@@ -1,12 +1,12 @@
 {
-  "name": "pteron — Agente pedagógico local",
+  "name": "pteron — Un espacio de trabajo para docentes",
   "short_name": "pteron",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fffdfa",
-  "theme_color": "#0e1f33",
+  "background_color": "#f7f3ec",
+  "theme_color": "#10243b",
   "icons": [
-    {"src": "/assets/app-icon.png", "sizes": "512x512", "type": "image/png"},
-    {"src": "/assets/apple-touch-icon.png", "sizes": "180x180", "type": "image/png"}
+    {"src": "/assets/app-icon-v2.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "/assets/apple-touch-icon-v2.png", "sizes": "180x180", "type": "image/png"}
   ]
 }

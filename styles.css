@@ -200,6 +200,18 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
 .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
 .js .reveal.is-visible { opacity: 1; transform: none; }
 
+.legal-page { padding: 176px 0 120px; }
+.legal-shell { display: grid; grid-template-columns: minmax(220px, .55fr) minmax(0, 1fr); column-gap: 11%; }
+.legal-shell > h1 { grid-column: 1; margin: 0; font-size: clamp(58px, 6vw, 90px); }
+.legal-meta { grid-column: 1; color: var(--ink-soft); font-size: 13px; }
+.legal-content { grid-column: 2; grid-row: 1 / span 3; max-width: 720px; }
+.legal-content > * { max-width: 640px; }
+.legal-content h2 { margin: 52px 0 18px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 34px; line-height: 1.05; }
+.legal-content h2:first-of-type { margin-top: 40px; }
+.legal-content p { color: var(--ink-soft); }
+.legal-content a { color: var(--ink); }
+.legal-notice { padding: 22px 24px; border-left: 2px solid var(--gold); background: var(--paper-deep); }
+
 @media (max-width: 900px) {
   :root { --container: min(100% - 40px, 680px); }
   .header-inner { min-height: 72px; }
@@ -222,6 +234,10 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
   .final-cta-inner { grid-template-columns: 1fr; align-items: start; }
   .footer-grid { grid-template-columns: 1fr; }
   .footer-grid p { text-align: left; }
+  .legal-page { padding-top: 128px; }
+  .legal-shell { grid-template-columns: 1fr; }
+  .legal-shell > h1, .legal-meta, .legal-content { grid-column: 1; grid-row: auto; }
+  .legal-meta { margin-bottom: 38px; }
 }
 
 @media (max-width: 560px) {
@@ -256,6 +272,10 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
   .final-cta { padding-block: 88px; }
   .final-cta h2 { font-size: 44px; }
   .footer-grid > div { flex-direction: column; gap: 12px; }
+  .legal-page { padding: 104px 0 76px; }
+  .legal-shell > h1 { font-size: 52px; }
+  .legal-content h2 { margin-top: 42px; font-size: 30px; }
+  .legal-notice { padding: 18px 20px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

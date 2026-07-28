@@ -59,7 +59,7 @@ Cada una de esas acciones requiere autorización específica.
 
 ## Doctrina visual y de contenido
 
-- Pteron está construido por profesores, para profesores.
+- pteron está construido por profes, para profes.
 - Debe transmitir seguridad, conocimiento y oficio, sin grandilocuencia.
 - El profesor mantiene siempre su criterio.
 - La interfaz y el discurso deben ser sobrios, concretos y breves.
