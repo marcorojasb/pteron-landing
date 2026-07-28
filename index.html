@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pterón — Agente pedagógico local</title>
-  <meta name="description" content="Pterón reduce el trabajo mecánico del docente con control local, fuentes inspeccionables, protección preventiva de datos y documentos editables.">
-  <meta name="theme-color" content="#0E1F33">
+  <title>Pteron — Un espacio de trabajo para docentes</title>
+  <meta name="description" content="Pteron ayuda a profesores a preparar y revisar materiales sin reemplazar su criterio.">
+  <meta name="theme-color" content="#f7f3ec">
   <meta name="color-scheme" content="light">
   <link rel="canonical" href="https://pteron.patagua.dev/">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_CL">
-  <meta property="og:site_name" content="Pterón">
-  <meta property="og:title" content="Pterón — Agente pedagógico local">
-  <meta property="og:description" content="Menos trabajo mecánico. Más criterio docente.">
+  <meta property="og:site_name" content="Pteron">
+  <meta property="og:title" content="Pteron — Un espacio de trabajo para docentes">
+  <meta property="og:description" content="Construido por profesores, para profesores.">
   <meta property="og:url" content="https://pteron.patagua.dev/">
   <meta property="og:image" content="https://pteron.patagua.dev/assets/og-pteron.jpg">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Pterón — Agente pedagógico local">
-  <meta name="twitter:description" content="Menos trabajo mecánico. Más criterio docente.">
+  <meta name="twitter:title" content="Pteron — Un espacio de trabajo para docentes">
+  <meta name="twitter:description" content="Construido por profesores, para profesores.">
   <meta name="twitter:image" content="https://pteron.patagua.dev/assets/og-pteron.jpg">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
@@ -25,518 +25,100 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <script>document.documentElement.classList.add("js")</script>
   <link rel="stylesheet" href="/styles.css">
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Pterón",
-    "url": "https://pteron.patagua.dev/",
-    "applicationCategory": "EducationalApplication",
-    "operatingSystem": "macOS, Windows, Linux",
-    "description": "Agente pedagógico local orientado a documentos, trazabilidad y protección preventiva de datos.",
-    "inLanguage": "es-CL",
-    "offers": {
-      "@type": "Offer",
-      "priceCurrency": "CLP",
-      "price": "4990",
-      "description": "Precio mensual previsto después de una prueba gratuita de 10 días."
-    }
-  }
-  </script>
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
   <header class="site-header" data-header>
     <div class="container header-inner">
-      <a class="brand" href="#inicio" aria-label="Pterón, inicio">
-        <img src="/assets/pteron-mark.png" width="44" height="52" alt="" aria-hidden="true">
-        <span>PTERÓN</span>
-      </a>
-
+      <a class="wordmark" href="#inicio" aria-label="Pteron, inicio">pteron</a>
       <button class="menu-button" type="button" aria-label="Abrir navegación" aria-expanded="false" aria-controls="site-nav" data-menu-button>
-        <span></span><span></span><span></span>
+        <span></span><span></span>
       </button>
-
       <nav class="site-nav" id="site-nav" aria-label="Navegación principal" data-nav>
-        <a href="#producto">Cómo funciona</a>
-        <a href="#principios">Principios</a>
-        <a href="#flujo">Flujo</a>
+        <a href="/privacidad.html">Privacidad</a>
         <a href="#precio">Precio</a>
-        <a href="#preguntas">Preguntas</a>
-        <a class="button button-small" href="#acceso">Probar 10 días</a>
+        <a class="button button-small" href="#acceso">Probar Pteron</a>
       </nav>
     </div>
   </header>
 
   <main id="contenido">
     <section class="hero" id="inicio">
-      <div class="hero-orbit hero-orbit-one" aria-hidden="true"></div>
-      <div class="hero-orbit hero-orbit-two" aria-hidden="true"></div>
       <div class="container hero-grid">
         <div class="hero-copy reveal">
-          <h1>Menos trabajo mecánico.<br><em>Más criterio docente.</em></h1>
-          <p class="hero-lead">
-            Pterón organiza, revisa y transforma tus documentos pedagógicos sin quitarte el control.
-            Trabaja en una carpeta local, señala sus fuentes, detecta datos sensibles y entrega artefactos editables.
-          </p>
-          <div class="hero-actions">
-            <a class="button" href="#acceso">
-              Probar gratis por 10 días
-              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 6l4 4-4 4"/></svg>
-            </a>
-            <a class="text-link" href="#producto">Ver cómo funciona</a>
-          </div>
-
-          <div class="hero-proof" aria-label="Principios principales de Pterón">
-            <span><i class="status-dot"></i> Local por defecto</span>
-            <span>Fuentes inspeccionables</span>
-            <span>Docente siempre al mando</span>
-          </div>
-
-          <div class="platform-line" aria-label="Sistemas operativos disponibles próximamente">
-            <span>Próximamente para</span>
-            <strong>macOS</strong><i></i><strong>Windows</strong><i></i><strong>Linux</strong>
-          </div>
-        </div>
-
-        <div class="hero-visual reveal" aria-label="Mascota de Pterón y estado del sistema">
-          <div class="local-card floating-card">
-            <div class="card-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="5" y="11" width="14" height="10" rx="3"/><path d="M12 15v2"/></svg>
-            </div>
+          <p class="eyebrow">Construido por profesores, para profesores</p>
+          <h1>Tus fuentes.<br>Tu criterio.</h1>
+          <div class="hero-lower">
             <div>
-              <strong>Modo local activo</strong>
-              <span>Sin transmisión externa</span>
-            </div>
-          </div>
-
-          <img class="hero-owl" src="/assets/owl-hero.png" width="530" height="800" alt="Pterón, un búho pedagógico con cuaderno y lápiz">
-
-          <div class="evidence-card floating-card">
-            <div class="evidence-top">
-              <span>Fuentes vinculadas</span>
-              <strong>4</strong>
-            </div>
-            <div class="evidence-line"><span></span><span></span><span></span></div>
-            <small>Cada afirmación puede inspeccionarse.</small>
-          </div>
-
-          <div class="privacy-chip">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 7 3v5c0 4.7-2.8 8.4-7 10-4.2-1.6-7-5.3-7-10V6l7-3Z"/><path d="m9 12 2 2 4-5"/></svg>
-            Protección preventiva de datos
-          </div>
-        </div>
-      </div>
-
-      <div class="container promise-rail reveal">
-        <div>
-          <span>01</span>
-          <strong>Control local</strong>
-          <p>Solo opera dentro de la carpeta que tú autorizas.</p>
-        </div>
-        <div>
-          <span>02</span>
-          <strong>Evidencia visible</strong>
-          <p>Las propuestas conservan su origen y trazabilidad.</p>
-        </div>
-        <div>
-          <span>03</span>
-          <strong>Alertas a tiempo</strong>
-          <p>Advierte antes de procesar información sensible.</p>
-        </div>
-        <div>
-          <span>04</span>
-          <strong>Artefactos útiles</strong>
-          <p>Edita documentos estructurados, no solo respuestas.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="product-section section" id="producto">
-      <div class="container">
-        <div class="section-heading split-heading reveal">
-          <div>
-            <h2>No conversa por conversar.<br>Trabaja sobre lo que necesitas.</h2>
-          </div>
-          <p>
-            Pterón pasa de la ayuda conversacional a un espacio de trabajo verificable: lee lo autorizado,
-            propone cambios, explica sus decisiones y prepara documentos listos para seguir editando.
-          </p>
-        </div>
-
-        <div class="demo-tabs reveal" role="tablist" aria-label="Demostración de Pterón">
-          <button type="button" role="tab" aria-selected="true" data-demo-tab="local">Carpeta local</button>
-          <button type="button" role="tab" aria-selected="false" data-demo-tab="evidence">Evidencia</button>
-          <button type="button" role="tab" aria-selected="false" data-demo-tab="privacy">Datos sensibles</button>
-          <button type="button" role="tab" aria-selected="false" data-demo-tab="export">Exportación</button>
-        </div>
-
-        <div class="workspace-shell reveal" data-workspace>
-          <div class="workspace-topbar">
-            <div class="window-controls" aria-hidden="true"><span></span><span></span><span></span></div>
-            <div class="workspace-path">
-              <img src="/assets/pteron-mark.png" alt="" aria-hidden="true">
-              <span>Pterón</span>
-              <b>/</b>
-              <strong data-demo-path>Planificación · 4° medio</strong>
-            </div>
-            <div class="local-status"><i></i><span data-demo-status>Modo local</span></div>
-          </div>
-
-          <div class="workspace-body">
-            <aside class="workspace-sidebar" aria-label="Archivos autorizados">
-              <div class="sidebar-label">Carpeta autorizada</div>
-              <button class="folder-row is-active" type="button">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h7l2 2h9v10H3z"/></svg>
-                Planificación
-              </button>
-              <div class="file-tree">
-                <span><i class="file-icon docx">W</i>Unidad 2.docx</span>
-                <span><i class="file-icon pdf">P</i>Bases curriculares.pdf</span>
-                <span><i class="file-icon sheet">S</i>Lista de curso.xlsx</span>
-                <span><i class="file-icon note">N</i>Notas de clase.md</span>
-              </div>
-              <div class="scope-note">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="5" y="11" width="14" height="10" rx="3"/></svg>
-                <span data-demo-scope>Pterón no puede acceder fuera de esta carpeta.</span>
-              </div>
-            </aside>
-
-            <div class="workspace-editor">
-              <div class="editor-toolbar">
-                <div>
-                  <span class="doc-kicker">Documento activo</span>
-                  <h3 data-demo-title>Secuencia didáctica: funciones exponenciales</h3>
-                </div>
-                <button class="icon-button" type="button" aria-label="Más opciones">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
-                </button>
-              </div>
-
-              <div class="editor-page">
-                <div class="document-meta">
-                  <span>Matemática</span><span>4° medio</span><span>90 minutos</span>
-                </div>
-                <h4 data-demo-heading>Objetivo de la clase</h4>
-                <p data-demo-copy>
-                  Modelar situaciones de crecimiento y decrecimiento mediante funciones exponenciales,
-                  justificando las decisiones tomadas a partir de distintas representaciones.
-                </p>
-
-                <div class="suggestion-block" data-demo-suggestion>
-                  <div class="suggestion-header">
-                    <span class="feather-mini">◒</span>
-                    <strong>Sugerencia de Pterón</strong>
-                    <span class="source-count">3 fuentes</span>
-                  </div>
-                  <p data-suggestion-copy>Incorporar una comparación entre representación tabular y gráfica antes de formalizar el modelo.</p>
-                  <div class="suggestion-actions">
-                    <button type="button" data-action="accept">Aplicar cambio</button>
-                    <button type="button" data-action="inspect">Inspeccionar fuentes</button>
-                  </div>
-                </div>
-
-                <h4>Secuencia propuesta</h4>
-                <ol class="lesson-list">
-                  <li><span>1</span><p><strong>Activación.</strong> Comparar dos situaciones de crecimiento cotidiano.</p></li>
-                  <li><span>2</span><p><strong>Exploración.</strong> Completar tablas y visualizar cambios sucesivos.</p></li>
-                  <li><span>3</span><p><strong>Formalización.</strong> Identificar parámetros y validar el modelo.</p></li>
-                </ol>
+              <p class="hero-lead">Pteron te ayuda a preparar guías, planificaciones, evaluaciones y rúbricas.</p>
+              <div class="hero-actions">
+                <a class="button" href="#acceso">Probar 10 días</a>
               </div>
             </div>
-
-            <aside class="workspace-inspector">
-              <div class="inspector-header">
-                <span data-inspector-label>Permisos</span>
-                <strong data-inspector-count>1 carpeta</strong>
-              </div>
-
-              <div class="inspector-content" data-inspector-content>
-                <div class="permission-visual">
-                  <div class="folder-icon-large">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h7l2 2h9v10H3z"/></svg>
-                  </div>
-                  <strong>Acceso acotado</strong>
-                  <p>Pterón ve únicamente la carpeta elegida para esta sesión.</p>
-                </div>
-                <div class="boundary-list">
-                  <span><i>✓</i> Leer documentos autorizados</span>
-                  <span><i>✓</i> Crear copias de trabajo</span>
-                  <span><i>—</i> Sobrescribir originales</span>
-                  <span><i>—</i> Enviar datos sin permiso</span>
-                </div>
-              </div>
-            </aside>
+            <p class="hero-note">Pteron propone.<br>Tú decides.</p>
           </div>
+        </div>
 
-          <div class="workspace-toast" role="status" aria-live="polite" data-toast>
-            Cambio aplicado en una copia de trabajo.
+        <div class="scroll-film reveal" data-scroll-film>
+          <div class="scroll-film-sticky">
+            <video
+              data-scroll-video
+              muted
+              playsinline
+              preload="auto"
+              poster="/assets/pteron-scroll-poster.jpg"
+              aria-label="Paisaje abstracto de nubes reflejadas sobre el agua"
+            >
+              <source src="/assets/pteron-scroll.mp4" type="video/mp4">
+            </video>
+            <div class="stage-caption">
+              <span>Pteron</span>
+              <span data-scroll-progress>00 — 100</span>
+            </div>
+            <figure class="product-window hero-product">
+              <img src="/assets/product-home-current.png" alt="Pantalla inicial completa de Pteron con accesos a guías, planificación, evaluación y rúbricas">
+            </figure>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="principles-section section" id="principios">
-      <div class="container">
-        <div class="section-heading centered-heading reveal">
-          <h2>Cuatro decisiones que cambian<br>la relación con la inteligencia artificial.</h2>
-          <p>La confianza no depende de una promesa abstracta, sino de límites que el docente puede ver y controlar.</p>
-        </div>
-
-        <div class="principle-list">
-          <article class="principle-row reveal">
-            <span class="principle-number">01</span>
-            <div class="principle-title">
-              <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 10h9l3 3h10v13H5z"/><path d="M11 10V7h10v6"/></svg>
-              <h3>Control y privacidad local</h3>
-            </div>
-            <p>El docente elige una carpeta de trabajo. Pterón no sale de ese perímetro, no altera originales y no transmite información sin una configuración explícita.</p>
-          </article>
-
-          <article class="principle-row reveal">
-            <span class="principle-number">02</span>
-            <div class="principle-title">
-              <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="14" cy="14" r="8"/><path d="m20 20 7 7"/><path d="m10 14 3 3 5-6"/></svg>
-              <h3>Evidencia y transparencia</h3>
-            </div>
-            <p>Cada afirmación relevante conserva una ruta de inspección: fuente, fragmento utilizado y relación con el cambio propuesto.</p>
-          </article>
-
-          <article class="principle-row reveal">
-            <span class="principle-number">03</span>
-            <div class="principle-title">
-              <svg viewBox="0 0 32 32" aria-hidden="true"><path d="m16 4 10 4v7c0 7-4 11-10 13C10 26 6 22 6 15V8z"/><path d="M16 10v7"/><circle cx="16" cy="21" r="1"/></svg>
-              <h3>Protección de datos docentes</h3>
-            </div>
-            <p>Antes de procesar nombres, RUT, calificaciones o antecedentes NEE/PIE, Pterón detiene el flujo y ofrece opciones claras: anonimizar, omitir o cancelar.</p>
-          </article>
-
-          <article class="principle-row reveal">
-            <span class="principle-number">04</span>
-            <div class="principle-title">
-              <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 4h11l5 5v19H8z"/><path d="M19 4v6h6"/><path d="M12 16h8M12 21h8"/></svg>
-              <h3>Enfoque en artefactos</h3>
-            </div>
-            <p>El resultado no queda atrapado en un chat. Se convierte en una estructura editable que puede revisarse y exportarse como DOCX u otros formatos.</p>
-          </article>
-        </div>
+    <section class="compact-story section" id="producto">
+      <div class="container compact-story-grid reveal">
+        <p class="section-number">Cómo trabaja</p>
+        <h2>De tus fuentes a un borrador editable.</h2>
+        <ul>
+          <li>Añade contexto.</li>
+          <li>Revisa la propuesta.</li>
+          <li>Edita antes de usar.</li>
+        </ul>
       </div>
     </section>
 
-    <section class="workflow-section section" id="flujo">
-      <div class="container">
-        <div class="section-heading split-heading reveal">
-          <div>
-            <h2>Un flujo breve.<br>Decisiones siempre reversibles.</h2>
-          </div>
-          <p>
-            Pterón acompaña el trabajo sin esconder lo que ocurre entre la instrucción y el documento final.
-            Cada paso deja al docente una salida clara.
-          </p>
-        </div>
-
-        <div class="workflow-grid">
-          <article class="workflow-step reveal">
-            <div class="step-image"><img src="/assets/owl-greeting.png" alt=""></div>
-            <span>01</span>
-            <h3>Autoriza</h3>
-            <p>Elige la carpeta y define el alcance de la sesión.</p>
-          </article>
-          <article class="workflow-step reveal">
-            <div class="step-image"><img src="/assets/owl-thinking.png" alt=""></div>
-            <span>02</span>
-            <h3>Inspecciona</h3>
-            <p>Revisa fuentes, permisos y posibles datos sensibles.</p>
-          </article>
-          <article class="workflow-step reveal">
-            <div class="step-image"><img src="/assets/owl-processing.png" alt=""></div>
-            <span>03</span>
-            <h3>Construye</h3>
-            <p>Edita una copia estructurada con cambios explicados.</p>
-          </article>
-          <article class="workflow-step reveal">
-            <div class="step-image"><img src="/assets/owl-success.png" alt=""></div>
-            <span>04</span>
-            <h3>Decide y exporta</h3>
-            <p>Acepta, modifica o descarta antes de generar el archivo.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="trace-section section">
-      <div class="container trace-grid">
-        <div class="trace-copy reveal">
-          <h2>Cada propuesta deja rastro.</h2>
-          <p>
-            Pterón muestra la cadena completa entre el material consultado y la edición sugerida.
-            No exige confianza ciega: permite revisar la evidencia antes de aceptar.
-          </p>
-          <ul class="trace-list">
-            <li><span>1</span> Documento o fuente consultada</li>
-            <li><span>2</span> Fragmento relevante identificado</li>
-            <li><span>3</span> Criterio pedagógico aplicado</li>
-            <li><span>4</span> Cambio propuesto en el artefacto</li>
-          </ul>
-        </div>
-
-        <div class="trace-visual reveal" aria-label="Ejemplo de trazabilidad de una propuesta">
-          <div class="trace-node source-node">
-            <small>Fuente local</small>
-            <strong>Bases curriculares.pdf</strong>
-            <span>OA 3 · p. 126</span>
-          </div>
-          <div class="trace-arrow" aria-hidden="true">
-            <svg viewBox="0 0 70 24"><path d="M2 12h62M57 5l8 7-8 7"/></svg>
-          </div>
-          <div class="trace-node extract-node">
-            <small>Fragmento</small>
-            <p>“Modelar situaciones de crecimiento…”</p>
-          </div>
-          <div class="trace-arrow trace-arrow-two" aria-hidden="true">
-            <svg viewBox="0 0 70 24"><path d="M2 12h62M57 5l8 7-8 7"/></svg>
-          </div>
-          <div class="trace-node proposal-node">
-            <small>Propuesta</small>
-            <strong>Agregar comparación tabular y gráfica</strong>
-            <span>Revisar antes de aplicar</span>
-          </div>
-          <div class="trace-seal">
-            <img src="/assets/pteron-mark.png" alt="" aria-hidden="true">
-            <span>Trazabilidad disponible</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="position-section section">
-      <div class="container">
-        <div class="position-grid">
-          <div class="position-intro reveal">
-            <img src="/assets/owl-teaching.png" alt="Pterón enseñando frente a una pizarra">
-            <div>
-              <h2>El profesional sigue al mando.</h2>
-              <p>Pterón está diseñado para ampliar la capacidad de trabajo docente, no para reemplazar el juicio que da sentido a ese trabajo.</p>
-            </div>
-          </div>
-
-          <div class="position-comparison reveal">
-            <div>
-              <span class="comparison-label">Pterón sí es</span>
-              <ul>
-                <li>Un asistente acotado por permisos visibles.</li>
-                <li>Un editor de artefactos pedagógicos.</li>
-                <li>Una herramienta con fuentes inspeccionables.</li>
-                <li>Un apoyo que solicita aprobación antes de actuar.</li>
-              </ul>
-            </div>
-            <div class="comparison-negative">
-              <span class="comparison-label">Pterón no es</span>
-              <ul>
-                <li>Un chatbot genérico sin contexto.</li>
-                <li>Una caja negra que decide por el docente.</li>
-                <li>Una plataforma que exige subir todos los datos.</li>
-                <li>Un sistema que sobrescribe el trabajo original.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <figure class="product-board reveal">
-          <img src="/assets/product-mobile.webp" alt="Propuesta visual de Pterón en distintas pantallas de una aplicación pedagógica">
-          <figcaption>Una experiencia sobria y comprensible, diseñada para acompañar tareas reales del trabajo docente.</figcaption>
-        </figure>
-      </div>
-    </section>
-
-    <section class="pricing-section section" id="precio">
+    <section class="pricing section" id="precio">
       <div class="container pricing-grid">
         <div class="pricing-copy reveal">
-          <h2>Empieza sin riesgo.<br>Decide con tiempo.</h2>
-          <p>
-            Tendrás diez días para probar el flujo completo en tu propio trabajo docente.
-            Sin pago inicial y con cancelación antes del cobro.
-          </p>
-          <div class="platform-cards" aria-label="Plataformas de Pterón">
-            <div><span>⌘</span><strong>macOS</strong><small>Próximamente</small></div>
-            <div><span>⊞</span><strong>Windows</strong><small>Próximamente</small></div>
-            <div><span>◉</span><strong>Linux</strong><small>Próximamente</small></div>
-          </div>
+          <p class="section-number">Acceso</p>
+          <h2>Prueba Pteron durante diez días.</h2>
+          <p>Sin pago inicial.</p>
         </div>
-
-        <div class="price-card reveal">
-          <div class="price-top">
-            <span>Plan personal docente</span>
-            <strong>10 días gratis</strong>
-          </div>
-          <div class="price-value">
-            <span>$</span><b>4.990</b><small>CLP / mes</small>
-          </div>
-          <p class="price-note">Precio de lanzamiento previsto. Se confirmará antes de iniciar cualquier cobro.</p>
-          <ul>
-            <li>Aplicación de escritorio</li>
-            <li>Carpetas locales con permisos visibles</li>
-            <li>Fuentes y trazabilidad de propuestas</li>
-            <li>Detección preventiva de datos sensibles</li>
-            <li>Edición y exportación de documentos</li>
-          </ul>
-          <a class="button button-wide" href="mailto:pteron@patagua.dev?subject=Quiero%20probar%20Pter%C3%B3n&body=Hola%2C%20me%20interesa%20probar%20Pter%C3%B3n%20por%2010%20d%C3%ADas.%0A%0ANombre%3A%0ASistema%20operativo%3A%0A">Solicitar acceso anticipado</a>
-          <small class="price-fine">No se te cobrará nada al solicitar acceso.</small>
+        <div class="price-detail reveal">
+          <p>Plan personal docente</p>
+          <div class="price"><strong>$4.990</strong><span>CLP / mes<br>después de la prueba</span></div>
+          <a class="button" href="mailto:pteron@patagua.dev?subject=Quiero%20probar%20Pteron&body=Hola%2C%20me%20interesa%20probar%20Pteron%20por%2010%20d%C3%ADas.%0A%0ANombre%3A%0ASistema%20operativo%3A%0A">Solicitar acceso</a>
         </div>
       </div>
     </section>
 
-    <section class="faq-section section" id="preguntas">
-      <div class="container faq-grid">
-        <div class="faq-heading reveal">
-          <h2>Preguntas importantes,<br>respuestas directas.</h2>
-          <p>La utilidad de una herramienta pedagógica también depende de comprender sus límites.</p>
-        </div>
-
-        <div class="faq-list reveal">
-          <details>
-            <summary>¿Pterón necesita subir mis archivos a internet?<span></span></summary>
-            <p>No por defecto. El modelo de trabajo parte desde una carpeta local autorizada. Cualquier conexión externa debe estar configurada y consentida previamente.</p>
-          </details>
-          <details>
-            <summary>¿Puede modificar mis documentos originales?<span></span></summary>
-            <p>No. El flujo crea copias de trabajo y mantiene el archivo original intacto para que cada cambio sea reversible.</p>
-          </details>
-          <details>
-            <summary>¿Qué ocurre si detecta datos de estudiantes?<span></span></summary>
-            <p>El proceso se detiene antes de continuar y muestra una advertencia. El docente puede anonimizar, excluir el contenido o cancelar la operación.</p>
-          </details>
-          <details>
-            <summary>¿Las fuentes quedan visibles en el documento final?<span></span></summary>
-            <p>Pterón conserva la trazabilidad durante la edición y permite decidir cómo incluir citas, referencias o notas de respaldo en el artefacto exportado.</p>
-          </details>
-          <details>
-            <summary>¿Cuándo estará disponible y en qué sistemas?<span></span></summary>
-            <p>Pterón está en preparación para macOS, Windows y Linux. Puedes solicitar acceso anticipado para recibir la disponibilidad de tu sistema.</p>
-          </details>
-          <details>
-            <summary>¿Cuánto costará después de la prueba?<span></span></summary>
-            <p>El precio mensual previsto es de $4.990 CLP después de diez días gratis. El valor definitivo se informará claramente antes de cualquier cobro.</p>
-          </details>
-        </div>
-      </div>
-    </section>
-
-    <section class="cta-section" id="acceso">
-      <div class="cta-orbit" aria-hidden="true"></div>
-      <div class="container cta-inner reveal">
-        <div class="cta-copy">
-          <img src="/assets/pteron-mark.png" alt="" aria-hidden="true">
-          <h2>Tu trabajo sigue siendo tuyo.<br>Pterón solo te ayuda a moverlo más lejos.</h2>
-          <p>Solicita acceso anticipado y recibe diez días de prueba cuando esté disponible para tu sistema.</p>
-        </div>
-        <div class="cta-actions">
-          <a class="button button-light" href="mailto:pteron@patagua.dev?subject=Acceso%20anticipado%20a%20Pter%C3%B3n&body=Hola%2C%20quiero%20sumarme%20al%20acceso%20anticipado%20de%20Pter%C3%B3n.%0A%0ANombre%3A%0ASistema%20operativo%3A%0A">Solicitar acceso anticipado</a>
-          <button class="copy-email" type="button" data-copy-email>
-            <span>pteron@patagua.dev</span>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>
-          </button>
+    <section class="final-cta" id="acceso">
+      <div class="container final-cta-inner reveal">
+        <p class="wordmark wordmark-light">pteron</p>
+        <h2>Pruébalo en tu trabajo real.</h2>
+        <p>Diez días para ver si encaja en tu manera de enseñar.</p>
+        <div>
+          <a class="button button-light" href="mailto:pteron@patagua.dev?subject=Quiero%20probar%20Pteron&body=Hola%2C%20quiero%20probar%20Pteron%20por%2010%20d%C3%ADas.%0A%0ANombre%3A%0ASistema%20operativo%3A%0A">Solicitar prueba</a>
+          <button class="copy-email" type="button" data-copy-email><span>pteron@patagua.dev</span></button>
         </div>
       </div>
     </section>
@@ -544,34 +126,17 @@
 
   <footer class="site-footer">
     <div class="container footer-grid">
-      <div class="footer-brand">
-        <a class="brand brand-footer" href="#inicio">
-          <img src="/assets/pteron-mark.png" width="44" height="52" alt="" aria-hidden="true">
-          <span>PTERÓN</span>
-        </a>
-        <p>Agente pedagógico local.<br>Claridad, control y criterio docente.</p>
+      <a class="wordmark" href="#inicio">pteron</a>
+      <div>
+        <a href="#precio">Precio</a>
+        <a href="/privacidad.html">Privacidad</a>
+        <a href="/terminos.html">Términos</a>
       </div>
-      <div class="footer-links">
-        <div>
-          <strong>Producto</strong>
-          <a href="#producto">Cómo funciona</a>
-          <a href="#principios">Principios</a>
-          <a href="#precio">Precio</a>
-        </div>
-        <div>
-          <strong>Información</strong>
-          <a href="/privacidad.html">Privacidad</a>
-          <a href="/terminos.html">Términos</a>
-          <a href="mailto:pteron@patagua.dev">Contacto</a>
-        </div>
-      </div>
-    </div>
-    <div class="container footer-bottom">
-      <span>© <span data-year></span> Pterón · Patagua</span>
-      <span>Diseñado en Chile para el trabajo docente.</span>
+      <p>© <span data-year></span> Pteron · Patagua<br>Diseñado en Chile para el trabajo docente.</p>
     </div>
   </footer>
 
+  <div class="toast" role="status" aria-live="polite" data-toast></div>
   <script src="/script.js" defer></script>
 </body>
 </html>
