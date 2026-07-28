@@ -7,6 +7,8 @@
   const toc = document.querySelector("[data-toc]");
   const search = document.querySelector("[data-search]");
   const results = document.querySelector("[data-search-results]");
+  const searchToggle = document.querySelector("[data-search-toggle]");
+  const searchPanel = document.querySelector("[data-search-panel]");
   const navToggle = document.querySelector("[data-nav-toggle]");
   const sidebar = document.querySelector("[data-sidebar]");
   const year = document.querySelector("[data-year]");
@@ -108,12 +110,24 @@
     results.hidden = false;
   };
 
+  const setSearchOpen = (open, returnFocus = false) => {
+    searchPanel.hidden = !open;
+    searchToggle.setAttribute("aria-expanded", String(open));
+    if (open) {
+      requestAnimationFrame(() => search.focus());
+    } else {
+      results.hidden = true;
+      if (returnFocus) searchToggle.focus();
+    }
+  };
+
   document.addEventListener("click", event => {
     const link = event.target.closest('a[href^="/docs/"]');
     if (!link) return;
     const url = new URL(link.href);
     if (url.origin !== location.origin) return;
     event.preventDefault();
+    setSearchOpen(false);
     renderPage(url.pathname.split("/").filter(Boolean).pop() || "inicio", true);
   });
 
@@ -122,18 +136,25 @@
   search.addEventListener("keydown", event => {
     if (event.key === "Escape") {
       search.value = "";
-      results.hidden = true;
-      search.blur();
+      setSearchOpen(false, true);
     }
+  });
+  searchToggle.addEventListener("click", () => {
+    setSearchOpen(searchPanel.hidden);
   });
   document.addEventListener("keydown", event => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
       event.preventDefault();
-      search.focus();
+      setSearchOpen(true);
+    } else if (event.key === "Escape" && !searchPanel.hidden) {
+      search.value = "";
+      setSearchOpen(false, true);
     }
   });
   document.addEventListener("click", event => {
-    if (!event.target.closest(".search-wrap")) results.hidden = true;
+    if (!searchPanel.hidden && !event.target.closest("[data-search-panel]") && !event.target.closest("[data-search-toggle]")) {
+      setSearchOpen(false);
+    }
   });
   navToggle.addEventListener("click", () => {
     const open = sidebar.classList.toggle("is-open");
