@@ -1,4 +1,46 @@
 (() => {
+  const loader = document.querySelector('[data-page-loader]');
+  const loaderCanvas = document.querySelector('[data-loader-medusa]');
+  let loaderFrameId = 0;
+  let loaderTime = 0;
+  let loaderLastPaint = 0;
+
+  const drawMedusa = (now = 0) => {
+    if (!loaderCanvas || loader?.classList.contains('is-complete')) return;
+    loaderFrameId = window.requestAnimationFrame(drawMedusa);
+    if (now - loaderLastPaint < 32) return;
+    loaderLastPaint = now;
+
+    const context = loaderCanvas.getContext('2d');
+    const size = 400;
+    context.fillStyle = 'rgb(247, 243, 236)';
+    context.fillRect(0, 0, size, size);
+    loaderTime += Math.PI / 80;
+
+    for (let index = 10000; index > 0; index -= 1) {
+      const y = index / 235;
+      const k = (4 + Math.cos(index / 9 - loaderTime * 2)) * Math.cos(index / 35);
+      const e = y / 7 - 13;
+      const d = Math.hypot(k, e) + Math.sin(e / 9 + loaderTime / 2) - 4;
+      const q = 2 * Math.sin(k * 3) - y / 35 * k * (9 + k * Math.sin(Math.cos(e) * 9 - d * 2 + loaderTime));
+      const c = d - loaderTime;
+      const x = q + 40 * Math.cos(c) + 200;
+      const pointY = q * Math.sin(c) + d * 35;
+      context.fillStyle = index % 19 === 0
+        ? 'rgba(189, 120, 35, .42)'
+        : 'rgba(16, 36, 59, .38)';
+      context.fillRect(x, pointY, 1, 1);
+    }
+  };
+
+  const finishLoading = () => {
+    window.cancelAnimationFrame(loaderFrameId);
+    loader?.classList.add('is-complete');
+    document.documentElement.classList.remove('is-loading');
+  };
+
+  drawMedusa();
+
   const header = document.querySelector('[data-header]');
   const menuButton = document.querySelector('[data-menu-button]');
   const nav = document.querySelector('[data-nav]');
@@ -66,22 +108,51 @@
   const video = document.querySelector('[data-scroll-video]');
   const progressLabel = document.querySelector('[data-scroll-progress]');
   const product = film?.querySelector('.hero-product');
-  if (!film || !video) return;
+  if (!film || !video) {
+    finishLoading();
+    return;
+  }
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const filmStage = film.querySelector('.scroll-film-sticky');
   let frameId = 0;
   let targetTime = 0;
 
   video.pause();
 
-  const prepareLocalVideo = async () => {
-    if (!['localhost', '127.0.0.1'].includes(window.location.hostname)) return;
+  const waitForVideo = (eventName, readyState, timeout = 20000) => new Promise((resolve, reject) => {
+    if (video.readyState >= readyState) {
+      resolve();
+      return;
+    }
+    const timeoutId = window.setTimeout(() => {
+      video.removeEventListener(eventName, onReady);
+      reject(new Error(`Video ${eventName} timeout`));
+    }, timeout);
+    const onReady = () => {
+      window.clearTimeout(timeoutId);
+      resolve();
+    };
+    video.addEventListener(eventName, onReady, { once: true });
+  });
+
+  const prepareVideo = async () => {
     try {
       const response = await fetch('/assets/pteron-scroll.mp4');
+      if (!response.ok) throw new Error(`Video request failed: ${response.status}`);
       const blob = await response.blob();
       video.src = URL.createObjectURL(blob);
+      video.load();
     } catch {
-      // Keep the original source when the local preview cannot create a seekable blob.
+      video.load();
     }
+
+    await waitForVideo('loadedmetadata', 1);
+    const playback = video.play();
+    if (playback) await playback.catch(() => {});
+    await waitForVideo('loadeddata', 2);
+    video.pause();
+    video.currentTime = 0;
+    filmStage?.classList.add('is-video-ready');
   };
 
   const updateFilm = () => {
@@ -97,7 +168,7 @@
     if (progressLabel) progressLabel.textContent = `${String(Math.round(progress * 100)).padStart(2, '0')} — 100`;
     if (product) {
       const enter = Math.min(1, Math.max(0, progress / .16));
-      const startOffset = window.innerWidth <= 560 ? 56 : 62;
+      const startOffset = window.innerWidth <= 560 ? 48 : 62;
       const offset = startOffset * (1 - enter);
       product.style.transform = `translate3d(-50%, ${offset}vh, 0)`;
     }
@@ -110,5 +181,13 @@
   video.addEventListener('loadedmetadata', updateFilm);
   window.addEventListener('scroll', requestFilmUpdate, { passive: true });
   window.addEventListener('resize', requestFilmUpdate, { passive: true });
-  prepareLocalVideo().finally(updateFilm);
+  Promise.all([
+    prepareVideo(),
+    new Promise((resolve) => window.setTimeout(resolve, 800))
+  ]).catch(() => {
+    filmStage?.classList.remove('is-video-ready');
+  }).finally(() => {
+    updateFilm();
+    finishLoading();
+  });
 })();
