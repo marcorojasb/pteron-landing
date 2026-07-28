@@ -106,7 +106,7 @@ window.PTERON_DOCS = {
       eyebrow: "Empezar",
       title: "Actualizar pteron",
       lead: "La aplicación avisa cuando hay una nueva versión de tu canal.",
-      html: `<section><h2 id="canal-beta">Canal beta</h2><p>Durante la beta recibirás versiones de prueba con correcciones y cambios frecuentes. El canal estable figura como próximamente.</p></section><section><h2 id="instalacion">Cómo se aplica</h2><p>pteron descarga la actualización y pide tu consentimiento antes de instalarla al reiniciar.</p></section><section><h2 id="windows">Windows sin firma</h2><div class="notice"><strong>Limitación conocida</strong><p>Las actualizaciones de Windows aún se distribuyen sin firma digital. El estado de firma se informa por plataforma.</p></div></section>`
+      html: `<section><h2 id="canal-beta">Canal beta</h2><p>La beta pública es gratuita. Durante esta etapa recibirás versiones de prueba con correcciones y cambios frecuentes. El canal estable figura como próximamente.</p></section><section><h2 id="instalacion">Cómo se aplica</h2><p>pteron descarga la actualización y pide tu consentimiento antes de instalarla al reiniciar.</p></section><section><h2 id="windows">Windows sin firma</h2><div class="notice"><strong>Limitación conocida</strong><p>Las actualizaciones de Windows aún se distribuyen sin firma digital. El estado de firma se informa por plataforma.</p></div></section>`
     },
     "carpeta-trabajo": {
       eyebrow: "Conceptos",

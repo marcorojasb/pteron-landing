@@ -45,7 +45,7 @@ Luego abre `http://localhost:4173`.
 
 ## Antes de publicar comercialmente
 
-- Confirmar el precio final y reemplazar “precio previsto” si corresponde.
+- Definir y comunicar cualquier plan pagado antes de activar cobros.
 - Revisar legalmente Privacidad y Términos.
-- Cambiar los enlaces de acceso anticipado por el flujo real de registro/pago cuando exista.
+- Mantener los enlaces de descarga sincronizados con el canal público de releases.
 - Confirmar las capacidades exactas de cada versión de escritorio.
