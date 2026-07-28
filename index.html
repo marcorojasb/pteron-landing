@@ -25,6 +25,9 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="preload" as="image" href="/assets/pteron-scroll-poster.jpg">
   <link rel="preload" as="image" href="/assets/product-home-current.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
   <script>document.documentElement.classList.add("js", "is-loading")</script>
   <link rel="stylesheet" href="/styles.css">
 </head>
@@ -44,6 +47,7 @@
       <nav class="site-nav" id="site-nav" aria-label="Navegación principal" data-nav>
         <a href="/privacidad.html">Privacidad</a>
         <a href="#precio">Precio</a>
+        <a href="/descargar/">Descargar</a>
         <a class="button button-small" href="#acceso">Probar Pteron</a>
       </nav>
     </div>
@@ -72,12 +76,10 @@
               data-scroll-video
               muted
               playsinline
-              preload="auto"
+              preload="none"
               poster="/assets/pteron-scroll-poster.jpg"
               aria-label="Paisaje abstracto de nubes reflejadas sobre el agua"
-            >
-              <source src="/assets/pteron-scroll.mp4" type="video/mp4">
-            </video>
+            ></video>
             <div class="stage-caption">
               <span>Pteron</span>
               <span data-scroll-progress>00 — 100</span>
@@ -141,6 +143,7 @@
     <div class="container footer-grid">
       <a class="wordmark" href="#inicio">pteron</a>
       <div>
+        <a href="/descargar/">Descargar</a>
         <a href="#precio">Precio</a>
         <a href="/privacidad.html">Privacidad</a>
         <a href="/terminos.html">Términos</a>

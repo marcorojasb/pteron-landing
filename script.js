@@ -4,11 +4,12 @@
   let loaderFrameId = 0;
   let loaderTime = 0;
   let loaderLastPaint = 0;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const drawMedusa = (now = 0) => {
     if (!loaderCanvas || loader?.classList.contains('is-complete')) return;
-    loaderFrameId = window.requestAnimationFrame(drawMedusa);
-    if (now - loaderLastPaint < 32) return;
+    if (!reducedMotion) loaderFrameId = window.requestAnimationFrame(drawMedusa);
+    if (!reducedMotion && now - loaderLastPaint < 32) return;
     loaderLastPaint = now;
 
     const context = loaderCanvas.getContext('2d');
@@ -36,6 +37,7 @@
   const finishLoading = () => {
     window.cancelAnimationFrame(loaderFrameId);
     loader?.classList.add('is-complete');
+    loader?.setAttribute('aria-hidden', 'true');
     document.documentElement.classList.remove('is-loading');
   };
 
@@ -112,7 +114,6 @@
     finishLoading();
     return;
   }
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const filmStage = film.querySelector('.scroll-film-sticky');
   let frameId = 0;
   let targetTime = 0;
@@ -124,31 +125,47 @@
       resolve();
       return;
     }
-    const timeoutId = window.setTimeout(() => {
+    const cleanup = () => {
+      window.clearTimeout(timeoutId);
       video.removeEventListener(eventName, onReady);
+      video.removeEventListener('error', onError);
+    };
+    const timeoutId = window.setTimeout(() => {
+      cleanup();
       reject(new Error(`Video ${eventName} timeout`));
     }, timeout);
     const onReady = () => {
-      window.clearTimeout(timeoutId);
+      cleanup();
       resolve();
     };
+    const onError = () => {
+      cleanup();
+      reject(new Error('Video failed to load'));
+    };
     video.addEventListener(eventName, onReady, { once: true });
+    video.addEventListener('error', onError, { once: true });
   });
 
   const prepareVideo = async () => {
-    try {
-      const response = await fetch('/assets/pteron-scroll.mp4');
-      if (!response.ok) throw new Error(`Video request failed: ${response.status}`);
-      const blob = await response.blob();
-      video.src = URL.createObjectURL(blob);
-      video.load();
-    } catch {
-      video.load();
-    }
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const constrainedConnection = connection?.saveData
+      || ['slow-2g', '2g', '3g'].includes(connection?.effectiveType);
+    const useMobileVideo = window.matchMedia('(max-width: 767px)').matches
+      || constrainedConnection;
+    const useHighQualityVideo = window.matchMedia('(min-width: 1200px)').matches
+      && window.devicePixelRatio > 1
+      && !constrainedConnection;
+    const videoUrl = useMobileVideo
+      ? '/assets/pteron-scroll-mobile.mp4'
+      : useHighQualityVideo
+        ? '/assets/pteron-scroll-hq.mp4'
+        : '/assets/pteron-scroll.mp4';
+    video.src = videoUrl;
+    video.load();
 
     await waitForVideo('loadedmetadata', 1);
     const playback = video.play();
-    if (playback) await playback.catch(() => {});
+    playback?.catch(() => {});
     await waitForVideo('loadeddata', 2);
     video.pause();
     video.currentTime = 0;
@@ -161,14 +178,16 @@
     const travel = Math.max(1, film.offsetHeight - window.innerHeight);
     const progress = Math.min(1, Math.max(0, (window.scrollY - start) / travel));
     const duration = Number.isFinite(video.duration) ? Math.max(0, video.duration - .05) : 0;
-    targetTime = reducedMotion ? 0 : progress * duration;
+    targetTime = reducedMotion ? 0 : progress * duration * .92;
     if (duration && Math.abs(video.currentTime - targetTime) > .025) {
       video.currentTime = targetTime;
     }
     if (progressLabel) progressLabel.textContent = `${String(Math.round(progress * 100)).padStart(2, '0')} — 100`;
     if (product) {
-      const enter = Math.min(1, Math.max(0, progress / .16));
-      const startOffset = window.innerWidth <= 560 ? 48 : 62;
+      const isMobile = window.innerWidth <= 560;
+      const enterDuration = isMobile ? .3 : .22;
+      const enter = reducedMotion ? 1 : Math.min(1, Math.max(0, progress / enterDuration));
+      const startOffset = isMobile ? 40 : 8;
       const offset = startOffset * (1 - enter);
       product.style.transform = `translate3d(-50%, ${offset}vh, 0)`;
     }
@@ -181,8 +200,18 @@
   video.addEventListener('loadedmetadata', updateFilm);
   window.addEventListener('scroll', requestFilmUpdate, { passive: true });
   window.addEventListener('resize', requestFilmUpdate, { passive: true });
+
+  const videoReady = reducedMotion
+    ? Promise.resolve()
+    : Promise.race([
+        prepareVideo(),
+        new Promise((_, reject) => window.setTimeout(() => reject(new Error('Video preparation timeout')), 9000))
+      ]);
+  const fontsReady = document.fonts?.ready ?? Promise.resolve();
+
   Promise.all([
-    prepareVideo(),
+    videoReady,
+    fontsReady,
     new Promise((resolve) => window.setTimeout(resolve, 800))
   ]).catch(() => {
     filmStage?.classList.remove('is-video-ready');
