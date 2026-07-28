@@ -1,6 +1,6 @@
 {
-  "name": "Pterón — Agente pedagógico local",
-  "short_name": "Pterón",
+  "name": "pteron — Agente pedagógico local",
+  "short_name": "pteron",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fffdfa",
