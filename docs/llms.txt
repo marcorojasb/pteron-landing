@@ -1,0 +1,19 @@
+# pteron
+
+> pteron es un espacio de trabajo local-first para docentes. Ayuda a preparar y
+> revisar guías, planificaciones, evaluaciones y rúbricas sin reemplazar el
+> criterio profesional.
+
+## Documentación
+
+- [Inicio](https://pteron.patagua.dev/docs/)
+- [Instalar en macOS](https://pteron.patagua.dev/docs/instalar-macos)
+- [Instalar en Windows](https://pteron.patagua.dev/docs/instalar-windows)
+- [Carpeta de trabajo](https://pteron.patagua.dev/docs/carpeta-trabajo)
+- [Fuentes y contexto](https://pteron.patagua.dev/docs/fuentes-contexto)
+- [Privacidad y control](https://pteron.patagua.dev/docs/trabajo-local)
+- [Versiones y plataformas](https://pteron.patagua.dev/docs/versiones)
+
+Windows 11 está soportado durante la beta. El instalador todavía no está firmado
+y Microsoft Defender SmartScreen puede pedir confirmación. El canal estable está
+próximamente, sin fecha comprometida.

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Documentación — pteron</title>
+  <meta name="description" content="Guías para instalar y usar pteron con tus propias fuentes.">
+  <meta name="theme-color" content="#f6f2ec">
+  <meta name="color-scheme" content="light">
+  <link rel="canonical" href="https://pteron.patagua.dev/docs/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_CL">
+  <meta property="og:site_name" content="pteron">
+  <meta property="og:title" content="Documentación — pteron">
+  <meta property="og:description" content="Instala pteron y aprende a trabajar con tus propias fuentes.">
+  <meta property="og:image" content="https://pteron.patagua.dev/assets/og-pteron-v3.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-v2-32.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v2.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500&display=swap">
+  <link rel="stylesheet" href="/docs/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#articulo">Saltar al artículo</a>
+
+  <header class="docs-header">
+    <a class="docs-wordmark" href="/" aria-label="pteron, inicio">pteron</a>
+    <nav aria-label="Navegación principal">
+      <a class="is-current" href="/docs/">Documentación</a>
+      <a href="/docs/versiones">Versiones</a>
+      <a href="/descargar/">Descargar</a>
+      <a href="/privacidad.html">Privacidad</a>
+    </nav>
+    <a class="header-action" href="mailto:pteron@patagua.dev?subject=Quiero%20probar%20pteron">Probar pteron</a>
+    <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="Abrir navegación">Menú</button>
+  </header>
+
+  <div class="search-band">
+    <div class="search-wrap">
+      <label for="docs-search">Buscar en la documentación</label>
+      <input id="docs-search" data-search type="search" autocomplete="off" placeholder="Buscar instalación, guías, privacidad…">
+      <kbd>⌘ K</kbd>
+      <div class="search-results" data-search-results hidden></div>
+    </div>
+  </div>
+
+  <div class="docs-shell">
+    <aside class="docs-sidebar" data-sidebar>
+      <div class="sidebar-scroll">
+        <nav aria-label="Documentación" data-docs-nav></nav>
+        <div class="beta-status">
+          <span class="status-dot" aria-hidden="true"></span>
+          <div><strong>Beta pública</strong><small>macOS M series · Windows 11</small></div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="article" id="articulo" tabindex="-1" data-article></main>
+
+    <aside class="page-toc" aria-label="En esta página">
+      <p>En esta página</p>
+      <nav data-toc></nav>
+    </aside>
+  </div>
+
+  <footer class="docs-footer">
+    <span>© <span data-year></span> pteron · Patagua</span>
+    <a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a>
+  </footer>
+
+  <script src="/docs/content.js" defer></script>
+  <script src="/docs/app.js" defer></script>
+</body>
+</html>

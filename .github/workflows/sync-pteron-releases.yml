@@ -1,0 +1,35 @@
+name: Sincronizar versiones de pteron
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [pteron-release-published]
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Leer releases y actualizar documentación
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/update-pteron-releases.mjs
+      - name: Publicar cambios
+        run: |
+          if git diff --quiet -- docs/data/releases.json; then
+            echo "No hay cambios"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/releases.json
+          git commit -m "docs: actualiza versiones publicadas"
+          git push
