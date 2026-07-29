@@ -7,11 +7,11 @@
 ## Documentación
 
 - [Inicio](https://pteron.patagua.dev/docs/)
-- [Instalar en macOS](https://pteron.patagua.dev/docs/instalar-macos)
-- [Instalar en Windows](https://pteron.patagua.dev/docs/instalar-windows)
-- [Carpeta de trabajo](https://pteron.patagua.dev/docs/carpeta-trabajo)
-- [Fuentes y contexto](https://pteron.patagua.dev/docs/fuentes-contexto)
-- [Privacidad y control](https://pteron.patagua.dev/docs/trabajo-local)
+- [Instalar en macOS](https://pteron.patagua.dev/docs/?pagina=instalar-macos)
+- [Instalar en Windows](https://pteron.patagua.dev/docs/?pagina=instalar-windows)
+- [Carpeta de trabajo](https://pteron.patagua.dev/docs/?pagina=carpeta-trabajo)
+- [Fuentes y contexto](https://pteron.patagua.dev/docs/?pagina=fuentes-contexto)
+- [Privacidad y control](https://pteron.patagua.dev/docs/?pagina=trabajo-local)
 - [Versiones y plataformas](https://pteron.patagua.dev/docs/?pagina=versiones)
 
 Windows 11 está soportado durante la beta. El instalador todavía no está firmado
