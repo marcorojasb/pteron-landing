@@ -4,7 +4,7 @@
   <url><loc>https://pteron.patagua.dev/docs/</loc><priority>0.9</priority></url>
   <url><loc>https://pteron.patagua.dev/docs/instalar-macos</loc><priority>0.8</priority></url>
   <url><loc>https://pteron.patagua.dev/docs/instalar-windows</loc><priority>0.8</priority></url>
-  <url><loc>https://pteron.patagua.dev/docs/versiones</loc><priority>0.7</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=versiones</loc><priority>0.7</priority></url>
   <url><loc>https://pteron.patagua.dev/descargar/</loc><priority>0.8</priority></url>
   <url><loc>https://pteron.patagua.dev/privacidad.html</loc><priority>0.4</priority></url>
   <url><loc>https://pteron.patagua.dev/terminos.html</loc><priority>0.4</priority></url>

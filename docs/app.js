@@ -17,12 +17,14 @@
   );
 
   const slugFromLocation = () => {
+    const requestedPage = new URLSearchParams(location.search).get("pagina");
+    if (requestedPage) return requestedPage;
     const path = location.pathname.replace(/\/+$/, "");
     if (path === "/docs" || path === "") return "inicio";
     return path.split("/").pop() || "inicio";
   };
 
-  const pageUrl = slug => slug === "inicio" ? "/docs/" : `/docs/${slug}`;
+  const pageUrl = slug => slug === "inicio" ? "/docs/" : `/docs/?pagina=${encodeURIComponent(slug)}`;
 
   const renderNav = active => {
     nav.innerHTML = docs.groups.map(group => `
@@ -128,7 +130,7 @@
     if (url.origin !== location.origin) return;
     event.preventDefault();
     setSearchOpen(false);
-    renderPage(url.pathname.split("/").filter(Boolean).pop() || "inicio", true);
+    renderPage(url.searchParams.get("pagina") || url.pathname.split("/").filter(Boolean).pop() || "inicio", true);
   });
 
   window.addEventListener("popstate", () => renderPage(slugFromLocation()));

@@ -12,7 +12,7 @@
 - [Carpeta de trabajo](https://pteron.patagua.dev/docs/carpeta-trabajo)
 - [Fuentes y contexto](https://pteron.patagua.dev/docs/fuentes-contexto)
 - [Privacidad y control](https://pteron.patagua.dev/docs/trabajo-local)
-- [Versiones y plataformas](https://pteron.patagua.dev/docs/versiones)
+- [Versiones y plataformas](https://pteron.patagua.dev/docs/?pagina=versiones)
 
 Windows 11 está soportado durante la beta. El instalador todavía no está firmado
 y Microsoft Defender SmartScreen puede pedir confirmación. El canal estable está

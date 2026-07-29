@@ -56,10 +56,10 @@ window.PTERON_DOCS = {
         <section>
           <h2 id="por-donde-empezar">Por dónde empezar</h2>
           <div class="path-list">
-            <a href="/docs/instalar-macos"><span>01</span><strong>Instala pteron</strong><small>Disponible en beta para macOS M series y Windows 11.</small></a>
-            <a href="/docs/carpeta-trabajo"><span>02</span><strong>Elige una carpeta</strong><small>pteron trabaja dentro de una ubicación que tú controlas.</small></a>
-            <a href="/docs/fuentes-contexto"><span>03</span><strong>Agrega tus fuentes</strong><small>Usa documentos y referencias para orientar el trabajo.</small></a>
-            <a href="/docs/crear-guia"><span>04</span><strong>Crea y revisa</strong><small>Genera un borrador editable y decide qué conservar.</small></a>
+            <a href="/docs/?pagina=instalar-macos"><span>01</span><strong>Instala pteron</strong><small>Disponible en beta para macOS M series y Windows 11.</small></a>
+            <a href="/docs/?pagina=carpeta-trabajo"><span>02</span><strong>Elige una carpeta</strong><small>pteron trabaja dentro de una ubicación que tú controlas.</small></a>
+            <a href="/docs/?pagina=fuentes-contexto"><span>03</span><strong>Agrega tus fuentes</strong><small>Usa documentos y referencias para orientar el trabajo.</small></a>
+            <a href="/docs/?pagina=crear-guia"><span>04</span><strong>Crea y revisa</strong><small>Genera un borrador editable y decide qué conservar.</small></a>
           </div>
         </section>
         <section>
