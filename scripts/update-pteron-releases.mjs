@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 
 const repository = process.env.PTERON_RELEASE_REPOSITORY || "marcorojasb/pteron-beta";
 const token = process.env.GITHUB_TOKEN;
@@ -40,13 +40,29 @@ if (!releases.length) throw new Error("No hay releases publicados; se conserva e
 
 const beta = releases.find(release => release.channel === "beta") || releases[0];
 const stable = releases.find(release => release.channel === "stable") || null;
+const outputPath = "docs/data/releases.json";
+let previousData = null;
+
+try {
+  previousData = JSON.parse(await readFile(outputPath, "utf8"));
+} catch {
+  // La primera sincronización crea el archivo.
+}
+
+const releaseState = { latest: beta, stable, releases };
+const previousReleaseState = previousData
+  ? { latest: previousData.latest, stable: previousData.stable, releases: previousData.releases }
+  : null;
+const releasesChanged = JSON.stringify(releaseState) !== JSON.stringify(previousReleaseState);
 const data = {
-  generatedAt: new Date().toISOString(),
-  latest: beta,
-  stable,
-  releases
+  generatedAt: releasesChanged ? new Date().toISOString() : previousData.generatedAt,
+  ...releaseState
 };
 
 await mkdir("docs/data", { recursive: true });
-await writeFile("docs/data/releases.json", `${JSON.stringify(data, null, 2)}\n`);
-console.log(`Documentación actualizada con ${releases.length} release(s). Última beta: ${beta.version}`);
+await writeFile(outputPath, `${JSON.stringify(data, null, 2)}\n`);
+console.log(
+  releasesChanged
+    ? `Web actualizada con ${releases.length} release(s). Última beta: ${beta.version}`
+    : `Sin cambios. Última beta: ${beta.version}`
+);

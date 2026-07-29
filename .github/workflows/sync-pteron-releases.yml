@@ -5,7 +5,7 @@ on:
   repository_dispatch:
     types: [pteron-release-published]
   schedule:
-    - cron: "17 */6 * * *"
+    - cron: "*/15 * * * *"
 
 permissions:
   contents: write
@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Leer releases y actualizar documentación
+      - name: Leer releases y actualizar la web
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/update-pteron-releases.mjs
