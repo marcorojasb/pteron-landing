@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-30T15:17:45.814Z",
+  "generatedAt": "2026-07-30T17:32:34.988Z",
   "latest": {
     "version": "0.2.1-beta.6",
     "channel": "beta",
@@ -231,6 +231,58 @@
         "*macOS** (Apple serie M): firmado con Developer ID y notarizado.",
         "*Windows 11**: el instalador **no está firmado**. Windows mostrará un aviso de SmartScreen al instalar; elige «Más información» → «Ejecutar de todas formas». La firma de código es requisito antes de salir de la beta.",
         "Si al actualizar en Windows aparece «Installer integrity check has failed», borra la carpeta `%LOCALAPPDATA%\\pteron-updater` y vuelve a intentarlo."
+      ]
+    },
+    {
+      "version": "0.2.1-beta.7",
+      "channel": "beta",
+      "publishedAt": "2026-07-30T17:31:59.000Z",
+      "publishedLabel": "julio de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.7",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.7/beta-mac.yml",
+          "bytes": 522
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.7/beta.yml",
+          "bytes": 358
+        },
+        {
+          "name": "pteron-0.2.1-beta.7-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.7/pteron-0.2.1-beta.7-arm64.dmg",
+          "bytes": 189392965
+        },
+        {
+          "name": "pteron-0.2.1-beta.7-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.7/pteron-0.2.1-beta.7-arm64.dmg.blockmap",
+          "bytes": 198181
+        },
+        {
+          "name": "pteron-0.2.1-beta.7-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.7/pteron-0.2.1-beta.7-arm64.zip",
+          "bytes": 188786358
+        },
+        {
+          "name": "pteron-0.2.1-beta.7-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.7/pteron-0.2.1-beta.7-arm64.zip.blockmap",
+          "bytes": 198176
+        },
+        {
+          "name": "pteron-0.2.1-beta.7-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.7/pteron-0.2.1-beta.7-x64.exe",
+          "bytes": 149890120
+        },
+        {
+          "name": "pteron-0.2.1-beta.7-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.7/pteron-0.2.1-beta.7-x64.exe.blockmap",
+          "bytes": 158903
+        }
+      ],
+      "notes": [
+        "Borrador en preparación."
       ]
     },
     {
