@@ -1,59 +1,125 @@
 {
-  "generatedAt": "2026-07-31T04:10:51.861Z",
+  "generatedAt": "2026-07-31T17:47:42.769Z",
   "latest": {
-    "version": "0.2.4",
+    "version": "0.2.5",
     "channel": "beta",
-    "publishedAt": "2026-07-31T04:10:35.000Z",
+    "publishedAt": "2026-07-31T17:47:12.000Z",
     "publishedLabel": "julio de 2026",
-    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.4",
+    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.5",
     "assets": [
       {
         "name": "beta-mac.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.4/beta-mac.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/beta-mac.yml",
         "bytes": 494
       },
       {
         "name": "beta.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.4/beta.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/beta.yml",
         "bytes": 337
       },
       {
-        "name": "pteron-0.2.4-arm64.dmg",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.4/pteron-0.2.4-arm64.dmg",
-        "bytes": 189392674
+        "name": "pteron-0.2.5-arm64.dmg",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-arm64.dmg",
+        "bytes": 189399083
       },
       {
-        "name": "pteron-0.2.4-arm64.dmg.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.4/pteron-0.2.4-arm64.dmg.blockmap",
-        "bytes": 198505
+        "name": "pteron-0.2.5-arm64.dmg.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-arm64.dmg.blockmap",
+        "bytes": 198307
       },
       {
-        "name": "pteron-0.2.4-arm64.zip",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.4/pteron-0.2.4-arm64.zip",
-        "bytes": 188793844
+        "name": "pteron-0.2.5-arm64.zip",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-arm64.zip",
+        "bytes": 188796409
       },
       {
-        "name": "pteron-0.2.4-arm64.zip.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.4/pteron-0.2.4-arm64.zip.blockmap",
-        "bytes": 197741
+        "name": "pteron-0.2.5-arm64.zip.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-arm64.zip.blockmap",
+        "bytes": 198321
       },
       {
-        "name": "pteron-0.2.4-x64.exe",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.4/pteron-0.2.4-x64.exe",
-        "bytes": 149896794
+        "name": "pteron-0.2.5-x64.exe",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-x64.exe",
+        "bytes": 149896356
       },
       {
-        "name": "pteron-0.2.4-x64.exe.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.4/pteron-0.2.4-x64.exe.blockmap",
-        "bytes": 158597
+        "name": "pteron-0.2.5-x64.exe.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-x64.exe.blockmap",
+        "bytes": 158750
       }
     ],
     "notes": [
-      "Borrador en preparación."
+      "pteron sigue en beta. Se instala y se actualiza desde la propia aplicación.",
+      "## Lo que cambia para ti",
+      "*«Crea una guía» vuelve a funcionar.** Era la petición central del producto y",
+      "podía morir tras seis intentos con el mensaje «no fue posible preparar el",
+      "material», pidiéndote que agregaras lo que ya habías pedido. El validador",
+      "rechazaba la guía por no rotular objetivo, instrucciones y cierre: una decisión",
+      "de contenido que no le corresponde tomar. Ahora avisa en vez de rechazar, y los",
+      "materiales realmente incompletos se siguen bloqueando."
     ]
   },
   "stable": null,
   "releases": [
+    {
+      "version": "0.2.5",
+      "channel": "beta",
+      "publishedAt": "2026-07-31T17:47:12.000Z",
+      "publishedLabel": "julio de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.5",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.2.5-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-arm64.dmg",
+          "bytes": 189399083
+        },
+        {
+          "name": "pteron-0.2.5-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-arm64.dmg.blockmap",
+          "bytes": 198307
+        },
+        {
+          "name": "pteron-0.2.5-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-arm64.zip",
+          "bytes": 188796409
+        },
+        {
+          "name": "pteron-0.2.5-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-arm64.zip.blockmap",
+          "bytes": 198321
+        },
+        {
+          "name": "pteron-0.2.5-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-x64.exe",
+          "bytes": 149896356
+        },
+        {
+          "name": "pteron-0.2.5-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-x64.exe.blockmap",
+          "bytes": 158750
+        }
+      ],
+      "notes": [
+        "pteron sigue en beta. Se instala y se actualiza desde la propia aplicación.",
+        "## Lo que cambia para ti",
+        "*«Crea una guía» vuelve a funcionar.** Era la petición central del producto y",
+        "podía morir tras seis intentos con el mensaje «no fue posible preparar el",
+        "material», pidiéndote que agregaras lo que ya habías pedido. El validador",
+        "rechazaba la guía por no rotular objetivo, instrucciones y cierre: una decisión",
+        "de contenido que no le corresponde tomar. Ahora avisa en vez de rechazar, y los",
+        "materiales realmente incompletos se siguen bloqueando."
+      ]
+    },
     {
       "version": "0.2.4",
       "channel": "beta",
