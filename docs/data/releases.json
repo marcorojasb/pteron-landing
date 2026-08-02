@@ -1,66 +1,125 @@
 {
-  "generatedAt": "2026-07-31T17:47:42.769Z",
+  "generatedAt": "2026-08-02T21:13:43.667Z",
   "latest": {
-    "version": "0.2.5",
+    "version": "0.2.6",
     "channel": "beta",
-    "publishedAt": "2026-07-31T17:47:12.000Z",
-    "publishedLabel": "julio de 2026",
-    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.5",
+    "publishedAt": "2026-08-02T21:13:29.000Z",
+    "publishedLabel": "agosto de 2026",
+    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.6",
     "assets": [
       {
         "name": "beta-mac.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/beta-mac.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/beta-mac.yml",
         "bytes": 494
       },
       {
         "name": "beta.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/beta.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/beta.yml",
         "bytes": 337
       },
       {
-        "name": "pteron-0.2.5-arm64.dmg",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-arm64.dmg",
-        "bytes": 189399083
+        "name": "pteron-0.2.6-arm64.dmg",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-arm64.dmg",
+        "bytes": 189389637
       },
       {
-        "name": "pteron-0.2.5-arm64.dmg.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-arm64.dmg.blockmap",
-        "bytes": 198307
+        "name": "pteron-0.2.6-arm64.dmg.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-arm64.dmg.blockmap",
+        "bytes": 197342
       },
       {
-        "name": "pteron-0.2.5-arm64.zip",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-arm64.zip",
-        "bytes": 188796409
+        "name": "pteron-0.2.6-arm64.zip",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-arm64.zip",
+        "bytes": 188798495
       },
       {
-        "name": "pteron-0.2.5-arm64.zip.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-arm64.zip.blockmap",
-        "bytes": 198321
+        "name": "pteron-0.2.6-arm64.zip.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-arm64.zip.blockmap",
+        "bytes": 198203
       },
       {
-        "name": "pteron-0.2.5-x64.exe",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-x64.exe",
-        "bytes": 149896356
+        "name": "pteron-0.2.6-x64.exe",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-x64.exe",
+        "bytes": 149897946
       },
       {
-        "name": "pteron-0.2.5-x64.exe.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-x64.exe.blockmap",
-        "bytes": 158750
+        "name": "pteron-0.2.6-x64.exe.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-x64.exe.blockmap",
+        "bytes": 158266
       }
     ],
     "notes": [
-      "pteron sigue en beta. Se instala y se actualiza desde la propia aplicación.",
-      "## Lo que cambia para ti",
-      "*«Crea una guía» vuelve a funcionar.** Era la petición central del producto y",
-      "podía morir tras seis intentos con el mensaje «no fue posible preparar el",
-      "material», pidiéndote que agregaras lo que ya habías pedido. El validador",
-      "rechazaba la guía por no rotular objetivo, instrucciones y cierre: una decisión",
-      "de contenido que no le corresponde tomar. Ahora avisa en vez de rechazar, y los",
-      "materiales realmente incompletos se siguen bloqueando."
+      "## pteron 0.2.6",
+      "Esta versión mejora la creación y revisión de materiales docentes a partir de pruebas comparativas con varios proveedores.",
+      "### Cambios principales",
+      "El agente puede revisar materiales extensos antes de entregarlos y corregir problemas estructurales detectados.",
+      "Las revisiones conservan la procedencia y la evidencia útil del material anterior.",
+      "Las solicitudes de agregar contenido al final protegen literalmente los bloques existentes y añaden sólo lo pedido.",
+      "Se corrigió la selección de planes cuando el docente solicita dos materiales y se reforzó el tratamiento de planificaciones, tablas y orientaciones.",
+      "Se normalizan fórmulas con escapes LaTeX duplicados y fragmentos Markdown sueltos dentro de bloques."
     ]
   },
   "stable": null,
   "releases": [
+    {
+      "version": "0.2.6",
+      "channel": "beta",
+      "publishedAt": "2026-08-02T21:13:29.000Z",
+      "publishedLabel": "agosto de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.6",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.2.6-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-arm64.dmg",
+          "bytes": 189389637
+        },
+        {
+          "name": "pteron-0.2.6-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-arm64.dmg.blockmap",
+          "bytes": 197342
+        },
+        {
+          "name": "pteron-0.2.6-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-arm64.zip",
+          "bytes": 188798495
+        },
+        {
+          "name": "pteron-0.2.6-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-arm64.zip.blockmap",
+          "bytes": 198203
+        },
+        {
+          "name": "pteron-0.2.6-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-x64.exe",
+          "bytes": 149897946
+        },
+        {
+          "name": "pteron-0.2.6-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-x64.exe.blockmap",
+          "bytes": 158266
+        }
+      ],
+      "notes": [
+        "## pteron 0.2.6",
+        "Esta versión mejora la creación y revisión de materiales docentes a partir de pruebas comparativas con varios proveedores.",
+        "### Cambios principales",
+        "El agente puede revisar materiales extensos antes de entregarlos y corregir problemas estructurales detectados.",
+        "Las revisiones conservan la procedencia y la evidencia útil del material anterior.",
+        "Las solicitudes de agregar contenido al final protegen literalmente los bloques existentes y añaden sólo lo pedido.",
+        "Se corrigió la selección de planes cuando el docente solicita dos materiales y se reforzó el tratamiento de planificaciones, tablas y orientaciones.",
+        "Se normalizan fórmulas con escapes LaTeX duplicados y fragmentos Markdown sueltos dentro de bloques."
+      ]
+    },
     {
       "version": "0.2.5",
       "channel": "beta",
