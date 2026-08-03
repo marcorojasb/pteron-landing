@@ -1,4 +1,11 @@
 (() => {
+  const authHash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  const isAccountPage = window.location.pathname === '/cuenta' || window.location.pathname === '/cuenta/';
+  if (authHash.has('access_token') && authHash.has('refresh_token') && !isAccountPage) {
+    window.location.replace(`/cuenta/${window.location.search}${window.location.hash}`);
+    return;
+  }
+
   const loader = document.querySelector('[data-page-loader]');
   const loaderCanvas = document.querySelector('[data-loader-medusa]');
   let loaderFrameId = 0;
