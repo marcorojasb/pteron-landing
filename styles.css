@@ -248,6 +248,7 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
 .plan-card { min-width: 0; display: flex; flex-direction: column; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--surface); }
 .plan-card-header { min-height: 116px; padding: 20px 26px 24px; background: var(--ink); color: var(--white); }
 .plan-card.is-coming .plan-card-header { background: #496a8e; }
+.plan-card.is-account .plan-card-header { background: #496a8e; }
 .plan-card-header h3 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 37px; line-height: 1; letter-spacing: -.03em; }
 .plan-availability { margin: 0 0 10px; color: rgba(255,255,255,.78); font-size: 12px; font-weight: 500; letter-spacing: .03em; }
 .plan-check { display: inline-grid; width: 25px; height: 25px; place-items: center; border-radius: 50%; background: var(--gold); color: var(--white); font: 600 15px/1 var(--sans); }
