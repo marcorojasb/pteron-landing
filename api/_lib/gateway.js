@@ -30,14 +30,19 @@ function currentPeriod(now = new Date()) {
 }
 
 /**
- * Registra `units` (tokens) contra la cuota del período actual. `limit` nulo
- * — el estado real de hoy, ver `plan_catalog.ai_units_limit` — significa "sin
- * tope todavía": una decisión de producto pendiente (D-3/PLAN-0.3.md), no algo
- * que este endpoint deba inventar. Con `units: 0` sirve como chequeo previo
- * sin registrar nada; se usa así antes de llamar al proveedor, y de nuevo
- * después con el gasto real ya conocido.
+ * Registra `units` (tokens) contra la cuota del período actual y guarda qué
+ * modelo real respondió: el cliente sólo pide "pteron-managed" (ADR-056
+ * permite ocultar el nombre en la superficie principal), así que si el
+ * servidor no anota el modelo real en algún lado, "qué modelo usó y por qué"
+ * deja de ser respondible — justo lo que esa ADR exige que siga siéndolo.
+ *
+ * `limit` nulo — el estado real de hoy, ver `plan_catalog.ai_units_limit` —
+ * significa "sin tope todavía": una decisión de producto pendiente
+ * (D-3/PLAN-0.3.md), no algo que este endpoint deba inventar. Con `units: 0`
+ * sirve como chequeo previo sin registrar nada; se usa así antes de llamar al
+ * proveedor, y de nuevo después con el gasto real ya conocido.
  */
-async function reserveAiUsage(sub, planId, units) {
+async function reserveAiUsage(sub, planId, units, metadata = {}) {
   const limit = await planAiUnitsLimit(planId);
   const period = currentPeriod();
   const rows = await request("/rest/v1/rpc/reserve_ai_usage", {
@@ -50,6 +55,7 @@ async function reserveAiUsage(sub, planId, units) {
       p_period_end: period.end,
       p_units: units,
       p_limit: limit,
+      p_metadata: metadata,
     },
   });
   const row = Array.isArray(rows) ? rows[0] : rows;
@@ -57,13 +63,14 @@ async function reserveAiUsage(sub, planId, units) {
 }
 
 /**
- * Busca el último objeto `usage` dentro de un bloque de eventos SSE
- * (`data: {...}`). Nunca lanza: un fragmento cortado entre chunks se
- * completa en el próximo, y mientras tanto se ignora en vez de reventar el
- * proxy de streaming.
+ * Busca en un bloque de eventos SSE (`data: {...}`) el último `usage` y el
+ * último `model` reportados por el proveedor real detrás del gateway. Nunca
+ * lanza: un fragmento cortado entre chunks se completa en el próximo, y
+ * mientras tanto se ignora en vez de reventar el proxy de streaming.
  */
-function latestUsageFromSseChunk(text) {
+function latestUsageAndModelFromSseChunk(text) {
   let usage = null;
+  let model = null;
   for (const line of text.split("\n")) {
     const trimmed = line.trim();
     if (!trimmed.startsWith("data:")) continue;
@@ -72,11 +79,12 @@ function latestUsageFromSseChunk(text) {
     try {
       const parsed = JSON.parse(value);
       if (parsed?.usage && typeof parsed.usage === "object") usage = parsed.usage;
+      if (typeof parsed?.model === "string" && parsed.model) model = parsed.model;
     } catch {
       // Fragmento SSE incompleto entre chunks; se completa en el próximo.
     }
   }
-  return usage;
+  return { usage, model };
 }
 
 function totalTokensFromUsage(usage) {
@@ -85,4 +93,10 @@ function totalTokensFromUsage(usage) {
   return Number.isFinite(value) && value > 0 ? Math.round(value) : 0;
 }
 
-module.exports = { authenticateGateway, currentPeriod, latestUsageFromSseChunk, reserveAiUsage, totalTokensFromUsage };
+module.exports = {
+  authenticateGateway,
+  currentPeriod,
+  latestUsageAndModelFromSseChunk,
+  reserveAiUsage,
+  totalTokensFromUsage,
+};

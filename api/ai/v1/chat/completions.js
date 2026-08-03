@@ -1,6 +1,11 @@
 const { Readable } = require("node:stream");
 const { HttpError, handler, json, method } = require("../../../_lib/http");
-const { authenticateGateway, latestUsageFromSseChunk, reserveAiUsage, totalTokensFromUsage } = require("../../../_lib/gateway");
+const {
+  authenticateGateway,
+  latestUsageAndModelFromSseChunk,
+  reserveAiUsage,
+  totalTokensFromUsage,
+} = require("../../../_lib/gateway");
 
 function upstreamConfig() {
   const baseUrl = String(process.env.GATEWAY_UPSTREAM_BASE_URL || "https://opencode.ai/zen/go/v1").trim().replace(/\/$/, "");
@@ -26,10 +31,13 @@ async function readJsonBody(req, maxBytes = 4_000_000) {
   }
 }
 
-function recordUsageInBackground(sub, plan, usage) {
+// route_model queda en event_metadata (jsonb, sin contenido) precisamente
+// para que "qué modelo usó" siga siendo respondible (ADR-056) aunque el
+// cliente sólo haya pedido el id virtual "pteron-managed".
+function recordUsageInBackground(sub, plan, usage, model) {
   const totalTokens = totalTokensFromUsage(usage);
   if (totalTokens <= 0) return;
-  reserveAiUsage(sub, plan, totalTokens).catch((error) => {
+  reserveAiUsage(sub, plan, totalTokens, model ? { route_model: model } : {}).catch((error) => {
     console.error("pteron gateway usage accounting failed", error instanceof Error ? error.message : error);
   });
 }
@@ -96,20 +104,29 @@ module.exports = handler(async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
 
   let usage = null;
+  let model = null;
   let buffered = "";
   try {
     const decoder = new TextDecoder();
     for await (const chunk of Readable.fromWeb(upstreamResponse.body)) {
       const text = decoder.decode(chunk, { stream: true });
-      if (stream) usage = latestUsageFromSseChunk(text) || usage;
-      else buffered += text;
+      if (stream) {
+        const found = latestUsageAndModelFromSseChunk(text);
+        usage = found.usage || usage;
+        model = found.model || model;
+      } else {
+        buffered += text;
+      }
       res.write(chunk);
     }
     if (!stream) {
       try {
-        usage = JSON.parse(buffered)?.usage || null;
+        const parsed = JSON.parse(buffered);
+        usage = parsed?.usage || null;
+        model = typeof parsed?.model === "string" ? parsed.model : null;
       } catch {
         usage = null;
+        model = null;
       }
     }
   } catch (error) {
@@ -118,5 +135,5 @@ module.exports = handler(async (req, res) => {
     res.end();
   }
 
-  recordUsageInBackground(verified.sub, verified.plan, usage);
+  recordUsageInBackground(verified.sub, verified.plan, usage, model);
 });

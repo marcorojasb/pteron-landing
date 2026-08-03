@@ -2,7 +2,7 @@ const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const { generateKeyPairSync } = require("node:crypto");
 const { signLicense } = require("../api/_lib/license");
-const { authenticateGateway, latestUsageFromSseChunk, totalTokensFromUsage } = require("../api/_lib/gateway");
+const { authenticateGateway, latestUsageAndModelFromSseChunk, totalTokensFromUsage } = require("../api/_lib/gateway");
 
 const { publicKey, privateKey } = generateKeyPairSync("ed25519");
 process.env.LICENSE_PRIVATE_KEY_PEM = privateKey.export({ type: "pkcs8", format: "pem" }).toString();
@@ -58,20 +58,26 @@ test("authenticateGateway rechaza formato inválido sin lanzar un error distinto
   assert.throws(() => authenticateGateway(reqWithToken("no-es-una-licencia"), testKeys), { code: "invalid_license" });
 });
 
-test("latestUsageFromSseChunk toma el usage del último evento con datos", () => {
+test("latestUsageAndModelFromSseChunk toma el usage y el modelo real del último evento con datos", () => {
   const chunk =
-    'data: {"choices":[{"delta":{"content":"hola"}}]}\n\n' +
-    'data: {"choices":[],"usage":{"prompt_tokens":10,"completion_tokens":5,"total_tokens":15}}\n\n' +
+    'data: {"model":"deepseek-v4-flash","choices":[{"delta":{"content":"hola"}}]}\n\n' +
+    'data: {"model":"deepseek-v4-flash","choices":[],"usage":{"prompt_tokens":10,"completion_tokens":5,"total_tokens":15}}\n\n' +
     "data: [DONE]\n\n";
-  assert.deepEqual(latestUsageFromSseChunk(chunk), { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 });
+  assert.deepEqual(latestUsageAndModelFromSseChunk(chunk), {
+    usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
+    model: "deepseek-v4-flash",
+  });
 });
 
-test("latestUsageFromSseChunk no lanza con un fragmento cortado a mitad de un chunk", () => {
-  assert.equal(latestUsageFromSseChunk('data: {"choices":[{"delta":{"conte'), null);
+test("latestUsageAndModelFromSseChunk no lanza con un fragmento cortado a mitad de un chunk", () => {
+  assert.deepEqual(latestUsageAndModelFromSseChunk('data: {"choices":[{"delta":{"conte'), { usage: null, model: null });
 });
 
-test("latestUsageFromSseChunk devuelve null sin ningún evento de usage", () => {
-  assert.equal(latestUsageFromSseChunk('data: {"choices":[{"delta":{"content":"hola"}}]}\n\n'), null);
+test("latestUsageAndModelFromSseChunk devuelve null sin ningún evento de usage", () => {
+  assert.deepEqual(latestUsageAndModelFromSseChunk('data: {"model":"deepseek-v4-flash","choices":[{"delta":{"content":"hola"}}]}\n\n'), {
+    usage: null,
+    model: "deepseek-v4-flash",
+  });
 });
 
 test("totalTokensFromUsage usa total_tokens cuando está presente", () => {
