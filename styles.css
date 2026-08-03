@@ -253,6 +253,10 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
 .plan-check { display: inline-grid; width: 25px; height: 25px; place-items: center; border-radius: 50%; background: var(--gold); color: var(--white); font: 600 15px/1 var(--sans); }
 .plan-card-body { display: flex; flex: 1; flex-direction: column; padding: 28px 26px 26px; }
 .plan-card-lead { min-height: 72px; margin: 0 0 28px; font-size: 15px; line-height: 1.5; }
+.plan-price { display: flex; align-items: baseline; gap: 7px; margin: -8px 0 8px; color: var(--ink); }
+.plan-price strong { font: 400 42px/.95 var(--serif); letter-spacing: -.04em; }
+.plan-price span { color: var(--ink-soft); font-size: 13px; }
+.plan-trial { margin: 0 0 24px; color: var(--gold); font-size: 12px; font-weight: 600; letter-spacing: .03em; }
 .plan-includes { margin: 0 0 20px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; }
 .plan-feature-list { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; color: var(--ink-soft); font-size: 14px; line-height: 1.4; }
 .plan-feature-list li { position: relative; padding-left: 22px; }
@@ -325,6 +329,7 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
   .plan-card-header h3 { font-size: 33px; }
   .plan-card-body { padding: 24px 20px 22px; }
   .plan-card-lead { margin-bottom: 24px; font-size: 14px; }
+  .plan-price strong { font-size: 39px; }
   .plan-feature-list { font-size: 13px; }
   .plans-footnote { padding-inline: 8px; font-size: 11px; }
   .plans-section-intro { margin-bottom: 54px; }
