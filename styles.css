@@ -212,6 +212,137 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
 .legal-content a { color: var(--ink); }
 .legal-notice { padding: 22px 24px; border-left: 2px solid var(--gold); background: var(--paper-deep); }
 
+/* Plans and licensing */
+.plans-page { padding-top: 92px; }
+.plans-hero { padding: 116px 0 82px; }
+.plans-hero-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr); gap: 9%; align-items: center; }
+.plans-hero h1 { max-width: 780px; margin-bottom: 32px; font-size: clamp(58px, 6.2vw, 94px); line-height: .94; }
+.plans-hero h1 em, .plans-final h2 em { font-style: italic; }
+.plans-hero-lead { max-width: 560px; margin: 0; color: var(--ink-soft); font-size: 18px; line-height: 1.55; }
+.license-art { min-height: 340px; display: grid; place-items: center; }
+.license-art svg { width: min(100%, 500px); height: auto; overflow: visible; }
+.license-art-back, .license-art-sheet { fill: var(--paper-deep); stroke: var(--ink); stroke-width: 1.5; }
+.license-art-sheet { fill: var(--surface); }
+.license-art-fold, .license-art-line, .license-art-key { fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: square; }
+.license-art-key { stroke: var(--gold); stroke-width: 7; stroke-linecap: round; }
+.license-art-keyhole { fill: var(--gold); stroke: var(--ink); stroke-width: 1.6; }
+.license-art-ring { fill: var(--paper); stroke: var(--ink); stroke-width: 1.6; }
+.license-art-dash { fill: none; stroke: var(--sky, #496a8e); stroke-width: 1.4; stroke-dasharray: 6 7; }
+.plans-status-wrap { padding-bottom: 38px; }
+.plans-status { display: flex; align-items: center; justify-content: space-between; gap: 36px; padding: 20px 24px; border-block: 1px solid var(--line); background: var(--paper-deep); }
+.plans-status-title { display: flex; align-items: center; gap: 10px; margin: 0 0 4px; font-weight: 600; }
+.plans-status > div > p:last-child { margin: 0; color: var(--ink-soft); font-size: 13px; }
+.plans-status .text-link { flex: 0 0 auto; }
+.plans-status-dot { width: 10px; height: 10px; border: 1px solid var(--gold); border-radius: 50%; background: transparent; }
+.plan-comparison { padding-top: 72px; padding-bottom: 112px; }
+.plans-heading-row { display: flex; align-items: end; justify-content: space-between; gap: 40px; padding-bottom: 30px; border-top: 1px solid var(--ink); }
+.plans-heading-row > div:first-child { padding-top: 22px; }
+.plans-heading-row .section-number { margin-bottom: 16px; }
+.plans-heading-row h2 { margin: 0; font-size: clamp(44px, 4.6vw, 70px); line-height: .98; letter-spacing: -.04em; }
+.availability-legend { display: flex; flex-wrap: wrap; gap: 22px; padding-bottom: 7px; color: var(--ink-soft); font-size: 12px; }
+.availability-legend span { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.availability-icon { display: inline-block; width: 17px; height: 17px; border: 1px solid var(--gold); border-radius: 50%; }
+.availability-icon-current::after { content: "✓"; display: block; color: var(--gold); font-size: 12px; line-height: 15px; text-align: center; }
+.availability-icon-soon { border-color: var(--ink-soft); border-style: dashed; }
+.plans-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-left: 1px solid var(--line); }
+.plan-card { min-width: 0; display: flex; flex-direction: column; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--surface); }
+.plan-card-header { min-height: 116px; padding: 20px 26px 24px; background: var(--ink); color: var(--white); }
+.plan-card.is-coming .plan-card-header { background: #496a8e; }
+.plan-card-header h3 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 37px; line-height: 1; letter-spacing: -.03em; }
+.plan-availability { margin: 0 0 10px; color: rgba(255,255,255,.78); font-size: 12px; font-weight: 500; letter-spacing: .03em; }
+.plan-check { display: inline-grid; width: 25px; height: 25px; place-items: center; border-radius: 50%; background: var(--gold); color: var(--white); font: 600 15px/1 var(--sans); }
+.plan-card-body { display: flex; flex: 1; flex-direction: column; padding: 28px 26px 26px; }
+.plan-card-lead { min-height: 72px; margin: 0 0 28px; font-size: 15px; line-height: 1.5; }
+.plan-includes { margin: 0 0 20px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; }
+.plan-feature-list { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; color: var(--ink-soft); font-size: 14px; line-height: 1.4; }
+.plan-feature-list li { position: relative; padding-left: 22px; }
+.plan-feature-list li::before { content: "✓"; position: absolute; left: 0; color: var(--gold); font-weight: 600; }
+.plan-footnote-mark { color: var(--gold); }
+.plan-card-footer { margin-top: auto; padding-top: 34px; }
+.plan-card-footer .button { width: 100%; min-height: 52px; padding-inline: 15px; font-size: 14px; }
+.button-outline { border-color: var(--ink); background: transparent; color: var(--ink); }
+.button-outline:hover { background: var(--ink); color: var(--white); }
+.button-muted { justify-content: space-between; border-color: var(--line); background: transparent; color: var(--ink-soft); cursor: default; }
+.button-muted span { color: var(--ink-soft); font-size: 23px; line-height: 1; }
+.plan-card-footer > p { margin: 10px 0 0; color: var(--ink-soft); font-size: 11px; text-align: center; }
+.plans-footnote { margin: 16px auto 0; color: var(--ink-soft); font-size: 12px; text-align: center; }
+.license-section { background: var(--surface); }
+.plans-section-intro { margin-bottom: 72px; }
+.plans-section-intro h2 { max-width: 730px; }
+.plans-section-intro > p:last-child { max-width: 330px; }
+.license-steps { display: grid; grid-template-columns: repeat(3, 1fr); }
+.license-step { position: relative; min-height: 240px; padding: 0 42px 0 32px; border-left: 1px solid var(--line); }
+.license-step:first-child { padding-left: 0; border-left: 0; }
+.license-step:not(:last-child)::after { content: "→"; position: absolute; top: 36px; right: 20px; color: var(--ink-soft); font-size: 28px; }
+.license-step-number { display: block; margin-bottom: 16px; color: var(--gold); font: 400 57px/.8 var(--serif); }
+.license-step h3 { margin: 0 0 14px; font-size: 30px; line-height: 1.05; }
+.license-step p { max-width: 280px; margin: 0; color: var(--ink-soft); font-size: 14px; }
+.license-note { display: flex; align-items: center; gap: 20px; max-width: 880px; margin: 68px auto 0; padding: 20px 26px; border: 1px solid var(--line); }
+.license-note-icon { display: grid; width: 38px; height: 38px; flex: 0 0 38px; place-items: center; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font-size: 25px; line-height: 1; }
+.license-note strong { display: block; margin-bottom: 3px; font-size: 14px; }
+.license-note p { margin: 0; color: var(--ink-soft); font-size: 13px; }
+.plans-faq-intro > p:last-child { max-width: 310px; color: var(--ink-soft); font-size: 15px; }
+.plans-final { padding: 112px 0; background: var(--paper-deep); }
+.plans-final-inner { display: flex; align-items: end; justify-content: space-between; gap: 60px; }
+.plans-final h2 { max-width: 720px; margin: 0 0 22px; font-size: clamp(54px, 5.4vw, 82px); line-height: .94; letter-spacing: -.045em; }
+.plans-final-inner > div:first-child > p:last-child { max-width: 450px; margin: 0; color: var(--ink-soft); font-size: 16px; }
+.plans-final-actions { display: flex; flex: 0 0 auto; flex-direction: column; align-items: flex-start; gap: 24px; padding-bottom: 4px; }
+
+@media (max-width: 900px) {
+  .plans-page { padding-top: 72px; }
+  .plans-hero { padding: 82px 0 60px; }
+  .plans-hero-grid { grid-template-columns: 1fr; gap: 34px; }
+  .plans-hero h1 { max-width: 720px; font-size: clamp(52px, 9vw, 76px); }
+  .license-art { min-height: 250px; justify-items: start; }
+  .license-art svg { width: min(100%, 440px); }
+  .plans-status { align-items: flex-start; flex-direction: column; gap: 20px; }
+  .plans-heading-row { align-items: flex-start; flex-direction: column; gap: 24px; }
+  .availability-legend { padding: 0; }
+  .plans-grid { grid-template-columns: 1fr; }
+  .plan-card-header { min-height: 0; }
+  .plan-card-body { min-height: 0; }
+  .plan-card-lead { min-height: 0; }
+  .license-step { min-height: 0; padding: 0 26px 0 24px; }
+  .license-step:not(:last-child)::after { right: 8px; }
+  .plans-final-inner { align-items: flex-start; flex-direction: column; gap: 36px; }
+}
+
+@media (max-width: 560px) {
+  .plans-page { padding-top: 66px; }
+  .plans-hero { padding: 64px 0 42px; }
+  .plans-hero h1 { margin-bottom: 24px; font-size: clamp(43px, 11.3vw, 53px); }
+  .plans-hero-lead { font-size: 16px; }
+  .license-art { min-height: 215px; }
+  .license-art svg { width: 100%; }
+  .plans-status-wrap { padding-bottom: 8px; }
+  .plans-status { padding: 18px; }
+  .plans-status-title { align-items: flex-start; font-size: 14px; }
+  .plans-status > div > p:last-child { font-size: 12px; }
+  .plan-comparison { padding-top: 76px; padding-bottom: 78px; }
+  .plans-heading-row h2 { font-size: 40px; }
+  .plans-grid { margin-inline: 0; }
+  .plan-card-header { padding: 18px 20px 21px; }
+  .plan-card-header h3 { font-size: 33px; }
+  .plan-card-body { padding: 24px 20px 22px; }
+  .plan-card-lead { margin-bottom: 24px; font-size: 14px; }
+  .plan-feature-list { font-size: 13px; }
+  .plans-footnote { padding-inline: 8px; font-size: 11px; }
+  .plans-section-intro { margin-bottom: 54px; }
+  .license-steps { grid-template-columns: 1fr; gap: 0; }
+  .license-step, .license-step:first-child { padding: 30px 0; border-top: 1px solid var(--line); border-left: 0; }
+  .license-step:first-child { padding-top: 0; border-top: 0; }
+  .license-step:not(:last-child)::after { content: "↓"; top: auto; right: 0; bottom: -17px; z-index: 1; padding-inline: 8px; background: var(--surface); font-size: 22px; }
+  .license-step-number { margin-bottom: 12px; font-size: 48px; }
+  .license-step h3 { font-size: 28px; }
+  .license-note { align-items: flex-start; gap: 14px; margin-top: 38px; padding: 18px; }
+  .license-note strong { font-size: 13px; }
+  .license-note p { font-size: 12px; }
+  .plans-final { padding: 78px 0; }
+  .plans-final h2 { font-size: 45px; }
+  .plans-final-actions { width: 100%; }
+  .plans-final-actions .button { width: 100%; }
+}
+
 @media (max-width: 900px) {
   :root { --container: min(100% - 40px, 680px); }
   .header-inner { min-height: 72px; }

@@ -5,6 +5,7 @@ Landing estática, responsive y lista para desplegar en Vercel.
 ## Contenido
 
 - `index.html`: landing principal.
+- `planes/index.html`: explicación pública de planes y licencias; el cobro se mantiene cerrado hasta definir sus condiciones.
 - `styles.css`: sistema visual completo.
 - `script.js`: navegación móvil, demo interactiva, animaciones y copiar correo.
 - `privacidad.html` y `terminos.html`: borradores preliminares para revisión antes del lanzamiento.
