@@ -41,7 +41,8 @@ module.exports = handler(async (req, res) => {
   const trialEnd = flowDate(flowValue(subscriptionResult, "trial_end", "trialEnd")) || (trialDays ? new Date(now.getTime() + trialDays * 86400000).toISOString() : null);
   const trialStart = flowDate(flowValue(subscriptionResult, "trial_start", "trialStart")) || (trialEnd ? now.toISOString() : null);
   const providerSubscriptionId = flowValue(subscriptionResult, "subscriptionId", "subscription_id", "id");
-  const currentPeriodEnd = flowDate(flowValue(subscriptionResult, "currentPeriodEnd", "current_period_end", "nextBillingDate", "next_billing_date", "next_invoice_date", "nextInvoiceDate", "subscription_end", "subscriptionEnd")) || trialEnd || new Date(now.getTime() + 30 * 86400000).toISOString();
+  const currentPeriodStart = flowDate(flowValue(subscriptionResult, "currentPeriodStart", "current_period_start", "period_start", "periodStart", "subscription_start", "subscriptionStart")) || now.toISOString();
+  const currentPeriodEnd = flowDate(flowValue(subscriptionResult, "currentPeriodEnd", "current_period_end", "period_end", "periodEnd", "nextBillingDate", "next_billing_date", "next_invoice_date", "nextInvoiceDate", "subscription_end", "subscriptionEnd")) || trialEnd || new Date(now.getTime() + 30 * 86400000).toISOString();
   try {
     await insert("subscriptions", {
       user_id: intent.user_id,
@@ -52,7 +53,7 @@ module.exports = handler(async (req, res) => {
       status: trialDays ? "trialing" : "active",
       trial_starts_at: trialDays ? trialStart : null,
       trial_ends_at: trialEnd,
-      current_period_start: now.toISOString(),
+      current_period_start: currentPeriodStart,
       current_period_end: currentPeriodEnd,
     }, { admin: true });
     await update("billing_checkout_intents", `id=eq.${encodeURIComponent(intent.id)}`, { status: "completed" }, { admin: true });
