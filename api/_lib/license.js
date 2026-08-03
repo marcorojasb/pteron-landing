@@ -80,7 +80,9 @@ function verifyLicense(token, keys = PUBLIC_KEYS) {
   }
   if (!authentic) return null;
 
-  return { sub: payload.sub, plan: payload.plan, kid: payload.kid };
+  // exp va en el resultado sin evaluarse acá a propósito: quien llama decide
+  // si el vencimiento importa (no importa para renovar; sí para el gateway).
+  return { sub: payload.sub, plan: payload.plan, kid: payload.kid, exp: payload.exp };
 }
 
 async function currentSubscription(userId) {
