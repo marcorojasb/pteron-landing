@@ -1,62 +1,568 @@
 {
-  "generatedAt": "2026-07-29T04:17:36.550Z",
+  "generatedAt": "2026-08-02T21:13:43.667Z",
   "latest": {
-    "version": "0.2.1-beta.3",
+    "version": "0.2.6",
     "channel": "beta",
-    "publishedAt": "2026-07-29T03:47:47.000Z",
-    "publishedLabel": "julio de 2026",
-    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.3",
+    "publishedAt": "2026-08-02T21:13:29.000Z",
+    "publishedLabel": "agosto de 2026",
+    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.6",
     "assets": [
       {
         "name": "beta-mac.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.3/beta-mac.yml",
-        "bytes": 522
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/beta-mac.yml",
+        "bytes": 494
       },
       {
         "name": "beta.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.3/beta.yml",
-        "bytes": 358
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/beta.yml",
+        "bytes": 337
       },
       {
-        "name": "Pteron-0.2.1-beta.3-arm64.dmg",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.3/Pteron-0.2.1-beta.3-arm64.dmg",
-        "bytes": 194184632
+        "name": "pteron-0.2.6-arm64.dmg",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-arm64.dmg",
+        "bytes": 189389637
       },
       {
-        "name": "Pteron-0.2.1-beta.3-arm64.dmg.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.3/Pteron-0.2.1-beta.3-arm64.dmg.blockmap",
-        "bytes": 204709
+        "name": "pteron-0.2.6-arm64.dmg.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-arm64.dmg.blockmap",
+        "bytes": 197342
       },
       {
-        "name": "Pteron-0.2.1-beta.3-arm64.zip",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.3/Pteron-0.2.1-beta.3-arm64.zip",
-        "bytes": 193638412
+        "name": "pteron-0.2.6-arm64.zip",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-arm64.zip",
+        "bytes": 188798495
       },
       {
-        "name": "Pteron-0.2.1-beta.3-arm64.zip.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.3/Pteron-0.2.1-beta.3-arm64.zip.blockmap",
-        "bytes": 203865
+        "name": "pteron-0.2.6-arm64.zip.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-arm64.zip.blockmap",
+        "bytes": 198203
       },
       {
-        "name": "Pteron-0.2.1-beta.3-x64.exe",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.3/Pteron-0.2.1-beta.3-x64.exe",
-        "bytes": 153616216
+        "name": "pteron-0.2.6-x64.exe",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-x64.exe",
+        "bytes": 149897946
       },
       {
-        "name": "Pteron-0.2.1-beta.3-x64.exe.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.3/Pteron-0.2.1-beta.3-x64.exe.blockmap",
-        "bytes": 161695
+        "name": "pteron-0.2.6-x64.exe.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-x64.exe.blockmap",
+        "bytes": 158266
       }
     ],
     "notes": [
-      "Corrige el aviso de actualización y evita la descarga diferencial, que en Windows podía dejar un instalador incompleto.",
-      "*macOS** (Apple serie M): firmado con Developer ID y notarizado.",
-      "*Windows 11**: el instalador **no está firmado**. Windows mostrará un aviso de SmartScreen al instalar; elige \"Más información\" → \"Ejecutar de todas formas\". La firma de código es requisito antes de salir de la beta.",
-      "Si al actualizar en Windows aparece \"Installer integrity check has failed\", borra la carpeta `%LOCALAPPDATA%\\pteron-updater` y vuelve a intentarlo."
+      "## pteron 0.2.6",
+      "Esta versión mejora la creación y revisión de materiales docentes a partir de pruebas comparativas con varios proveedores.",
+      "### Cambios principales",
+      "El agente puede revisar materiales extensos antes de entregarlos y corregir problemas estructurales detectados.",
+      "Las revisiones conservan la procedencia y la evidencia útil del material anterior.",
+      "Las solicitudes de agregar contenido al final protegen literalmente los bloques existentes y añaden sólo lo pedido.",
+      "Se corrigió la selección de planes cuando el docente solicita dos materiales y se reforzó el tratamiento de planificaciones, tablas y orientaciones.",
+      "Se normalizan fórmulas con escapes LaTeX duplicados y fragmentos Markdown sueltos dentro de bloques."
     ]
   },
   "stable": null,
   "releases": [
+    {
+      "version": "0.2.6",
+      "channel": "beta",
+      "publishedAt": "2026-08-02T21:13:29.000Z",
+      "publishedLabel": "agosto de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.6",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.2.6-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-arm64.dmg",
+          "bytes": 189389637
+        },
+        {
+          "name": "pteron-0.2.6-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-arm64.dmg.blockmap",
+          "bytes": 197342
+        },
+        {
+          "name": "pteron-0.2.6-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-arm64.zip",
+          "bytes": 188798495
+        },
+        {
+          "name": "pteron-0.2.6-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-arm64.zip.blockmap",
+          "bytes": 198203
+        },
+        {
+          "name": "pteron-0.2.6-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-x64.exe",
+          "bytes": 149897946
+        },
+        {
+          "name": "pteron-0.2.6-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.6/pteron-0.2.6-x64.exe.blockmap",
+          "bytes": 158266
+        }
+      ],
+      "notes": [
+        "## pteron 0.2.6",
+        "Esta versión mejora la creación y revisión de materiales docentes a partir de pruebas comparativas con varios proveedores.",
+        "### Cambios principales",
+        "El agente puede revisar materiales extensos antes de entregarlos y corregir problemas estructurales detectados.",
+        "Las revisiones conservan la procedencia y la evidencia útil del material anterior.",
+        "Las solicitudes de agregar contenido al final protegen literalmente los bloques existentes y añaden sólo lo pedido.",
+        "Se corrigió la selección de planes cuando el docente solicita dos materiales y se reforzó el tratamiento de planificaciones, tablas y orientaciones.",
+        "Se normalizan fórmulas con escapes LaTeX duplicados y fragmentos Markdown sueltos dentro de bloques."
+      ]
+    },
+    {
+      "version": "0.2.5",
+      "channel": "beta",
+      "publishedAt": "2026-07-31T17:47:12.000Z",
+      "publishedLabel": "julio de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.5",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.2.5-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-arm64.dmg",
+          "bytes": 189399083
+        },
+        {
+          "name": "pteron-0.2.5-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-arm64.dmg.blockmap",
+          "bytes": 198307
+        },
+        {
+          "name": "pteron-0.2.5-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-arm64.zip",
+          "bytes": 188796409
+        },
+        {
+          "name": "pteron-0.2.5-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-arm64.zip.blockmap",
+          "bytes": 198321
+        },
+        {
+          "name": "pteron-0.2.5-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-x64.exe",
+          "bytes": 149896356
+        },
+        {
+          "name": "pteron-0.2.5-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.5/pteron-0.2.5-x64.exe.blockmap",
+          "bytes": 158750
+        }
+      ],
+      "notes": [
+        "pteron sigue en beta. Se instala y se actualiza desde la propia aplicación.",
+        "## Lo que cambia para ti",
+        "*«Crea una guía» vuelve a funcionar.** Era la petición central del producto y",
+        "podía morir tras seis intentos con el mensaje «no fue posible preparar el",
+        "material», pidiéndote que agregaras lo que ya habías pedido. El validador",
+        "rechazaba la guía por no rotular objetivo, instrucciones y cierre: una decisión",
+        "de contenido que no le corresponde tomar. Ahora avisa en vez de rechazar, y los",
+        "materiales realmente incompletos se siguen bloqueando."
+      ]
+    },
+    {
+      "version": "0.2.4",
+      "channel": "beta",
+      "publishedAt": "2026-07-31T04:10:35.000Z",
+      "publishedLabel": "julio de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.4",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.4/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.4/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.2.4-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.4/pteron-0.2.4-arm64.dmg",
+          "bytes": 189392674
+        },
+        {
+          "name": "pteron-0.2.4-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.4/pteron-0.2.4-arm64.dmg.blockmap",
+          "bytes": 198505
+        },
+        {
+          "name": "pteron-0.2.4-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.4/pteron-0.2.4-arm64.zip",
+          "bytes": 188793844
+        },
+        {
+          "name": "pteron-0.2.4-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.4/pteron-0.2.4-arm64.zip.blockmap",
+          "bytes": 197741
+        },
+        {
+          "name": "pteron-0.2.4-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.4/pteron-0.2.4-x64.exe",
+          "bytes": 149896794
+        },
+        {
+          "name": "pteron-0.2.4-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.4/pteron-0.2.4-x64.exe.blockmap",
+          "bytes": 158597
+        }
+      ],
+      "notes": [
+        "Borrador en preparación."
+      ]
+    },
+    {
+      "version": "0.2.3",
+      "channel": "beta",
+      "publishedAt": "2026-07-30T21:52:19.000Z",
+      "publishedLabel": "julio de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.3",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.3/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.3/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.2.3-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.3/pteron-0.2.3-arm64.dmg",
+          "bytes": 189386783
+        },
+        {
+          "name": "pteron-0.2.3-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.3/pteron-0.2.3-arm64.dmg.blockmap",
+          "bytes": 197710
+        },
+        {
+          "name": "pteron-0.2.3-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.3/pteron-0.2.3-arm64.zip",
+          "bytes": 188789834
+        },
+        {
+          "name": "pteron-0.2.3-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.3/pteron-0.2.3-arm64.zip.blockmap",
+          "bytes": 198429
+        },
+        {
+          "name": "pteron-0.2.3-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.3/pteron-0.2.3-x64.exe",
+          "bytes": 149893236
+        },
+        {
+          "name": "pteron-0.2.3-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.3/pteron-0.2.3-x64.exe.blockmap",
+          "bytes": 158899
+        }
+      ],
+      "notes": [
+        "Pteron continúa en etapa y canal beta; la versión pública usa X.Y.Z sin incorporar la palabra beta al número.",
+        "Esta consolidación endurece la creación de materiales y la planificación a partir de pruebas reales con Gemini 3.5 Flash Lite: separa el plan del artefacto final, evita sustituciones de tipo y confirmaciones falsas, valida encabezados, alternativas, matemática, puntajes y duración, y añade recolección saneada de evidencia de QA. También actualiza la documentación y las capturas de diseño.",
+        "Verificación: 468 pruebas aprobadas, 33 omitidas de forma declarada, typecheck y builds de macOS/Windows aprobados; auditoría de producción con 0 vulnerabilidades. macOS está firmado y notarizado. En Windows 11 el instalador aún no está firmado, por lo que Microsoft Defender SmartScreen puede mostrar una advertencia.",
+        "Limitación conocida: Gemini 3.5 Flash Lite no converge siempre en pedidos complejos dentro del presupuesto de reintentos; Pteron ahora falla de forma explícita en vez de persistir una salida estructuralmente inválida. La verificación física de 0.2.3 en Windows queda pendiente porque la máquina QA no respondió por SSH durante este corte."
+      ]
+    },
+    {
+      "version": "0.2.2",
+      "channel": "beta",
+      "publishedAt": "2026-07-30T18:00:00.000Z",
+      "publishedLabel": "julio de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.2",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.2/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.2/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.2.2-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.2/pteron-0.2.2-arm64.dmg",
+          "bytes": 189400483
+        },
+        {
+          "name": "pteron-0.2.2-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.2/pteron-0.2.2-arm64.dmg.blockmap",
+          "bytes": 197974
+        },
+        {
+          "name": "pteron-0.2.2-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.2/pteron-0.2.2-arm64.zip",
+          "bytes": 188788182
+        },
+        {
+          "name": "pteron-0.2.2-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.2/pteron-0.2.2-arm64.zip.blockmap",
+          "bytes": 197999
+        },
+        {
+          "name": "pteron-0.2.2-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.2/pteron-0.2.2-x64.exe",
+          "bytes": 149889456
+        },
+        {
+          "name": "pteron-0.2.2-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.2/pteron-0.2.2-x64.exe.blockmap",
+          "bytes": 157474
+        }
+      ],
+      "notes": [
+        "Pteron continúa en etapa y canal beta. Esta versión no incorpora cambios funcionales respecto de 0.2.1-beta.7: el único cambio es el esquema de versión pública, que desde ahora usa X.Y.Z sin incluir la palabra beta. El estado beta se mantiene explícitamente en el canal de actualización y en la distribución. macOS está firmado y notarizado. En Windows 11 el instalador aún no está firmado, por lo que Microsoft Defender SmartScreen puede mostrar una advertencia."
+      ]
+    },
+    {
+      "version": "0.2.1-beta.6",
+      "channel": "beta",
+      "publishedAt": "2026-07-30T15:17:26.000Z",
+      "publishedLabel": "julio de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.6",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/beta-mac.yml",
+          "bytes": 522
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/beta.yml",
+          "bytes": 358
+        },
+        {
+          "name": "Pteron-0.2.1-beta.6-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-arm64.dmg",
+          "bytes": 194227500
+        },
+        {
+          "name": "Pteron-0.2.1-beta.6-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-arm64.dmg.blockmap",
+          "bytes": 203450
+        },
+        {
+          "name": "Pteron-0.2.1-beta.6-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-arm64.zip",
+          "bytes": 193654337
+        },
+        {
+          "name": "Pteron-0.2.1-beta.6-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-arm64.zip.blockmap",
+          "bytes": 203464
+        },
+        {
+          "name": "Pteron-0.2.1-beta.6-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-x64.exe",
+          "bytes": 153569367
+        },
+        {
+          "name": "Pteron-0.2.1-beta.6-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-x64.exe.blockmap",
+          "bytes": 162508
+        }
+      ],
+      "notes": [
+        "*Pteron en tu iPhone.** Ajustes permite vincular el teléfono con el Pteron de tu computador, que sigue siendo el que guarda todo: sesiones, carpeta, evidencia y materiales. El teléfono no es una segunda copia del programa, es una ventana a la que ya tienes abierta. Viene apagado y se enciende sólo si tú lo activas; mientras está encendido escucha únicamente dentro de tu propio computador —nunca queda abierto a la red—, la clave se guarda cifrada y puedes cambiarla o revocarla cuando quieras.",
+        "*Menos ruido mientras se prepara el material.** El avance se mostraba dos veces a la vez, en la conversación y en el panel de abajo, diciendo lo mismo con distinto detalle. Ahora lo lleva sólo el panel, que muestra cada paso con su estado. La conversación deja constancia de qué consultó Pteron recién cuando termina, que es cuando esa información sirve de registro.",
+        "*Las tarjetas de avance dicen el dato, no la categoría.** Antes decían «Material seleccionado»; ahora dicen cuál: el curso, la asignatura y el tema con los que está trabajando. Y cuando no adjuntaste ningún material, lo dice, en vez de afirmar que hay una selección registrada que no existe.",
+        "*La barra del material quedó más limpia.** El contador «Contexto · 0» desaparece cuando no hay nada que contar. La etiqueta para tu portafolio se llama ahora por lo que hace y aparece cuando el material está listo, no mientras lo trabajas. Insertar un salto de página pasó a vivir junto al resto de la configuración de página. Y en pantallas angostas los botones dejaron de estirarse de lado a lado con huecos enormes.",
+        "*macOS** (Apple serie M): firmado con Developer ID y notarizado.",
+        "*Windows 11**: el instalador **no está firmado**. Windows mostrará un aviso de SmartScreen al instalar; elige «Más información» → «Ejecutar de todas formas». La firma de código es requisito antes de salir de la beta.",
+        "Si al actualizar en Windows aparece «Installer integrity check has failed», borra la carpeta `%LOCALAPPDATA%\\pteron-updater` y vuelve a intentarlo."
+      ]
+    },
+    {
+      "version": "0.2.1-beta.5",
+      "channel": "beta",
+      "publishedAt": "2026-07-30T08:46:02.000Z",
+      "publishedLabel": "julio de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.5",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.5/beta-mac.yml",
+          "bytes": 522
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.5/beta.yml",
+          "bytes": 358
+        },
+        {
+          "name": "Pteron-0.2.1-beta.5-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.5/Pteron-0.2.1-beta.5-arm64.dmg",
+          "bytes": 194224786
+        },
+        {
+          "name": "Pteron-0.2.1-beta.5-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.5/Pteron-0.2.1-beta.5-arm64.dmg.blockmap",
+          "bytes": 203908
+        },
+        {
+          "name": "Pteron-0.2.1-beta.5-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.5/Pteron-0.2.1-beta.5-arm64.zip",
+          "bytes": 193653898
+        },
+        {
+          "name": "Pteron-0.2.1-beta.5-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.5/Pteron-0.2.1-beta.5-arm64.zip.blockmap",
+          "bytes": 203890
+        },
+        {
+          "name": "Pteron-0.2.1-beta.5-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.5/Pteron-0.2.1-beta.5-x64.exe",
+          "bytes": 153568580
+        },
+        {
+          "name": "Pteron-0.2.1-beta.5-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.5/Pteron-0.2.1-beta.5-x64.exe.blockmap",
+          "bytes": 162597
+        }
+      ],
+      "notes": [
+        "Preparar material para básica ya no falla a mitad de camino. Pteron revisa cada guía para no entregarte un esqueleto de títulos, pero esa revisión estaba afinada sobre álgebra de media: enunciados perfectamente normales —«Traza las tres alturas del triángulo.», «Une con una línea cada palabra con su significado.», «Completa la tabla.»— se rechazaban, y como cada rechazo gasta intentos, una guía entera podía caerse. Ahora reconoce el vocabulario real de un aula y distingue una instrucción («Completa la tabla.») de un rótulo de índice («Actividad de completación»).",
+        "Las fórmulas se ven como fórmulas también dentro de las tablas. Una fracción en una celda se mostraba con su código a la vista; ahora aparece maquetada, y al entrar a la celda vuelve el código para que puedas editarlo.",
+        "La pauta de corrección responde pregunta por pregunta, en el mismo orden del material y con el criterio de puntaje de cada una.",
+        "El aviso de datos de estudiantes dejó de interrumpir trabajo legítimo. Sigue avisando antes de enviar a la nube un nombre en un campo de persona o un RUT, que es lo que identifica a alguien; ya no salta por hablar de salud, evaluación o necesidades educativas, que son también temas del currículum y tuyos para tratar.",
+        "Más revisión sobre el material que recibes: el puntaje total tiene que cuadrar con la suma de las preguntas, las alternativas de selección múltiple llegan como alternativas y no como texto corrido, y Pteron avisa cuando una evaluación formativa no explica sus alternativas o una planificación no declara momentos ni duración.",
+        "*Desde el iPhone** (opcional, apagado por defecto): Ajustes permite emparejar un cliente con el Pteron de tu equipo, que sigue siendo el que conserva sesiones, carpeta, evidencia y artefactos. El acceso escucha sólo dentro del propio computador, y su clave se puede rotar o revocar cuando quieras.",
+        "*macOS** (Apple serie M): firmado con Developer ID y notarizado.",
+        "*Windows 11**: el instalador **no está firmado**. Windows mostrará un aviso de SmartScreen al instalar; elige «Más información» → «Ejecutar de todas formas». La firma de código es requisito antes de salir de la beta."
+      ]
+    },
+    {
+      "version": "0.2.1-beta.4",
+      "channel": "beta",
+      "publishedAt": "2026-07-29T21:56:59.000Z",
+      "publishedLabel": "julio de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.4",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.4/beta-mac.yml",
+          "bytes": 522
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.4/beta.yml",
+          "bytes": 358
+        },
+        {
+          "name": "Pteron-0.2.1-beta.4-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.4/Pteron-0.2.1-beta.4-arm64.dmg",
+          "bytes": 194214112
+        },
+        {
+          "name": "Pteron-0.2.1-beta.4-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.4/Pteron-0.2.1-beta.4-arm64.dmg.blockmap",
+          "bytes": 204832
+        },
+        {
+          "name": "Pteron-0.2.1-beta.4-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.4/Pteron-0.2.1-beta.4-arm64.zip",
+          "bytes": 193645378
+        },
+        {
+          "name": "Pteron-0.2.1-beta.4-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.4/Pteron-0.2.1-beta.4-arm64.zip.blockmap",
+          "bytes": 203223
+        },
+        {
+          "name": "Pteron-0.2.1-beta.4-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.4/Pteron-0.2.1-beta.4-x64.exe",
+          "bytes": 153561730
+        },
+        {
+          "name": "Pteron-0.2.1-beta.4-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.4/Pteron-0.2.1-beta.4-x64.exe.blockmap",
+          "bytes": 162125
+        }
+      ],
+      "notes": [
+        "Actualizar desde Pteron ya no abre el asistente del instalador: el reinicio aplica la versión nueva y vuelve a abrir la app.",
+        "Las instalaciones nuevas en Windows son por usuario. Ya no se ofrece «para todos los usuarios» ni cambio de carpeta: esa opción llevaba la app a Program Files y hacía que cada actualización exigiera permisos de administrador. Una instalación anterior hecha para todos los usuarios conserva ese requisito.",
+        "*macOS** (Apple serie M): firmado con Developer ID y notarizado.",
+        "*Windows 11**: el instalador **no está firmado**. Windows mostrará un aviso de SmartScreen al instalar; elige «Más información» → «Ejecutar de todas formas». La firma de código es requisito antes de salir de la beta.",
+        "Si al actualizar en Windows aparece «Installer integrity check has failed», borra la carpeta `%LOCALAPPDATA%\\pteron-updater` y vuelve a intentarlo."
+      ]
+    },
+    {
+      "version": "0.2.1-beta.7",
+      "channel": "beta",
+      "publishedAt": "2026-07-30T17:31:59.000Z",
+      "publishedLabel": "julio de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.7",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.7/beta-mac.yml",
+          "bytes": 522
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.7/beta.yml",
+          "bytes": 358
+        },
+        {
+          "name": "pteron-0.2.1-beta.7-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.7/pteron-0.2.1-beta.7-arm64.dmg",
+          "bytes": 189392965
+        },
+        {
+          "name": "pteron-0.2.1-beta.7-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.7/pteron-0.2.1-beta.7-arm64.dmg.blockmap",
+          "bytes": 198181
+        },
+        {
+          "name": "pteron-0.2.1-beta.7-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.7/pteron-0.2.1-beta.7-arm64.zip",
+          "bytes": 188786358
+        },
+        {
+          "name": "pteron-0.2.1-beta.7-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.7/pteron-0.2.1-beta.7-arm64.zip.blockmap",
+          "bytes": 198176
+        },
+        {
+          "name": "pteron-0.2.1-beta.7-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.7/pteron-0.2.1-beta.7-x64.exe",
+          "bytes": 149890120
+        },
+        {
+          "name": "pteron-0.2.1-beta.7-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.7/pteron-0.2.1-beta.7-x64.exe.blockmap",
+          "bytes": 158903
+        }
+      ],
+      "notes": [
+        "Borrador en preparación."
+      ]
+    },
     {
       "version": "0.2.1-beta.3",
       "channel": "beta",
