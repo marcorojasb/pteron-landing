@@ -1,6 +1,15 @@
-const { createPrivateKey, createHash, sign } = require("node:crypto");
+const { createPrivateKey, createPublicKey, createHash, sign, verify } = require("node:crypto");
 const { HttpError } = require("./http");
 const { insert, select, upsert } = require("./supabase");
+
+/**
+ * Debe coincidir con PUBLIC_KEYS de pteron/src/main/services/license.ts: es la
+ * misma clave, sólo que acá sirve para verificar (nunca para firmar) al
+ * renovar una licencia que el cliente ya tenía guardada.
+ */
+const PUBLIC_KEYS = {
+  k1: "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAIiyVbE5TARxOvkmsybhjZimWX0D9DMulrhT6ToBw4PY=\n-----END PUBLIC KEY-----\n",
+};
 
 function base64url(value) {
   return Buffer.from(value).toString("base64url");
@@ -30,6 +39,48 @@ function signLicense({ subject, plan, expiresAt }) {
 
 function tokenHash(token) {
   return createHash("sha256").update(token).digest("hex");
+}
+
+/**
+ * Verifica un token ya emitido, sin importar si venció: quien decide si se
+ * renueva es la suscripción vigente en `subscriptions`, no el `exp` del token
+ * viejo — así un profesor que abrió la app después de semanas sin conexión no
+ * queda bloqueado por un reloj. Nunca lanza; null ante cualquier problema.
+ */
+function verifyLicense(token, keys = PUBLIC_KEYS) {
+  if (typeof token !== "string" || !token.trim()) return null;
+  const [payloadSegment, signatureSegment, ...rest] = token.trim().split(".");
+  if (!payloadSegment || !signatureSegment || rest.length > 0) return null;
+
+  let payload;
+  try {
+    payload = JSON.parse(Buffer.from(payloadSegment, "base64url").toString("utf8"));
+  } catch {
+    return null;
+  }
+  if (!payload || typeof payload !== "object") return null;
+  if (payload.v !== 1) return null;
+  if (payload.plan !== "basic" && payload.plan !== "pro") return null;
+  for (const field of ["sub", "iat", "exp", "kid"]) {
+    if (typeof payload[field] !== "string" || !payload[field]) return null;
+  }
+
+  const pem = keys[payload.kid];
+  if (!pem) return null;
+  let authentic = false;
+  try {
+    authentic = verify(
+      null,
+      Buffer.from(payloadSegment, "utf8"),
+      createPublicKey(pem),
+      Buffer.from(signatureSegment, "base64url"),
+    );
+  } catch {
+    authentic = false;
+  }
+  if (!authentic) return null;
+
+  return { sub: payload.sub, plan: payload.plan, kid: payload.kid };
 }
 
 async function currentSubscription(userId) {
@@ -63,4 +114,4 @@ async function issueLicense(userId) {
   return { token, plan: subscription.plan_id, expiresAt, keyId };
 }
 
-module.exports = { currentSubscription, issueLicense, signLicense, tokenHash };
+module.exports = { currentSubscription, issueLicense, signLicense, tokenHash, verifyLicense };
