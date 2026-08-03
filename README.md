@@ -41,7 +41,6 @@ las pegues en la interfaz del navegador.
 Variables públicas o de configuración:
 
 - `PUBLIC_SITE_URL=https://pteron.patagua.dev`
-- `PUBLIC_APP_PROTOCOL=pteron`
 - `SUPABASE_URL=https://swzqblyllbudwbmbcthr.supabase.co`
 - `SUPABASE_PUBLISHABLE_KEY`
 - `FLOW_BASE_URL=https://sandbox.flow.cl/api` durante las pruebas, o
