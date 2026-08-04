@@ -9,7 +9,10 @@ const { privateKey } = generateKeyPairSync("ed25519");
 process.env.LICENSE_PRIVATE_KEY_PEM = privateKey.export({ type: "pkcs8", format: "pem" }).toString();
 process.env.LICENSE_KID = "k1";
 
-const exchange = require("../api/activation/exchange");
+// api/activation/exchange.js se fusionó en api/activation/[action].js (12
+// funciones máx. en el plan Hobby de Vercel); "require" con corchetes en el
+// nombre funciona porque es sólo una ruta de archivo, no un glob.
+const activation = require("../api/activation/[action]");
 
 // Enruta por tabla + método: el mismo endpoint dispara varias llamadas
 // PostgREST distintas (leer el intent, leer la suscripción, guardar la
@@ -34,7 +37,11 @@ function fakeSupabase(routes) {
 }
 
 function fakeReq(body) {
-  return { method: "POST", body, headers: {} };
+  return { method: "POST", body, headers: {}, query: { action: "exchange" } };
+}
+
+function exchange(req, res) {
+  return activation(req, res);
 }
 
 function fakeRes() {
