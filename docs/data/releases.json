@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-02T21:13:43.667Z",
+  "generatedAt": "2026-08-04T03:07:09.968Z",
   "latest": {
     "version": "0.2.6",
     "channel": "beta",
@@ -59,8 +59,125 @@
       "Se normalizan fórmulas con escapes LaTeX duplicados y fragmentos Markdown sueltos dentro de bloques."
     ]
   },
-  "stable": null,
+  "stable": {
+    "version": "0.2.7",
+    "channel": "stable",
+    "publishedAt": "2026-08-04T03:06:54.000Z",
+    "publishedLabel": "agosto de 2026",
+    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.7",
+    "assets": [
+      {
+        "name": "beta-mac.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/beta-mac.yml",
+        "bytes": 494
+      },
+      {
+        "name": "beta.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/beta.yml",
+        "bytes": 337
+      },
+      {
+        "name": "pteron-0.2.7-arm64.dmg",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-arm64.dmg",
+        "bytes": 189411472
+      },
+      {
+        "name": "pteron-0.2.7-arm64.dmg.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-arm64.dmg.blockmap",
+        "bytes": 199025
+      },
+      {
+        "name": "pteron-0.2.7-arm64.zip",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-arm64.zip",
+        "bytes": 188804993
+      },
+      {
+        "name": "pteron-0.2.7-arm64.zip.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-arm64.zip.blockmap",
+        "bytes": 197997
+      },
+      {
+        "name": "pteron-0.2.7-x64.exe",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-x64.exe",
+        "bytes": 149903436
+      },
+      {
+        "name": "pteron-0.2.7-x64.exe.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-x64.exe.blockmap",
+        "bytes": 158497
+      }
+    ],
+    "notes": [
+      "## pteron 0.2.7",
+      "Esta versión suma activación de licencia para los planes Básico y Pro: verificación local, sin necesidad de cuenta para el resto del producto.",
+      "### Cambios principales",
+      "Nueva sección \"Licencia\" en Ajustes: activa este equipo desde tu cuenta web y consulta el estado de tu plan.",
+      "La licencia se renueva sola en segundo plano mientras haya conexión, sin interrumpir el trabajo.",
+      "El núcleo local de pteron —carpeta, materiales, sesiones, artefactos, memoria— sigue funcionando igual, con o sin licencia.",
+      "### Compatibilidad",
+      "macOS para Apple silicon: aplicación firmada y notarizada."
+    ]
+  },
   "releases": [
+    {
+      "version": "0.2.7",
+      "channel": "stable",
+      "publishedAt": "2026-08-04T03:06:54.000Z",
+      "publishedLabel": "agosto de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.7",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.2.7-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-arm64.dmg",
+          "bytes": 189411472
+        },
+        {
+          "name": "pteron-0.2.7-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-arm64.dmg.blockmap",
+          "bytes": 199025
+        },
+        {
+          "name": "pteron-0.2.7-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-arm64.zip",
+          "bytes": 188804993
+        },
+        {
+          "name": "pteron-0.2.7-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-arm64.zip.blockmap",
+          "bytes": 197997
+        },
+        {
+          "name": "pteron-0.2.7-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-x64.exe",
+          "bytes": 149903436
+        },
+        {
+          "name": "pteron-0.2.7-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-x64.exe.blockmap",
+          "bytes": 158497
+        }
+      ],
+      "notes": [
+        "## pteron 0.2.7",
+        "Esta versión suma activación de licencia para los planes Básico y Pro: verificación local, sin necesidad de cuenta para el resto del producto.",
+        "### Cambios principales",
+        "Nueva sección \"Licencia\" en Ajustes: activa este equipo desde tu cuenta web y consulta el estado de tu plan.",
+        "La licencia se renueva sola en segundo plano mientras haya conexión, sin interrumpir el trabajo.",
+        "El núcleo local de pteron —carpeta, materiales, sesiones, artefactos, memoria— sigue funcionando igual, con o sin licencia.",
+        "### Compatibilidad",
+        "macOS para Apple silicon: aplicación firmada y notarizada."
+      ]
+    },
     {
       "version": "0.2.6",
       "channel": "beta",
