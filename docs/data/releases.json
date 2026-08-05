@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-04T03:07:09.968Z",
+  "generatedAt": "2026-08-05T17:31:38.302Z",
   "latest": {
     "version": "0.2.6",
     "channel": "beta",
@@ -60,65 +60,124 @@
     ]
   },
   "stable": {
-    "version": "0.2.7",
+    "version": "0.2.8",
     "channel": "stable",
-    "publishedAt": "2026-08-04T03:06:54.000Z",
+    "publishedAt": "2026-08-05T17:31:03.000Z",
     "publishedLabel": "agosto de 2026",
-    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.7",
+    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.8",
     "assets": [
       {
         "name": "beta-mac.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/beta-mac.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/beta-mac.yml",
         "bytes": 494
       },
       {
         "name": "beta.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/beta.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/beta.yml",
         "bytes": 337
       },
       {
-        "name": "pteron-0.2.7-arm64.dmg",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-arm64.dmg",
-        "bytes": 189411472
+        "name": "pteron-0.2.8-arm64.dmg",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-arm64.dmg",
+        "bytes": 191391530
       },
       {
-        "name": "pteron-0.2.7-arm64.dmg.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-arm64.dmg.blockmap",
-        "bytes": 199025
+        "name": "pteron-0.2.8-arm64.dmg.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-arm64.dmg.blockmap",
+        "bytes": 198570
       },
       {
-        "name": "pteron-0.2.7-arm64.zip",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-arm64.zip",
-        "bytes": 188804993
+        "name": "pteron-0.2.8-arm64.zip",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-arm64.zip",
+        "bytes": 190810571
       },
       {
-        "name": "pteron-0.2.7-arm64.zip.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-arm64.zip.blockmap",
-        "bytes": 197997
+        "name": "pteron-0.2.8-arm64.zip.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-arm64.zip.blockmap",
+        "bytes": 199628
       },
       {
-        "name": "pteron-0.2.7-x64.exe",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-x64.exe",
-        "bytes": 149903436
+        "name": "pteron-0.2.8-x64.exe",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-x64.exe",
+        "bytes": 148221301
       },
       {
-        "name": "pteron-0.2.7-x64.exe.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.7/pteron-0.2.7-x64.exe.blockmap",
-        "bytes": 158497
+        "name": "pteron-0.2.8-x64.exe.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-x64.exe.blockmap",
+        "bytes": 154955
       }
     ],
     "notes": [
-      "## pteron 0.2.7",
-      "Esta versión suma activación de licencia para los planes Básico y Pro: verificación local, sin necesidad de cuenta para el resto del producto.",
+      "## pteron 0.2.8",
+      "Esta versión suma DeepSeek como proveedor directo, rediseña Ajustes → Modelo, y corrige varios errores reales: materiales de un plan con el tipo equivocado, un falso aviso de privacidad, y documentos Word que no abrían cuando una guía incluía ciertas fórmulas matemáticas.",
       "### Cambios principales",
-      "Nueva sección \"Licencia\" en Ajustes: activa este equipo desde tu cuenta web y consulta el estado de tu plan.",
-      "La licencia se renueva sola en segundo plano mientras haya conexión, sin interrumpir el trabajo.",
-      "El núcleo local de pteron —carpeta, materiales, sesiones, artefactos, memoria— sigue funcionando igual, con o sin licencia.",
-      "### Compatibilidad",
-      "macOS para Apple silicon: aplicación firmada y notarizada."
+      "Nuevo proveedor: DeepSeek directo, junto a los ya disponibles.",
+      "Ajustes → Modelo rediseñado: \"Modo fácil\" (planes) y \"Modo manual\" (proveedores), más claro que antes.",
+      "Corrige que el segundo material de una petición con dos materiales (por ejemplo, planificación y guía) pudiera crearse con el tipo equivocado.",
+      "Corrige un falso aviso de privacidad que se activaba con la palabra \"estudiante\" en medio de una oración común.",
+      "Corrige documentos .docx que no abrían cuando una guía incluía una fórmula con una comparación (como \"<\" o \">\"); de paso, los documentos exportados ahora se ven más ordenados: encabezado en tabla, notas con recuadro, encabezados de tabla en negrita."
     ]
   },
   "releases": [
+    {
+      "version": "0.2.8",
+      "channel": "stable",
+      "publishedAt": "2026-08-05T17:31:03.000Z",
+      "publishedLabel": "agosto de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.8",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.2.8-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-arm64.dmg",
+          "bytes": 191391530
+        },
+        {
+          "name": "pteron-0.2.8-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-arm64.dmg.blockmap",
+          "bytes": 198570
+        },
+        {
+          "name": "pteron-0.2.8-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-arm64.zip",
+          "bytes": 190810571
+        },
+        {
+          "name": "pteron-0.2.8-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-arm64.zip.blockmap",
+          "bytes": 199628
+        },
+        {
+          "name": "pteron-0.2.8-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-x64.exe",
+          "bytes": 148221301
+        },
+        {
+          "name": "pteron-0.2.8-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-x64.exe.blockmap",
+          "bytes": 154955
+        }
+      ],
+      "notes": [
+        "## pteron 0.2.8",
+        "Esta versión suma DeepSeek como proveedor directo, rediseña Ajustes → Modelo, y corrige varios errores reales: materiales de un plan con el tipo equivocado, un falso aviso de privacidad, y documentos Word que no abrían cuando una guía incluía ciertas fórmulas matemáticas.",
+        "### Cambios principales",
+        "Nuevo proveedor: DeepSeek directo, junto a los ya disponibles.",
+        "Ajustes → Modelo rediseñado: \"Modo fácil\" (planes) y \"Modo manual\" (proveedores), más claro que antes.",
+        "Corrige que el segundo material de una petición con dos materiales (por ejemplo, planificación y guía) pudiera crearse con el tipo equivocado.",
+        "Corrige un falso aviso de privacidad que se activaba con la palabra \"estudiante\" en medio de una oración común.",
+        "Corrige documentos .docx que no abrían cuando una guía incluía una fórmula con una comparación (como \"<\" o \">\"); de paso, los documentos exportados ahora se ven más ordenados: encabezado en tabla, notas con recuadro, encabezados de tabla en negrita."
+      ]
+    },
     {
       "version": "0.2.7",
       "channel": "stable",
@@ -345,7 +404,12 @@
         }
       ],
       "notes": [
-        "Borrador en preparación."
+        "## pteron 0.2.4",
+        "Primera integración del arnés de comparativa de proveedores, y soporte para que un plan declare más de un material en la misma conversación.",
+        "### Cambios principales",
+        "Modo plan: un plan puede declarar varios materiales (por ejemplo, una planificación y su guía) y pteron los crea uno por uno, en orden.",
+        "Corrige tablas y orientación de página en planificaciones horizontales.",
+        "Se registra la primera corrida completa de comparación entre proveedores, con doble revisión pedagógica."
       ]
     },
     {
@@ -677,7 +741,13 @@
         }
       ],
       "notes": [
-        "Borrador en preparación."
+        "## pteron 0.2.1-beta.7",
+        "Endurece el flujo de exportación y la vista previa antes de cerrar la serie 0.2.1-beta.",
+        "### Cambios principales",
+        "Corrige que una alternativa de selección múltiple pudiera filtrar atribución al material del estudiante.",
+        "Centra el muelle de acciones sobre el material en pantalla.",
+        "Alinea los artefactos de la build de Windows con el resto del release.",
+        "La marca pasa a escribirse «pteron» en minúscula en toda la app."
       ]
     },
     {
@@ -840,7 +910,8 @@
         }
       ],
       "notes": [
-        "Correcciones y mejoras de la beta."
+        "## pteron 0.2.1-beta.1",
+        "Primera build beta del proyecto. La etiqueta de git de esta versión ya no existe en el repositorio, así que este texto es una nota breve de contexto, no un detalle de cambios verificado commit por commit."
       ]
     }
   ]
