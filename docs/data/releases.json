@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-05T17:31:38.302Z",
+  "generatedAt": "2026-08-07T00:37:11.806Z",
   "latest": {
     "version": "0.2.6",
     "channel": "beta",
@@ -60,65 +60,110 @@
     ]
   },
   "stable": {
-    "version": "0.2.8",
+    "version": "0.2.9",
     "channel": "stable",
-    "publishedAt": "2026-08-05T17:31:03.000Z",
+    "publishedAt": "2026-08-06T22:18:10.000Z",
     "publishedLabel": "agosto de 2026",
-    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.8",
+    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.9",
     "assets": [
       {
         "name": "beta-mac.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/beta-mac.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/beta-mac.yml",
         "bytes": 494
       },
       {
         "name": "beta.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/beta.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/beta.yml",
         "bytes": 337
       },
       {
-        "name": "pteron-0.2.8-arm64.dmg",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-arm64.dmg",
-        "bytes": 191391530
+        "name": "pteron-0.2.9-arm64.dmg",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-arm64.dmg",
+        "bytes": 191426511
       },
       {
-        "name": "pteron-0.2.8-arm64.dmg.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-arm64.dmg.blockmap",
-        "bytes": 198570
+        "name": "pteron-0.2.9-arm64.dmg.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-arm64.dmg.blockmap",
+        "bytes": 200106
       },
       {
-        "name": "pteron-0.2.8-arm64.zip",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-arm64.zip",
-        "bytes": 190810571
+        "name": "pteron-0.2.9-arm64.zip",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-arm64.zip",
+        "bytes": 190824973
       },
       {
-        "name": "pteron-0.2.8-arm64.zip.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-arm64.zip.blockmap",
-        "bytes": 199628
+        "name": "pteron-0.2.9-arm64.zip.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-arm64.zip.blockmap",
+        "bytes": 200208
       },
       {
-        "name": "pteron-0.2.8-x64.exe",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-x64.exe",
-        "bytes": 148221301
+        "name": "pteron-0.2.9-x64.exe",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-x64.exe",
+        "bytes": 148231214
       },
       {
-        "name": "pteron-0.2.8-x64.exe.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.8/pteron-0.2.8-x64.exe.blockmap",
-        "bytes": 154955
+        "name": "pteron-0.2.9-x64.exe.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-x64.exe.blockmap",
+        "bytes": 154271
       }
     ],
     "notes": [
-      "## pteron 0.2.8",
-      "Esta versión suma DeepSeek como proveedor directo, rediseña Ajustes → Modelo, y corrige varios errores reales: materiales de un plan con el tipo equivocado, un falso aviso de privacidad, y documentos Word que no abrían cuando una guía incluía ciertas fórmulas matemáticas.",
-      "### Cambios principales",
-      "Nuevo proveedor: DeepSeek directo, junto a los ya disponibles.",
-      "Ajustes → Modelo rediseñado: \"Modo fácil\" (planes) y \"Modo manual\" (proveedores), más claro que antes.",
-      "Corrige que el segundo material de una petición con dos materiales (por ejemplo, planificación y guía) pudiera crearse con el tipo equivocado.",
-      "Corrige un falso aviso de privacidad que se activaba con la palabra \"estudiante\" en medio de una oración común.",
-      "Corrige documentos .docx que no abrían cuando una guía incluía una fórmula con una comparación (como \"<\" o \">\"); de paso, los documentos exportados ahora se ven más ordenados: encabezado en tabla, notas con recuadro, encabezados de tabla en negrita."
+      "Borrador en preparación."
     ]
   },
   "releases": [
+    {
+      "version": "0.2.9",
+      "channel": "stable",
+      "publishedAt": "2026-08-06T22:18:10.000Z",
+      "publishedLabel": "agosto de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.9",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.2.9-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-arm64.dmg",
+          "bytes": 191426511
+        },
+        {
+          "name": "pteron-0.2.9-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-arm64.dmg.blockmap",
+          "bytes": 200106
+        },
+        {
+          "name": "pteron-0.2.9-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-arm64.zip",
+          "bytes": 190824973
+        },
+        {
+          "name": "pteron-0.2.9-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-arm64.zip.blockmap",
+          "bytes": 200208
+        },
+        {
+          "name": "pteron-0.2.9-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-x64.exe",
+          "bytes": 148231214
+        },
+        {
+          "name": "pteron-0.2.9-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-x64.exe.blockmap",
+          "bytes": 154271
+        }
+      ],
+      "notes": [
+        "Borrador en preparación."
+      ]
+    },
     {
       "version": "0.2.8",
       "channel": "stable",
