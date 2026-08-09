@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-07T00:37:11.806Z",
+  "generatedAt": "2026-08-09T18:03:07.360Z",
   "latest": {
     "version": "0.2.6",
     "channel": "beta",
@@ -60,58 +60,124 @@
     ]
   },
   "stable": {
-    "version": "0.2.9",
+    "version": "0.2.10",
     "channel": "stable",
-    "publishedAt": "2026-08-06T22:18:10.000Z",
+    "publishedAt": "2026-08-09T18:02:48.000Z",
     "publishedLabel": "agosto de 2026",
-    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.9",
+    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.10",
     "assets": [
       {
         "name": "beta-mac.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/beta-mac.yml",
-        "bytes": 494
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/beta-mac.yml",
+        "bytes": 498
       },
       {
         "name": "beta.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/beta.yml",
-        "bytes": 337
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/beta.yml",
+        "bytes": 340
       },
       {
-        "name": "pteron-0.2.9-arm64.dmg",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-arm64.dmg",
-        "bytes": 191426511
+        "name": "pteron-0.2.10-arm64.dmg",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-arm64.dmg",
+        "bytes": 191661016
       },
       {
-        "name": "pteron-0.2.9-arm64.dmg.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-arm64.dmg.blockmap",
-        "bytes": 200106
+        "name": "pteron-0.2.10-arm64.dmg.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-arm64.dmg.blockmap",
+        "bytes": 199349
       },
       {
-        "name": "pteron-0.2.9-arm64.zip",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-arm64.zip",
-        "bytes": 190824973
+        "name": "pteron-0.2.10-arm64.zip",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-arm64.zip",
+        "bytes": 191066545
       },
       {
-        "name": "pteron-0.2.9-arm64.zip.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-arm64.zip.blockmap",
-        "bytes": 200208
+        "name": "pteron-0.2.10-arm64.zip.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-arm64.zip.blockmap",
+        "bytes": 199044
       },
       {
-        "name": "pteron-0.2.9-x64.exe",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-x64.exe",
-        "bytes": 148231214
+        "name": "pteron-0.2.10-x64.exe",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-x64.exe",
+        "bytes": 148392528
       },
       {
-        "name": "pteron-0.2.9-x64.exe.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.9/pteron-0.2.9-x64.exe.blockmap",
-        "bytes": 154271
+        "name": "pteron-0.2.10-x64.exe.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-x64.exe.blockmap",
+        "bytes": 155496
       }
     ],
     "notes": [
-      "Borrador en preparación."
+      "## pteron 0.2.10",
+      "Entrega pública del canal beta de pteron, construida desde el commit verificado de esta versión.",
+      "### Cambios destacados",
+      "Chat primario más fiable para solicitudes de uno o varios materiales, con respuestas terminales honestas y tarjetas vinculadas al mensaje que las produjo.",
+      "Mejor paridad entre conversación, visor y exportación: se conservan formatos de bloques, revisiones y documentos originales sin sobrescribirlos.",
+      "Matemática y DOCX más robustos: representación matemática canónica, conversión compatible con Word y preservación de tablas y contenido estructurado.",
+      "Arnés live más preciso y general: corrige la medición de tareas, distingue resultados correctos, fallidos, bloqueados e inválidos, y conserva evidencia reproducible por modelo y ejecución.",
+      "Se incorpora y ordena la evidencia histórica de las pruebas v5.2, v5.3, v5.4, v5.4.2 y la matriz completa v5.5."
     ]
   },
   "releases": [
+    {
+      "version": "0.2.10",
+      "channel": "stable",
+      "publishedAt": "2026-08-09T18:02:48.000Z",
+      "publishedLabel": "agosto de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.10",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/beta-mac.yml",
+          "bytes": 498
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/beta.yml",
+          "bytes": 340
+        },
+        {
+          "name": "pteron-0.2.10-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-arm64.dmg",
+          "bytes": 191661016
+        },
+        {
+          "name": "pteron-0.2.10-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-arm64.dmg.blockmap",
+          "bytes": 199349
+        },
+        {
+          "name": "pteron-0.2.10-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-arm64.zip",
+          "bytes": 191066545
+        },
+        {
+          "name": "pteron-0.2.10-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-arm64.zip.blockmap",
+          "bytes": 199044
+        },
+        {
+          "name": "pteron-0.2.10-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-x64.exe",
+          "bytes": 148392528
+        },
+        {
+          "name": "pteron-0.2.10-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-x64.exe.blockmap",
+          "bytes": 155496
+        }
+      ],
+      "notes": [
+        "## pteron 0.2.10",
+        "Entrega pública del canal beta de pteron, construida desde el commit verificado de esta versión.",
+        "### Cambios destacados",
+        "Chat primario más fiable para solicitudes de uno o varios materiales, con respuestas terminales honestas y tarjetas vinculadas al mensaje que las produjo.",
+        "Mejor paridad entre conversación, visor y exportación: se conservan formatos de bloques, revisiones y documentos originales sin sobrescribirlos.",
+        "Matemática y DOCX más robustos: representación matemática canónica, conversión compatible con Word y preservación de tablas y contenido estructurado.",
+        "Arnés live más preciso y general: corrige la medición de tareas, distingue resultados correctos, fallidos, bloqueados e inválidos, y conserva evidencia reproducible por modelo y ejecución.",
+        "Se incorpora y ordena la evidencia histórica de las pruebas v5.2, v5.3, v5.4, v5.4.2 y la matriz completa v5.5."
+      ]
+    },
     {
       "version": "0.2.9",
       "channel": "stable",
