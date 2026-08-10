@@ -21,6 +21,7 @@ jobs:
       - name: Leer releases y actualizar la web
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PTERON_STABLE_VERSION: ${{ vars.PTERON_STABLE_VERSION }}
         run: node scripts/update-pteron-releases.mjs
       - name: Publicar cambios
         run: |

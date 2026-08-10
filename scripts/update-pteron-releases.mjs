@@ -1,6 +1,10 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 
 const repository = process.env.PTERON_RELEASE_REPOSITORY || "marcorojasb/pteron-beta";
+// Durante la beta, pteron publica versiones X.Y.Z. Por eso el flag
+// `prerelease` de GitHub no determina el canal de producto. El primer release
+// estable se puede declarar explícitamente con PTERON_STABLE_VERSION.
+const stableVersion = process.env.PTERON_STABLE_VERSION?.trim() || null;
 const token = process.env.GITHUB_TOKEN;
 const headers = {
   Accept: "application/vnd.github+json",
@@ -15,7 +19,6 @@ const releases = (await response.json())
   .filter(release => !release.draft)
   .map(release => {
     const version = release.tag_name.replace(/^v/, "");
-    const channel = release.prerelease || version.includes("beta") ? "beta" : "stable";
     const published = new Date(release.published_at || release.created_at);
     const assets = release.assets.map(asset => ({
       name: asset.name,
@@ -27,18 +30,22 @@ const releases = (await response.json())
       : ["Correcciones y mejoras de la beta."];
     return {
       version,
-      channel,
       publishedAt: published.toISOString(),
       publishedLabel: new Intl.DateTimeFormat("es-CL", { month: "long", year: "numeric", timeZone: "America/Santiago" }).format(published),
       url: release.html_url,
       assets,
       notes
     };
-  });
+  })
+  .sort((left, right) => Date.parse(right.publishedAt) - Date.parse(left.publishedAt))
+  .map(release => ({
+    ...release,
+    channel: stableVersion === release.version ? "stable" : "beta"
+  }));
 
 if (!releases.length) throw new Error("No hay releases publicados; se conserva el archivo existente.");
 
-const beta = releases.find(release => release.channel === "beta") || releases[0];
+const latest = releases[0];
 const stable = releases.find(release => release.channel === "stable") || null;
 const outputPath = "docs/data/releases.json";
 let previousData = null;
@@ -49,7 +56,7 @@ try {
   // La primera sincronización crea el archivo.
 }
 
-const releaseState = { latest: beta, stable, releases };
+const releaseState = { latest, stable, releases };
 const previousReleaseState = previousData
   ? { latest: previousData.latest, stable: previousData.stable, releases: previousData.releases }
   : null;
@@ -63,6 +70,6 @@ await mkdir("docs/data", { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(data, null, 2)}\n`);
 console.log(
   releasesChanged
-    ? `Web actualizada con ${releases.length} release(s). Última beta: ${beta.version}`
-    : `Sin cambios. Última beta: ${beta.version}`
+    ? `Web actualizada con ${releases.length} release(s). Última publicación: ${latest.version}`
+    : `Sin cambios. Última publicación: ${latest.version}`
 );
