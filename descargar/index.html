@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Descargar pteron — Beta pública gratis para macOS y Windows</title>
-  <meta name="description" content="Descarga gratis la beta pública de pteron para macOS con Apple Silicon y Windows 11. Construido por profes, para profes.">
+  <title>Descargar pteron — Beta pública para macOS, Windows y Linux</title>
+  <meta name="description" content="Descarga gratis la beta pública de pteron para macOS con Apple Silicon, Windows 11 y Linux x86_64.">
   <meta name="theme-color" content="#07101b">
   <meta name="color-scheme" content="dark">
   <link rel="canonical" href="https://pteron.patagua.dev/descargar/">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_CL">
   <meta property="og:site_name" content="pteron">
-  <meta property="og:title" content="pteron para macOS y Windows">
+  <meta property="og:title" content="pteron para macOS, Windows y Linux">
   <meta property="og:description" content="Beta pública gratis. Construido por profes, para profes.">
   <meta property="og:url" content="https://pteron.patagua.dev/descargar/">
   <meta property="og:image" content="https://pteron.patagua.dev/assets/download-jellyfish-poster.jpg">
@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/styles.css?v=0.2.12">
 </head>
 <body class="download-page">
   <div class="download-background" aria-hidden="true">
@@ -44,20 +44,28 @@
 
     <main class="download-content">
       <p class="eyebrow">Construido por profes, para profes</p>
-      <h1>pteron para macOS y Windows.</h1>
+      <h1>pteron para macOS, Windows y Linux.</h1>
       <p class="download-lead">La beta pública es gratis. Elige la versión para tu equipo.</p>
       <div class="download-options">
-        <a class="download-option button button-light" data-download-windows href="https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-x64.exe">
+        <a class="download-option button button-light" data-download-windows href="https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-x64.exe">
           <span>Descargar para Windows</span>
-          <small data-download-windows-label>Windows 11 · x64 · versión 0.2.10</small>
+          <small data-download-windows-label>Windows 11 · x64 · versión 0.2.12</small>
         </a>
-        <a class="download-option button download-option-secondary" data-download-macos href="https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-arm64.dmg">
+        <a class="download-option button download-option-secondary" data-download-macos href="https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-arm64.dmg">
           <span>Descargar para macOS</span>
-          <small data-download-macos-label>Apple Silicon · versión 0.2.10</small>
+          <small data-download-macos-label>Apple Silicon · versión 0.2.12</small>
+        </a>
+        <a class="download-option button download-option-secondary" data-download-linux href="https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-x86_64.AppImage">
+          <span>Descargar para Linux</span>
+          <small data-download-linux-label>x86_64 · AppImage · versión 0.2.12</small>
         </a>
       </div>
+      <div class="download-linux-details">
+        <p><strong>Otros formatos Linux:</strong> <a data-download-linux-deb href="https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-amd64.deb">.deb</a> · <a data-download-linux-rpm href="https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-x86_64.rpm">.rpm</a> · <a data-download-linux-tar href="https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-x64.tar.gz">.tar.gz</a>. <a href="/docs/?pagina=instalar-linux">Ver instalación y actualizaciones</a>.</p>
+        <p><strong>Firmas GPG:</strong> <a data-download-linux-appimage-signature href="https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-x86_64.AppImage.asc">AppImage</a> · <a data-download-linux-deb-signature href="https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-amd64.deb.asc">.deb</a> · <a data-download-linux-rpm-signature href="https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-x86_64.rpm.asc">.rpm</a> · <a data-download-linux-tar-signature href="https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-x64.tar.gz.asc">.tar.gz</a>. <a href="/descargar/pteron-releases-public.asc" download>Clave pública</a> · huella <code>5DDC 795B EFB7 EC2F EC93 0227 EAFB 54AE A175 0DCF</code>.</p>
+      </div>
       <p class="download-warning"><strong>Windows:</strong> el instalador beta todavía no está firmado. SmartScreen puede mostrar una advertencia antes de permitir la instalación. <a href="/docs/?pagina=instalar-windows">Ver instrucciones</a>.</p>
-      <p class="download-status">También puedes consultar <a data-download-release href="https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.10">la versión y sus archivos en GitHub</a>.</p>
+      <p class="download-status">También puedes consultar <a data-download-release href="https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.12">la versión y sus archivos en GitHub</a>.</p>
     </main>
 
     <footer class="download-footer">
@@ -66,6 +74,7 @@
     </footer>
   </div>
 
-  <script src="/descargar/download.js" defer></script>
+  <script src="/release-data.js?v=0.2.12" defer></script>
+  <script src="/descargar/download.js?v=0.2.12" defer></script>
 </body>
 </html>

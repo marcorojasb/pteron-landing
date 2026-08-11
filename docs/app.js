@@ -49,22 +49,54 @@
     const notes = article.querySelector("[data-release-notes]");
     if (!table && !notes) return;
     try {
-      const response = await fetch("/docs/data/releases.json", { cache: "no-store" });
-      if (!response.ok) throw new Error("release data unavailable");
-      const data = await response.json();
-      if (table) table.innerHTML = `
-        <dl class="release-meta">
-          <div><dt>Versión</dt><dd>${data.latest.version}</dd></div>
-          <div><dt>Canal</dt><dd>${data.latest.channel}</dd></div>
-          <div><dt>Publicada</dt><dd>${data.latest.publishedLabel}</dd></div>
-        </dl>`;
-      if (notes) notes.innerHTML = data.releases.map(release => `
-        <article class="release-note">
-          <p><strong>${release.version}</strong><span>${release.publishedLabel}</span></p>
-          <ul>${release.notes.map(note => `<li>${note}</li>`).join("")}</ul>
-        </article>`).join("");
+      if (!window.PTERON_RELEASES) throw new Error("release data unavailable");
+      const data = await window.PTERON_RELEASES.loadReleaseCatalog();
+      if (table) {
+        const metadata = document.createElement("dl");
+        metadata.className = "release-meta";
+        [
+          ["Versión", data.latest.version],
+          ["Canal", data.latest.channel],
+          ["Publicada", data.latest.publishedLabel],
+        ].forEach(([label, value]) => {
+          const row = document.createElement("div");
+          const term = document.createElement("dt");
+          const description = document.createElement("dd");
+          term.textContent = label;
+          description.textContent = value;
+          row.append(term, description);
+          metadata.append(row);
+        });
+        table.replaceChildren(metadata);
+      }
+      if (notes) {
+        const fragment = document.createDocumentFragment();
+        data.releases.forEach(release => {
+          const releaseArticle = document.createElement("article");
+          const heading = document.createElement("p");
+          const version = document.createElement("strong");
+          const published = document.createElement("span");
+          const list = document.createElement("ul");
+          releaseArticle.className = "release-note";
+          version.textContent = release.version;
+          published.textContent = release.publishedLabel;
+          heading.append(version, published);
+          release.notes.forEach(note => {
+            const item = document.createElement("li");
+            item.textContent = note;
+            list.append(item);
+          });
+          releaseArticle.append(heading, list);
+          fragment.append(releaseArticle);
+        });
+        notes.replaceChildren(fragment);
+      }
     } catch {
-      if (table) table.innerHTML = "<p>La versión publicada aparecerá aquí cuando el canal beta esté disponible.</p>";
+      if (table) {
+        const fallback = document.createElement("p");
+        fallback.textContent = "La versión publicada aparecerá aquí cuando el canal beta esté disponible.";
+        table.replaceChildren(fallback);
+      }
     }
   };
 

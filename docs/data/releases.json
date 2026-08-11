@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-08-11T16:56:27.844Z",
+  "generatedAt": "2026-08-11T16:57:30.950Z",
   "latest": {
     "version": "0.2.12",
-    "publishedAt": "2026-08-11T16:56:08.000Z",
+    "publishedAt": "2026-08-11T16:56:08Z",
     "publishedLabel": "agosto de 2026",
     "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.12",
     "assets": [
@@ -98,14 +98,14 @@
       }
     ],
     "notes": [
-      "## pteron 0.2.12",
+      "pteron 0.2.12",
       "Esta versión incorpora compatibilidad beta con Linux x86_64 y mantiene macOS con Apple Silicon y Windows 11 en el mismo lanzamiento.",
-      "### Linux",
+      "Linux",
       "AppImage como descarga principal, con actualización interna desde pteron.",
-      "Paquetes `.deb` y `.rpm`, además de `.tar.gz`, como alternativas de instalación y actualización manual.",
+      "Paquetes .deb y .rpm, además de .tar.gz, como alternativas de instalación y actualización manual.",
       "Firma GPG separada para cada artefacto Linux.",
-      "Clave pública incluida en el release: `pteron-releases-public.asc`.",
-      "Huella de la clave: `5DDC 795B EFB7 EC2F EC93 0227 EAFB 54AE A175 0DCF`."
+      "Clave pública incluida en el release: pteron-releases-public.asc.",
+      "Huella de la clave: 5DDC 795B EFB7 EC2F EC93 0227 EAFB 54AE A175 0DCF."
     ],
     "channel": "beta"
   },
@@ -113,7 +113,7 @@
   "releases": [
     {
       "version": "0.2.12",
-      "publishedAt": "2026-08-11T16:56:08.000Z",
+      "publishedAt": "2026-08-11T16:56:08Z",
       "publishedLabel": "agosto de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.12",
       "assets": [
@@ -209,20 +209,20 @@
         }
       ],
       "notes": [
-        "## pteron 0.2.12",
+        "pteron 0.2.12",
         "Esta versión incorpora compatibilidad beta con Linux x86_64 y mantiene macOS con Apple Silicon y Windows 11 en el mismo lanzamiento.",
-        "### Linux",
+        "Linux",
         "AppImage como descarga principal, con actualización interna desde pteron.",
-        "Paquetes `.deb` y `.rpm`, además de `.tar.gz`, como alternativas de instalación y actualización manual.",
+        "Paquetes .deb y .rpm, además de .tar.gz, como alternativas de instalación y actualización manual.",
         "Firma GPG separada para cada artefacto Linux.",
-        "Clave pública incluida en el release: `pteron-releases-public.asc`.",
-        "Huella de la clave: `5DDC 795B EFB7 EC2F EC93 0227 EAFB 54AE A175 0DCF`."
+        "Clave pública incluida en el release: pteron-releases-public.asc.",
+        "Huella de la clave: 5DDC 795B EFB7 EC2F EC93 0227 EAFB 54AE A175 0DCF."
       ],
       "channel": "beta"
     },
     {
       "version": "0.2.11",
-      "publishedAt": "2026-08-10T19:51:21.000Z",
+      "publishedAt": "2026-08-10T19:51:21Z",
       "publishedLabel": "agosto de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.11",
       "assets": [
@@ -274,7 +274,7 @@
     },
     {
       "version": "0.2.10",
-      "publishedAt": "2026-08-09T18:02:48.000Z",
+      "publishedAt": "2026-08-09T18:02:48Z",
       "publishedLabel": "agosto de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.10",
       "assets": [
@@ -320,9 +320,9 @@
         }
       ],
       "notes": [
-        "## pteron 0.2.10",
+        "pteron 0.2.10",
         "Entrega pública del canal beta de pteron, construida desde el commit verificado de esta versión.",
-        "### Cambios destacados",
+        "Cambios destacados",
         "Chat primario más fiable para solicitudes de uno o varios materiales, con respuestas terminales honestas y tarjetas vinculadas al mensaje que las produjo.",
         "Mejor paridad entre conversación, visor y exportación: se conservan formatos de bloques, revisiones y documentos originales sin sobrescribirlos.",
         "Matemática y DOCX más robustos: representación matemática canónica, conversión compatible con Word y preservación de tablas y contenido estructurado.",
@@ -333,7 +333,7 @@
     },
     {
       "version": "0.2.9",
-      "publishedAt": "2026-08-06T22:18:10.000Z",
+      "publishedAt": "2026-08-06T22:18:10Z",
       "publishedLabel": "agosto de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.9",
       "assets": [
@@ -385,7 +385,7 @@
     },
     {
       "version": "0.2.8",
-      "publishedAt": "2026-08-05T17:31:03.000Z",
+      "publishedAt": "2026-08-05T17:31:03Z",
       "publishedLabel": "agosto de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.8",
       "assets": [
@@ -431,9 +431,9 @@
         }
       ],
       "notes": [
-        "## pteron 0.2.8",
+        "pteron 0.2.8",
         "Esta versión suma DeepSeek como proveedor directo, rediseña Ajustes → Modelo, y corrige varios errores reales: materiales de un plan con el tipo equivocado, un falso aviso de privacidad, y documentos Word que no abrían cuando una guía incluía ciertas fórmulas matemáticas.",
-        "### Cambios principales",
+        "Cambios principales",
         "Nuevo proveedor: DeepSeek directo, junto a los ya disponibles.",
         "Ajustes → Modelo rediseñado: \"Modo fácil\" (planes) y \"Modo manual\" (proveedores), más claro que antes.",
         "Corrige que el segundo material de una petición con dos materiales (por ejemplo, planificación y guía) pudiera crearse con el tipo equivocado.",
@@ -444,7 +444,7 @@
     },
     {
       "version": "0.2.7",
-      "publishedAt": "2026-08-04T03:06:54.000Z",
+      "publishedAt": "2026-08-04T03:06:54Z",
       "publishedLabel": "agosto de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.7",
       "assets": [
@@ -490,20 +490,20 @@
         }
       ],
       "notes": [
-        "## pteron 0.2.7",
+        "pteron 0.2.7",
         "Esta versión suma activación de licencia para los planes Básico y Pro: verificación local, sin necesidad de cuenta para el resto del producto.",
-        "### Cambios principales",
+        "Cambios principales",
         "Nueva sección \"Licencia\" en Ajustes: activa este equipo desde tu cuenta web y consulta el estado de tu plan.",
         "La licencia se renueva sola en segundo plano mientras haya conexión, sin interrumpir el trabajo.",
         "El núcleo local de pteron —carpeta, materiales, sesiones, artefactos, memoria— sigue funcionando igual, con o sin licencia.",
-        "### Compatibilidad",
+        "Compatibilidad",
         "macOS para Apple silicon: aplicación firmada y notarizada."
       ],
       "channel": "beta"
     },
     {
       "version": "0.2.6",
-      "publishedAt": "2026-08-02T21:13:29.000Z",
+      "publishedAt": "2026-08-02T21:13:29Z",
       "publishedLabel": "agosto de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.6",
       "assets": [
@@ -549,9 +549,9 @@
         }
       ],
       "notes": [
-        "## pteron 0.2.6",
+        "pteron 0.2.6",
         "Esta versión mejora la creación y revisión de materiales docentes a partir de pruebas comparativas con varios proveedores.",
-        "### Cambios principales",
+        "Cambios principales",
         "El agente puede revisar materiales extensos antes de entregarlos y corregir problemas estructurales detectados.",
         "Las revisiones conservan la procedencia y la evidencia útil del material anterior.",
         "Las solicitudes de agregar contenido al final protegen literalmente los bloques existentes y añaden sólo lo pedido.",
@@ -562,7 +562,7 @@
     },
     {
       "version": "0.2.5",
-      "publishedAt": "2026-07-31T17:47:12.000Z",
+      "publishedAt": "2026-07-31T17:47:12Z",
       "publishedLabel": "julio de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.5",
       "assets": [
@@ -609,8 +609,8 @@
       ],
       "notes": [
         "pteron sigue en beta. Se instala y se actualiza desde la propia aplicación.",
-        "## Lo que cambia para ti",
-        "*«Crea una guía» vuelve a funcionar.** Era la petición central del producto y",
+        "Lo que cambia para ti",
+        "«Crea una guía» vuelve a funcionar. Era la petición central del producto y",
         "podía morir tras seis intentos con el mensaje «no fue posible preparar el",
         "material», pidiéndote que agregaras lo que ya habías pedido. El validador",
         "rechazaba la guía por no rotular objetivo, instrucciones y cierre: una decisión",
@@ -621,7 +621,7 @@
     },
     {
       "version": "0.2.4",
-      "publishedAt": "2026-07-31T04:10:35.000Z",
+      "publishedAt": "2026-07-31T04:10:35Z",
       "publishedLabel": "julio de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.4",
       "assets": [
@@ -667,9 +667,9 @@
         }
       ],
       "notes": [
-        "## pteron 0.2.4",
+        "pteron 0.2.4",
         "Primera integración del arnés de comparativa de proveedores, y soporte para que un plan declare más de un material en la misma conversación.",
-        "### Cambios principales",
+        "Cambios principales",
         "Modo plan: un plan puede declarar varios materiales (por ejemplo, una planificación y su guía) y pteron los crea uno por uno, en orden.",
         "Corrige tablas y orientación de página en planificaciones horizontales.",
         "Se registra la primera corrida completa de comparación entre proveedores, con doble revisión pedagógica."
@@ -678,7 +678,7 @@
     },
     {
       "version": "0.2.3",
-      "publishedAt": "2026-07-30T21:52:19.000Z",
+      "publishedAt": "2026-07-30T21:52:19Z",
       "publishedLabel": "julio de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.3",
       "assets": [
@@ -733,7 +733,7 @@
     },
     {
       "version": "0.2.2",
-      "publishedAt": "2026-07-30T18:00:00.000Z",
+      "publishedAt": "2026-07-30T18:00:00Z",
       "publishedLabel": "julio de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.2",
       "assets": [
@@ -785,7 +785,7 @@
     },
     {
       "version": "0.2.1-beta.7",
-      "publishedAt": "2026-07-30T17:31:59.000Z",
+      "publishedAt": "2026-07-30T17:31:59Z",
       "publishedLabel": "julio de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.7",
       "assets": [
@@ -831,9 +831,9 @@
         }
       ],
       "notes": [
-        "## pteron 0.2.1-beta.7",
+        "pteron 0.2.1-beta.7",
         "Endurece el flujo de exportación y la vista previa antes de cerrar la serie 0.2.1-beta.",
-        "### Cambios principales",
+        "Cambios principales",
         "Corrige que una alternativa de selección múltiple pudiera filtrar atribución al material del estudiante.",
         "Centra el muelle de acciones sobre el material en pantalla.",
         "Alinea los artefactos de la build de Windows con el resto del release.",
@@ -843,7 +843,7 @@
     },
     {
       "version": "0.2.1-beta.6",
-      "publishedAt": "2026-07-30T15:17:26.000Z",
+      "publishedAt": "2026-07-30T15:17:26Z",
       "publishedLabel": "julio de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.6",
       "assets": [
@@ -889,19 +889,19 @@
         }
       ],
       "notes": [
-        "*Pteron en tu iPhone.** Ajustes permite vincular el teléfono con el Pteron de tu computador, que sigue siendo el que guarda todo: sesiones, carpeta, evidencia y materiales. El teléfono no es una segunda copia del programa, es una ventana a la que ya tienes abierta. Viene apagado y se enciende sólo si tú lo activas; mientras está encendido escucha únicamente dentro de tu propio computador —nunca queda abierto a la red—, la clave se guarda cifrada y puedes cambiarla o revocarla cuando quieras.",
-        "*Menos ruido mientras se prepara el material.** El avance se mostraba dos veces a la vez, en la conversación y en el panel de abajo, diciendo lo mismo con distinto detalle. Ahora lo lleva sólo el panel, que muestra cada paso con su estado. La conversación deja constancia de qué consultó Pteron recién cuando termina, que es cuando esa información sirve de registro.",
-        "*Las tarjetas de avance dicen el dato, no la categoría.** Antes decían «Material seleccionado»; ahora dicen cuál: el curso, la asignatura y el tema con los que está trabajando. Y cuando no adjuntaste ningún material, lo dice, en vez de afirmar que hay una selección registrada que no existe.",
-        "*La barra del material quedó más limpia.** El contador «Contexto · 0» desaparece cuando no hay nada que contar. La etiqueta para tu portafolio se llama ahora por lo que hace y aparece cuando el material está listo, no mientras lo trabajas. Insertar un salto de página pasó a vivir junto al resto de la configuración de página. Y en pantallas angostas los botones dejaron de estirarse de lado a lado con huecos enormes.",
-        "*macOS** (Apple serie M): firmado con Developer ID y notarizado.",
-        "*Windows 11**: el instalador **no está firmado**. Windows mostrará un aviso de SmartScreen al instalar; elige «Más información» → «Ejecutar de todas formas». La firma de código es requisito antes de salir de la beta.",
-        "Si al actualizar en Windows aparece «Installer integrity check has failed», borra la carpeta `%LOCALAPPDATA%\\pteron-updater` y vuelve a intentarlo."
+        "Pteron en tu iPhone. Ajustes permite vincular el teléfono con el Pteron de tu computador, que sigue siendo el que guarda todo: sesiones, carpeta, evidencia y materiales. El teléfono no es una segunda copia del programa, es una ventana a la que ya tienes abierta. Viene apagado y se enciende sólo si tú lo activas; mientras está encendido escucha únicamente dentro de tu propio computador —nunca queda abierto a la red—, la clave se guarda cifrada y puedes cambiarla o revocarla cuando quieras.",
+        "Menos ruido mientras se prepara el material. El avance se mostraba dos veces a la vez, en la conversación y en el panel de abajo, diciendo lo mismo con distinto detalle. Ahora lo lleva sólo el panel, que muestra cada paso con su estado. La conversación deja constancia de qué consultó Pteron recién cuando termina, que es cuando esa información sirve de registro.",
+        "Las tarjetas de avance dicen el dato, no la categoría. Antes decían «Material seleccionado»; ahora dicen cuál: el curso, la asignatura y el tema con los que está trabajando. Y cuando no adjuntaste ningún material, lo dice, en vez de afirmar que hay una selección registrada que no existe.",
+        "La barra del material quedó más limpia. El contador «Contexto · 0» desaparece cuando no hay nada que contar. La etiqueta para tu portafolio se llama ahora por lo que hace y aparece cuando el material está listo, no mientras lo trabajas. Insertar un salto de página pasó a vivir junto al resto de la configuración de página. Y en pantallas angostas los botones dejaron de estirarse de lado a lado con huecos enormes.",
+        "macOS (Apple serie M): firmado con Developer ID y notarizado.",
+        "Windows 11: el instalador no está firmado. Windows mostrará un aviso de SmartScreen al instalar; elige «Más información» → «Ejecutar de todas formas». La firma de código es requisito antes de salir de la beta.",
+        "Si al actualizar en Windows aparece «Installer integrity check has failed», borra la carpeta %LOCALAPPDATA%\\pteron-updater y vuelve a intentarlo."
       ],
       "channel": "beta"
     },
     {
       "version": "0.2.1-beta.5",
-      "publishedAt": "2026-07-30T08:46:02.000Z",
+      "publishedAt": "2026-07-30T08:46:02Z",
       "publishedLabel": "julio de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.5",
       "assets": [
@@ -952,15 +952,15 @@
         "La pauta de corrección responde pregunta por pregunta, en el mismo orden del material y con el criterio de puntaje de cada una.",
         "El aviso de datos de estudiantes dejó de interrumpir trabajo legítimo. Sigue avisando antes de enviar a la nube un nombre en un campo de persona o un RUT, que es lo que identifica a alguien; ya no salta por hablar de salud, evaluación o necesidades educativas, que son también temas del currículum y tuyos para tratar.",
         "Más revisión sobre el material que recibes: el puntaje total tiene que cuadrar con la suma de las preguntas, las alternativas de selección múltiple llegan como alternativas y no como texto corrido, y Pteron avisa cuando una evaluación formativa no explica sus alternativas o una planificación no declara momentos ni duración.",
-        "*Desde el iPhone** (opcional, apagado por defecto): Ajustes permite emparejar un cliente con el Pteron de tu equipo, que sigue siendo el que conserva sesiones, carpeta, evidencia y artefactos. El acceso escucha sólo dentro del propio computador, y su clave se puede rotar o revocar cuando quieras.",
-        "*macOS** (Apple serie M): firmado con Developer ID y notarizado.",
-        "*Windows 11**: el instalador **no está firmado**. Windows mostrará un aviso de SmartScreen al instalar; elige «Más información» → «Ejecutar de todas formas». La firma de código es requisito antes de salir de la beta."
+        "Desde el iPhone (opcional, apagado por defecto): Ajustes permite emparejar un cliente con el Pteron de tu equipo, que sigue siendo el que conserva sesiones, carpeta, evidencia y artefactos. El acceso escucha sólo dentro del propio computador, y su clave se puede rotar o revocar cuando quieras.",
+        "macOS (Apple serie M): firmado con Developer ID y notarizado.",
+        "Windows 11: el instalador no está firmado. Windows mostrará un aviso de SmartScreen al instalar; elige «Más información» → «Ejecutar de todas formas». La firma de código es requisito antes de salir de la beta."
       ],
       "channel": "beta"
     },
     {
       "version": "0.2.1-beta.4",
-      "publishedAt": "2026-07-29T21:56:59.000Z",
+      "publishedAt": "2026-07-29T21:56:59Z",
       "publishedLabel": "julio de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.4",
       "assets": [
@@ -1008,15 +1008,15 @@
       "notes": [
         "Actualizar desde Pteron ya no abre el asistente del instalador: el reinicio aplica la versión nueva y vuelve a abrir la app.",
         "Las instalaciones nuevas en Windows son por usuario. Ya no se ofrece «para todos los usuarios» ni cambio de carpeta: esa opción llevaba la app a Program Files y hacía que cada actualización exigiera permisos de administrador. Una instalación anterior hecha para todos los usuarios conserva ese requisito.",
-        "*macOS** (Apple serie M): firmado con Developer ID y notarizado.",
-        "*Windows 11**: el instalador **no está firmado**. Windows mostrará un aviso de SmartScreen al instalar; elige «Más información» → «Ejecutar de todas formas». La firma de código es requisito antes de salir de la beta.",
-        "Si al actualizar en Windows aparece «Installer integrity check has failed», borra la carpeta `%LOCALAPPDATA%\\pteron-updater` y vuelve a intentarlo."
+        "macOS (Apple serie M): firmado con Developer ID y notarizado.",
+        "Windows 11: el instalador no está firmado. Windows mostrará un aviso de SmartScreen al instalar; elige «Más información» → «Ejecutar de todas formas». La firma de código es requisito antes de salir de la beta.",
+        "Si al actualizar en Windows aparece «Installer integrity check has failed», borra la carpeta %LOCALAPPDATA%\\pteron-updater y vuelve a intentarlo."
       ],
       "channel": "beta"
     },
     {
       "version": "0.2.1-beta.3",
-      "publishedAt": "2026-07-29T03:47:47.000Z",
+      "publishedAt": "2026-07-29T03:47:47Z",
       "publishedLabel": "julio de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.3",
       "assets": [
@@ -1063,15 +1063,15 @@
       ],
       "notes": [
         "Corrige el aviso de actualización y evita la descarga diferencial, que en Windows podía dejar un instalador incompleto.",
-        "*macOS** (Apple serie M): firmado con Developer ID y notarizado.",
-        "*Windows 11**: el instalador **no está firmado**. Windows mostrará un aviso de SmartScreen al instalar; elige \"Más información\" → \"Ejecutar de todas formas\". La firma de código es requisito antes de salir de la beta.",
-        "Si al actualizar en Windows aparece \"Installer integrity check has failed\", borra la carpeta `%LOCALAPPDATA%\\pteron-updater` y vuelve a intentarlo."
+        "macOS (Apple serie M): firmado con Developer ID y notarizado.",
+        "Windows 11: el instalador no está firmado. Windows mostrará un aviso de SmartScreen al instalar; elige \"Más información\" → \"Ejecutar de todas formas\". La firma de código es requisito antes de salir de la beta.",
+        "Si al actualizar en Windows aparece \"Installer integrity check has failed\", borra la carpeta %LOCALAPPDATA%\\pteron-updater y vuelve a intentarlo."
       ],
       "channel": "beta"
     },
     {
       "version": "0.2.1-beta.2",
-      "publishedAt": "2026-07-28T21:39:12.000Z",
+      "publishedAt": "2026-07-28T21:39:12Z",
       "publishedLabel": "julio de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.2",
       "assets": [
@@ -1119,15 +1119,15 @@
       "notes": [
         "Primera versión con actualización automática dentro de la app.",
         "Una vez instalada, Pteron avisa cuando hay una versión nueva y la instala al reiniciar, sólo cuando tú lo aceptas. Puedes desactivarlo o cambiar de canal en Ajustes → Sobre Pteron.",
-        "*macOS** (Apple serie M): firmado con Developer ID y notarizado por Apple. Se abre sin advertencias.",
-        "*Windows 11**: el instalador **no está firmado todavía**. Windows mostrará un aviso de SmartScreen al instalar; hay que elegir \"Más información\" → \"Ejecutar de todas formas\". La firma de código es requisito antes de salir de la beta.",
+        "macOS (Apple serie M): firmado con Developer ID y notarizado por Apple. Se abre sin advertencias.",
+        "Windows 11: el instalador no está firmado todavía. Windows mostrará un aviso de SmartScreen al instalar; hay que elegir \"Más información\" → \"Ejecutar de todas formas\". La firma de código es requisito antes de salir de la beta.",
         "Esta es una versión beta: espera fallos y cambios frecuentes."
       ],
       "channel": "beta"
     },
     {
       "version": "0.2.1-beta.1",
-      "publishedAt": "2026-07-28T19:42:48.000Z",
+      "publishedAt": "2026-07-28T19:42:48Z",
       "publishedLabel": "julio de 2026",
       "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.1",
       "assets": [
@@ -1173,7 +1173,7 @@
         }
       ],
       "notes": [
-        "## pteron 0.2.1-beta.1",
+        "pteron 0.2.1-beta.1",
         "Primera build beta del proyecto. La etiqueta de git de esta versión ya no existe en el repositorio, así que este texto es una nota breve de contexto, no un detalle de cambios verificado commit por commit."
       ],
       "channel": "beta"

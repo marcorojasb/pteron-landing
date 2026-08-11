@@ -1,4 +1,8 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const { compareSemver, isCompleteRelease, normalizeRelease } = require("../release-data.js");
 
 const repository = process.env.PTERON_RELEASE_REPOSITORY || "marcorojasb/pteron-beta";
 // Durante la beta, pteron publica versiones X.Y.Z. Por eso el flag
@@ -17,27 +21,9 @@ if (!response.ok) throw new Error(`GitHub releases: ${response.status} ${respons
 
 const releases = (await response.json())
   .filter(release => !release.draft)
-  .map(release => {
-    const version = release.tag_name.replace(/^v/, "");
-    const published = new Date(release.published_at || release.created_at);
-    const assets = release.assets.map(asset => ({
-      name: asset.name,
-      url: asset.browser_download_url,
-      bytes: asset.size
-    }));
-    const notes = release.body
-      ? release.body.split("\n").map(line => line.replace(/^[-*]\s*/, "").trim()).filter(Boolean).slice(0, 8)
-      : ["Correcciones y mejoras de la beta."];
-    return {
-      version,
-      publishedAt: published.toISOString(),
-      publishedLabel: new Intl.DateTimeFormat("es-CL", { month: "long", year: "numeric", timeZone: "America/Santiago" }).format(published),
-      url: release.html_url,
-      assets,
-      notes
-    };
-  })
-  .sort((left, right) => Date.parse(right.publishedAt) - Date.parse(left.publishedAt))
+  .map(normalizeRelease)
+  .filter(Boolean)
+  .sort((left, right) => compareSemver(right.version, left.version))
   .map(release => ({
     ...release,
     channel: stableVersion === release.version ? "stable" : "beta"
@@ -45,7 +31,8 @@ const releases = (await response.json())
 
 if (!releases.length) throw new Error("No hay releases publicados; se conserva el archivo existente.");
 
-const latest = releases[0];
+const latest = releases.find(isCompleteRelease);
+if (!latest) throw new Error("No hay un release publicado con la matriz completa de artefactos.");
 const stable = releases.find(release => release.channel === "stable") || null;
 const outputPath = "docs/data/releases.json";
 let previousData = null;

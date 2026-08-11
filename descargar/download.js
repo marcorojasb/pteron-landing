@@ -1,36 +1,62 @@
 (() => {
+  const releaseData = window.PTERON_RELEASES;
   const windowsDownload = document.querySelector("[data-download-windows]");
   const macosDownload = document.querySelector("[data-download-macos]");
+  const linuxDownload = document.querySelector("[data-download-linux]");
   const windowsLabel = document.querySelector("[data-download-windows-label]");
   const macosLabel = document.querySelector("[data-download-macos-label]");
+  const linuxLabel = document.querySelector("[data-download-linux-label]");
   const releaseLink = document.querySelector("[data-download-release]");
 
   const loadLatestRelease = async () => {
-    try {
-      const response = await fetch("/docs/data/releases.json", { cache: "no-store" });
-      if (!response.ok) throw new Error("release data unavailable");
+    if (!releaseData) return;
+    const { latest } = await releaseData.loadReleaseCatalog();
+    const windowsAsset = releaseData.findAsset(latest, "windowsExe");
+    const macosAsset = releaseData.findAsset(latest, "macosDmg");
+    const linuxAsset = releaseData.findAsset(latest, "linuxAppImage");
 
-      const { latest } = await response.json();
-      const windowsAsset = latest?.assets?.find(asset => asset.name.endsWith("-x64.exe"));
-      const macosAsset = latest?.assets?.find(asset => asset.name.endsWith("-arm64.dmg"));
-
-      if (windowsAsset && windowsDownload && windowsLabel) {
-        windowsDownload.href = windowsAsset.url;
-        windowsLabel.textContent = `Windows 11 · x64 · versión ${latest.version}`;
-      }
-
-      if (macosAsset && macosDownload && macosLabel) {
-        macosDownload.href = macosAsset.url;
-        macosLabel.textContent = `Apple Silicon · versión ${latest.version}`;
-      }
-
-      if (latest?.url && releaseLink) releaseLink.href = latest.url;
-    } catch (error) {
-      console.warn("No se pudo cargar la versión más reciente; se conservan los enlaces incluidos.", error);
+    if (windowsAsset && windowsDownload && windowsLabel) {
+      windowsDownload.href = windowsAsset.url;
+      windowsLabel.textContent = `Windows 11 · x64 · versión ${latest.version}`;
     }
+
+    if (macosAsset && macosDownload && macosLabel) {
+      macosDownload.href = macosAsset.url;
+      macosLabel.textContent = `Apple Silicon · versión ${latest.version}`;
+    }
+
+    if (linuxAsset && linuxDownload && linuxLabel) {
+      linuxDownload.href = linuxAsset.url;
+      linuxLabel.textContent = `x86_64 · AppImage · versión ${latest.version}`;
+    }
+
+    const assetLinks = {
+      linuxDeb: "[data-download-linux-deb]",
+      linuxRpm: "[data-download-linux-rpm]",
+      linuxTar: "[data-download-linux-tar]",
+    };
+    Object.entries(assetLinks).forEach(([kind, selector]) => {
+      const link = document.querySelector(selector);
+      const asset = releaseData.findAsset(latest, kind);
+      if (link && asset) link.href = asset.url;
+    });
+
+    const signatureLinks = {
+      linuxAppImage: "[data-download-linux-appimage-signature]",
+      linuxDeb: "[data-download-linux-deb-signature]",
+      linuxRpm: "[data-download-linux-rpm-signature]",
+      linuxTar: "[data-download-linux-tar-signature]",
+    };
+    Object.entries(signatureLinks).forEach(([kind, selector]) => {
+      const link = document.querySelector(selector);
+      const signature = releaseData.findSignature(latest, kind);
+      if (link && signature) link.href = signature.url;
+    });
+
+    if (latest?.url && releaseLink) releaseLink.href = latest.url;
   };
 
-  loadLatestRelease();
+  loadLatestRelease().catch(() => {});
 
   const video = document.querySelector("[data-download-video]");
   const year = document.querySelector("[data-year]");

@@ -9,11 +9,13 @@
 - [Inicio](https://pteron.patagua.dev/docs/)
 - [Instalar en macOS](https://pteron.patagua.dev/docs/?pagina=instalar-macos)
 - [Instalar en Windows](https://pteron.patagua.dev/docs/?pagina=instalar-windows)
+- [Instalar en Linux](https://pteron.patagua.dev/docs/?pagina=instalar-linux)
 - [Carpeta de trabajo](https://pteron.patagua.dev/docs/?pagina=carpeta-trabajo)
 - [Fuentes y contexto](https://pteron.patagua.dev/docs/?pagina=fuentes-contexto)
 - [Privacidad y control](https://pteron.patagua.dev/docs/?pagina=trabajo-local)
 - [Versiones y plataformas](https://pteron.patagua.dev/docs/?pagina=versiones)
 
 Windows 11 está soportado durante la beta. El instalador todavía no está firmado
-y Microsoft Defender SmartScreen puede pedir confirmación. El canal estable está
-próximamente, sin fecha comprometida.
+y Microsoft Defender SmartScreen puede pedir confirmación. Linux x86_64 está
+disponible en beta mediante AppImage, .deb, .rpm y .tar.gz, con firmas GPG
+separadas. El canal estable está próximamente, sin fecha comprometida.

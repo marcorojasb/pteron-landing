@@ -7,6 +7,7 @@ window.PTERON_DOCS = {
         ["requisitos", "Requisitos"],
         ["instalar-macos", "Instalar en macOS"],
         ["instalar-windows", "Instalar en Windows"],
+        ["instalar-linux", "Instalar en Linux"],
         ["primera-apertura", "Primera apertura"],
         ["actualizar", "Actualizar pteron"]
       ]
@@ -56,7 +57,7 @@ window.PTERON_DOCS = {
         <section>
           <h2 id="por-donde-empezar">Por dónde empezar</h2>
           <div class="path-list">
-            <a href="/docs/?pagina=instalar-macos"><span>01</span><strong>Instala pteron</strong><small>Disponible en beta para macOS M series y Windows 11.</small></a>
+            <a href="/descargar/"><span>01</span><strong>Instala pteron</strong><small>Disponible en beta para macOS M series, Windows 11 y Linux x86_64.</small></a>
             <a href="/docs/?pagina=carpeta-trabajo"><span>02</span><strong>Elige una carpeta</strong><small>pteron trabaja dentro de una ubicación que tú controlas.</small></a>
             <a href="/docs/?pagina=fuentes-contexto"><span>03</span><strong>Agrega tus fuentes</strong><small>Usa documentos y referencias para orientar el trabajo.</small></a>
             <a href="/docs/?pagina=crear-guia"><span>04</span><strong>Crea y revisa</strong><small>Genera un borrador editable y decide qué conservar.</small></a>
@@ -75,6 +76,7 @@ window.PTERON_DOCS = {
       html: `
         <section><h2 id="macos">macOS</h2><ul><li>Procesador Apple serie M.</li><li>Una versión reciente y compatible de macOS.</li><li>Espacio disponible para la aplicación, tus documentos y el modelo local que elijas.</li></ul></section>
         <section><h2 id="windows">Windows 11</h2><ul><li>Windows 11 en un equipo de 64 bits.</li><li>Permiso para instalar aplicaciones descargadas desde la web.</li><li>Espacio disponible para documentos y modelos locales.</li></ul><div class="notice"><strong>Beta sin firma digital</strong><p>El instalador de Windows todavía no está firmado. SmartScreen puede mostrar una advertencia y pedir confirmación antes de continuar.</p></div></section>
+        <section><h2 id="linux">Linux</h2><ul><li>Sistema x86_64.</li><li>Permiso para instalar un paquete o ejecutar una AppImage.</li><li>Espacio disponible para la aplicación, tus documentos y el modelo local que elijas.</li></ul><div class="notice"><strong>Artefactos firmados</strong><p>Los archivos para Linux incluyen una firma GPG separada que puedes verificar con la clave pública de pteron.</p></div></section>
         <section><h2 id="conexion">Conexión</h2><p>El trabajo con tus archivos es local. Algunas capacidades externas y la descarga de actualizaciones necesitan conexión y se presentan de forma visible.</p></section>`
     },
     "instalar-macos": {
@@ -96,6 +98,19 @@ window.PTERON_DOCS = {
         <figure class="product-shot"><img src="/assets/product-home-current.png" width="2242" height="1540" alt="Pantalla inicial completa de pteron"><figcaption>Al abrir, verás el espacio de trabajo de pteron.</figcaption></figure></section>
         <section><h2 id="verificar">Antes de continuar</h2><p>Comprueba que el archivo provenga del enlace oficial de pteron. Si tu organización administra el equipo, puede ser necesaria la autorización del área responsable.</p></section>`
     },
+    "instalar-linux": {
+      eyebrow: "Empezar / Instalar",
+      title: "Instalar pteron en Linux",
+      lead: "La beta para Linux está disponible en equipos x86_64. AppImage es la descarga principal y también hay paquetes .deb, .rpm y .tar.gz.",
+      html: `
+        <section><h2 id="elegir">1. Elige un formato</h2><p>Abre la <a href="/descargar/">página de descargas</a>. Elige <strong>AppImage</strong> para usar el formato principal, <code>.deb</code> o <code>.rpm</code> para instalar un paquete, o <code>.tar.gz</code> para una instalación manual.</p></section>
+        <section><h2 id="appimage">2. Abre la AppImage</h2><ol><li>Marca el archivo como ejecutable desde las propiedades del archivo o con <code>chmod +x pteron-&lt;versión&gt;-x86_64.AppImage</code>.</li><li>Abre <code>pteron-&lt;versión&gt;-x86_64.AppImage</code>.</li><li>Completa el primer inicio y elige tu carpeta de trabajo.</li></ol></section>
+        <section><h2 id="paquetes">Instalar otro formato</h2><p>Abre el archivo <code>.deb</code> o <code>.rpm</code> con el instalador de paquetes de tu sistema. El archivo <code>.tar.gz</code> se extrae manualmente y no registra un paquete en el sistema.</p></section>
+        <section><h2 id="actualizaciones">Actualizaciones</h2><p>La AppImage puede descargar y aplicar actualizaciones desde pteron con tu confirmación. Las instalaciones <code>.deb</code>, <code>.rpm</code> y <code>.tar.gz</code> muestran el aviso de una versión nueva y abren la descarga para que la reemplaces manualmente.</p></section>
+        <section><h2 id="firma">Verificar la firma GPG</h2><p>Descarga la firma <code>.asc</code> que acompaña a tu archivo y la <a href="/descargar/pteron-releases-public.asc" download>clave pública de releases</a>. Su huella es:</p><pre><code>5DDC 795B EFB7 EC2F EC93 0227 EAFB 54AE A175 0DCF</code></pre><p>Muestra la huella, importa la clave y verifica, por ejemplo, la AppImage:</p><pre><code>gpg --show-keys --fingerprint pteron-releases-public.asc
+gpg --import pteron-releases-public.asc
+gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;-x86_64.AppImage</code></pre><p>Comprueba que GPG muestre exactamente la huella publicada antes de confiar en el archivo.</p></section>`
+    },
     "primera-apertura": {
       eyebrow: "Empezar",
       title: "Primera apertura",
@@ -106,7 +121,7 @@ window.PTERON_DOCS = {
       eyebrow: "Empezar",
       title: "Actualizar pteron",
       lead: "La aplicación avisa cuando hay una nueva versión de tu canal.",
-      html: `<section><h2 id="canal-beta">Canal beta</h2><p>La beta pública es gratuita. Durante esta etapa recibirás versiones de prueba con correcciones y cambios frecuentes. El canal estable figura como próximamente.</p></section><section><h2 id="instalacion">Cómo se aplica</h2><p>pteron descarga la actualización y pide tu consentimiento antes de instalarla al reiniciar.</p></section><section><h2 id="windows">Windows sin firma</h2><div class="notice"><strong>Limitación conocida</strong><p>Las actualizaciones de Windows aún se distribuyen sin firma digital. El estado de firma se informa por plataforma.</p></div></section>`
+      html: `<section><h2 id="canal-beta">Canal beta</h2><p>La beta pública es gratuita. Durante esta etapa recibirás versiones de prueba con correcciones y cambios frecuentes. El canal estable figura como próximamente.</p></section><section><h2 id="instalacion">Cómo se aplica</h2><p>En macOS, Windows y AppImage para Linux, pteron descarga la actualización y pide tu consentimiento antes de instalarla al reiniciar. Las instalaciones Linux <code>.deb</code>, <code>.rpm</code> y <code>.tar.gz</code> muestran el aviso y abren la descarga para una actualización manual.</p></section><section><h2 id="windows">Windows sin firma</h2><div class="notice"><strong>Limitación conocida</strong><p>Las actualizaciones de Windows aún se distribuyen sin firma digital. El estado de firma se informa por plataforma.</p></div></section>`
     },
     "carpeta-trabajo": {
       eyebrow: "Conceptos",
@@ -184,7 +199,7 @@ window.PTERON_DOCS = {
       eyebrow: "Ayuda",
       title: "Preguntas frecuentes",
       lead: "Respuestas breves sobre instalación, archivos y disponibilidad.",
-      html: `<section><h2 id="internet">¿Necesito internet?</h2><p>No para trabajar con un modelo local. Sí para descargar actualizaciones o usar una capacidad externa.</p></section><section><h2 id="originales">¿pteron modifica mis originales?</h2><p>No. Los resultados se guardan como archivos nuevos mediante una acción visible.</p></section><section><h2 id="windows">¿Windows está soportado?</h2><p>Sí, durante la beta en Windows 11. El instalador todavía no está firmado y SmartScreen puede pedir confirmación.</p></section><section><h2 id="estable">¿Cuándo sale la versión estable?</h2><p>No hay una fecha comprometida. El canal estable se mantiene como próximamente.</p></section>`
+      html: `<section><h2 id="internet">¿Necesito internet?</h2><p>No para trabajar con un modelo local. Sí para descargar actualizaciones o usar una capacidad externa.</p></section><section><h2 id="originales">¿pteron modifica mis originales?</h2><p>No. Los resultados se guardan como archivos nuevos mediante una acción visible.</p></section><section><h2 id="windows">¿Windows está soportado?</h2><p>Sí, durante la beta en Windows 11. El instalador todavía no está firmado y SmartScreen puede pedir confirmación.</p></section><section><h2 id="linux">¿Linux está disponible?</h2><p>Sí, como beta para equipos x86_64. AppImage es el formato principal y también se publican paquetes <code>.deb</code>, <code>.rpm</code> y <code>.tar.gz</code>.</p></section><section><h2 id="estable">¿Cuándo sale la versión estable?</h2><p>No hay una fecha comprometida. El canal estable se mantiene como próximamente.</p></section>`
     },
     "solucion-problemas": {
       eyebrow: "Ayuda",
@@ -198,7 +213,7 @@ window.PTERON_DOCS = {
       lead: "pteron se distribuye sólo en beta. El canal estable llegará más adelante.",
       html: `
         <section><h2 id="actual">Versión actual</h2><div class="release-table" data-release-table><p>Cargando información de la versión…</p></div></section>
-        <section><h2 id="plataformas">Estado por plataforma</h2><table><thead><tr><th>Plataforma</th><th>Estado</th><th>Firma</th></tr></thead><tbody><tr><td>macOS M series</td><td>Beta soportada</td><td>Firmada y notarizada</td></tr><tr><td>Windows 11</td><td>Beta soportada</td><td>Sin firma; puede mostrar avisos</td></tr></tbody></table></section>
+        <section><h2 id="plataformas">Estado por plataforma</h2><table><thead><tr><th>Plataforma</th><th>Estado</th><th>Firma</th></tr></thead><tbody><tr><td>macOS M series</td><td>Beta soportada</td><td>Firmada y notarizada</td></tr><tr><td>Windows 11</td><td>Beta soportada</td><td>Sin firma; puede mostrar avisos</td></tr><tr><td>Linux x86_64</td><td>Beta disponible</td><td>Firma GPG separada</td></tr></tbody></table></section>
         <section><h2 id="notas">Notas de versión</h2><div data-release-notes><p>Las notas se publicarán con cada versión disponible.</p></div></section>`
     }
   }

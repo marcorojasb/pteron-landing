@@ -423,7 +423,8 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
 /* Download */
 .download-page {
   min-height: 100svh;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   background: #07101b url("/assets/download-jellyfish-poster.jpg") center / cover no-repeat;
   color: var(--white);
 }
@@ -476,17 +477,17 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
 }
 .download-content {
   align-self: end;
-  max-width: 710px;
-  padding: 80px 0 64px;
+  max-width: 920px;
+  padding: 64px 0 52px;
 }
 .download-content .eyebrow {
   margin-bottom: 22px;
   color: #e0ad61;
 }
 .download-content h1 {
-  max-width: 700px;
+  max-width: 900px;
   margin-bottom: 30px;
-  font-size: clamp(68px, 7.2vw, 108px);
+  font-size: clamp(60px, 6.4vw, 96px);
 }
 .download-lead {
   max-width: 520px;
@@ -505,6 +506,7 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
   gap: 12px;
 }
 .download-option {
+  flex: 1 1 220px;
   min-height: 72px;
   align-items: flex-start;
   flex-direction: column;
@@ -523,9 +525,30 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
 }
 .download-option-secondary:hover { background: rgba(7, 16, 27, .56); }
 .download-option-secondary small { color: rgba(255, 255, 255, .68); }
+.download-linux-details {
+  max-width: 900px;
+  margin-top: 18px;
+  color: rgba(255, 255, 255, .76);
+  font-size: 12px;
+  line-height: 1.55;
+}
+.download-linux-details p { margin: 0 0 6px; }
+.download-linux-details a,
+.download-linux-details code {
+  color: rgba(255, 255, 255, .94);
+}
+.download-linux-details a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.download-linux-details code {
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .92em;
+}
 .download-warning {
-  max-width: 700px;
-  margin: 20px 0 12px;
+  max-width: 900px;
+  margin: 14px 0 10px;
   color: rgba(255, 255, 255, .78);
   font-size: 12px;
 }
@@ -549,6 +572,8 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
   .download-shell { width: min(100% - 40px, 680px); }
   .download-header { min-height: 72px; }
   .download-content { padding-bottom: 48px; }
+  .download-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .download-option { width: 100%; }
 }
 
 @media (max-width: 560px) {
@@ -558,7 +583,7 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
   .download-content { align-self: end; padding: 64px 0 36px; }
   .download-content h1 { margin-bottom: 22px; font-size: clamp(48px, 15vw, 64px); }
   .download-lead { margin-bottom: 26px; font-size: 16px; }
-  .download-options { display: grid; }
+  .download-options { grid-template-columns: 1fr; }
   .download-option { width: 100%; min-height: 64px; padding-inline: 20px; }
   .download-footer { padding-block: 18px 22px; }
   .download-footer span:last-child { display: none; }

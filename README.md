@@ -13,6 +13,8 @@ registro de tarjeta y activación de licencias en la aplicación de escritorio.
   activaciones, eventos de cobro y uso.
 - `styles.css` y `cuenta/styles.css`: sistema visual responsive.
 - `script.js` y `cuenta/cuenta.js`: interacción del sitio y de la cuenta.
+- `release-data.js`: selección semver de la última versión completa a partir
+  del JSON incluido, la API pública de GitHub y el fallback de la web.
 - `vercel.json`: URLs limpias, caché de assets y cabeceras de seguridad.
 - `assets/`: imágenes, favicons y recursos públicos.
 
@@ -32,6 +34,18 @@ https://swzqblyllbudwbmbcthr.supabase.co
 
 Las migraciones ya aplicadas deben conservarse en `supabase/migrations/` y
 aplicarse en orden si se prepara otro entorno.
+
+## Versiones públicas
+
+El workflow `sync-pteron-releases.yml` actualiza `docs/data/releases.json` a
+partir de los releases publicados. Una versión sólo pasa a ser la actual cuando
+su matriz de artefactos está completa. En el navegador, `release-data.js`
+combina ese JSON con la API pública de GitHub y conserva un fallback local.
+
+Los HTML cargan el CSS y JavaScript compartidos con un parámetro `?v=` para
+evitar que un archivo antiguo de la caché reemplace los enlaces actuales. Ese
+valor debe cambiar cuando se modifica alguno de esos recursos; publicar una
+versión nueva sin cambios de código no requiere tocarlo.
 
 ## Variables de Vercel
 
