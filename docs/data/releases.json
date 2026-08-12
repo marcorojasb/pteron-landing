@@ -1,116 +1,225 @@
 {
-  "generatedAt": "2026-08-11T16:57:30.950Z",
+  "generatedAt": "2026-08-12T15:25:21.507Z",
   "latest": {
-    "version": "0.2.12",
-    "publishedAt": "2026-08-11T16:56:08Z",
+    "version": "0.3.0",
+    "publishedAt": "2026-08-12T15:25:03Z",
     "publishedLabel": "agosto de 2026",
-    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.12",
+    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.3.0",
     "assets": [
       {
         "name": "beta-linux.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/beta-linux.yml",
-        "bytes": 690
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/beta-linux.yml",
+        "bytes": 685
       },
       {
         "name": "beta-mac.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/beta-mac.yml",
-        "bytes": 498
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/beta-mac.yml",
+        "bytes": 494
       },
       {
         "name": "beta.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/beta.yml",
-        "bytes": 340
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/beta.yml",
+        "bytes": 337
       },
       {
-        "name": "pteron-0.2.12-amd64.deb",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-amd64.deb",
-        "bytes": 133038164
+        "name": "pteron-0.3.0-amd64.deb",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-amd64.deb",
+        "bytes": 133045388
       },
       {
-        "name": "pteron-0.2.12-amd64.deb.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-amd64.deb.asc",
+        "name": "pteron-0.3.0-amd64.deb.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-amd64.deb.asc",
         "bytes": 833
       },
       {
-        "name": "pteron-0.2.12-arm64.dmg",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-arm64.dmg",
-        "bytes": 171340278
+        "name": "pteron-0.3.0-arm64.dmg",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-arm64.dmg",
+        "bytes": 171344942
       },
       {
-        "name": "pteron-0.2.12-arm64.dmg.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-arm64.dmg.blockmap",
-        "bytes": 179937
+        "name": "pteron-0.3.0-arm64.dmg.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-arm64.dmg.blockmap",
+        "bytes": 179488
       },
       {
-        "name": "pteron-0.2.12-arm64.zip",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-arm64.zip",
-        "bytes": 170768936
+        "name": "pteron-0.3.0-arm64.zip",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-arm64.zip",
+        "bytes": 170777176
       },
       {
-        "name": "pteron-0.2.12-arm64.zip.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-arm64.zip.blockmap",
-        "bytes": 179573
+        "name": "pteron-0.3.0-arm64.zip.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-arm64.zip.blockmap",
+        "bytes": 179646
       },
       {
-        "name": "pteron-0.2.12-x64.exe",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-x64.exe",
-        "bytes": 133299270
+        "name": "pteron-0.3.0-x64.exe",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x64.exe",
+        "bytes": 133305643
       },
       {
-        "name": "pteron-0.2.12-x64.exe.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-x64.exe.blockmap",
-        "bytes": 138731
+        "name": "pteron-0.3.0-x64.exe.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x64.exe.blockmap",
+        "bytes": 138403
       },
       {
-        "name": "pteron-0.2.12-x64.tar.gz",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-x64.tar.gz",
-        "bytes": 171390467
+        "name": "pteron-0.3.0-x64.tar.gz",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x64.tar.gz",
+        "bytes": 171397634
       },
       {
-        "name": "pteron-0.2.12-x64.tar.gz.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-x64.tar.gz.asc",
+        "name": "pteron-0.3.0-x64.tar.gz.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x64.tar.gz.asc",
         "bytes": 833
       },
       {
-        "name": "pteron-0.2.12-x86_64.AppImage",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-x86_64.AppImage",
-        "bytes": 182226588
+        "name": "pteron-0.3.0-x86_64.AppImage",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x86_64.AppImage",
+        "bytes": 182242997
       },
       {
-        "name": "pteron-0.2.12-x86_64.AppImage.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-x86_64.AppImage.asc",
+        "name": "pteron-0.3.0-x86_64.AppImage.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x86_64.AppImage.asc",
         "bytes": 833
       },
       {
-        "name": "pteron-0.2.12-x86_64.rpm",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-x86_64.rpm",
-        "bytes": 111338221
+        "name": "pteron-0.3.0-x86_64.rpm",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x86_64.rpm",
+        "bytes": 111339269
       },
       {
-        "name": "pteron-0.2.12-x86_64.rpm.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-0.2.12-x86_64.rpm.asc",
+        "name": "pteron-0.3.0-x86_64.rpm.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x86_64.rpm.asc",
         "bytes": 833
       },
       {
         "name": "pteron-releases-public.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.12/pteron-releases-public.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-releases-public.asc",
         "bytes": 1680
       }
     ],
     "notes": [
-      "pteron 0.2.12",
-      "Esta versión incorpora compatibilidad beta con Linux x86_64 y mantiene macOS con Apple Silicon y Windows 11 en el mismo lanzamiento.",
-      "Linux",
-      "AppImage como descarga principal, con actualización interna desde pteron.",
-      "Paquetes .deb y .rpm, además de .tar.gz, como alternativas de instalación y actualización manual.",
-      "Firma GPG separada para cada artefacto Linux.",
-      "Clave pública incluida en el release: pteron-releases-public.asc.",
-      "Huella de la clave: 5DDC 795B EFB7 EC2F EC93 0227 EAFB 54AE A175 0DCF."
+      "pteron 0.3.0 — consolidación de la beta de escritorio",
+      "pteron 0.3.0 afianza el trabajo desarrollado durante las versiones anteriores",
+      "antes de ampliar el producto con integraciones nuevas. Esta versión sigue siendo",
+      "beta: prioriza un núcleo docente local-first, resultados revisables y una",
+      "experiencia coherente de principio a fin.",
+      "Lo principal",
+      "El modo Plan funciona dentro del hilo y conduce a materiales independientes,",
+      "revisables y editables, sin convertir la conversación en un asistente rígido."
     ],
     "channel": "beta"
   },
   "stable": null,
   "releases": [
+    {
+      "version": "0.3.0",
+      "publishedAt": "2026-08-12T15:25:03Z",
+      "publishedLabel": "agosto de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.3.0",
+      "assets": [
+        {
+          "name": "beta-linux.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/beta-linux.yml",
+          "bytes": 685
+        },
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.3.0-amd64.deb",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-amd64.deb",
+          "bytes": 133045388
+        },
+        {
+          "name": "pteron-0.3.0-amd64.deb.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-amd64.deb.asc",
+          "bytes": 833
+        },
+        {
+          "name": "pteron-0.3.0-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-arm64.dmg",
+          "bytes": 171344942
+        },
+        {
+          "name": "pteron-0.3.0-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-arm64.dmg.blockmap",
+          "bytes": 179488
+        },
+        {
+          "name": "pteron-0.3.0-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-arm64.zip",
+          "bytes": 170777176
+        },
+        {
+          "name": "pteron-0.3.0-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-arm64.zip.blockmap",
+          "bytes": 179646
+        },
+        {
+          "name": "pteron-0.3.0-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x64.exe",
+          "bytes": 133305643
+        },
+        {
+          "name": "pteron-0.3.0-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x64.exe.blockmap",
+          "bytes": 138403
+        },
+        {
+          "name": "pteron-0.3.0-x64.tar.gz",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x64.tar.gz",
+          "bytes": 171397634
+        },
+        {
+          "name": "pteron-0.3.0-x64.tar.gz.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x64.tar.gz.asc",
+          "bytes": 833
+        },
+        {
+          "name": "pteron-0.3.0-x86_64.AppImage",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x86_64.AppImage",
+          "bytes": 182242997
+        },
+        {
+          "name": "pteron-0.3.0-x86_64.AppImage.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x86_64.AppImage.asc",
+          "bytes": 833
+        },
+        {
+          "name": "pteron-0.3.0-x86_64.rpm",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x86_64.rpm",
+          "bytes": 111339269
+        },
+        {
+          "name": "pteron-0.3.0-x86_64.rpm.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x86_64.rpm.asc",
+          "bytes": 833
+        },
+        {
+          "name": "pteron-releases-public.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-releases-public.asc",
+          "bytes": 1680
+        }
+      ],
+      "notes": [
+        "pteron 0.3.0 — consolidación de la beta de escritorio",
+        "pteron 0.3.0 afianza el trabajo desarrollado durante las versiones anteriores",
+        "antes de ampliar el producto con integraciones nuevas. Esta versión sigue siendo",
+        "beta: prioriza un núcleo docente local-first, resultados revisables y una",
+        "experiencia coherente de principio a fin.",
+        "Lo principal",
+        "El modo Plan funciona dentro del hilo y conduce a materiales independientes,",
+        "revisables y editables, sin convertir la conversación en un asistente rígido."
+      ],
+      "channel": "beta"
+    },
     {
       "version": "0.2.12",
       "publishedAt": "2026-08-11T16:56:08Z",
