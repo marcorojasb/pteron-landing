@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-12T15:25:21.507Z",
+  "generatedAt": "2026-08-12T18:07:01.784Z",
   "latest": {
     "version": "0.3.0",
     "publishedAt": "2026-08-12T15:25:03Z",
@@ -111,6 +111,65 @@
   },
   "stable": null,
   "releases": [
+    {
+      "version": "0.3.1",
+      "publishedAt": "2026-08-12T18:06:45Z",
+      "publishedLabel": "agosto de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.3.1",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.1/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.1/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.3.1-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.1/pteron-0.3.1-arm64.dmg",
+          "bytes": 171343689
+        },
+        {
+          "name": "pteron-0.3.1-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.1/pteron-0.3.1-arm64.dmg.blockmap",
+          "bytes": 179604
+        },
+        {
+          "name": "pteron-0.3.1-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.1/pteron-0.3.1-arm64.zip",
+          "bytes": 170779581
+        },
+        {
+          "name": "pteron-0.3.1-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.1/pteron-0.3.1-arm64.zip.blockmap",
+          "bytes": 179812
+        },
+        {
+          "name": "pteron-0.3.1-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.1/pteron-0.3.1-x64.exe",
+          "bytes": 133306761
+        },
+        {
+          "name": "pteron-0.3.1-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.1/pteron-0.3.1-x64.exe.blockmap",
+          "bytes": 138304
+        }
+      ],
+      "notes": [
+        "pteron 0.3.1 — actualizador de Windows",
+        "pteron 0.3.1 corrige un fallo del actualizador en Windows 11: la versión nueva se descargaba y, al aceptar instalar, la aplicación se cerraba sin reemplazarse.",
+        "Esta versión sigue siendo beta.",
+        "Lo principal",
+        "Si Windows bloquea el instalador silencioso, pteron lo abre de forma visible para que puedas confirmar el aviso de SmartScreen. Ya no pide elevación de administrador en una instalación por usuario.",
+        "Si la instalación no llega a aplicarse, al volver a abrir pteron avisa que sigues en la versión anterior y permite reintentar.",
+        "El instalador de Windows sigue sin firma. Puede aparecer Microsoft Defender SmartScreen; no es un error de pteron. La firma de código sigue pendiente antes de una difusión estable.",
+        "Plataformas"
+      ],
+      "channel": "beta"
+    },
     {
       "version": "0.3.0",
       "publishedAt": "2026-08-12T15:25:03Z",
