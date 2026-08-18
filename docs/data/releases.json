@@ -1,99 +1,99 @@
 {
-  "generatedAt": "2026-08-17T20:36:32.302Z",
+  "generatedAt": "2026-08-18T17:20:02.752Z",
   "latest": {
-    "version": "0.4.0",
-    "publishedAt": "2026-08-17T20:36:15Z",
+    "version": "0.4.2",
+    "publishedAt": "2026-08-18T17:19:45Z",
     "publishedLabel": "agosto de 2026",
-    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.4.0",
+    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.4.2",
     "assets": [
       {
         "name": "beta-linux.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/beta-linux.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/beta-linux.yml",
         "bytes": 685
       },
       {
         "name": "beta-mac.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/beta-mac.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/beta-mac.yml",
         "bytes": 494
       },
       {
         "name": "beta.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/beta.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/beta.yml",
         "bytes": 337
       },
       {
-        "name": "pteron-0.4.0-amd64.deb",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/pteron-0.4.0-amd64.deb",
-        "bytes": 133136332
+        "name": "pteron-0.4.2-amd64.deb",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-amd64.deb",
+        "bytes": 133144056
       },
       {
-        "name": "pteron-0.4.0-amd64.deb.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/pteron-0.4.0-amd64.deb.asc",
+        "name": "pteron-0.4.2-amd64.deb.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-amd64.deb.asc",
         "bytes": 833
       },
       {
-        "name": "pteron-0.4.0-arm64.dmg",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/pteron-0.4.0-arm64.dmg",
-        "bytes": 171458424
+        "name": "pteron-0.4.2-arm64.dmg",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-arm64.dmg",
+        "bytes": 171398812
       },
       {
-        "name": "pteron-0.4.0-arm64.dmg.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/pteron-0.4.0-arm64.dmg.blockmap",
-        "bytes": 181616
+        "name": "pteron-0.4.2-arm64.dmg.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-arm64.dmg.blockmap",
+        "bytes": 179904
       },
       {
-        "name": "pteron-0.4.0-arm64.zip",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/pteron-0.4.0-arm64.zip",
-        "bytes": 170827033
+        "name": "pteron-0.4.2-arm64.zip",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-arm64.zip",
+        "bytes": 170832830
       },
       {
-        "name": "pteron-0.4.0-arm64.zip.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/pteron-0.4.0-arm64.zip.blockmap",
-        "bytes": 179549
+        "name": "pteron-0.4.2-arm64.zip.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-arm64.zip.blockmap",
+        "bytes": 179512
       },
       {
-        "name": "pteron-0.4.0-x64.exe",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/pteron-0.4.0-x64.exe",
-        "bytes": 133425720
+        "name": "pteron-0.4.2-x64.exe",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x64.exe",
+        "bytes": 133429886
       },
       {
-        "name": "pteron-0.4.0-x64.exe.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/pteron-0.4.0-x64.exe.blockmap",
-        "bytes": 139661
+        "name": "pteron-0.4.2-x64.exe.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x64.exe.blockmap",
+        "bytes": 139540
       },
       {
-        "name": "pteron-0.4.0-x64.tar.gz",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/pteron-0.4.0-x64.tar.gz",
-        "bytes": 171451161
+        "name": "pteron-0.4.2-x64.tar.gz",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x64.tar.gz",
+        "bytes": 171458488
       },
       {
-        "name": "pteron-0.4.0-x64.tar.gz.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/pteron-0.4.0-x64.tar.gz.asc",
+        "name": "pteron-0.4.2-x64.tar.gz.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x64.tar.gz.asc",
         "bytes": 833
       },
       {
-        "name": "pteron-0.4.0-x86_64.AppImage",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/pteron-0.4.0-x86_64.AppImage",
-        "bytes": 182304867
+        "name": "pteron-0.4.2-x86_64.AppImage",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x86_64.AppImage",
+        "bytes": 182308810
       },
       {
-        "name": "pteron-0.4.0-x86_64.AppImage.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/pteron-0.4.0-x86_64.AppImage.asc",
+        "name": "pteron-0.4.2-x86_64.AppImage.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x86_64.AppImage.asc",
         "bytes": 833
       },
       {
-        "name": "pteron-0.4.0-x86_64.rpm",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/pteron-0.4.0-x86_64.rpm",
-        "bytes": 111367565
+        "name": "pteron-0.4.2-x86_64.rpm",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x86_64.rpm",
+        "bytes": 111368521
       },
       {
-        "name": "pteron-0.4.0-x86_64.rpm.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/pteron-0.4.0-x86_64.rpm.asc",
+        "name": "pteron-0.4.2-x86_64.rpm.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x86_64.rpm.asc",
         "bytes": 833
       },
       {
         "name": "pteron-releases-public.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.0/pteron-releases-public.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-releases-public.asc",
         "bytes": 1680
       }
     ],
@@ -104,6 +104,108 @@
   },
   "stable": null,
   "releases": [
+    {
+      "version": "0.4.2",
+      "publishedAt": "2026-08-18T17:19:45Z",
+      "publishedLabel": "agosto de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.4.2",
+      "assets": [
+        {
+          "name": "beta-linux.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/beta-linux.yml",
+          "bytes": 685
+        },
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.4.2-amd64.deb",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-amd64.deb",
+          "bytes": 133144056
+        },
+        {
+          "name": "pteron-0.4.2-amd64.deb.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-amd64.deb.asc",
+          "bytes": 833
+        },
+        {
+          "name": "pteron-0.4.2-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-arm64.dmg",
+          "bytes": 171398812
+        },
+        {
+          "name": "pteron-0.4.2-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-arm64.dmg.blockmap",
+          "bytes": 179904
+        },
+        {
+          "name": "pteron-0.4.2-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-arm64.zip",
+          "bytes": 170832830
+        },
+        {
+          "name": "pteron-0.4.2-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-arm64.zip.blockmap",
+          "bytes": 179512
+        },
+        {
+          "name": "pteron-0.4.2-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x64.exe",
+          "bytes": 133429886
+        },
+        {
+          "name": "pteron-0.4.2-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x64.exe.blockmap",
+          "bytes": 139540
+        },
+        {
+          "name": "pteron-0.4.2-x64.tar.gz",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x64.tar.gz",
+          "bytes": 171458488
+        },
+        {
+          "name": "pteron-0.4.2-x64.tar.gz.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x64.tar.gz.asc",
+          "bytes": 833
+        },
+        {
+          "name": "pteron-0.4.2-x86_64.AppImage",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x86_64.AppImage",
+          "bytes": 182308810
+        },
+        {
+          "name": "pteron-0.4.2-x86_64.AppImage.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x86_64.AppImage.asc",
+          "bytes": 833
+        },
+        {
+          "name": "pteron-0.4.2-x86_64.rpm",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x86_64.rpm",
+          "bytes": 111368521
+        },
+        {
+          "name": "pteron-0.4.2-x86_64.rpm.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x86_64.rpm.asc",
+          "bytes": 833
+        },
+        {
+          "name": "pteron-releases-public.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-releases-public.asc",
+          "bytes": 1680
+        }
+      ],
+      "notes": [
+        "Borrador en preparación."
+      ],
+      "channel": "beta"
+    },
     {
       "version": "0.4.0",
       "publishedAt": "2026-08-17T20:36:15Z",
@@ -1329,62 +1431,6 @@
         "macOS (Apple serie M): firmado con Developer ID y notarizado.",
         "Windows 11: el instalador no está firmado. Windows mostrará un aviso de SmartScreen al instalar; elige \"Más información\" → \"Ejecutar de todas formas\". La firma de código es requisito antes de salir de la beta.",
         "Si al actualizar en Windows aparece \"Installer integrity check has failed\", borra la carpeta %LOCALAPPDATA%\\pteron-updater y vuelve a intentarlo."
-      ],
-      "channel": "beta"
-    },
-    {
-      "version": "0.2.1-beta.2",
-      "publishedAt": "2026-07-28T21:39:12Z",
-      "publishedLabel": "julio de 2026",
-      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.2",
-      "assets": [
-        {
-          "name": "beta-mac.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.2/beta-mac.yml",
-          "bytes": 522
-        },
-        {
-          "name": "beta.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.2/beta.yml",
-          "bytes": 358
-        },
-        {
-          "name": "Pteron-0.2.1-beta.2-arm64.dmg",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.2/Pteron-0.2.1-beta.2-arm64.dmg",
-          "bytes": 194188938
-        },
-        {
-          "name": "Pteron-0.2.1-beta.2-arm64.dmg.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.2/Pteron-0.2.1-beta.2-arm64.dmg.blockmap",
-          "bytes": 204259
-        },
-        {
-          "name": "Pteron-0.2.1-beta.2-arm64.zip",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.2/Pteron-0.2.1-beta.2-arm64.zip",
-          "bytes": 193638069
-        },
-        {
-          "name": "Pteron-0.2.1-beta.2-arm64.zip.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.2/Pteron-0.2.1-beta.2-arm64.zip.blockmap",
-          "bytes": 203363
-        },
-        {
-          "name": "Pteron-0.2.1-beta.2-x64.exe",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.2/Pteron-0.2.1-beta.2-x64.exe",
-          "bytes": 153617718
-        },
-        {
-          "name": "Pteron-0.2.1-beta.2-x64.exe.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.2/Pteron-0.2.1-beta.2-x64.exe.blockmap",
-          "bytes": 163372
-        }
-      ],
-      "notes": [
-        "Primera versión con actualización automática dentro de la app.",
-        "Una vez instalada, Pteron avisa cuando hay una versión nueva y la instala al reiniciar, sólo cuando tú lo aceptas. Puedes desactivarlo o cambiar de canal en Ajustes → Sobre Pteron.",
-        "macOS (Apple serie M): firmado con Developer ID y notarizado por Apple. Se abre sin advertencias.",
-        "Windows 11: el instalador no está firmado todavía. Windows mostrará un aviso de SmartScreen al instalar; hay que elegir \"Más información\" → \"Ejecutar de todas formas\". La firma de código es requisito antes de salir de la beta.",
-        "Esta es una versión beta: espera fallos y cambios frecuentes."
       ],
       "channel": "beta"
     }
