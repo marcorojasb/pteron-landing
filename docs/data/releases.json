@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-19T21:56:17.809Z",
+  "generatedAt": "2026-08-21T02:40:45.746Z",
   "latest": {
     "version": "0.4.4",
     "publishedAt": "2026-08-19T21:55:47Z",
@@ -111,6 +111,65 @@
   },
   "stable": null,
   "releases": [
+    {
+      "version": "0.4.5",
+      "publishedAt": "2026-08-21T02:40:30Z",
+      "publishedLabel": "agosto de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.4.5",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.5/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.5/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.4.5-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.5/pteron-0.4.5-arm64.dmg",
+          "bytes": 171419937
+        },
+        {
+          "name": "pteron-0.4.5-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.5/pteron-0.4.5-arm64.dmg.blockmap",
+          "bytes": 179961
+        },
+        {
+          "name": "pteron-0.4.5-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.5/pteron-0.4.5-arm64.zip",
+          "bytes": 170851941
+        },
+        {
+          "name": "pteron-0.4.5-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.5/pteron-0.4.5-arm64.zip.blockmap",
+          "bytes": 179841
+        },
+        {
+          "name": "pteron-0.4.5-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.5/pteron-0.4.5-x64.exe",
+          "bytes": 135555531
+        },
+        {
+          "name": "pteron-0.4.5-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.5/pteron-0.4.5-x64.exe.blockmap",
+          "bytes": 142467
+        }
+      ],
+      "notes": [
+        "pteron 0.4.5 — que cada cosa se diga una vez, y que el hilo te siga",
+        "0.4.5 es un parche de consolidación (ADR-051): pule, unifica y corrige lo que ya",
+        "existía. Los controles que aparecen —volver al último mensaje, elegir el tema de",
+        "proyección— arreglan funciones que estaban rotas o inalcanzables; no son",
+        "funciones nuevas.",
+        "Lo principal",
+        "La conversación te sigue. El hilo no tenía anclaje de ningún tipo: mientras",
+        "cabía en la ventana no se notaba, y en cuanto la excedía la respuesta crecía"
+      ],
+      "channel": "beta"
+    },
     {
       "version": "0.4.4",
       "publishedAt": "2026-08-19T21:55:47Z",
@@ -1515,62 +1574,6 @@
         "Desde el iPhone (opcional, apagado por defecto): Ajustes permite emparejar un cliente con el Pteron de tu equipo, que sigue siendo el que conserva sesiones, carpeta, evidencia y artefactos. El acceso escucha sólo dentro del propio computador, y su clave se puede rotar o revocar cuando quieras.",
         "macOS (Apple serie M): firmado con Developer ID y notarizado.",
         "Windows 11: el instalador no está firmado. Windows mostrará un aviso de SmartScreen al instalar; elige «Más información» → «Ejecutar de todas formas». La firma de código es requisito antes de salir de la beta."
-      ],
-      "channel": "beta"
-    },
-    {
-      "version": "0.2.1-beta.4",
-      "publishedAt": "2026-07-29T21:56:59Z",
-      "publishedLabel": "julio de 2026",
-      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.4",
-      "assets": [
-        {
-          "name": "beta-mac.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.4/beta-mac.yml",
-          "bytes": 522
-        },
-        {
-          "name": "beta.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.4/beta.yml",
-          "bytes": 358
-        },
-        {
-          "name": "Pteron-0.2.1-beta.4-arm64.dmg",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.4/Pteron-0.2.1-beta.4-arm64.dmg",
-          "bytes": 194214112
-        },
-        {
-          "name": "Pteron-0.2.1-beta.4-arm64.dmg.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.4/Pteron-0.2.1-beta.4-arm64.dmg.blockmap",
-          "bytes": 204832
-        },
-        {
-          "name": "Pteron-0.2.1-beta.4-arm64.zip",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.4/Pteron-0.2.1-beta.4-arm64.zip",
-          "bytes": 193645378
-        },
-        {
-          "name": "Pteron-0.2.1-beta.4-arm64.zip.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.4/Pteron-0.2.1-beta.4-arm64.zip.blockmap",
-          "bytes": 203223
-        },
-        {
-          "name": "Pteron-0.2.1-beta.4-x64.exe",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.4/Pteron-0.2.1-beta.4-x64.exe",
-          "bytes": 153561730
-        },
-        {
-          "name": "Pteron-0.2.1-beta.4-x64.exe.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.4/Pteron-0.2.1-beta.4-x64.exe.blockmap",
-          "bytes": 162125
-        }
-      ],
-      "notes": [
-        "Actualizar desde Pteron ya no abre el asistente del instalador: el reinicio aplica la versión nueva y vuelve a abrir la app.",
-        "Las instalaciones nuevas en Windows son por usuario. Ya no se ofrece «para todos los usuarios» ni cambio de carpeta: esa opción llevaba la app a Program Files y hacía que cada actualización exigiera permisos de administrador. Una instalación anterior hecha para todos los usuarios conserva ese requisito.",
-        "macOS (Apple serie M): firmado con Developer ID y notarizado.",
-        "Windows 11: el instalador no está firmado. Windows mostrará un aviso de SmartScreen al instalar; elige «Más información» → «Ejecutar de todas formas». La firma de código es requisito antes de salir de la beta.",
-        "Si al actualizar en Windows aparece «Installer integrity check has failed», borra la carpeta %LOCALAPPDATA%\\pteron-updater y vuelve a intentarlo."
       ],
       "channel": "beta"
     }
