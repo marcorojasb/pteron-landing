@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-21T02:40:45.746Z",
+  "generatedAt": "2026-08-21T16:52:34.658Z",
   "latest": {
     "version": "0.4.4",
     "publishedAt": "2026-08-19T21:55:47Z",
@@ -111,6 +111,65 @@
   },
   "stable": null,
   "releases": [
+    {
+      "version": "0.4.6",
+      "publishedAt": "2026-08-21T16:52:18Z",
+      "publishedLabel": "agosto de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.4.6",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.6/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.6/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.4.6-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.6/pteron-0.4.6-arm64.dmg",
+          "bytes": 171988846
+        },
+        {
+          "name": "pteron-0.4.6-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.6/pteron-0.4.6-arm64.dmg.blockmap",
+          "bytes": 181750
+        },
+        {
+          "name": "pteron-0.4.6-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.6/pteron-0.4.6-arm64.zip",
+          "bytes": 171363630
+        },
+        {
+          "name": "pteron-0.4.6-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.6/pteron-0.4.6-arm64.zip.blockmap",
+          "bytes": 180062
+        },
+        {
+          "name": "pteron-0.4.6-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.6/pteron-0.4.6-x64.exe",
+          "bytes": 135447630
+        },
+        {
+          "name": "pteron-0.4.6-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.6/pteron-0.4.6-x64.exe.blockmap",
+          "bytes": 141934
+        }
+      ],
+      "notes": [
+        "pteron 0.4.6 — figuras que se pueden corregir",
+        "Hasta ahora, si querías una figura en una guía, pteron te dejaba el hueco y tú lo",
+        "llenabas a mano. 0.4.6 trae diagramas de verdad —cajas, nubes, rombos y flechas",
+        "con texto— y los entrega como formas nativas de Word y PowerPoint, no como",
+        "una imagen.",
+        "La diferencia importa: una imagen dentro de un documento es materia muerta. Si un",
+        "rótulo salió mal, no puedes arreglarlo, tienes que pedir el material de nuevo. Un",
+        "diagrama de formas lo mueves, lo recoloreas y lo reescribes en tu propio Word,"
+      ],
+      "channel": "beta"
+    },
     {
       "version": "0.4.5",
       "publishedAt": "2026-08-21T02:40:30Z",
@@ -1515,65 +1574,6 @@
         "macOS (Apple serie M): firmado con Developer ID y notarizado.",
         "Windows 11: el instalador no está firmado. Windows mostrará un aviso de SmartScreen al instalar; elige «Más información» → «Ejecutar de todas formas». La firma de código es requisito antes de salir de la beta.",
         "Si al actualizar en Windows aparece «Installer integrity check has failed», borra la carpeta %LOCALAPPDATA%\\pteron-updater y vuelve a intentarlo."
-      ],
-      "channel": "beta"
-    },
-    {
-      "version": "0.2.1-beta.5",
-      "publishedAt": "2026-07-30T08:46:02Z",
-      "publishedLabel": "julio de 2026",
-      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.5",
-      "assets": [
-        {
-          "name": "beta-mac.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.5/beta-mac.yml",
-          "bytes": 522
-        },
-        {
-          "name": "beta.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.5/beta.yml",
-          "bytes": 358
-        },
-        {
-          "name": "Pteron-0.2.1-beta.5-arm64.dmg",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.5/Pteron-0.2.1-beta.5-arm64.dmg",
-          "bytes": 194224786
-        },
-        {
-          "name": "Pteron-0.2.1-beta.5-arm64.dmg.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.5/Pteron-0.2.1-beta.5-arm64.dmg.blockmap",
-          "bytes": 203908
-        },
-        {
-          "name": "Pteron-0.2.1-beta.5-arm64.zip",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.5/Pteron-0.2.1-beta.5-arm64.zip",
-          "bytes": 193653898
-        },
-        {
-          "name": "Pteron-0.2.1-beta.5-arm64.zip.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.5/Pteron-0.2.1-beta.5-arm64.zip.blockmap",
-          "bytes": 203890
-        },
-        {
-          "name": "Pteron-0.2.1-beta.5-x64.exe",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.5/Pteron-0.2.1-beta.5-x64.exe",
-          "bytes": 153568580
-        },
-        {
-          "name": "Pteron-0.2.1-beta.5-x64.exe.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.5/Pteron-0.2.1-beta.5-x64.exe.blockmap",
-          "bytes": 162597
-        }
-      ],
-      "notes": [
-        "Preparar material para básica ya no falla a mitad de camino. Pteron revisa cada guía para no entregarte un esqueleto de títulos, pero esa revisión estaba afinada sobre álgebra de media: enunciados perfectamente normales —«Traza las tres alturas del triángulo.», «Une con una línea cada palabra con su significado.», «Completa la tabla.»— se rechazaban, y como cada rechazo gasta intentos, una guía entera podía caerse. Ahora reconoce el vocabulario real de un aula y distingue una instrucción («Completa la tabla.») de un rótulo de índice («Actividad de completación»).",
-        "Las fórmulas se ven como fórmulas también dentro de las tablas. Una fracción en una celda se mostraba con su código a la vista; ahora aparece maquetada, y al entrar a la celda vuelve el código para que puedas editarlo.",
-        "La pauta de corrección responde pregunta por pregunta, en el mismo orden del material y con el criterio de puntaje de cada una.",
-        "El aviso de datos de estudiantes dejó de interrumpir trabajo legítimo. Sigue avisando antes de enviar a la nube un nombre en un campo de persona o un RUT, que es lo que identifica a alguien; ya no salta por hablar de salud, evaluación o necesidades educativas, que son también temas del currículum y tuyos para tratar.",
-        "Más revisión sobre el material que recibes: el puntaje total tiene que cuadrar con la suma de las preguntas, las alternativas de selección múltiple llegan como alternativas y no como texto corrido, y Pteron avisa cuando una evaluación formativa no explica sus alternativas o una planificación no declara momentos ni duración.",
-        "Desde el iPhone (opcional, apagado por defecto): Ajustes permite emparejar un cliente con el Pteron de tu equipo, que sigue siendo el que conserva sesiones, carpeta, evidencia y artefactos. El acceso escucha sólo dentro del propio computador, y su clave se puede rotar o revocar cuando quieras.",
-        "macOS (Apple serie M): firmado con Developer ID y notarizado.",
-        "Windows 11: el instalador no está firmado. Windows mostrará un aviso de SmartScreen al instalar; elige «Más información» → «Ejecutar de todas formas». La firma de código es requisito antes de salir de la beta."
       ],
       "channel": "beta"
     }
