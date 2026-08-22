@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-22T22:55:59.933Z",
+  "generatedAt": "2026-08-22T23:14:21.852Z",
   "latest": {
     "version": "0.4.4",
     "publishedAt": "2026-08-19T21:55:47Z",
@@ -99,18 +99,77 @@
     ],
     "notes": [
       "pteron 0.4.4 — el PDF vuelve a ser el material",
-      "Un profesor exportó una guía y recibió un archivo de una página con la barra",
-      "superior de pteron impresa dentro, empezando a mitad de una tabla. Esta versión",
-      "arregla eso y ordena lo que lo rodeaba.",
+      "Un profesor exportó una guía y recibió un archivo de una página con la barra superior de pteron impresa dentro, empezando a mitad de una tabla. Esta versión arregla eso y ordena lo que lo rodeaba.",
       "Guardar el material",
       "Un material tiene ahora dos salidas, y cada una dice para qué sirve.",
-      "Editable → «Guardar DOCX…», la acción principal junto al cuadro de",
-      "conversación. Es el documento que abres en Word."
+      "Editable → «Guardar DOCX…», la acción principal junto al cuadro de conversación. Es el documento que abres en Word.",
+      "Imprimible → «Guardar PDF…», dentro de «Documento imprimible». Esa pantalla te muestra la hoja tal como saldrá, y el botón guarda exactamente eso.",
+      "No hay ninguna otra forma de imprimir. «Imprimir…» desaparece: llamaba a la impresión del navegador, que imprime la ventana de la aplicación —por eso salían las pestañas, «Compartir» y el avatar dentro del PDF, y por eso terminaba en la primera página—. «Compartir» sale de la barra superior: era una tercera puerta al mismo PDF, con otro nombre y peor resultado, porque escribía texto plano sin encabezado, sin tablas y sin fórmulas.",
+      "El PDF se arma ahora desde el documento y no desde la pantalla: la paginación la hace el motor, el tamaño y los márgenes salen de la configuración de página del material, y las fórmulas se componen de verdad. Su tipografía y sus medidas son las mismas del DOCX, así que el editable y el imprimible son la misma hoja en dos formatos."
     ],
     "channel": "beta"
   },
   "stable": null,
   "releases": [
+    {
+      "version": "0.4.7",
+      "publishedAt": "2026-08-22T23:14:08Z",
+      "publishedLabel": "agosto de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.4.7",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.7/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.7/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.4.7-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.7/pteron-0.4.7-arm64.dmg",
+          "bytes": 169457886
+        },
+        {
+          "name": "pteron-0.4.7-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.7/pteron-0.4.7-arm64.dmg.blockmap",
+          "bytes": 177694
+        },
+        {
+          "name": "pteron-0.4.7-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.7/pteron-0.4.7-arm64.zip",
+          "bytes": 168862423
+        },
+        {
+          "name": "pteron-0.4.7-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.7/pteron-0.4.7-arm64.zip.blockmap",
+          "bytes": 178030
+        },
+        {
+          "name": "pteron-0.4.7-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.7/pteron-0.4.7-x64.exe",
+          "bytes": 134007783
+        },
+        {
+          "name": "pteron-0.4.7-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.7/pteron-0.4.7-x64.exe.blockmap",
+          "bytes": 140814
+        }
+      ],
+      "notes": [
+        "pteron 0.4.7 — abrir, retomar y confiar en lo que sale",
+        "Lo que vas a notar",
+        "Abrir pteron ya no crea una conversación. Partes en la pantalla de inicio, y la sesión nace cuando empiezas a trabajar de verdad. Si vuelves dentro de la media hora, retoma donde ibas. Tu historial deja de llenarse de conversaciones vacías.",
+        "Una sola pantalla de inicio. Antes había dos preguntando lo mismo con distintas palabras.",
+        "La conversación vuelve a seguirte. Al abrir un chat largo se quedaba arriba del todo, con el último botón tapado por el compositor. Ahora te muestra donde ibas.",
+        "Una tabla ya no te deja sin material. Si el modelo armaba una tabla sin títulos de columna, pteron le pedía algo imposible y la petición moría sin entregarte nada.",
+        "El documento sale limpio. Los ### del modelo se imprimían literales en el Word, y un monto como $5.100 rompía las fórmulas cercanas.",
+        "Por dentro"
+      ],
+      "channel": "beta"
+    },
     {
       "version": "0.4.6",
       "publishedAt": "2026-08-21T16:52:18Z",
@@ -160,13 +219,13 @@
       ],
       "notes": [
         "pteron 0.4.6 — figuras que se pueden corregir",
-        "Hasta ahora, si querías una figura en una guía, pteron te dejaba el hueco y tú lo",
-        "llenabas a mano. 0.4.6 trae diagramas de verdad —cajas, nubes, rombos y flechas",
-        "con texto— y los entrega como formas nativas de Word y PowerPoint, no como",
-        "una imagen.",
-        "La diferencia importa: una imagen dentro de un documento es materia muerta. Si un",
-        "rótulo salió mal, no puedes arreglarlo, tienes que pedir el material de nuevo. Un",
-        "diagrama de formas lo mueves, lo recoloreas y lo reescribes en tu propio Word,"
+        "Hasta ahora, si querías una figura en una guía, pteron te dejaba el hueco y tú lo llenabas a mano. 0.4.6 trae diagramas de verdad —cajas, nubes, rombos y flechas con texto— y los entrega como formas nativas de Word y PowerPoint, no como una imagen.",
+        "La diferencia importa: una imagen dentro de un documento es materia muerta. Si un rótulo salió mal, no puedes arreglarlo, tienes que pedir el material de nuevo. Un diagrama de formas lo mueves, lo recoloreas y lo reescribes en tu propio Word, como cualquier figura que hubieras hecho tú.",
+        "Lo principal",
+        "Diagramas en guías y presentaciones. Un ciclo, un proceso, una clasificación. Pídelos junto con el material («agrega un diagrama del ciclo del agua») y aparecen en el lienzo, en el PDF, en el DOCX y en la diapositiva, dibujados desde la misma disposición: lo que apruebas en pantalla es lo que se imprime.",
+        "Y los corriges sin volver a pedir el material. Elige un paso en el lienzo y puedes arreglarle el texto, cambiarle la forma, agregar otro paso o quitarlo. Al quitar un paso el camino se recose solo, en vez de dejar el diagrama partido en dos mitades sueltas.",
+        "Puedes poner tus propias imágenes. Una figura acepta una imagen de tu equipo y viaja dentro del DOCX y del PPTX, con su texto alternativo para quien usa lector de pantalla. pteron no inventa imágenes ni las descarga de internet: las pones tú.",
+        "Una diapositiva ya no revelaba la respuesta correcta. Al exportar una presentación con selección múltiple, la alternativa correcta salía marcada y con su justificación, proyectada al curso. Es la corrección más importante de esta versión: si proyectaste una presentación con preguntas hecha con 0.4.4 o anterior, tus estudiantes vieron las respuestas."
       ],
       "channel": "beta"
     },
@@ -219,13 +278,13 @@
       ],
       "notes": [
         "pteron 0.4.5 — que cada cosa se diga una vez, y que el hilo te siga",
-        "0.4.5 es un parche de consolidación (ADR-051): pule, unifica y corrige lo que ya",
-        "existía. Los controles que aparecen —volver al último mensaje, elegir el tema de",
-        "proyección— arreglan funciones que estaban rotas o inalcanzables; no son",
-        "funciones nuevas.",
+        "0.4.5 es un parche de consolidación: pule, unifica y corrige lo que ya existía. Los controles que aparecen —volver al último mensaje, elegir el tema de proyección— arreglan funciones que estaban rotas o inalcanzables; no son funciones nuevas.",
         "Lo principal",
-        "La conversación te sigue. El hilo no tenía anclaje de ningún tipo: mientras",
-        "cabía en la ventana no se notaba, y en cuanto la excedía la respuesta crecía"
+        "La conversación te sigue. El hilo no tenía anclaje de ningún tipo: mientras cabía en la ventana no se notaba, y en cuanto la excedía la respuesta crecía fuera de tu vista y tenías que bajar a mano en cada turno. Ahora se comporta como un lector: si estás mirando el final, se te sigue mostrando el final; si subiste a releer, no se te mueve el suelo, y un botón te devuelve abajo cuando quieras.",
+        "El texto ya no aparece de golpe. Cuando un modelo entrega la respuesta entera de una vez, se revela a ritmo legible en vez de saltar de un renglón a treinta. Con los que escriben de a poco, no notarás diferencia.",
+        "La pantalla dejó de repetirse. El recuadro de instrucciones ya no dice",
+        "«Instrucciones» dos veces; el objetivo de aprendizaje ya no aparece en el encabezado y otra vez como primer párrafo; «Ver avance» habla con una sola voz en vez de contar las mismas acciones con dos vocabularios; y la pantalla de revisión ya no repite cinco veces que la propuesta está sin aplicar.",
+        "La barra de edición dejó de explicarse a sí misma. Gastaba un tercio de su ancho en decirte que estabas editando. Con ese espacio ahora caben todos sus controles, incluida la lista, que antes quedaba fuera del borde. «Formato base» dejó de parecer un botón que no respondía: es un icono de información."
       ],
       "channel": "beta"
     },
@@ -328,13 +387,13 @@
       ],
       "notes": [
         "pteron 0.4.4 — el PDF vuelve a ser el material",
-        "Un profesor exportó una guía y recibió un archivo de una página con la barra",
-        "superior de pteron impresa dentro, empezando a mitad de una tabla. Esta versión",
-        "arregla eso y ordena lo que lo rodeaba.",
+        "Un profesor exportó una guía y recibió un archivo de una página con la barra superior de pteron impresa dentro, empezando a mitad de una tabla. Esta versión arregla eso y ordena lo que lo rodeaba.",
         "Guardar el material",
         "Un material tiene ahora dos salidas, y cada una dice para qué sirve.",
-        "Editable → «Guardar DOCX…», la acción principal junto al cuadro de",
-        "conversación. Es el documento que abres en Word."
+        "Editable → «Guardar DOCX…», la acción principal junto al cuadro de conversación. Es el documento que abres en Word.",
+        "Imprimible → «Guardar PDF…», dentro de «Documento imprimible». Esa pantalla te muestra la hoja tal como saldrá, y el botón guarda exactamente eso.",
+        "No hay ninguna otra forma de imprimir. «Imprimir…» desaparece: llamaba a la impresión del navegador, que imprime la ventana de la aplicación —por eso salían las pestañas, «Compartir» y el avatar dentro del PDF, y por eso terminaba en la primera página—. «Compartir» sale de la barra superior: era una tercera puerta al mismo PDF, con otro nombre y peor resultado, porque escribía texto plano sin encabezado, sin tablas y sin fórmulas.",
+        "El PDF se arma ahora desde el documento y no desde la pantalla: la paginación la hace el motor, el tamaño y los márgenes salen de la configuración de página del material, y las fórmulas se componen de verdad. Su tipografía y sus medidas son las mismas del DOCX, así que el editable y el imprimible son la misma hoja en dos formatos."
       ],
       "channel": "beta"
     },
@@ -437,13 +496,13 @@
       ],
       "notes": [
         "pteron 0.4.3 — el visor deja de repetirse y el panel deja de adivinar",
-        "Esta versión es de interfaz. No cambia lo que pteron sabe hacer: cambia cuánto de",
-        "la pantalla ocupa diciendo lo mismo dos veces, y cuánto de lo que ofrece tiene",
-        "efecto de verdad. La decisión que la gobierna es ADR-077.",
+        "Esta versión es de interfaz. No cambia lo que pteron sabe hacer: cambia cuánto de la pantalla ocupa diciendo lo mismo dos veces, y cuánto de lo que ofrece tiene efecto de verdad. La decisión que la gobierna es.",
         "En el material abierto",
-        "El nombre del material se dice una vez menos. Vivía tres veces en 260 px:",
-        "arriba, en una franja intermedia y en el papel. La franja se fue, y con ella",
-        "«Volver al chat», que llamaba exactamente a lo mismo que «Cerrar archivo»."
+        "El nombre del material se dice una vez menos. Vivía tres veces en 260 px: arriba, en una franja intermedia y en el papel. La franja se fue, y con ella «Volver al chat», que llamaba exactamente a lo mismo que «Cerrar archivo».",
+        "La barra de formato deja de nacer apagada. Los ocho controles sólo se encienden con un bloque seleccionado, y ninguno lo está al abrir el material: era una fila entera de botones sin efecto en el sitio más visible. Ahora aparecen cuando pueden hacer algo, y mientras tanto la franja dice qué hacer y nombra el bloque que estás editando.",
+        "Mover un bloque es un gesto. Estaba a dos niveles dentro de un menú. Ahora hay un carril al margen del papel con subir y bajar, que además dice de qué tipo es cada bloque.",
+        "El muelle deja de ser un fantasma. Flotaba semitransparente y debajo se leía medio texto. Ahora la página se ve continuar debajo, y mientras escribes dentro de un bloque la fila de decisión se retrae para devolverte el papel.",
+        "En las presentaciones"
       ],
       "channel": "beta"
     },
@@ -546,13 +605,13 @@
       ],
       "notes": [
         "pteron 0.4.2 — la hoja que imprimes se parece a la que ves",
-        "Esta versión reúne todo lo que no alcanzó a publicarse desde 0.4.0: el parche de",
-        "correcciones que iba a ser 0.4.1 —nunca etiquetado— y el trabajo de forma sobre el",
-        "material exportado. Sigue siendo un parche: corrige y mide, no incorpora",
-        "funciones.",
+        "Esta versión reúne todo lo que no alcanzó a publicarse desde 0.4.0: el parche de correcciones que iba a ser 0.4.1 —nunca etiquetado— y el trabajo de forma sobre el material exportado. Sigue siendo un parche: corrige y mide, no incorpora funciones.",
         "Lo que cambia en el material que entregas",
-        "La hoja se lee como una guía, no como una transcripción. Tipografía con",
-        "jerarquía, interlineado y aire entre párrafos donde antes había un muro de"
+        "La hoja se lee como una guía, no como una transcripción. Tipografía con jerarquía, interlineado y aire entre párrafos donde antes había un muro de texto en Times New Roman.",
+        "Las listas son listas. Un guion o una viñeta que escribe el asistente ahora llegan a Word como lista real, con la segunda línea alineada bajo el texto y no bajo la marca. Las alternativas «A) B) C)» y las casillas conservan su marca: renumerarlas cambiaría lo que recibe el estudiante.",
+        "Las tablas usan la hoja completa. Una planificación apaisada desperdiciaba cuatro centímetros de papel mientras la columna de actividades partía cada palabra; ahora cada columna recibe el ancho que su contenido necesita.",
+        "Un material apaisado nace apaisado. Si pides formato horizontal, o la tabla no cabe a lo ancho, la primera versión ya sale así. Antes sólo lo hacía a partir de la segunda, con cualquier modelo.",
+        "El enunciado de una pregunta se distingue y ya no queda separado de sus alternativas al cambiar de página. La instrucción tiene su recuadro con rótulo."
       ],
       "channel": "beta"
     },
@@ -655,13 +714,13 @@
       ],
       "notes": [
         "pteron 0.4.0 — conversación pedagógica abierta",
-        "Hasta 0.3 el chat elegía un modo por ti a partir de lo que escribías: pedir algo",
-        "podía convertirse en un encargo de material aunque sólo quisieras pensar en voz",
-        "alta. 0.4 abre el turno. Preguntas, analizas, buscas, transformas o creas sin",
-        "elegir un modo, y pteron interviene sólo donde tiene autoridad: permisos,",
-        "privacidad, contratos, persistencia y reversibilidad (ADR-072, ADR-073).",
+        "Hasta 0.3 el chat elegía un modo por ti a partir de lo que escribías: pedir algo podía convertirse en un encargo de material aunque sólo quisieras pensar en voz alta. 0.4 abre el turno. Preguntas, analizas, buscas, transformas o creas sin elegir un modo, y pteron interviene sólo donde tiene autoridad: permisos, privacidad, contratos, persistencia y reversibilidad.",
         "Lo que cambia al conversar",
-        "Una consulta se queda en el chat. Una respuesta conversacional termina en el"
+        "Una consulta se queda en el chat. Una respuesta conversacional termina en el hilo, con «Guardar esta respuesta…» si la quieres conservar. Sólo una propuesta persistente abre el ciclo de aceptar o descartar.",
+        "El contexto ya no es una orden. Curso, asignatura, OA, documentos elegidos y material abierto orientan la conversación, pero no convierten tu siguiente mensaje en una modificación de lo que está abierto. Para eso hace falta una acción visible, acotada a ese turno.",
+        "El plan es una opción, no un peaje. Cuando el pedido lo justifica, pteron propone un plan con objetivo, entregables, decisiones confirmadas y las preguntas que faltan; puedes ajustarlo conversando antes de que escriba nada. Una consulta simple no pasa por ahí.",
+        "Las preguntas traen alternativas. Entre dos y cuatro, la recomendada primero y su efecto en una frase, y siempre puedes responder con tus palabras.",
+        "Lo que cambia al esperar"
       ],
       "channel": "beta"
     },
@@ -823,13 +882,13 @@
       ],
       "notes": [
         "pteron 0.3.0 — consolidación de la beta de escritorio",
-        "pteron 0.3.0 afianza el trabajo desarrollado durante las versiones anteriores",
-        "antes de ampliar el producto con integraciones nuevas. Esta versión sigue siendo",
-        "beta: prioriza un núcleo docente local-first, resultados revisables y una",
-        "experiencia coherente de principio a fin.",
+        "pteron 0.3.0 afianza el trabajo desarrollado durante las versiones anteriores antes de ampliar el producto con integraciones nuevas. Esta versión sigue siendo beta: prioriza un núcleo docente local-first, resultados revisables y una experiencia coherente de principio a fin.",
         "Lo principal",
-        "El modo Plan funciona dentro del hilo y conduce a materiales independientes,",
-        "revisables y editables, sin convertir la conversación en un asistente rígido."
+        "El modo Plan funciona dentro del hilo y conduce a materiales independientes, revisables y editables, sin convertir la conversación en un asistente rígido.",
+        "Guías, evaluaciones, pautas, planificaciones y presentaciones viven como artefactos propios. El editor documental, las presentaciones 16:9 y las exportaciones DOCX/PPTX conservan una ruta visible de revisión y guardado.",
+        "La interfaz completa el pulido de desplazamiento, paneles, dock del compositor, estados finales y controles progresivos en tamaños de ventana de 1440, 1100 y 900 px.",
+        "El núcleo del agente por sesión integra Pi con cancelación, compactación y un conjunto acotado de herramientas docentes; los proveedores siguen siendo reemplazables y opt-in.",
+        "Las claves de proveedores se guardan únicamente en el almacén seguro del sistema operativo. Si el llavero no responde, pteron corta la espera con un error visible y no degrada a texto plano."
       ],
       "channel": "beta"
     },
@@ -992,12 +1051,12 @@
       "notes": [
         "pteron 0.2.11 — presentaciones y un arranque más corto",
         "Presentaciones nativas",
-        "Puedes pedir una presentación y editarla en pteron. Mesa 16:9 con carril de",
-        "diapositivas, título, contenido y notas del orador, todo sobre los mismos",
-        "bloques que ya usan los documentos: una presentación es una revisión más del",
-        "material, no un formato aparte.",
-        "Guardar copia… produce PPTX. Añadir, duplicar, reordenar o eliminar una",
-        "diapositiva crea una revisión nueva, así que puedes volver atrás."
+        "Puedes pedir una presentación y editarla en pteron. Mesa 16:9 con carril de diapositivas, título, contenido y notas del orador, todo sobre los mismos bloques que ya usan los documentos: una presentación es una revisión más del material, no un formato aparte.",
+        "Guardar copia… produce PPTX. Añadir, duplicar, reordenar o eliminar una diapositiva crea una revisión nueva, así que puedes volver atrás.",
+        "No se ofrece abrir un PPTX cualquiera como fuente editable: pteron crea y edita presentaciones propias.",
+        "Arranque",
+        "La aplicación abre antes. La carga no esencial se difiere en vez de bloquear la primera pantalla.",
+        "Planificación dentro del chat"
       ],
       "channel": "beta"
     },
@@ -1110,12 +1169,12 @@
       "notes": [
         "pteron 0.2.9 — el lienzo dice en qué estado está",
         "En el material abierto",
-        "Estado de edición explícito. Una franja sobre el papel declara si el",
-        "material es editable, si estás viendo una propuesta en sólo lectura o si se",
-        "está procesando. Antes había que deducirlo del comportamiento de los controles.",
-        "Formato acotado. La barra ofrece lo que el formato base permite cambiar y no",
-        "finge ser un procesador de textos: tipografía y tamaño siguen definidos por la",
-        "plantilla."
+        "Estado de edición explícito. Una franja sobre el papel declara si el material es editable, si estás viendo una propuesta en sólo lectura o si se está procesando. Antes había que deducirlo del comportamiento de los controles.",
+        "Formato acotado. La barra ofrece lo que el formato base permite cambiar y no finge ser un procesador de textos: tipografía y tamaño siguen definidos por la plantilla.",
+        "Recuperación cuando algo falla. Un error al preparar el material explica qué pasó y cómo recuperarlo, y conserva el borrador anterior en vez de perderlo.",
+        "Proveedores",
+        "Meta AI / Muse Spark 1.2 como proveedor opt-in, con sus dos tiers visibles. El tier con descuento declara en su propio nombre que las entradas y salidas se usan para entrenar, muestra un aviso destacado en Ajustes y pide autorización en cada ejecución. Activar el proveedor selecciona el tier estándar: el descuento sólo se obtiene eligiéndolo.",
+        "Materiales múltiples"
       ],
       "channel": "beta"
     },
@@ -1174,7 +1233,7 @@
         "Ajustes → Modelo rediseñado: \"Modo fácil\" (planes) y \"Modo manual\" (proveedores), más claro que antes.",
         "Corrige que el segundo material de una petición con dos materiales (por ejemplo, planificación y guía) pudiera crearse con el tipo equivocado.",
         "Corrige un falso aviso de privacidad que se activaba con la palabra \"estudiante\" en medio de una oración común.",
-        "Corrige documentos .docx que no abrían cuando una guía incluía una fórmula con una comparación (como \"<\" o \">\"); de paso, los documentos exportados ahora se ven más ordenados: encabezado en tabla, notas con recuadro, encabezados de tabla en negrita."
+        "Corrige documentos.docx que no abrían cuando una guía incluía una fórmula con una comparación (como \"<\" o \">\"); de paso, los documentos exportados ahora se ven más ordenados: encabezado en tabla, notas con recuadro, encabezados de tabla en negrita."
       ],
       "channel": "beta"
     },
@@ -1346,12 +1405,12 @@
       "notes": [
         "pteron sigue en beta. Se instala y se actualiza desde la propia aplicación.",
         "Lo que cambia para ti",
-        "«Crea una guía» vuelve a funcionar. Era la petición central del producto y",
-        "podía morir tras seis intentos con el mensaje «no fue posible preparar el",
-        "material», pidiéndote que agregaras lo que ya habías pedido. El validador",
-        "rechazaba la guía por no rotular objetivo, instrucciones y cierre: una decisión",
-        "de contenido que no le corresponde tomar. Ahora avisa en vez de rechazar, y los",
-        "materiales realmente incompletos se siguen bloqueando."
+        "«Crea una guía» vuelve a funcionar. Era la petición central del producto y podía morir tras seis intentos con el mensaje «no fue posible preparar el material», pidiéndote que agregaras lo que ya habías pedido. El validador rechazaba la guía por no rotular objetivo, instrucciones y cierre: una decisión de contenido que no le corresponde tomar. Ahora avisa en vez de rechazar, y los materiales realmente incompletos se siguen bloqueando.",
+        "No se te vuelve a preguntar lo que ya declaraste. Si el curso está en los chips del compositor, pteron ya no pregunta para qué curso es el material. Y si el material no menciona el curso pero tampoco lo contradice, deja de rechazarse.",
+        "Un pedido doble crea sus dos materiales. «La planificación de la clase y la guía» declara ambos en el plan y los crea uno por uno; el lienzo los lista y puedes crear el que falte. Antes se creaba uno y el otro se perdía en silencio.",
+        "Planificaciones apaisadas. Puedes pedir el material horizontal, y una tabla que no cabe a lo ancho pasa a horizontal por su cuenta.",
+        "Tablas que se imprimían mal. Una tabla con la columna de más corría los descriptores un lugar: con una rúbrica, eso significaba calificar un nivel por debajo del que corresponde sin poder notarlo. También se enderezan las tablas transpuestas y ya no se imprimen los \\n y  que dejaba el proveedor.",
+        "Lo que sigue pendiente"
       ],
       "channel": "beta"
     },
@@ -1516,64 +1575,6 @@
       ],
       "notes": [
         "Pteron continúa en etapa y canal beta. Esta versión no incorpora cambios funcionales respecto de 0.2.1-beta.7: el único cambio es el esquema de versión pública, que desde ahora usa X.Y.Z sin incluir la palabra beta. El estado beta se mantiene explícitamente en el canal de actualización y en la distribución. macOS está firmado y notarizado. En Windows 11 el instalador aún no está firmado, por lo que Microsoft Defender SmartScreen puede mostrar una advertencia."
-      ],
-      "channel": "beta"
-    },
-    {
-      "version": "0.2.1-beta.6",
-      "publishedAt": "2026-07-30T15:17:26Z",
-      "publishedLabel": "julio de 2026",
-      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.6",
-      "assets": [
-        {
-          "name": "beta-mac.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/beta-mac.yml",
-          "bytes": 522
-        },
-        {
-          "name": "beta.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/beta.yml",
-          "bytes": 358
-        },
-        {
-          "name": "Pteron-0.2.1-beta.6-arm64.dmg",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-arm64.dmg",
-          "bytes": 194227500
-        },
-        {
-          "name": "Pteron-0.2.1-beta.6-arm64.dmg.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-arm64.dmg.blockmap",
-          "bytes": 203450
-        },
-        {
-          "name": "Pteron-0.2.1-beta.6-arm64.zip",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-arm64.zip",
-          "bytes": 193654337
-        },
-        {
-          "name": "Pteron-0.2.1-beta.6-arm64.zip.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-arm64.zip.blockmap",
-          "bytes": 203464
-        },
-        {
-          "name": "Pteron-0.2.1-beta.6-x64.exe",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-x64.exe",
-          "bytes": 153569367
-        },
-        {
-          "name": "Pteron-0.2.1-beta.6-x64.exe.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-x64.exe.blockmap",
-          "bytes": 162508
-        }
-      ],
-      "notes": [
-        "Pteron en tu iPhone. Ajustes permite vincular el teléfono con el Pteron de tu computador, que sigue siendo el que guarda todo: sesiones, carpeta, evidencia y materiales. El teléfono no es una segunda copia del programa, es una ventana a la que ya tienes abierta. Viene apagado y se enciende sólo si tú lo activas; mientras está encendido escucha únicamente dentro de tu propio computador —nunca queda abierto a la red—, la clave se guarda cifrada y puedes cambiarla o revocarla cuando quieras.",
-        "Menos ruido mientras se prepara el material. El avance se mostraba dos veces a la vez, en la conversación y en el panel de abajo, diciendo lo mismo con distinto detalle. Ahora lo lleva sólo el panel, que muestra cada paso con su estado. La conversación deja constancia de qué consultó Pteron recién cuando termina, que es cuando esa información sirve de registro.",
-        "Las tarjetas de avance dicen el dato, no la categoría. Antes decían «Material seleccionado»; ahora dicen cuál: el curso, la asignatura y el tema con los que está trabajando. Y cuando no adjuntaste ningún material, lo dice, en vez de afirmar que hay una selección registrada que no existe.",
-        "La barra del material quedó más limpia. El contador «Contexto · 0» desaparece cuando no hay nada que contar. La etiqueta para tu portafolio se llama ahora por lo que hace y aparece cuando el material está listo, no mientras lo trabajas. Insertar un salto de página pasó a vivir junto al resto de la configuración de página. Y en pantallas angostas los botones dejaron de estirarse de lado a lado con huecos enormes.",
-        "macOS (Apple serie M): firmado con Developer ID y notarizado.",
-        "Windows 11: el instalador no está firmado. Windows mostrará un aviso de SmartScreen al instalar; elige «Más información» → «Ejecutar de todas formas». La firma de código es requisito antes de salir de la beta.",
-        "Si al actualizar en Windows aparece «Installer integrity check has failed», borra la carpeta %LOCALAPPDATA%\\pteron-updater y vuelve a intentarlo."
       ],
       "channel": "beta"
     }
