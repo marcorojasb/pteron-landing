@@ -360,7 +360,7 @@ button, input { font: inherit; }
 .notice strong { display: block; margin-bottom: 5px; font-size: 15px; }
 .notice p { margin: 0; color: #314254; font-size: 14px; }
 .notice-prominent { padding: 20px 22px; }
-.product-shot { margin: 26px 0 0; }
+.product-shot { margin: 26px 0 24px; }
 .product-shot img {
   display: block;
   width: 100%;
