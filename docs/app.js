@@ -100,10 +100,15 @@
     }
   };
 
+  // Una dirección antigua sigue llevando a su página, ya renombrada.
+  const resolveSlug = slug =>
+    docs.pages[slug] ? slug : (docs.aliases && docs.aliases[slug]) || "inicio";
+
   const renderPage = (slug, push = false) => {
-    const page = docs.pages[slug] || docs.pages.inicio;
-    const resolvedSlug = docs.pages[slug] ? slug : "inicio";
+    const resolvedSlug = resolveSlug(slug);
+    const page = docs.pages[resolvedSlug];
     if (push) history.pushState({ slug: resolvedSlug }, "", pageUrl(resolvedSlug));
+    else if (resolvedSlug !== slug) history.replaceState({ slug: resolvedSlug }, "", pageUrl(resolvedSlug));
     document.title = `${page.title} — pteron`;
     article.innerHTML = `
       <header class="article-header">
