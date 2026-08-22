@@ -2,9 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://pteron.patagua.dev/</loc><priority>1.0</priority></url>
   <url><loc>https://pteron.patagua.dev/docs/</loc><priority>0.9</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=requisitos</loc><priority>0.7</priority></url>
   <url><loc>https://pteron.patagua.dev/docs/?pagina=instalar-macos</loc><priority>0.8</priority></url>
   <url><loc>https://pteron.patagua.dev/docs/?pagina=instalar-windows</loc><priority>0.8</priority></url>
   <url><loc>https://pteron.patagua.dev/docs/?pagina=instalar-linux</loc><priority>0.8</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=primera-apertura</loc><priority>0.7</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=actualizar</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=pantalla-inicio</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=sesiones-memoria</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=carpeta-trabajo</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=fuentes-contexto</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=biblioteca</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=planificar</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=crear</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=evaluar</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=adaptar</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=revisar-exportar</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=artefactos</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=presentaciones</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=exportar</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=trabajo-local</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=datos-estudiantes</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=modelos-permisos</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=preguntas</loc><priority>0.7</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs/?pagina=solucion-problemas</loc><priority>0.7</priority></url>
   <url><loc>https://pteron.patagua.dev/docs/?pagina=versiones</loc><priority>0.7</priority></url>
   <url><loc>https://pteron.patagua.dev/descargar/</loc><priority>0.8</priority></url>
   <url><loc>https://pteron.patagua.dev/planes/</loc><priority>0.8</priority></url>

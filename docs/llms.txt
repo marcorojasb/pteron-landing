@@ -1,21 +1,72 @@
 # pteron
 
-> pteron es un espacio de trabajo local-first para docentes. Ayuda a preparar y
-> revisar guías, planificaciones, evaluaciones y rúbricas sin reemplazar el
-> criterio profesional.
+> pteron es un espacio de trabajo local-first para docentes. Prepara guías,
+> planificaciones, evaluaciones, rúbricas y presentaciones a partir de las
+> fuentes del profesor, y las entrega como un documento editable que él decide
+> si conservar. No reemplaza su criterio.
 
-## Documentación
+El núcleo local es gratis para siempre y no depende de un plan de pago. Los
+planes añaden capacidad de IA incluida, no el trabajo local.
 
-- [Inicio](https://pteron.patagua.dev/docs/)
+## Empezar
+
+- [Qué es pteron](https://pteron.patagua.dev/docs/)
+- [Requisitos](https://pteron.patagua.dev/docs/?pagina=requisitos)
 - [Instalar en macOS](https://pteron.patagua.dev/docs/?pagina=instalar-macos)
 - [Instalar en Windows](https://pteron.patagua.dev/docs/?pagina=instalar-windows)
 - [Instalar en Linux](https://pteron.patagua.dev/docs/?pagina=instalar-linux)
+- [Primera apertura](https://pteron.patagua.dev/docs/?pagina=primera-apertura)
+- [Actualizar pteron](https://pteron.patagua.dev/docs/?pagina=actualizar)
+
+## Conocer la aplicación
+
+- [La pantalla de inicio](https://pteron.patagua.dev/docs/?pagina=pantalla-inicio)
+- [Sesiones y memoria](https://pteron.patagua.dev/docs/?pagina=sesiones-memoria)
 - [Carpeta de trabajo](https://pteron.patagua.dev/docs/?pagina=carpeta-trabajo)
 - [Fuentes y contexto](https://pteron.patagua.dev/docs/?pagina=fuentes-contexto)
-- [Privacidad y control](https://pteron.patagua.dev/docs/?pagina=trabajo-local)
+- [Abrir un recurso](https://pteron.patagua.dev/docs/?pagina=biblioteca)
+
+## Trabajar con pteron
+
+La pantalla de inicio ofrece cuatro rumbos: Planificar, Crear, Evaluar y
+Adaptar. Un rumbo orienta el pedido de ese turno; no fija un modo ni obliga a
+un curso, un plan o un tipo de material.
+
+- [Planificar](https://pteron.patagua.dev/docs/?pagina=planificar)
+- [Crear](https://pteron.patagua.dev/docs/?pagina=crear)
+- [Evaluar](https://pteron.patagua.dev/docs/?pagina=evaluar)
+- [Adaptar](https://pteron.patagua.dev/docs/?pagina=adaptar)
+- [Revisar y guardar](https://pteron.patagua.dev/docs/?pagina=revisar-exportar)
+
+## Materiales y formatos
+
+- [Documentos](https://pteron.patagua.dev/docs/?pagina=artefactos)
+- [Presentaciones](https://pteron.patagua.dev/docs/?pagina=presentaciones)
+- [Exportar y compartir](https://pteron.patagua.dev/docs/?pagina=exportar)
+
+## Privacidad y control
+
+- [Trabajo local](https://pteron.patagua.dev/docs/?pagina=trabajo-local)
+- [Datos de estudiantes](https://pteron.patagua.dev/docs/?pagina=datos-estudiantes)
+- [Modelos y permisos](https://pteron.patagua.dev/docs/?pagina=modelos-permisos)
+
+## Ayuda
+
+- [Preguntas frecuentes](https://pteron.patagua.dev/docs/?pagina=preguntas)
+- [Solución de problemas](https://pteron.patagua.dev/docs/?pagina=solucion-problemas)
 - [Versiones y plataformas](https://pteron.patagua.dev/docs/?pagina=versiones)
+
+## Notas sobre el estado actual
 
 Windows 11 está soportado durante la beta. El instalador todavía no está firmado
 y Microsoft Defender SmartScreen puede pedir confirmación. Linux x86_64 está
 disponible en beta mediante AppImage, .deb, .rpm y .tar.gz, con firmas GPG
-separadas. El canal estable está próximamente, sin fecha comprometida.
+separadas. macOS requiere procesadores Apple serie M. El canal estable está
+próximamente, sin fecha comprometida.
+
+La detección de datos de estudiantes es una salvaguarda acotada: reconoce un
+nombre declarado en un campo de persona y un RUT con formato chileno antes de un
+envío a un proveedor externo. Salud, NEE/PIE, calificaciones o disciplina no la
+disparan por sí solas.
+
+pteron no abre ni convierte archivos PPTX externos: los crea y los exporta.
