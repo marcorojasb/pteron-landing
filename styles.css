@@ -122,7 +122,7 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
 .product-window { margin-inline: 0; overflow: hidden; border: 1px solid var(--line); background: var(--surface); box-shadow: 0 24px 70px rgba(34, 42, 49, .08); }
 .product-window img { width: 100%; height: auto; }
 .product-window.hero-product {
-  width: min(88%, 1140px, calc((100vh - 250px) * 1.456)); height: max-content;
+  width: min(88%, 1140px, calc((100vh - 250px) * 1.636)); height: max-content;
   border: 0; border-radius: 0; background: transparent; box-shadow: none;
 }
 .product-window.hero-product img { filter: drop-shadow(0 28px 38px rgba(3, 8, 18, .38)); }
@@ -394,7 +394,7 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
   .scroll-film { height: 165vh; margin-inline: -20px; }
   .stage-caption { inset-inline: 18px; }
   .hero-product { top: 18vh; transform: translate3d(-50%, 48vh, 0); }
-  .product-window.hero-product { width: min(calc(100% - 32px), calc((100vh - 164px) * 1.456)); }
+  .product-window.hero-product { width: min(calc(100% - 32px), calc((100vh - 164px) * 1.636)); }
   .section { padding: 76px 0; }
   .compact-story-grid h2, .section-intro h2, .principles h2, .pricing h2, .faq h2 { font-size: 40px; }
   .compact-story-grid { gap: 20px; }
