@@ -5,6 +5,7 @@
   --paper-deep: #f0e9de;
   --surface: #fffdfa;
   --gold: #bd7823;
+  --gold-text: #96590f;
   --line: #ded6ca;
   --white: #fff;
   --serif: "Newsreader", Georgia, serif;
@@ -77,7 +78,7 @@ body.nav-open .site-header { backdrop-filter: none; }
 
 .hero { padding: 174px 0 0; overflow-x: clip; }
 .hero-grid { display: grid; grid-template-columns: 1fr; }
-.eyebrow, .section-number { margin: 0 0 22px; color: var(--gold); font-size: 13px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; }
+.eyebrow, .section-number { margin: 0 0 22px; color: var(--gold-text); font-size: 13px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; }
 h1, h2, h3, p { margin-top: 0; }
 h1, h2, h3 { font-family: var(--serif); font-weight: 400; }
 h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px); line-height: .92; letter-spacing: -.052em; }
@@ -141,7 +142,7 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
 .process-list li { min-height: 210px; padding: 28px 34px 0 0; border-right: 1px solid var(--line); }
 .process-list li + li { padding-left: 34px; }
 .process-list li:last-child { border-right: 0; }
-.process-list span { display: block; margin-bottom: 18px; color: var(--gold); font-size: 12px; }
+.process-list span { display: block; margin-bottom: 18px; color: var(--gold-text); font-size: 12px; }
 .process-list strong { display: block; margin-bottom: 10px; font: 400 27px/1.1 var(--serif); }
 .process-list p { color: var(--ink-soft); font-size: 14px; }
 
@@ -150,13 +151,13 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
 .principles-heading { position: sticky; top: 140px; align-self: start; }
 .principles-list article { display: grid; grid-template-columns: 180px 1fr; column-gap: 44px; padding: 8px 0 52px; border-top: 1px solid var(--line); }
 .principles-list article + article { padding-top: 52px; }
-.principles-list span { color: var(--gold); font-size: 13px; }
+.principles-list span { color: var(--gold-text); font-size: 13px; }
 .principles-list h3 { margin: 0 0 18px; font-size: 40px; line-height: 1.07; letter-spacing: -.025em; }
 .principles-list p { grid-column: 2; max-width: 520px; color: var(--ink-soft); }
 
 .statement { padding-block: 185px; }
 .statement-inner { max-width: 1120px; margin-inline: auto; text-align: center; }
-.statement p { margin-bottom: 20px; color: var(--gold); font-size: 15px; }
+.statement p { margin-bottom: 20px; color: var(--gold-text); font-size: 15px; }
 .statement h2 { margin: 0; font-size: clamp(58px, 6.8vw, 100px); line-height: .96; letter-spacing: -.047em; }
 
 .pricing { background: var(--paper-deep); }
@@ -242,7 +243,7 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
 .availability-legend { display: flex; flex-wrap: wrap; gap: 22px; padding-bottom: 7px; color: var(--ink-soft); font-size: 12px; }
 .availability-legend span { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
 .availability-icon { display: inline-block; width: 17px; height: 17px; border: 1px solid var(--gold); border-radius: 50%; }
-.availability-icon-current::after { content: "✓"; display: block; color: var(--gold); font-size: 12px; line-height: 15px; text-align: center; }
+.availability-icon-current::after { content: "✓"; display: block; color: var(--gold-text); font-size: 12px; line-height: 15px; text-align: center; }
 .availability-icon-soon { border-color: var(--ink-soft); border-style: dashed; }
 .plans-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-left: 1px solid var(--line); }
 .plan-card { min-width: 0; display: flex; flex-direction: column; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--surface); }
@@ -250,19 +251,19 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
 .plan-card.is-coming .plan-card-header { background: #496a8e; }
 .plan-card.is-account .plan-card-header { background: #496a8e; }
 .plan-card-header h3 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 37px; line-height: 1; letter-spacing: -.03em; }
-.plan-availability { margin: 0 0 10px; color: rgba(255,255,255,.78); font-size: 12px; font-weight: 500; letter-spacing: .03em; }
-.plan-check { display: inline-grid; width: 25px; height: 25px; place-items: center; border-radius: 50%; background: var(--gold); color: var(--white); font: 600 15px/1 var(--sans); }
+.plan-availability { margin: 0 0 10px; color: rgba(255,255,255,.9); font-size: 12px; font-weight: 500; letter-spacing: .03em; }
+.plan-check { display: inline-grid; width: 25px; height: 25px; place-items: center; border-radius: 50%; background: var(--gold-text); color: var(--white); font: 600 15px/1 var(--sans); }
 .plan-card-body { display: flex; flex: 1; flex-direction: column; padding: 28px 26px 26px; }
 .plan-card-lead { min-height: 72px; margin: 0 0 28px; font-size: 15px; line-height: 1.5; }
 .plan-price { display: flex; align-items: baseline; gap: 7px; margin: -8px 0 8px; color: var(--ink); }
 .plan-price strong { font: 400 42px/.95 var(--serif); letter-spacing: -.04em; }
 .plan-price span { color: var(--ink-soft); font-size: 13px; }
-.plan-trial { margin: 0 0 24px; color: var(--gold); font-size: 12px; font-weight: 600; letter-spacing: .03em; }
+.plan-trial { margin: 0 0 24px; color: var(--gold-text); font-size: 12px; font-weight: 600; letter-spacing: .03em; }
 .plan-includes { margin: 0 0 20px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; }
 .plan-feature-list { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; color: var(--ink-soft); font-size: 14px; line-height: 1.4; }
 .plan-feature-list li { position: relative; padding-left: 22px; }
-.plan-feature-list li::before { content: "✓"; position: absolute; left: 0; color: var(--gold); font-weight: 600; }
-.plan-footnote-mark { color: var(--gold); }
+.plan-feature-list li::before { content: "✓"; position: absolute; left: 0; color: var(--gold-text); font-weight: 600; }
+.plan-footnote-mark { color: var(--gold-text); }
 .plan-card-footer { margin-top: auto; padding-top: 34px; }
 .plan-card-footer .button { width: 100%; min-height: 52px; padding-inline: 15px; font-size: 14px; }
 .button-outline { border-color: var(--ink); background: transparent; color: var(--ink); }
@@ -589,7 +590,7 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
   .download-footer span:last-child { display: none; }
   .download-background::after {
     background:
-      linear-gradient(180deg, rgba(3, 10, 19, .34), rgba(3, 10, 19, .12) 32%, rgba(3, 10, 19, .84) 76%),
-      linear-gradient(90deg, rgba(3, 10, 19, .5), rgba(3, 10, 19, .14));
+      linear-gradient(180deg, rgba(3, 10, 19, .38), rgba(3, 10, 19, .32) 26%, rgba(3, 10, 19, .8) 54%, rgba(3, 10, 19, .93) 82%),
+      linear-gradient(90deg, rgba(3, 10, 19, .5), rgba(3, 10, 19, .2));
   }
 }
