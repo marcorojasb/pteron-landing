@@ -1,3 +1,4 @@
+[hidden] { display: none !important; }
 .account-page { background: var(--paper); }
 .account-hero { padding: 94px 0 76px; border-bottom: 1px solid var(--line); }
 .account-hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 80px; align-items: end; }
