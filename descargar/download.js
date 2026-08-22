@@ -56,6 +56,26 @@
     if (latest?.url && releaseLink) releaseLink.href = latest.url;
   };
 
+  // El boton solido marcaba siempre Windows, incluso a un profesor en Mac.
+  // Se traslada el enfasis a la plataforma desde la que se visita la pagina.
+  const highlightPlatform = () => {
+    const signature = `${navigator.userAgentData?.platform || ""} ${navigator.userAgent}`;
+    const isAndroid = /Android/i.test(signature);
+    const target = /Mac|iPad|iPhone/i.test(signature)
+      ? macosDownload
+      : /Linux|X11/i.test(signature) && !isAndroid
+        ? linuxDownload
+        : windowsDownload;
+    if (!target) return;
+    [windowsDownload, macosDownload, linuxDownload].forEach((option) => {
+      if (!option) return;
+      option.classList.toggle("button-light", option === target);
+      option.classList.toggle("download-option-secondary", option !== target);
+    });
+  };
+
+  highlightPlatform();
+
   loadLatestRelease().catch(() => {});
 
   const video = document.querySelector("[data-download-video]");
