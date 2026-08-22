@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-21T16:52:34.658Z",
+  "generatedAt": "2026-08-22T22:50:31.460Z",
   "latest": {
     "version": "0.4.4",
     "publishedAt": "2026-08-19T21:55:47Z",
@@ -111,6 +111,55 @@
   },
   "stable": null,
   "releases": [
+    {
+      "version": "0.4.7",
+      "publishedAt": "2026-08-22T22:50:16Z",
+      "publishedLabel": "agosto de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.4.7",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.7/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "pteron-0.4.7-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.7/pteron-0.4.7-arm64.dmg",
+          "bytes": 169482242
+        },
+        {
+          "name": "pteron-0.4.7-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.7/pteron-0.4.7-arm64.dmg.blockmap",
+          "bytes": 179468
+        },
+        {
+          "name": "pteron-0.4.7-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.7/pteron-0.4.7-arm64.zip",
+          "bytes": 168860724
+        },
+        {
+          "name": "pteron-0.4.7-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.7/pteron-0.4.7-arm64.zip.blockmap",
+          "bytes": 178049
+        },
+        {
+          "name": "pteron-0.4.7-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.7/pteron-0.4.7-x64.exe",
+          "bytes": 134007783
+        }
+      ],
+      "notes": [
+        "Versión de arranque, ciclo de sesión y un arnés de pruebas que mide lo que dice medir.",
+        "Lo que cambia para el profesor",
+        "Abrir pteron ya no crea una conversación. Se parte en Home, y la sesión nace cuando empiezas a trabajar de verdad. Si vuelves dentro de 30 minutos, retoma donde ibas.",
+        "Una sola pantalla de partida. Antes había dos preguntando lo mismo con distintas palabras.",
+        "El hilo vuelve a seguir la conversación. Se soltaba en el primer instante al abrir, y una conversación larga aparecía por el principio con el último botón tapado.",
+        "Una tabla sin títulos de columna ya no te deja sin material. El sistema pedía al modelo algo imposible y la petición moría sin entregar nada.",
+        "El Markdown y los montos en pesos dejaron de romper el documento. Los ### se imprimían literales y un $5.100 rompía las fórmulas cercanas.",
+        "Por dentro"
+      ],
+      "channel": "beta"
+    },
     {
       "version": "0.4.6",
       "publishedAt": "2026-08-21T16:52:18Z",
@@ -1516,64 +1565,6 @@
       ],
       "notes": [
         "Pteron continúa en etapa y canal beta. Esta versión no incorpora cambios funcionales respecto de 0.2.1-beta.7: el único cambio es el esquema de versión pública, que desde ahora usa X.Y.Z sin incluir la palabra beta. El estado beta se mantiene explícitamente en el canal de actualización y en la distribución. macOS está firmado y notarizado. En Windows 11 el instalador aún no está firmado, por lo que Microsoft Defender SmartScreen puede mostrar una advertencia."
-      ],
-      "channel": "beta"
-    },
-    {
-      "version": "0.2.1-beta.6",
-      "publishedAt": "2026-07-30T15:17:26Z",
-      "publishedLabel": "julio de 2026",
-      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.1-beta.6",
-      "assets": [
-        {
-          "name": "beta-mac.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/beta-mac.yml",
-          "bytes": 522
-        },
-        {
-          "name": "beta.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/beta.yml",
-          "bytes": 358
-        },
-        {
-          "name": "Pteron-0.2.1-beta.6-arm64.dmg",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-arm64.dmg",
-          "bytes": 194227500
-        },
-        {
-          "name": "Pteron-0.2.1-beta.6-arm64.dmg.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-arm64.dmg.blockmap",
-          "bytes": 203450
-        },
-        {
-          "name": "Pteron-0.2.1-beta.6-arm64.zip",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-arm64.zip",
-          "bytes": 193654337
-        },
-        {
-          "name": "Pteron-0.2.1-beta.6-arm64.zip.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-arm64.zip.blockmap",
-          "bytes": 203464
-        },
-        {
-          "name": "Pteron-0.2.1-beta.6-x64.exe",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-x64.exe",
-          "bytes": 153569367
-        },
-        {
-          "name": "Pteron-0.2.1-beta.6-x64.exe.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.1-beta.6/Pteron-0.2.1-beta.6-x64.exe.blockmap",
-          "bytes": 162508
-        }
-      ],
-      "notes": [
-        "Pteron en tu iPhone. Ajustes permite vincular el teléfono con el Pteron de tu computador, que sigue siendo el que guarda todo: sesiones, carpeta, evidencia y materiales. El teléfono no es una segunda copia del programa, es una ventana a la que ya tienes abierta. Viene apagado y se enciende sólo si tú lo activas; mientras está encendido escucha únicamente dentro de tu propio computador —nunca queda abierto a la red—, la clave se guarda cifrada y puedes cambiarla o revocarla cuando quieras.",
-        "Menos ruido mientras se prepara el material. El avance se mostraba dos veces a la vez, en la conversación y en el panel de abajo, diciendo lo mismo con distinto detalle. Ahora lo lleva sólo el panel, que muestra cada paso con su estado. La conversación deja constancia de qué consultó Pteron recién cuando termina, que es cuando esa información sirve de registro.",
-        "Las tarjetas de avance dicen el dato, no la categoría. Antes decían «Material seleccionado»; ahora dicen cuál: el curso, la asignatura y el tema con los que está trabajando. Y cuando no adjuntaste ningún material, lo dice, en vez de afirmar que hay una selección registrada que no existe.",
-        "La barra del material quedó más limpia. El contador «Contexto · 0» desaparece cuando no hay nada que contar. La etiqueta para tu portafolio se llama ahora por lo que hace y aparece cuando el material está listo, no mientras lo trabajas. Insertar un salto de página pasó a vivir junto al resto de la configuración de página. Y en pantallas angostas los botones dejaron de estirarse de lado a lado con huecos enormes.",
-        "macOS (Apple serie M): firmado con Developer ID y notarizado.",
-        "Windows 11: el instalador no está firmado. Windows mostrará un aviso de SmartScreen al instalar; elige «Más información» → «Ejecutar de todas formas». La firma de código es requisito antes de salir de la beta.",
-        "Si al actualizar en Windows aparece «Installer integrity check has failed», borra la carpeta %LOCALAPPDATA%\\pteron-updater y vuelve a intentarlo."
       ],
       "channel": "beta"
     }
