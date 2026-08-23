@@ -16,7 +16,15 @@
   <header class="site-header is-scrolled">
     <div class="container header-inner">
       <a class="wordmark" href="/" aria-label="pteron, inicio">pteron</a>
-      <a class="button button-small" href="mailto:pteron@patagua.dev">Contacto</a>
+      <button class="menu-button" type="button" aria-label="Abrir navegación" aria-expanded="false" aria-controls="site-nav" data-menu-button>
+        <span></span><span></span>
+      </button>
+      <nav class="site-nav" id="site-nav" aria-label="Navegación principal" data-nav>
+        <a href="/docs/">Documentación</a>
+        <a href="/planes/">Planes</a>
+        <a href="/cuenta/">Cuenta</a>
+        <a class="button button-small" href="/descargar/">Descargar gratis</a>
+      </nav>
     </div>
   </header>
   <main class="legal-page">
