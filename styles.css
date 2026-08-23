@@ -217,7 +217,7 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
 .plans-page { padding-top: 92px; }
 .plans-hero { padding: 116px 0 82px; }
 .plans-hero-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr); gap: 9%; align-items: center; }
-.plans-hero h1 { max-width: 780px; margin-bottom: 32px; font-size: clamp(58px, 6.2vw, 94px); line-height: .94; }
+.plans-hero h1 { max-width: 780px; margin-bottom: 32px; font-size: clamp(58px, 6.2vw, 94px); line-height: .94; text-wrap: balance; }
 .plans-hero h1 em, .plans-final h2 em { font-style: italic; }
 .plans-hero-lead { max-width: 560px; margin: 0; color: var(--ink-soft); font-size: 18px; line-height: 1.55; }
 .license-art { min-height: 340px; display: grid; place-items: center; }
