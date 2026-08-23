@@ -539,6 +539,9 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
   color: rgba(255, 255, 255, .94);
 }
 .download-linux-details a {
+  display: inline-block;
+  padding-block: 5px;
+  line-height: 1.25;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -579,6 +582,7 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
 
 @media (max-width: 560px) {
   .download-shell { width: calc(100% - 40px); }
+  .download-linux-details p { line-height: 2.4; }
   .download-header { min-height: 66px; }
   .download-back { font-size: 13px; }
   .download-content { align-self: end; padding: 64px 0 36px; }
