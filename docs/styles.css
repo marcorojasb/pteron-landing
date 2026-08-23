@@ -203,6 +203,8 @@ button, input { font: inherit; }
   background: var(--paper-2);
 }
 .sidebar-scroll { height: 100%; overflow: auto; padding: 30px 30px 36px 44px; }
+.sidebar-site-nav { display: none; }
+.docs-footer-links { display: flex; gap: 18px; }
 .docs-sidebar section { margin: 0 0 30px; }
 .docs-sidebar h2, .page-toc > p {
   margin: 0 0 9px;
@@ -480,6 +482,16 @@ th { color: var(--muted); font-weight: 600; }
   }
   .docs-sidebar.is-open { display: block; }
   .sidebar-scroll { padding: 24px 22px 40px; }
+  .sidebar-site-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 24px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+    font-weight: 500;
+  }
   .article { padding: 31px 20px 68px; }
   .article-header { margin-bottom: 26px; }
   .article-header h1 { font-size: 36px; line-height: 1.08; }

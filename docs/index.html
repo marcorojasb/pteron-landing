@@ -28,9 +28,9 @@
   <header class="docs-header">
     <a class="docs-wordmark" href="/" aria-label="pteron, inicio">pteron</a>
     <nav aria-label="Navegación principal">
-      <a class="is-current" href="/docs/">Documentación</a>
-      <a href="/docs/?pagina=versiones">Versiones</a>
-      <a href="/privacidad.html">Privacidad</a>
+      <a class="is-current" href="/docs/" aria-current="page">Documentación</a>
+      <a href="/planes/">Planes</a>
+      <a href="/cuenta/">Cuenta</a>
     </nav>
     <button class="search-toggle" type="button" data-search-toggle aria-expanded="false" aria-controls="docs-search-panel" aria-label="Buscar en la documentación">
       <span class="material-symbols-rounded" aria-hidden="true">search</span>
@@ -51,6 +51,12 @@
   <div class="docs-shell">
     <aside class="docs-sidebar" data-sidebar>
       <div class="sidebar-scroll">
+        <nav class="sidebar-site-nav" aria-label="Navegación principal">
+          <a href="/docs/" aria-current="page">Documentación</a>
+          <a href="/planes/">Planes</a>
+          <a href="/cuenta/">Cuenta</a>
+          <a href="/descargar/">Descargar gratis</a>
+        </nav>
         <nav aria-label="Documentación" data-docs-nav></nav>
         <div class="beta-status">
           <span class="status-dot" aria-hidden="true"></span>
@@ -69,7 +75,11 @@
 
   <footer class="docs-footer">
     <span>© <span data-year></span> pteron · Patagua</span>
-    <a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a>
+    <span class="docs-footer-links">
+      <a href="/privacidad.html">Privacidad</a>
+      <a href="/terminos.html">Términos</a>
+      <a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a>
+    </span>
   </footer>
 
   <script src="/release-data.js?v=0.4.4-3" defer></script>
