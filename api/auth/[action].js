@@ -9,13 +9,14 @@ async function requestMagicLink(req, res) {
   method(req, "POST");
   const input = await body(req);
   const email = requireEmail(input.email);
-  await request("/auth/v1/otp", {
+  // El destino de retorno va como parámetro de consulta: `options.email_redirect_to`
+  // es la firma de los SDK, no la de la API REST, y GoTrue descarta el campo sin
+  // avisar. Sin barra final porque `trailingSlash: false` haría que /cuenta/
+  // respondiera 308, y el enlace trae los tokens en el fragmento.
+  const redirectTo = `${siteUrl(req)}/cuenta`;
+  await request(`/auth/v1/otp?redirect_to=${encodeURIComponent(redirectTo)}`, {
     method: "POST",
-    body: {
-      email,
-      create_user: true,
-      options: { email_redirect_to: `${siteUrl(req)}/cuenta/` },
-    },
+    body: { email, create_user: true },
   });
   json(res, 200, { ok: true, message: "Si el correo puede recibir el enlace, lo enviaremos ahora." });
 }
