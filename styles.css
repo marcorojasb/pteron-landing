@@ -467,15 +467,18 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
   justify-content: space-between;
   border-bottom: 1px solid rgba(255, 255, 255, .24);
 }
-.download-back {
+.download-nav {
+  display: flex;
+  align-items: center;
+  gap: 26px;
   font-size: 14px;
   font-weight: 500;
 }
-.download-back::before {
-  content: "←";
-  margin-right: 10px;
-  color: #d4a256;
+.download-nav a { position: relative; padding-block: 10px; }
+.download-nav a::after {
+  content: ""; position: absolute; left: 0; right: 100%; bottom: 4px; height: 1px; background: #d4a256; transition: right .2s ease;
 }
+.download-nav a:hover::after { right: 0; }
 .download-content {
   align-self: end;
   max-width: 920px;
@@ -584,7 +587,7 @@ h1 { max-width: 1120px; margin-bottom: 36px; font-size: clamp(66px, 7.2vw, 112px
   .download-shell { width: calc(100% - 40px); }
   .download-linux-details p { line-height: 2.4; }
   .download-header { min-height: 66px; }
-  .download-back { font-size: 13px; }
+  .download-nav { gap: 16px; font-size: 13px; }
   .download-content { align-self: end; padding: 64px 0 36px; }
   .download-content h1 { margin-bottom: 22px; font-size: clamp(48px, 15vw, 64px); }
   .download-lead { margin-bottom: 26px; font-size: 16px; }
