@@ -159,7 +159,28 @@
     document.querySelector("[data-display-name]").textContent = displayName;
   }
 
+  const clp = new Intl.NumberFormat("es-CL", { maximumFractionDigits: 0 });
+
+  // El precio y los días de prueba viven en `plan_catalog`. El HTML trae los
+  // valores conocidos como respaldo: si el catálogo no responde o trae un valor
+  // que no es un número positivo, la tarjeta se queda con lo que ya mostraba
+  // antes que enseñar un precio en blanco o inventado.
+  function renderPlanCatalog(plans) {
+    const catalog = new Map((plans || []).map((plan) => [plan.id, plan]));
+    document.querySelectorAll("[data-plan-card]").forEach((card) => {
+      const plan = catalog.get(card.dataset.planCard);
+      if (!plan) return;
+      const price = Number(plan.monthly_price_clp);
+      const priceNode = card.querySelector("[data-plan-price]");
+      if (priceNode && Number.isFinite(price) && price > 0) priceNode.textContent = `$${clp.format(price)}`;
+      const days = Number(plan.trial_period_days);
+      const trialNode = card.querySelector("[data-plan-trial]");
+      if (trialNode && Number.isFinite(days) && days > 0) trialNode.textContent = `${days} días gratis`;
+    });
+  }
+
   function renderPlans(data) {
+    renderPlanCatalog(data.plans);
     const current = data.subscriptions?.find((item) => ["incomplete", "trialing", "active", "past_due", "paused"].includes(item.status));
     document.querySelectorAll("[data-plan-card]").forEach((card) => {
       const isCurrent = current?.plan_id === card.dataset.planCard;
