@@ -88,7 +88,7 @@ function verifyLicense(token, keys = PUBLIC_KEYS) {
 async function currentSubscription(userId) {
   const rows = await select(
     "subscriptions",
-    `user_id=eq.${encodeURIComponent(userId)}&status=in.(trialing,active,past_due,paused)&select=id,plan_id,provider_customer_id,provider_subscription_id,status,trial_starts_at,trial_ends_at,current_period_start,current_period_end,cancel_at_period_end,canceled_at&order=created_at.desc&limit=1`,
+    `user_id=eq.${encodeURIComponent(userId)}&status=in.(trialing,active,past_due,paused)&select=id,plan_id,provider_customer_id,provider_subscription_id,status,trial_starts_at,trial_ends_at,current_period_start,current_period_end,cancel_at_period_end,canceled_at,plan_catalog(license_plan)&order=created_at.desc&limit=1`,
     { admin: true },
   );
   return rows?.[0] || null;
@@ -96,12 +96,23 @@ async function currentSubscription(userId) {
 
 async function issueLicense(userId) {
   const subscription = await currentSubscription(userId);
-  if (!subscription || !["basic", "pro"].includes(subscription.plan_id)) {
+  // El plan que va dentro de la licencia no siempre es el de la suscripción:
+  // la app sólo reconoce 'basic' y 'pro', así que un plan de cortesía se firma
+  // como el que sí entiende. `plan_catalog.license_plan` en null significa que
+  // ese plan no emite licencia — es el caso de 'free'.
+  if (!subscription) {
     throw new HttpError(403, "plan_required", "Necesitas un plan activo para activar pteron.");
+  }
+  const licensePlan = subscription.plan_catalog?.license_plan || null;
+  if (!licensePlan) {
+    // Distinto del caso anterior a propósito: aquí sí hay suscripción vigente.
+    // O el plan no emite licencia, o el catálogo no llegó embebido en la
+    // consulta — y con un solo mensaje para ambos no habría forma de saberlo.
+    throw new HttpError(403, "plan_without_license", `Tu plan (${subscription.plan_id}) no emite licencia para este equipo.`);
   }
   const expiresAt = subscription.current_period_end || subscription.trial_ends_at || new Date(Date.now() + 30 * 86400000).toISOString();
   if (Date.parse(expiresAt) <= Date.now()) throw new HttpError(403, "plan_expired", "Tu plan ya no está vigente.");
-  const token = signLicense({ subject: userId, plan: subscription.plan_id, expiresAt });
+  const token = signLicense({ subject: userId, plan: licensePlan, expiresAt });
   const keyId = String(process.env.LICENSE_KID || "k1").trim();
   await upsert("licenses", {
     user_id: userId,
@@ -113,7 +124,7 @@ async function issueLicense(userId) {
     key_id: keyId,
     token_hash: tokenHash(token),
   }, { admin: true, query: "on_conflict=subject" });
-  return { token, plan: subscription.plan_id, expiresAt, keyId };
+  return { token, plan: licensePlan, expiresAt, keyId };
 }
 
 module.exports = { currentSubscription, issueLicense, signLicense, tokenHash, verifyLicense };
