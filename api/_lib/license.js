@@ -15,10 +15,30 @@ function base64url(value) {
   return Buffer.from(value).toString("base64url");
 }
 
+/**
+ * Un PEM pegado en un panel web pierde los saltos de línea con facilidad: llega
+ * con `\n` literales, o aplastado en una sola línea. El base64 sigue intacto,
+ * pero OpenSSL rechaza el bloque entero con un `DECODER routines::unsupported`
+ * que no dice nada de la causa — y salía como 500 genérico, sin pista.
+ */
+function normalizePem(raw) {
+  const texto = raw.replace(/\\n/g, "\n").trim();
+  if (texto.includes("\n")) return `${texto}\n`;
+  const cuerpo = texto.match(/-----BEGIN ([A-Z ]+)-----(.*?)-----END \1-----/);
+  if (!cuerpo) return texto;
+  const base64 = cuerpo[2].replace(/\s+/g, "");
+  const lineas = base64.match(/.{1,64}/g) || [];
+  return `-----BEGIN ${cuerpo[1]}-----\n${lineas.join("\n")}\n-----END ${cuerpo[1]}-----\n`;
+}
+
 function privateKey() {
-  const pem = String(process.env.LICENSE_PRIVATE_KEY_PEM || "").trim();
-  if (!pem) throw new HttpError(503, "license_not_configured", "La firma de licencias todavía no está configurada.");
-  return createPrivateKey(pem);
+  const raw = String(process.env.LICENSE_PRIVATE_KEY_PEM || "").trim();
+  if (!raw) throw new HttpError(503, "license_not_configured", "La firma de licencias todavía no está configurada.");
+  try {
+    return createPrivateKey(normalizePem(raw));
+  } catch (error) {
+    throw new HttpError(503, "license_key_invalid", "La clave de firma de licencias está mal guardada: revisa LICENSE_PRIVATE_KEY_PEM.");
+  }
 }
 
 function signLicense({ subject, plan, expiresAt }) {
