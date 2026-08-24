@@ -52,9 +52,15 @@ async function request(path, params = {}, method = "POST") {
   return data || {};
 }
 
+// La cuenta de Flow es compartida con otros productos de Patagua, cuyos planes
+// siguen la forma `<producto>-monthly`. El prefijo evita que un id de pteron se
+// confunda con uno ajeno: en la misma cuenta ya vive un plan llamado
+// `pro-monthly` que cuesta otra cosa. Flow fija el monto al crear el plan y no
+// lo actualiza después, así que cambiar este id crea un plan nuevo en vez de
+// modificar el anterior.
 function planId(plan) {
   const configured = plan === "basic" ? process.env.FLOW_BASIC_PLAN_ID : process.env.FLOW_PRO_PLAN_ID;
-  return String(configured || `pteron_${plan}`).trim();
+  return String(configured || `pteron-${plan}-monthly`).trim();
 }
 
 async function createPlan({ id, name, amount, trialPeriodDays, callbackUrl }) {
