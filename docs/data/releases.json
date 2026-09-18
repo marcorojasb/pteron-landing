@@ -1,116 +1,225 @@
 {
-  "generatedAt": "2026-09-17T20:39:55.361Z",
+  "generatedAt": "2026-09-18T01:42:15.392Z",
   "latest": {
-    "version": "0.5.3",
-    "publishedAt": "2026-09-17T20:39:38Z",
+    "version": "0.5.4",
+    "publishedAt": "2026-09-18T01:42:01Z",
     "publishedLabel": "septiembre de 2026",
-    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.5.3",
+    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.5.4",
     "assets": [
       {
         "name": "beta-linux.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/beta-linux.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/beta-linux.yml",
         "bytes": 685
       },
       {
         "name": "beta-mac.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/beta-mac.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/beta-mac.yml",
         "bytes": 494
       },
       {
         "name": "beta.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/beta.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/beta.yml",
         "bytes": 337
       },
       {
-        "name": "pteron-0.5.3-amd64.deb",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/pteron-0.5.3-amd64.deb",
-        "bytes": 139307208
+        "name": "pteron-0.5.4-amd64.deb",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-amd64.deb",
+        "bytes": 139806552
       },
       {
-        "name": "pteron-0.5.3-amd64.deb.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/pteron-0.5.3-amd64.deb.asc",
+        "name": "pteron-0.5.4-amd64.deb.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-amd64.deb.asc",
         "bytes": 833
       },
       {
-        "name": "pteron-0.5.3-arm64.dmg",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/pteron-0.5.3-arm64.dmg",
-        "bytes": 178653733
+        "name": "pteron-0.5.4-arm64.dmg",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-arm64.dmg",
+        "bytes": 179216585
       },
       {
-        "name": "pteron-0.5.3-arm64.dmg.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/pteron-0.5.3-arm64.dmg.blockmap",
-        "bytes": 186715
+        "name": "pteron-0.5.4-arm64.dmg.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-arm64.dmg.blockmap",
+        "bytes": 187883
       },
       {
-        "name": "pteron-0.5.3-arm64.zip",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/pteron-0.5.3-arm64.zip",
-        "bytes": 178075410
+        "name": "pteron-0.5.4-arm64.zip",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-arm64.zip",
+        "bytes": 178608628
       },
       {
-        "name": "pteron-0.5.3-arm64.zip.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/pteron-0.5.3-arm64.zip.blockmap",
-        "bytes": 181934
+        "name": "pteron-0.5.4-arm64.zip.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-arm64.zip.blockmap",
+        "bytes": 182774
       },
       {
-        "name": "pteron-0.5.3-x64.exe",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/pteron-0.5.3-x64.exe",
-        "bytes": 134856657
+        "name": "pteron-0.5.4-x64.exe",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-x64.exe",
+        "bytes": 135334136
       },
       {
-        "name": "pteron-0.5.3-x64.exe.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/pteron-0.5.3-x64.exe.blockmap",
-        "bytes": 140942
+        "name": "pteron-0.5.4-x64.exe.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-x64.exe.blockmap",
+        "bytes": 141608
       },
       {
-        "name": "pteron-0.5.3-x64.tar.gz",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/pteron-0.5.3-x64.tar.gz",
-        "bytes": 177731075
+        "name": "pteron-0.5.4-x64.tar.gz",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-x64.tar.gz",
+        "bytes": 178252306
       },
       {
-        "name": "pteron-0.5.3-x64.tar.gz.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/pteron-0.5.3-x64.tar.gz.asc",
+        "name": "pteron-0.5.4-x64.tar.gz.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-x64.tar.gz.asc",
         "bytes": 833
       },
       {
-        "name": "pteron-0.5.3-x86_64.AppImage",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/pteron-0.5.3-x86_64.AppImage",
-        "bytes": 184079368
+        "name": "pteron-0.5.4-x86_64.AppImage",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-x86_64.AppImage",
+        "bytes": 184617395
       },
       {
-        "name": "pteron-0.5.3-x86_64.AppImage.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/pteron-0.5.3-x86_64.AppImage.asc",
+        "name": "pteron-0.5.4-x86_64.AppImage.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-x86_64.AppImage.asc",
         "bytes": 833
       },
       {
-        "name": "pteron-0.5.3-x86_64.rpm",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/pteron-0.5.3-x86_64.rpm",
-        "bytes": 113893813
+        "name": "pteron-0.5.4-x86_64.rpm",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-x86_64.rpm",
+        "bytes": 114358165
       },
       {
-        "name": "pteron-0.5.3-x86_64.rpm.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/pteron-0.5.3-x86_64.rpm.asc",
+        "name": "pteron-0.5.4-x86_64.rpm.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-x86_64.rpm.asc",
         "bytes": 833
       },
       {
         "name": "pteron-releases-public.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.3/pteron-releases-public.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-releases-public.asc",
         "bytes": 1680
       }
     ],
     "notes": [
-      "pteron 0.5.3",
-      "Corte de desarrollo (prerelease) que lleva el Banco Begonia en vivo al espejo v0.4 y completa una oleada de unificación de lenguaje en todas las superficies: un solo nombre para Configuración, planificador íntegramente en español docente y etiquetas del banco sin jerga técnica.",
+      "pteron 0.5.4",
+      "Corte de desarrollo (prerelease) centrado en los editores Write y Present: cinta por pestañas con recuperación total ante menús y búsquedas, paginación física con reflujo automático, configuración de página persistente que el PDF honra, listas e imágenes integradas sin ventanas flotantes, ecuaciones inline estilo Word y un historial de deshacer que atraviesa repaginaciones. Además completa la reconstrucción visual del planificador (F0–F7) y una oleada transversal de botones y pestañas.",
       "Novedades",
-      "Banco Begonia en vivo, espejo v0.4:",
-      "El detalle muestra la verdad servida canon ⊕ addenda: título y temas con procedencia, enunciado completo, pauta con su estilo (respuesta o rúbrica) y OA del ítem.",
-      "Nuevos filtros de material, OA y «con archivos», poblados desde facetas globales; la lista trae miniaturas con caché en memoria acotada por release.",
-      "Vigilancia del snapshot_id con aviso cuando el banco se actualiza; un ítem retirado se explica como despublicado, no como error.",
-      "Nueva escena de captura library-begonia: la matriz visual cubre 33 escenas × 3 tamaños."
+      "Cinta Write/Present por pestañas:",
+      "Pestañas Inicio, Insertar, Disposición, Página, Revisar y Vista con grupos adaptativos, modo compacto, backstage de Archivo y búsqueda de comandos que ejecuta acciones reales.",
+      "Ningún desplegable puede atrapar al docente: Escape y clic fuera siempre devuelven el control, con foco restaurado.",
+      "Write pagina en hojas físicas:",
+      "Reflujo automático al desbordar, con aviso único por hoja tocada en vez de una ráfaga de re-guardados."
     ],
     "channel": "beta"
   },
   "stable": null,
   "releases": [
+    {
+      "version": "0.5.4",
+      "publishedAt": "2026-09-18T01:42:01Z",
+      "publishedLabel": "septiembre de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.5.4",
+      "assets": [
+        {
+          "name": "beta-linux.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/beta-linux.yml",
+          "bytes": 685
+        },
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.5.4-amd64.deb",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-amd64.deb",
+          "bytes": 139806552
+        },
+        {
+          "name": "pteron-0.5.4-amd64.deb.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-amd64.deb.asc",
+          "bytes": 833
+        },
+        {
+          "name": "pteron-0.5.4-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-arm64.dmg",
+          "bytes": 179216585
+        },
+        {
+          "name": "pteron-0.5.4-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-arm64.dmg.blockmap",
+          "bytes": 187883
+        },
+        {
+          "name": "pteron-0.5.4-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-arm64.zip",
+          "bytes": 178608628
+        },
+        {
+          "name": "pteron-0.5.4-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-arm64.zip.blockmap",
+          "bytes": 182774
+        },
+        {
+          "name": "pteron-0.5.4-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-x64.exe",
+          "bytes": 135334136
+        },
+        {
+          "name": "pteron-0.5.4-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-x64.exe.blockmap",
+          "bytes": 141608
+        },
+        {
+          "name": "pteron-0.5.4-x64.tar.gz",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-x64.tar.gz",
+          "bytes": 178252306
+        },
+        {
+          "name": "pteron-0.5.4-x64.tar.gz.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-x64.tar.gz.asc",
+          "bytes": 833
+        },
+        {
+          "name": "pteron-0.5.4-x86_64.AppImage",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-x86_64.AppImage",
+          "bytes": 184617395
+        },
+        {
+          "name": "pteron-0.5.4-x86_64.AppImage.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-x86_64.AppImage.asc",
+          "bytes": 833
+        },
+        {
+          "name": "pteron-0.5.4-x86_64.rpm",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-x86_64.rpm",
+          "bytes": 114358165
+        },
+        {
+          "name": "pteron-0.5.4-x86_64.rpm.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-0.5.4-x86_64.rpm.asc",
+          "bytes": 833
+        },
+        {
+          "name": "pteron-releases-public.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.4/pteron-releases-public.asc",
+          "bytes": 1680
+        }
+      ],
+      "notes": [
+        "pteron 0.5.4",
+        "Corte de desarrollo (prerelease) centrado en los editores Write y Present: cinta por pestañas con recuperación total ante menús y búsquedas, paginación física con reflujo automático, configuración de página persistente que el PDF honra, listas e imágenes integradas sin ventanas flotantes, ecuaciones inline estilo Word y un historial de deshacer que atraviesa repaginaciones. Además completa la reconstrucción visual del planificador (F0–F7) y una oleada transversal de botones y pestañas.",
+        "Novedades",
+        "Cinta Write/Present por pestañas:",
+        "Pestañas Inicio, Insertar, Disposición, Página, Revisar y Vista con grupos adaptativos, modo compacto, backstage de Archivo y búsqueda de comandos que ejecuta acciones reales.",
+        "Ningún desplegable puede atrapar al docente: Escape y clic fuera siempre devuelven el control, con foco restaurado.",
+        "Write pagina en hojas físicas:",
+        "Reflujo automático al desbordar, con aviso único por hoja tocada en vez de una ráfaga de re-guardados."
+      ],
+      "channel": "beta"
+    },
     {
       "version": "0.5.3",
       "publishedAt": "2026-09-17T20:39:38Z",
@@ -1829,65 +1938,6 @@
         "Arranque",
         "La aplicación abre antes. La carga no esencial se difiere en vez de bloquear la primera pantalla.",
         "Planificación dentro del chat"
-      ],
-      "channel": "beta"
-    },
-    {
-      "version": "0.2.10",
-      "publishedAt": "2026-08-09T18:02:48Z",
-      "publishedLabel": "agosto de 2026",
-      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.2.10",
-      "assets": [
-        {
-          "name": "beta-mac.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/beta-mac.yml",
-          "bytes": 498
-        },
-        {
-          "name": "beta.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/beta.yml",
-          "bytes": 340
-        },
-        {
-          "name": "pteron-0.2.10-arm64.dmg",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-arm64.dmg",
-          "bytes": 191661016
-        },
-        {
-          "name": "pteron-0.2.10-arm64.dmg.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-arm64.dmg.blockmap",
-          "bytes": 199349
-        },
-        {
-          "name": "pteron-0.2.10-arm64.zip",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-arm64.zip",
-          "bytes": 191066545
-        },
-        {
-          "name": "pteron-0.2.10-arm64.zip.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-arm64.zip.blockmap",
-          "bytes": 199044
-        },
-        {
-          "name": "pteron-0.2.10-x64.exe",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-x64.exe",
-          "bytes": 148392528
-        },
-        {
-          "name": "pteron-0.2.10-x64.exe.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.2.10/pteron-0.2.10-x64.exe.blockmap",
-          "bytes": 155496
-        }
-      ],
-      "notes": [
-        "pteron 0.2.10",
-        "Entrega pública del canal beta de pteron, construida desde el commit verificado de esta versión.",
-        "Cambios destacados",
-        "Chat primario más fiable para solicitudes de uno o varios materiales, con respuestas terminales honestas y tarjetas vinculadas al mensaje que las produjo.",
-        "Mejor paridad entre conversación, visor y exportación: se conservan formatos de bloques, revisiones y documentos originales sin sobrescribirlos.",
-        "Matemática y DOCX más robustos: representación matemática canónica, conversión compatible con Word y preservación de tablas y contenido estructurado.",
-        "Arnés live más preciso y general: corrige la medición de tareas, distingue resultados correctos, fallidos, bloqueados e inválidos, y conserva evidencia reproducible por modelo y ejecución.",
-        "Se incorpora y ordena la evidencia histórica de las pruebas v5.2, v5.3, v5.4, v5.4.2 y la matriz completa v5.5."
       ],
       "channel": "beta"
     }
