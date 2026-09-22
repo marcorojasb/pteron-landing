@@ -59,6 +59,8 @@ const pendingIntent = { id: "intent-1", user_id: "user-1", expires_at: new Date(
 const activeSubscription = {
   plan_id: "pro",
   current_period_end: new Date(Date.now() + 30 * 86400000).toISOString(),
+  // issueLicense firma plan_catalog.license_plan, no plan_id (v. 7ae2270).
+  plan_catalog: { license_plan: "pro" },
 };
 
 test("exchange devuelve una licencia válida cuando el intent ya está autorizado", async () => {
