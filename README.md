@@ -14,7 +14,9 @@ registro de tarjeta y activación de licencias en la aplicación de escritorio.
 - `styles.css` y `cuenta/styles.css`: sistema visual responsive.
 - `script.js` y `cuenta/cuenta.js`: interacción del sitio y de la cuenta.
 - `release-data.js`: selección semver de la última versión completa a partir
-  del JSON incluido, la API pública de GitHub y el fallback de la web.
+  del JSON incluido y la API pública de GitHub. No contiene ninguna versión
+  escrita a mano: si no hay datos, la web no anuncia versión y enlaza a las
+  versiones publicadas.
 - `vercel.json`: URLs limpias, caché de assets y cabeceras de seguridad.
 - `assets/`: imágenes, favicons y recursos públicos.
 
@@ -44,8 +46,11 @@ combina ese JSON con la API pública de GitHub y conserva un fallback local.
 
 Los HTML cargan el CSS y JavaScript compartidos con un parámetro `?v=` para
 evitar que un archivo antiguo de la caché reemplace los enlaces actuales. Ese
-valor debe cambiar cuando se modifica alguno de esos recursos; publicar una
-versión nueva sin cambios de código no requiere tocarlo.
+valor es una revisión del sitio (`2026-09-18.1`), no la versión de pteron: sube
+cuando se modifica `styles.css` o alguno de los JavaScript compartidos, y no
+cambia al publicar una versión nueva del producto. La versión publicada se
+resuelve sola en el navegador desde `docs/data/releases.json` y la API pública
+de GitHub.
 
 ## Variables de Vercel
 

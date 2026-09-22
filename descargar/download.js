@@ -7,10 +7,32 @@
   const macosLabel = document.querySelector("[data-download-macos-label]");
   const linuxLabel = document.querySelector("[data-download-linux-label]");
   const releaseLink = document.querySelector("[data-download-release]");
+  const status = document.querySelector("[data-download-status]");
+  const releasesPageUrl =
+    releaseData?.RELEASES_PAGE_URL || "https://github.com/marcorojasb/pteron-beta/releases";
+
+  // Sin catálogo no se anuncia ninguna versión: los enlaces quedan en la página
+  // oficial de versiones y la página lo dice, en vez de ofrecer una versión vieja.
+  const announceUnavailable = () => {
+    if (releaseLink) releaseLink.href = releasesPageUrl;
+    if (!status) return;
+    const link = document.createElement("a");
+    link.href = releasesPageUrl;
+    link.textContent = "la página de versiones en GitHub";
+    status.replaceChildren(
+      document.createTextNode("No pudimos comprobar la última versión publicada. Consulta "),
+      link,
+      document.createTextNode(" para elegir el archivo de tu equipo.")
+    );
+  };
 
   const loadLatestRelease = async () => {
     if (!releaseData) return;
     const { latest } = await releaseData.loadReleaseCatalog();
+    if (!latest) {
+      announceUnavailable();
+      return;
+    }
     const windowsAsset = releaseData.findAsset(latest, "windowsExe");
     const macosAsset = releaseData.findAsset(latest, "macosDmg");
     const linuxAsset = releaseData.findAsset(latest, "linuxAppImage");
@@ -76,7 +98,7 @@
 
   highlightPlatform();
 
-  loadLatestRelease().catch(() => {});
+  loadLatestRelease().catch(announceUnavailable);
 
   const video = document.querySelector("[data-download-video]");
   const year = document.querySelector("[data-year]");

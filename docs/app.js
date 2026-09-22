@@ -44,6 +44,29 @@
     ).join("");
   };
 
+  // Sin catálogo esta página no anuncia ninguna versión: lo dice y ofrece la
+  // fuente oficial en vez de dejar el mensaje de carga para siempre.
+  const renderReleaseUnavailable = (table, notes) => {
+    const releasesPageUrl =
+      window.PTERON_RELEASES?.RELEASES_PAGE_URL || "https://github.com/marcorojasb/pteron-beta/releases";
+    const withLink = text => {
+      const link = document.createElement("a");
+      link.href = releasesPageUrl;
+      link.textContent = "las versiones publicadas en GitHub";
+      return [document.createTextNode(text), link, document.createTextNode(".")];
+    };
+    if (table) {
+      const message = document.createElement("p");
+      message.append(...withLink("No pudimos comprobar la versión publicada. Consulta "));
+      table.replaceChildren(message);
+    }
+    if (notes) {
+      const message = document.createElement("p");
+      message.textContent = "Las notas de versión aparecerán cuando el catálogo esté disponible.";
+      notes.replaceChildren(message);
+    }
+  };
+
   const renderReleaseData = async () => {
     const table = article.querySelector("[data-release-table]");
     const notes = article.querySelector("[data-release-notes]");
@@ -51,6 +74,10 @@
     try {
       if (!window.PTERON_RELEASES) throw new Error("release data unavailable");
       const data = await window.PTERON_RELEASES.loadReleaseCatalog();
+      if (!data?.latest) {
+        renderReleaseUnavailable(table, notes);
+        return;
+      }
       if (table) {
         const metadata = document.createElement("dl");
         metadata.className = "release-meta";
@@ -92,11 +119,7 @@
         notes.replaceChildren(fragment);
       }
     } catch {
-      if (table) {
-        const fallback = document.createElement("p");
-        fallback.textContent = "La versión publicada aparecerá aquí cuando el canal beta esté disponible.";
-        table.replaceChildren(fallback);
-      }
+      renderReleaseUnavailable(table, notes);
     }
   };
 

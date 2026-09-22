@@ -79,7 +79,7 @@ window.PTERON_DOCS = {
         <section>
           <h2 id="como-se-ve">Cómo se ve</h2>
           <p>Al abrir pteron encuentras la pantalla de inicio: la barra de sesiones arriba, los cuatro rumbos al centro y el compositor abajo. No hay que configurar nada más para escribir el primer pedido.</p>
-          <figure class="product-shot"><img src="/assets/docs/app-inicio.webp" width="1760" height="1076" loading="lazy" alt="Pantalla de inicio de pteron con los rumbos Planificar, Crear, Evaluar y Adaptar sobre el compositor"><figcaption>La pantalla de inicio. Cada rumbo es un verbo con una salida propia.</figcaption></figure>
+          <figure class="product-shot"><img src="/assets/docs/app-inicio-0-5-4.webp" width="1760" height="1076" loading="lazy" alt="Pantalla de inicio de pteron con los rumbos Planificar, Crear, Evaluar y Adaptar sobre el compositor"><figcaption>La pantalla de inicio. Cada rumbo es un verbo con una salida propia.</figcaption></figure>
         </section>
         <section>
           <h2 id="que-hace">Qué hace y qué no</h2>
@@ -100,7 +100,7 @@ window.PTERON_DOCS = {
         <section><h2 id="macos">macOS</h2><ul><li>Procesador Apple serie M.</li><li>Una versión reciente y compatible de macOS.</li><li>Espacio disponible para la aplicación, tus documentos y el modelo local que elijas.</li></ul></section>
         <section><h2 id="windows">Windows 11</h2><ul><li>Windows 11 en un equipo de 64 bits.</li><li>Permiso para instalar aplicaciones descargadas desde la web.</li><li>Espacio disponible para documentos y modelos locales.</li></ul><div class="notice"><strong>Beta sin firma digital</strong><p>El instalador de Windows todavía no está firmado. SmartScreen puede mostrar una advertencia y pedir confirmación antes de continuar.</p></div></section>
         <section><h2 id="linux">Linux</h2><ul><li>Sistema x86_64.</li><li>Permiso para instalar un paquete o ejecutar una AppImage.</li><li>Espacio disponible para la aplicación, tus documentos y el modelo local que elijas.</li></ul><div class="notice"><strong>Artefactos firmados</strong><p>Los archivos para Linux incluyen una firma GPG separada que puedes verificar con la clave pública de pteron.</p></div></section>
-        <section><h2 id="modelo">Modelo</h2><p>pteron viene preparado para usar un modelo local con Ollama. También puedes conectar un proveedor externo pegando tu propia clave. Ninguna de las dos opciones es obligatoria para instalar: la eliges en el primer inicio y puedes cambiarla después en <strong>Ajustes → Modelo</strong>.</p></section>
+        <section><h2 id="modelo">Modelo</h2><p>pteron viene preparado para usar un modelo local con Ollama. También puedes conectar un proveedor externo pegando tu propia clave. Ninguna de las dos opciones es obligatoria para instalar: la eliges en el primer inicio y puedes cambiarla después en <strong>Configuración → Modelo de IA</strong>.</p></section>
         <section><h2 id="conexion">Conexión</h2><p>El trabajo con tus archivos es local. Descargar actualizaciones y usar un proveedor en la nube necesitan conexión, y pteron lo indica antes de usarlos.</p></section>`
     },
     "instalar-macos": {
@@ -142,11 +142,11 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
       html: `
         <section>
           <h2 id="carpeta">1. Confirma la carpeta de trabajo</h2>
-          <p>pteron propone una carpeta dentro de Documentos y puedes elegir otra. Todo lo que lea, indexe o cree ocurre dentro de ese límite, y no se sobrescribe ningún original. Puedes cambiarla después en <strong>Ajustes → Fuentes y materiales</strong>.</p>
+          <p>pteron propone una carpeta dentro de Documentos y puedes elegir otra. Todo lo que lea, indexe o cree ocurre dentro de ese límite, y no se sobrescribe ningún original. Puedes cambiarla después en <strong>Configuración → Perfil</strong>.</p>
         </section>
         <section>
           <h2 id="modelo">2. Elige quién prepara el material</h2>
-          <p>Abre <strong>Ajustes → Modelo</strong>. La primera tarjeta es <strong>En este equipo</strong>, que usa Ollama y no envía tus documentos a ningún servidor. El resto de proveedores aparece con la etiqueta <strong>Requiere clave</strong>: al abrir uno, pegas tu clave y pteron muestra los modelos que esa clave habilita, con su contexto, salida y tarifa.</p>
+          <p>Abre <strong>Configuración → Modelo de IA</strong>. La primera tarjeta es <strong>En este equipo</strong>, que usa Ollama y no envía tus documentos a ningún servidor. El resto de proveedores aparece con la etiqueta <strong>Requiere clave</strong>: al abrir uno, pegas tu clave y pteron muestra los modelos que esa clave habilita, con su contexto, salida y tarifa.</p>
           <p>Si no configuras nada, pteron queda en el plan libre con el modelo local. Los cambios no se aplican hasta pulsar <strong>Guardar cambios</strong>.</p>
         </section>
         <section>
@@ -184,7 +184,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="contexto">Los selectores de contexto</h2>
           <p>Al elegir un rumbo aparecen cuatro selectores sobre el compositor: <strong>curso</strong>, <strong>asignatura</strong>, <strong>OA</strong> y <strong>Materiales</strong>. Lo que eliges se convierte en chips dentro del compositor, y <strong>Limpiar</strong> los retira todos. El compositor también cambia su texto para recordarte qué estás pidiendo.</p>
-          <figure class="product-shot"><img src="/assets/docs/app-rumbo.webp" width="1760" height="1076" loading="lazy" alt="Rumbo Crear seleccionado, con los selectores de curso, asignatura, OA y Materiales y los chips 6° básico y Matemática en el compositor"><figcaption>Con el rumbo Crear elegido, los chips muestran exactamente qué contexto viaja con el pedido.</figcaption></figure>
+          <figure class="product-shot"><img src="/assets/docs/app-rumbo-0-5-4.webp" width="1760" height="1076" loading="lazy" alt="Rumbo Crear seleccionado, con los selectores de curso, asignatura, OA y Materiales y los chips 6° básico y Matemática en el compositor"><figcaption>Con el rumbo Crear elegido, los chips muestran exactamente qué contexto viaja con el pedido.</figcaption></figure>
         </section>
         <section>
           <h2 id="compositor">El compositor</h2>
@@ -192,7 +192,24 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         </section>
         <section>
           <h2 id="barra">La barra superior</h2>
-          <p>Arriba viven las sesiones abiertas, el botón <strong>+</strong> para abrir una nueva y el reloj que despliega el historial. A la derecha está tu perfil.</p>
+          <p>Arriba viven las sesiones abiertas, el botón <strong>+</strong> para abrir una nueva y el reloj que despliega el historial.</p>
+        </section>
+        <section>
+          <h2 id="espacios">Los cuatro espacios</h2>
+          <p>El selector de la esquina superior derecha cambia de espacio sin cerrar lo que tienes abierto.</p>
+          <table>
+            <thead><tr><th>Espacio</th><th>Qué hay ahí</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Chats</strong></td><td>Las conversaciones y sus pestañas: donde pides, revisas y decides.</td></tr>
+              <tr><td><strong>Biblioteca</strong></td><td>Tus materiales y los archivos de tu carpeta, abiertos en su visor o editor.</td></tr>
+              <tr><td><strong>Planificador</strong></td><td>Clases, unidades y calendario. Sigue en implementación: su superficie todavía puede cambiar.</td></tr>
+              <tr><td><strong>Configuración</strong></td><td>Perfil, Modelo de IA, Memoria y contexto, Complementos, Labs y Sobre pteron.</td></tr>
+            </tbody>
+          </table>
+        </section>
+        <section>
+          <h2 id="apariencia">Tema claro u oscuro</h2>
+          <p>pteron abre en tema claro y puedes cambiarlo a oscuro o dejarlo a cargo del sistema desde <strong>Configuración → Perfil</strong>. La preferencia se conserva al volver a abrir la aplicación.</p>
         </section>`
     },
     "sesiones-memoria": {
@@ -203,15 +220,15 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="sesiones">Sesiones y pestañas</h2>
           <p>Cada trabajo abre su propia pestaña en la barra superior, con un nombre tomado de lo que estás haciendo. Puedes tener varias abiertas y moverte entre ellas sin perder el estado de ninguna: cada una conserva su conversación, su contexto y su material.</p>
-          <figure class="product-shot"><img src="/assets/docs/app-sesiones.webp" width="1760" height="1076" loading="lazy" alt="Barra superior de pteron con varias pestañas de sesión abiertas y el botón de historial"><figcaption>Las sesiones abiertas, el botón + para una nueva y el reloj del historial.</figcaption></figure>
+          <figure class="product-shot"><img src="/assets/docs/app-sesiones-0-5-4.webp" width="1760" height="1076" loading="lazy" alt="Barra superior de pteron con varias pestañas de sesión abiertas y el botón de historial"><figcaption>Las sesiones abiertas, el botón + para una nueva y el reloj del historial.</figcaption></figure>
           <p>Abre una sesión nueva cuando cambie el objetivo. Cerrar una sesión la archiva y puedes recuperarla desde el historial; eliminarla es una acción distinta y explícita.</p>
           <div class="notice"><strong>Continuidad de 30 minutos</strong><p>Si vuelves a la aplicación dentro de los 30 minutos siguientes, pteron retoma donde estabas. Pasado ese plazo, empieza una sesión nueva.</p></div>
         </section>
         <section>
           <h2 id="memoria">Memoria y contexto</h2>
           <p>La memoria guarda preferencias que tú aceptas conservar —cómo te gusta que se redacten las instrucciones, qué formato usas, qué cursos atiendes— para no repetirlas en cada pedido. Cuando una sugerencia proviene de ahí, aparece rotulada <em>por tu memoria</em>.</p>
-          <figure class="product-shot"><img src="/assets/docs/app-memoria.webp" width="1760" height="1076" loading="lazy" alt="Panel de memoria y contexto de pteron con las preferencias guardadas"><figcaption>Ajustes → Memoria y contexto: lo que pteron recuerda, a la vista y retirable.</figcaption></figure>
-          <p>Todo lo guardado se revisa y se retira desde <strong>Ajustes → Memoria y contexto</strong>. La memoria no incluye tus materiales ni el contenido de tus sesiones.</p>
+          <figure class="product-shot"><img src="/assets/docs/app-memoria-0-5-4.webp" width="1760" height="1076" loading="lazy" alt="Panel de memoria y contexto de pteron con las preferencias guardadas"><figcaption>Configuración → Memoria y contexto: lo que pteron recuerda, a la vista y retirable.</figcaption></figure>
+          <p>Todo lo guardado se revisa y se retira desde <strong>Configuración → Memoria y contexto</strong>. La memoria no incluye tus materiales ni el contenido de tus sesiones.</p>
         </section>`
     },
     "carpeta-trabajo": {
@@ -219,7 +236,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
       title: "Carpeta de trabajo",
       lead: "Es el límite visible dentro del cual pteron puede leer y crear archivos.",
       html: `
-        <section><h2 id="por-que">Por qué existe</h2><p>pteron no tiene acceso general a tu equipo. Al instalar propone una carpeta dentro de Documentos, tú puedes elegir otra, y todo lo que indexe, busque o lea ocurre dentro de ella. Se cambia desde <strong>Ajustes → Fuentes y materiales</strong>.</p></section>
+        <section><h2 id="por-que">Por qué existe</h2><p>pteron no tiene acceso general a tu equipo. Al instalar propone una carpeta dentro de Documentos, tú puedes elegir otra, y todo lo que indexe, busque o lea ocurre dentro de ella. Se cambia desde <strong>Configuración → Perfil</strong>.</p></section>
         <section><h2 id="originales">Tus originales</h2><p>La aplicación no sobrescribe los archivos de origen. Cada resultado se guarda como una copia nueva mediante una acción visible que tú ejecutas: no hay guardado automático sobre tus documentos.</p></section>
         <section><h2 id="indice">Búsqueda dentro de la carpeta</h2><p>pteron mantiene un índice local del contenido para poder encontrar y citar tus materiales. Ese índice vive en tu equipo junto con las sesiones, y cada ejecución tiene un presupuesto de lectura acotado.</p></section>
         <section><h2 id="organizar">Cómo organizarla</h2><p>Una estructura simple por curso, unidad o proyecto facilita encontrar fuentes y resultados. No necesitas adoptar una plantilla rígida.</p></section>`
@@ -242,7 +259,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="acciones">Qué puedes hacer con una respuesta</h2>
           <p>Una respuesta en la conversación no es un callejón sin salida: puedes guardarla, convertirla en material o copiarla.</p>
-          <figure class="product-shot"><img src="/assets/docs/app-conversacion.webp" width="1760" height="1076" loading="lazy" alt="Conversación en pteron con las acciones Guardar esta respuesta, Crear un material con esto y Copiar"><figcaption>Las acciones al pie de cada respuesta: guardar, convertir en material o copiar.</figcaption></figure>
+          <figure class="product-shot"><img src="/assets/docs/app-conversacion-0-5-4.webp" width="1760" height="1076" loading="lazy" alt="Conversación en pteron con las acciones Guardar esta respuesta, Crear un material con esto y Copiar"><figcaption>Las acciones al pie de cada respuesta: guardar, convertir en material o copiar.</figcaption></figure>
         </section>
         <section>
           <h2 id="contexto">Qué conviene incluir</h2>
@@ -258,7 +275,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="abrir">El selector de recursos</h2>
           <p>Busca por nombre o filtra por tipo: <strong>Guías</strong>, <strong>Evaluaciones</strong>, <strong>Planificaciones</strong>, <strong>Rúbricas</strong> y <strong>Materiales</strong>. Cada elemento indica su origen —<em>Guía de pteron</em> o <em>Material de tu carpeta</em>— y su fecha.</p>
-          <figure class="product-shot"><img src="/assets/docs/app-biblioteca.webp" width="1760" height="1076" loading="lazy" alt="Diálogo Abrir recurso con búsqueda, filtros por tipo y la vista previa del recurso seleccionado"><figcaption>Abrir recurso: tu material creado y los documentos de tu carpeta, en una sola lista.</figcaption></figure>
+          <figure class="product-shot"><img src="/assets/docs/app-biblioteca-0-5-4.webp" width="1760" height="1076" loading="lazy" alt="Diálogo Abrir recurso con búsqueda, filtros por tipo y la vista previa del recurso seleccionado"><figcaption>Abrir recurso: tu material creado y los documentos de tu carpeta, en una sola lista.</figcaption></figure>
         </section>
         <section>
           <h2 id="volver">Volver a un material</h2>
@@ -267,6 +284,10 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="dispositivo">Traer un archivo de fuera</h2>
           <p><strong>Abrir desde mi dispositivo…</strong> incorpora un documento que no está en la carpeta de trabajo. Se copia a tu espacio; el original no se mueve ni se modifica.</p>
+        </section>
+        <section>
+          <h2 id="complementos">Fuentes externas, si las habilitas</h2>
+          <p>En <strong>Configuración → Complementos</strong> están las fuentes que no viven en tu equipo: el banco de recursos pedagógicos Begonia, el Currículum Nacional, la búsqueda web y el correo. Son opt-in y ninguna se activa sola; lo que traen se distingue de tus fuentes locales y queda a la vista junto al resultado.</p>
         </section>`
     },
     "planificar": {
@@ -274,6 +295,10 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
       title: "Planificar",
       lead: "El rumbo para organizar clases y unidades, con momentos y duración que cuadren.",
       html: `
+        <section>
+          <h2 id="dos-cosas">Dos cosas distintas con el mismo nombre</h2>
+          <p>El rumbo <strong>Planificar</strong> del compositor produce una planificación como material revisable, y es lo que describe esta página. El espacio <strong>Planificador</strong> del selector —clases, unidades y calendario— es otra superficie y sigue en implementación: todavía puede cambiar.</p>
+        </section>
         <section>
           <h2 id="pedido">Qué entregar en el pedido</h2>
           <p>Elige el rumbo <strong>Planificar</strong> y fija curso, asignatura y OA en los selectores. En el compositor añade lo que ellos no cubren: duración total, recursos disponibles, número de clases y cómo quieres cerrar.</p>
@@ -300,7 +325,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="plan">2. Revisa el plan</h2>
           <p>Cuando el pedido lo amerita, pteron responde primero con un <strong>plan de trabajo</strong> en vez de un borrador. El plan declara qué va a producir, qué decidió por su cuenta y qué preguntas te hizo.</p>
-          <figure class="product-shot"><img src="/assets/docs/app-plan.webp" width="1760" height="1076" loading="lazy" alt="Tarjeta de plan de trabajo con resultado previsto, decisiones confirmadas, cómo lo abordaré y supuestos que puedes cambiar"><figcaption>El plan separa lo confirmado de los supuestos, y nombra los que puedes cambiar.</figcaption></figure>
+          <figure class="product-shot"><img src="/assets/docs/app-plan-0-5-4.webp" width="1760" height="1076" loading="lazy" alt="Tarjeta de plan de trabajo con resultado previsto, decisiones confirmadas, cómo lo abordaré y supuestos que puedes cambiar"><figcaption>El plan separa lo confirmado de los supuestos, y nombra los que puedes cambiar.</figcaption></figure>
           <p>Fíjate en <strong>Supuestos que puedes cambiar</strong>: ahí está lo que pteron decidió sin preguntarte. Corrígelo con <strong>Pedir un ajuste</strong> antes de seguir; sale más barato que rehacer el material. Cuando estés conforme, pulsa <strong>Crear la guía</strong>.</p>
           <div class="notice"><strong>El plan no es un peaje</strong><p>Aparece sólo cuando aporta al pedido. Si pides algo directo, pteron va directo al material.</p></div>
         </section>
@@ -332,7 +357,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="sugerencias">Lo que te advierte sin bloquear</h2>
           <p>El resto llega como <strong>Sugerencias</strong> en el panel derecho, con el bloque afectado y el motivo. Cada una trae un botón <strong>Proponer</strong>: nada se aplica hasta que tú lo pides.</p>
-          <figure class="product-shot"><img src="/assets/docs/app-revision.webp" width="1760" height="1076" loading="lazy" alt="Panel de sugerencias señalando que una pregunta no tiene puntaje y que no deja espacio para responder"><figcaption>Las sugerencias explican por qué importan: sin espacio para responder, la hoja no se puede usar.</figcaption></figure>
+          <figure class="product-shot"><img src="/assets/docs/app-revision-0-5-4.webp" width="1760" height="1076" loading="lazy" alt="Panel de sugerencias señalando que una pregunta no tiene puntaje y que no deja espacio para responder"><figcaption>Las sugerencias explican por qué importan: sin espacio para responder, la hoja no se puede usar.</figcaption></figure>
         </section>
         <section>
           <h2 id="datos">No uses datos reales</h2>
@@ -352,7 +377,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="referencia">Trabajar con el original a la vista</h2>
           <p>Un documento de tu espacio se abre junto al material, con su propio paginador y zoom. Su texto es seleccionable, puedes citar una página o un fragmento, y <strong>Usar como referencia</strong> lo adjunta al contexto como un chip visible que puedes retirar.</p>
-          <figure class="product-shot"><img src="/assets/docs/app-referencia.webp" width="1760" height="1076" loading="lazy" alt="Vista doble con el material a la izquierda y un PDF de referencia abierto a la derecha"><figcaption>El material y su referencia, uno junto al otro. Adjuntar no envía nada: el pedido lo escribes tú.</figcaption></figure>
+          <figure class="product-shot"><img src="/assets/docs/app-referencia-0-5-4.webp" width="1760" height="1076" loading="lazy" alt="Vista doble con el material a la izquierda y un PDF de referencia abierto a la derecha"><figcaption>El material y su referencia, uno junto al otro. Adjuntar no envía nada: el pedido lo escribes tú.</figcaption></figure>
           <div class="notice"><strong>Una referencia a la vez</strong><p>Bajo 1100 px de ancho, el material y la referencia se alternan en vez de mostrarse juntos.</p></div>
         </section>`
     },
@@ -364,7 +389,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="propuesta">Cómo llega una propuesta</h2>
           <p>Cuando pides un cambio, pteron no reescribe el documento: prepara una propuesta y te la muestra. El estado pasa a <strong>Sólo lectura</strong>, la cabecera indica cuántos cambios propone y el conmutador <strong>Documento / Comparar</strong> te deja ver el resultado o las diferencias por bloque.</p>
-          <figure class="product-shot"><img src="/assets/docs/app-artefacto.webp" width="1760" height="1076" loading="lazy" alt="Guía abierta en el lienzo editable de pteron con el panel de revisiones a la derecha"><figcaption>El material abierto, editable, con su historial de revisiones a la derecha.</figcaption></figure>
+          <figure class="product-shot"><img src="/assets/docs/app-artefacto-0-5-4.webp" width="1760" height="1076" loading="lazy" alt="Guía abierta en el editor Write de pteron, con la estructura del documento a la izquierda y la hoja a la derecha"><figcaption>El material abierto en Write: la estructura del documento a la izquierda y la hoja a la derecha.</figcaption></figure>
           <p>El muelle inferior lo dice sin rodeos —<em>Propongo estos cambios. Aún no se aplican.</em>— y ofrece <strong>Conservar cambios</strong> o <strong>Descartar propuesta</strong>. Si cancelas a medias, no se publica una revisión incompleta.</p>
         </section>
         <section>
@@ -393,12 +418,24 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="formatos">Tamaños y orientación</h2>
           <p>Los documentos admiten A4, Carta y Oficio, con márgenes y saltos de página que se respetan al exportar. Puedes trabajar en vertical o apaisado, y la barra de edición permanece visible mientras recorres el material.</p>
-          <figure class="product-shot"><img src="/assets/docs/app-apaisado.webp" width="1760" height="1076" loading="lazy" alt="Guía en orientación apaisada dentro del lienzo de pteron"><figcaption>Una guía apaisada. La orientación es parte del documento, no un ajuste de impresión.</figcaption></figure>
+          <figure class="product-shot"><img src="/assets/docs/app-write-0-5-4.webp" width="1760" height="1076" loading="lazy" alt="Editor Write de pteron con la cinta por pestañas, la estructura del documento y una hoja física"><figcaption>El editor Write: cinta por pestañas, estructura del documento y hojas físicas.</figcaption></figure>
+        </section>
+        <section>
+          <h2 id="cinta">La cinta del editor</h2>
+          <p>Los materiales nuevos se abren en los editores nativos <strong>Write</strong> (documento) y <strong>Present</strong> (presentación). Ambos comparten una cinta por pestañas —Inicio, Insertar, Disposición, Página, Revisar y Vista— con grupos que se adaptan al ancho de la ventana y un modo compacto cuando el espacio aprieta. <strong>Archivo</strong> reúne las acciones del documento y la búsqueda de la cinta ejecuta comandos reales.</p>
+          <div class="notice"><strong>Ningún menú puede atraparte</strong><p>Escape o un clic fuera cierran el desplegable abierto y devuelven el foco al documento.</p></div>
+        </section>
+        <section>
+          <h2 id="paginas">Hojas y configuración de página</h2>
+          <p>Write trabaja sobre hojas físicas: cuando el contenido desborda una página, refluye a la siguiente y avisa una sola vez por hoja afectada. En la pestaña <strong>Página</strong> eliges tamaño —A4, Carta u Oficio—, orientación, márgenes, encabezado, pie y numeración. La configuración es por documento, y el PDF exportado la respeta.</p>
+          <p>Deshacer y rehacer atraviesan la paginación: saltan los micro-estados del reflujo y llegan al cambio real, también en los bordes de página.</p>
         </section>
         <section>
           <h2 id="matematicas">Matemáticas y tablas</h2>
           <p>Las expresiones matemáticas viajan como fórmula, no como texto con barras: se maquetan en pantalla —también dentro de una celda de tabla, que muestra su fuente al enfocarla— y salen al DOCX como ecuación real.</p>
+          <p>Las ecuaciones se insertan desde la cinta y se editan en el propio documento: al abrir una, aparece su pestaña <strong>Ecuación</strong> con estructuras (fracción, raíz, integral, matriz…), símbolos y presentación en línea o centrada. Pasar de una ecuación a otra guarda la primera y abre la segunda en el mismo gesto.</p>
           <p>Un bloque puede mezclar prosa y una tabla escrita en markdown, y ambas se exportan en el orden en que fueron escritas.</p>
+          <p>Las listas se escriben con marcadores (<code>-</code>, <code>1.</code>, <code>A.</code>) y conservan su estilo al exportar. Las imágenes se ajustan desde la pestaña contextual —tamaño, alineación y texto alternativo— sin ventanas flotantes.</p>
         </section>
         <section>
           <h2 id="historial">Revisiones</h2>
@@ -413,11 +450,15 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="editor">El editor de diapositivas</h2>
           <p>La columna izquierda lista las diapositivas y permite añadir, duplicar, mover y eliminar. La cabecera indica el master y el total —<em>Master 16:9 · 3 diapositivas</em>— y ofrece un selector de <strong>Tema</strong>.</p>
-          <figure class="product-shot"><img src="/assets/docs/app-presentacion.webp" width="1760" height="1076" loading="lazy" alt="Editor de presentaciones de pteron con la lista de diapositivas, el lienzo y las notas del orador"><figcaption>El editor de presentaciones, con las notas del orador bajo el lienzo.</figcaption></figure>
+          <figure class="product-shot"><img src="/assets/docs/app-presentacion-0-5-4.webp" width="1760" height="1076" loading="lazy" alt="Editor de presentaciones de pteron con la lista de diapositivas, el lienzo y las notas del orador"><figcaption>El editor de presentaciones, con las notas del orador bajo el lienzo.</figcaption></figure>
         </section>
         <section>
           <h2 id="notas">Notas del orador</h2>
           <p>Cada diapositiva tiene su campo de notas, rotulado <em>Sólo para ti · no se proyecta</em>. Las notas viajan al PPTX exportado.</p>
+        </section>
+        <section>
+          <h2 id="inspector">Listas e imágenes desde el inspector</h2>
+          <p>El formato de las listas y el ajuste de una imagen —tamaño, proporción y reemplazo— se resuelven en el inspector, con la diapositiva a la vista. Present comparte con Write la cinta por pestañas y su modo compacto.</p>
         </section>
         <section>
           <h2 id="limite">Lo que no hace</h2>
@@ -434,12 +475,13 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
           <table>
             <thead><tr><th>Material</th><th>Acción</th><th>Resultado</th></tr></thead>
             <tbody>
-              <tr><td>Documento</td><td>Guardar copia…</td><td>DOCX con márgenes y saltos de página</td></tr>
-              <tr><td>Presentación</td><td>Guardar copia…</td><td>PPTX editable, con notas</td></tr>
-              <tr><td>Documento</td><td>Compartir</td><td>PDF del material</td></tr>
+              <tr><td>Documento</td><td>Guardar DOCX…</td><td>DOCX editable, con la configuración de página del material</td></tr>
+              <tr><td>Presentación</td><td>Guardar PPTX…</td><td>PPTX editable, con las notas del orador</td></tr>
+              <tr><td>Documento</td><td>Guardar PDF…, dentro de «Documento imprimible»</td><td>PDF de la hoja tal como se ve en pantalla</td></tr>
+              <tr><td>Write y Present</td><td>Archivo → Exportar</td><td>DOCX, PPTX, HTML, TXT o SVG, según la superficie</td></tr>
             </tbody>
           </table>
-          <p>El PDF contiene el material y nada más: sin la barra de la aplicación ni elementos de interfaz.</p>
+          <p>El PDF se arma desde el documento y no desde la pantalla: contiene el material y nada más, sin la barra de la aplicación ni elementos de interfaz, y respeta el tamaño, la orientación y los márgenes que definiste.</p>
         </section>
         <section>
           <h2 id="integridad">Si algo no se puede exportar</h2>
@@ -457,8 +499,8 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
       html: `
         <section><h2 id="limite">Límite de acceso</h2><p>pteron trabaja dentro de la carpeta que tú eliges. No incluye terminal ni herramientas generales de programación, y la interfaz no tiene acceso directo al sistema: los privilegios pasan por un canal tipado con una lista acotada de capacidades docentes.</p></section>
         <section><h2 id="nube">Uso de nube</h2><p>Antes de enviar contenido a un servicio externo, pteron indica qué capacidad se usará y pide una configuración o autorización clara. Las fuentes web se limitan a HTTPS, y lo que se recupera de ellas se trata como dato no confiable.</p></section>
-        <section><h2 id="iphone">Acceso desde el iPhone</h2><p>Existe un acceso complementario desde el iPhone y viene <strong>apagado de fábrica</strong>. El escritorio conserva sesiones, carpeta y materiales, y el teléfono se empareja contra él. El host escucha sólo dentro del propio computador, su clave se guarda como hash y puede rotarse o revocarse desde <strong>Ajustes → iPhone</strong>.</p></section>
-        <section><h2 id="licencia">Licencia</h2><p>El núcleo local funciona sin licencia y seguirá siendo gratis. La licencia sólo habilita capacidad de IA incluida; se activa desde <strong>Ajustes → Licencia</strong> y se verifica en tu equipo, sin consultar a un servidor.</p></section>`
+        <section><h2 id="iphone">Acceso desde el iPhone</h2><p>Existe un acceso complementario desde el iPhone y viene <strong>apagado de fábrica</strong>. El escritorio conserva sesiones, carpeta y materiales, y el teléfono se empareja contra él. El host escucha sólo dentro del propio computador, su clave se guarda como hash y puede rotarse o revocarse desde <strong>Configuración → Labs</strong>.</p></section>
+        <section><h2 id="licencia">Licencia</h2><p>El núcleo local funciona sin licencia y seguirá siendo gratis. La licencia sólo habilita capacidad de IA incluida; se activa desde <strong>Configuración → Perfil</strong> y se verifica en tu equipo, sin consultar a un servidor.</p></section>`
     },
     "datos-estudiantes": {
       eyebrow: "Privacidad y control",
@@ -468,7 +510,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="detecta">Qué detecta exactamente</h2>
           <p>Antes de enviar algo a un proveedor que no sea local, pteron busca dos cosas concretas: un <strong>nombre declarado en un campo de persona</strong> y un <strong>RUT con formato chileno</strong>. Si encuentra alguno, detiene el envío y te muestra la elección.</p>
-          <figure class="product-shot"><img src="/assets/docs/app-datos.webp" width="1760" height="1076" loading="lazy" alt="Aviso de datos identificables de estudiantes con las opciones Excluir fragmentos, Anonimizar y continuar, y Cancelar"><figcaption>El aviso llega antes del envío, dice qué detectó y ofrece una vista previa anonimizada.</figcaption></figure>
+          <figure class="product-shot"><img src="/assets/docs/app-datos-0-5-4.webp" width="1760" height="1076" loading="lazy" alt="Aviso de datos identificables de estudiantes con las opciones Excluir fragmentos, Anonimizar y continuar, y Cancelar"><figcaption>El aviso llega antes del envío, dice qué detectó y ofrece una vista previa anonimizada.</figcaption></figure>
           <p>Tienes tres salidas: <strong>Excluir fragmentos</strong>, <strong>Anonimizar y continuar</strong> o <strong>Cancelar</strong>. La vista previa anonimizada te deja ver qué se enviaría antes de aceptar.</p>
         </section>
         <section>
@@ -486,9 +528,9 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
       lead: "Eliges quién prepara tus materiales. Las capacidades externas son opcionales, acotadas y revocables.",
       html: `
         <section>
-          <h2 id="ajustes">Dónde se configura</h2>
-          <p>En <strong>Ajustes → Modelo</strong>. Cada proveedor es un panel plegable: al abrirlo pegas su clave y pteron muestra los modelos que esa clave habilita, con su ficha técnica —contexto, salida, tarifa y si razona—. Los modelos probados llevan su marca. Nada se aplica hasta pulsar <strong>Guardar cambios</strong>.</p>
-          <figure class="product-shot"><img src="/assets/docs/app-modelo.webp" width="1760" height="1076" loading="lazy" alt="Ajustes de modelo en pteron con el proveedor En este equipo y varios proveedores externos que requieren clave"><figcaption>«En este equipo» usa un modelo local. El resto pide tu propia clave.</figcaption></figure>
+          <h2 id="configuracion">Dónde se configura</h2>
+          <p>En <strong>Configuración → Modelo de IA</strong>. Cada proveedor es un panel plegable: al abrirlo pegas su clave y pteron muestra los modelos que esa clave habilita, con su ficha técnica —contexto, salida, tarifa y si razona—. Los modelos probados llevan su marca. Nada se aplica hasta pulsar <strong>Guardar cambios</strong>.</p>
+          <figure class="product-shot"><img src="/assets/docs/app-modelo-0-5-4.webp" width="1760" height="1076" loading="lazy" alt="Configuración → Modelo de IA en pteron con el proveedor En este equipo y varios proveedores externos que requieren clave"><figcaption>«En este equipo» usa un modelo local. El resto pide tu propia clave.</figcaption></figure>
         </section>
         <section>
           <h2 id="local">Modelo local</h2>
@@ -504,7 +546,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         </section>
         <section>
           <h2 id="privacidad">Dónde vive tu configuración</h2>
-          <p>La pantalla de Ajustes lo declara al pie: tu configuración se guarda en este dispositivo.</p>
+          <p>La pantalla de Configuración lo declara al pie: tu configuración se guarda en este dispositivo.</p>
         </section>`
     },
     "preguntas": {
@@ -526,9 +568,9 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
       lead: "Comprueba primero la versión, la carpeta y el estado del modelo.",
       html: `
         <section><h2 id="no-abre">pteron no abre</h2><p>Reinicia el equipo, verifica que uses una plataforma compatible y vuelve a descargar el instalador desde el sitio oficial.</p></section>
-        <section><h2 id="modelo">El modelo no responde</h2><p>Abre <strong>Ajustes → Modelo</strong> y revisa el estado de la tarjeta. Si usas el modelo local, comprueba que Ollama esté iniciado; si usas un proveedor externo, que la clave siga siendo válida y haya conexión.</p></section>
-        <section><h2 id="exportar">La exportación falla</h2><p>pteron prefiere avisar antes que entregarte una copia incompleta. El mensaje indica qué parte del material no pudo convertirse; suele tratarse de una estructura no soportada.</p><figure class="product-shot"><img src="/assets/docs/app-error-exportar.webp" width="1760" height="1076" loading="lazy" alt="Aviso de error de exportación en pteron sobre el material abierto"><figcaption>Un fallo de exportación se declara y no deja un archivo a medias.</figcaption></figure></section>
-        <section><h2 id="archivos">No aparece un archivo</h2><p>Confirma que esté dentro de la carpeta de trabajo actual y en un formato compatible. Puedes revisar o cambiar la carpeta en <strong>Ajustes → Fuentes y materiales</strong>.</p></section>
+        <section><h2 id="modelo">El modelo no responde</h2><p>Abre <strong>Configuración → Modelo de IA</strong> y revisa el estado de la tarjeta. Si usas el modelo local, comprueba que Ollama esté iniciado; si usas un proveedor externo, que la clave siga siendo válida y haya conexión.</p></section>
+        <section><h2 id="exportar">La exportación falla</h2><p>pteron prefiere avisar antes que entregarte una copia incompleta. El mensaje indica qué parte del material no pudo convertirse; suele tratarse de una estructura no soportada.</p><figure class="product-shot"><img src="/assets/docs/app-error-exportar-0-5-4.webp" width="1760" height="1076" loading="lazy" alt="Aviso de error de exportación en pteron sobre el material abierto"><figcaption>Un fallo de exportación se declara y no deja un archivo a medias.</figcaption></figure></section>
+        <section><h2 id="archivos">No aparece un archivo</h2><p>Confirma que esté dentro de la carpeta de trabajo actual y en un formato compatible. Puedes revisar o cambiar la carpeta en <strong>Configuración → Perfil</strong>.</p></section>
         <section><h2 id="actualizacion">La actualización no se aplicó</h2><p>En Windows, si el instalador silencioso queda bloqueado, pteron lo abre a la vista. Al volver a abrirse compara la versión real con la intentada y avisa si no cambió.</p></section>
         <section><h2 id="contacto">Aún necesito ayuda</h2><p>Escribe a <a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a> e incluye tu sistema operativo, versión de pteron y una descripción breve. No adjuntes datos identificables de estudiantes.</p></section>`
     },

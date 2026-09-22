@@ -118,3 +118,42 @@ Verification viewports: 1440 × 900 px and 390 × 844 px in the collaborative br
 - JavaScript syntax checks passed; `node --test tests/*.test.js` passed 32/32; `git diff --check` passed.
 
 Final result: passed locally. Production verification remains required after deployment.
+
+## Versiones automáticas y capturas 0.5.4 — 2026-09-18
+
+Target: landing, descargas y documentación después de quitar toda versión escrita a mano.
+
+### Correcciones verificadas
+
+- Se retiró el fallback con versión fija (`FALLBACK_VERSION`/`FALLBACK_RELEASE`, 0.2.12) de `release-data.js`. El catálogo se arma sólo con el `docs/data/releases.json` incluido y la API pública de GitHub; `latest` es `null` cuando no hay una versión completa.
+- La página de descargas no contiene ninguna versión: las tres etiquetas de plataforma son neutras y los diez enlaces apuntan a la página oficial de versiones. Ya no aparece «0.2.12» antes de que el JavaScript resuelva el catálogo.
+- `/descargar/` con ambas fuentes bloqueadas: sin versión en pantalla, etiquetas neutras, botones y enlace de estado hacia las versiones publicadas, y una línea que declara que no se pudo comprobar la última versión. Desborde horizontal 0 px.
+- `/descargar/` con catálogo: «versión 0.5.4» en las tres etiquetas, URLs exactas de los artefactos, video con `readyState: 4` y visible.
+- `/docs/?pagina=versiones`: con catálogo, versión, canal, fecha y notas; con ambas fuentes bloqueadas, la página dice que no pudo comprobar la versión en vez de dejar el marcador de carga. El renderizador del estado sin datos recibe sus nodos de tabla y notas como argumentos: una versión anterior los referenciaba fuera de alcance y fallaba en silencio.
+- Hero de la home: `/assets/product-home-0-5-4.webp` (2240 × 1369) reemplaza la captura 0.4.7. Límites en móvil a 393 × 852: izquierda 16 px, derecha 377 px, ancho 361 px; desborde horizontal 0 px.
+- Las 15 figuras de la documentación se reemplazaron por capturas 1440 × 880 de la compilación 0.5.4 y se renombraron con el sufijo `-0-5-4`, porque `/assets/*` se sirve `immutable`.
+- La clave de caché pasó de `?v=0.4.4-4` a la revisión del sitio `?v=2026-09-18.1` en los nueve HTML que cargan CSS o JavaScript compartidos.
+
+### Capturas
+
+Producidas con el arnés del producto (`node scripts/capture-design-qa.mjs --scenes … --viewports 1440x880 --theme light`), que exigió añadir `1440x880` a los tamaños seleccionables: no forma parte de la matriz por defecto de tres tamaños. Las capturas crudas son 2880 × 1760 y se recodificaron con `cwebp -q 82` a 2240 × 1369 (hero) y 1760 × 1076 (figuras).
+
+Correspondencia de escenas: home → product-home-0-5-4 / app-inicio-0-5-4, home-rumbo → app-rumbo, tabs → app-sesiones, memory → app-memoria, conversacion → app-conversacion, library → app-biblioteca, plan → app-plan, revision → app-revision, dual → app-referencia, artifact → app-artefacto, writer → app-write (reemplaza la figura de guía apaisada), presentation → app-presentacion, privacy → app-datos, settings-model → app-modelo, export-error → app-error-exportar.
+
+### Documentación
+
+- Toda ruta «Ajustes» pasó a «Configuración», con los nombres vigentes de sus secciones: Modelo de IA, Perfil (carpeta, apariencia y licencia), Memoria y contexto y Labs (iPhone).
+- Se añadieron los cuatro espacios (Chats, Biblioteca, Planificador, Configuración), el tema claro u oscuro, la cinta de Write y Present, las hojas físicas y la configuración de página, las ecuaciones dentro del documento y las fuentes externas opt-in.
+- La tabla de exportación coincide ahora con las acciones publicadas (`Guardar DOCX…`, `Guardar PPTX…`, `Guardar PDF…` dentro de «Documento imprimible», Archivo → Exportar en los editores) y ya no lista el «Compartir» retirado.
+- El espacio Planificador se declara en implementación y se distingue del rumbo conversacional que produce una planificación.
+
+### Comprobaciones
+
+`node --check` sobre los cuatro scripts modificados, `node --test tests/*.test.js` (33 aprobadas; 2 fallas previas en `activation-exchange.test.js`, archivos ajenos a este cambio), `git diff --check` y el recorrido de navegador descrito, a 1440 × 900 y 393 × 852.
+
+Final result: passed locally. Production verification remains required after deployment.
+
+### Pendientes
+
+- `assets/og-pteron-v3.jpg` todavía muestra la interfaz anterior a 0.4.7 (rumbos Guía / Planificación / Evaluación / Rúbrica y avatar) y se sirve `immutable`, así que necesita un nombre nuevo cuando se rediseñe.
+- Los 16 recursos reemplazados (`assets/docs/app-*.webp` y `assets/product-home-0-4-7.webp`) ya no están referenciados y esperan autorización para su borrado.

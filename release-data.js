@@ -11,7 +11,7 @@
   const GITHUB_RELEASES_API_URL = `https://api.github.com/repos/${REPOSITORY}/releases?per_page=20`;
   const PUBLIC_KEY_URL = "/descargar/pteron-releases-public.asc";
   const PUBLIC_KEY_FINGERPRINT = "5DDC 795B EFB7 EC2F EC93 0227 EAFB 54AE A175 0DCF";
-  const FALLBACK_VERSION = "0.2.12";
+  const RELEASES_PAGE_URL = `https://github.com/${REPOSITORY}/releases`;
   const FETCH_TIMEOUT_MS = 5000;
 
   const parseSemver = value => {
@@ -122,7 +122,7 @@
 
   const publishedLabel = value => {
     const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "agosto de 2026";
+    if (Number.isNaN(date.getTime())) return "sin fecha";
     return new Intl.DateTimeFormat("es-CL", {
       month: "long",
       year: "numeric",
@@ -168,22 +168,6 @@
     };
   };
 
-  const fallbackAssets = requiredAssetNames(FALLBACK_VERSION).map(name => ({
-    name,
-    url: assetUrl(FALLBACK_VERSION, name),
-    bytes: null,
-  }));
-
-  const FALLBACK_RELEASE = Object.freeze({
-    version: FALLBACK_VERSION,
-    publishedAt: "",
-    publishedLabel: "agosto de 2026",
-    url: releaseUrl(FALLBACK_VERSION),
-    assets: fallbackAssets,
-    notes: ["Compatibilidad beta con Linux x86_64, además de macOS con Apple Silicon y Windows 11."],
-    channel: "beta",
-  });
-
   const isCompleteRelease = release => {
     if (!release) return false;
     const names = new Set(release.assets.map(asset => asset.name));
@@ -208,10 +192,7 @@
       ...current,
       ...next,
       publishedAt: next.publishedAt || current.publishedAt,
-      publishedLabel:
-        next.publishedAt || next.publishedLabel !== "agosto de 2026"
-          ? next.publishedLabel
-          : current.publishedLabel,
+      publishedLabel: next.publishedAt ? next.publishedLabel : current.publishedLabel,
       assets: [...assets.values()],
       notes: next.notes.length ? next.notes : current.notes,
       channel: current.channel === "stable" || next.channel === "stable" ? "stable" : "beta",
@@ -220,7 +201,8 @@
 
   const buildReleaseCatalog = payloads => {
     const byVersion = new Map();
-    [FALLBACK_RELEASE, ...payloads.flatMap(releasesFromPayload)]
+    payloads
+      .flatMap(releasesFromPayload)
       .map(normalizeRelease)
       .filter(Boolean)
       .forEach(release => {
@@ -228,8 +210,10 @@
       });
 
     const ordered = [...byVersion.values()].sort((left, right) => compareSemver(right.version, left.version));
-    const latest = ordered.find(isCompleteRelease) || normalizeRelease(FALLBACK_RELEASE);
-    const releases = ordered.filter(release => compareSemver(release.version, latest.version) <= 0);
+    const latest = ordered.find(isCompleteRelease) || null;
+    const releases = latest
+      ? ordered.filter(release => compareSemver(release.version, latest.version) <= 0)
+      : ordered;
     return {
       latest,
       stable: releases.find(release => release.channel === "stable") || null,
@@ -279,8 +263,9 @@
   };
 
   const findAsset = (release, kind) => {
-    const name = artifactNames(release?.version || FALLBACK_VERSION)[kind];
-    return release?.assets?.find(asset => asset.name === name) || null;
+    if (!release?.version) return null;
+    const name = artifactNames(release.version)[kind];
+    return release.assets?.find(asset => asset.name === name) || null;
   };
 
   const findSignature = (release, kind) => {
@@ -291,12 +276,11 @@
 
   return {
     BUNDLED_RELEASES_URL,
-    FALLBACK_RELEASE,
-    FALLBACK_VERSION,
     FETCH_TIMEOUT_MS,
     GITHUB_RELEASES_API_URL,
     PUBLIC_KEY_FINGERPRINT,
     PUBLIC_KEY_URL,
+    RELEASES_PAGE_URL,
     artifactNames,
     buildReleaseCatalog,
     compareSemver,
