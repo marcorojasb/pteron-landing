@@ -167,7 +167,12 @@
       : useHighQualityVideo
         ? '/assets/pteron-scroll-hq.mp4'
         : '/assets/pteron-scroll.mp4';
-    video.src = videoUrl;
+
+    // Blob first so iOS Safari can scrub the scroll film reliably.
+    const response = await fetch(videoUrl, { priority: 'high' });
+    if (!response.ok) throw new Error(`Video fetch failed: ${response.status}`);
+    const blob = await response.blob();
+    video.src = URL.createObjectURL(blob);
     video.load();
 
     await waitForVideo('loadedmetadata', 1);
@@ -176,6 +181,16 @@
     await waitForVideo('loadeddata', 2);
     video.pause();
     video.currentTime = 0;
+    if (video.seeking) {
+      await new Promise((resolve) => {
+        const done = () => {
+          video.removeEventListener('seeked', done);
+          resolve();
+        };
+        video.addEventListener('seeked', done, { once: true });
+        window.setTimeout(done, 2000);
+      });
+    }
     filmStage?.classList.add('is-video-ready');
   };
 
@@ -185,16 +200,17 @@
     const travel = Math.max(1, film.offsetHeight - window.innerHeight);
     const progress = Math.min(1, Math.max(0, (window.scrollY - start) / travel));
     const duration = Number.isFinite(video.duration) ? Math.max(0, video.duration - .05) : 0;
-    targetTime = reducedMotion ? 0 : progress * duration * .92;
+    targetTime = reducedMotion ? 0 : progress * duration * .88;
     if (duration && Math.abs(video.currentTime - targetTime) > .025) {
       video.currentTime = targetTime;
     }
     if (progressLabel) progressLabel.textContent = `${String(Math.round(progress * 100)).padStart(2, '0')} — 100`;
     if (product) {
       const isMobile = window.innerWidth <= 560;
-      const enterDuration = isMobile ? .3 : .22;
+      const enterDuration = isMobile ? .28 : .18;
       const enter = reducedMotion ? 1 : Math.min(1, Math.max(0, progress / enterDuration));
-      const startOffset = isMobile ? 40 : 8;
+      // Start higher so the pteron window is already readable as the film arrives.
+      const startOffset = isMobile ? 22 : 12;
       const offset = startOffset * (1 - enter);
       product.style.transform = `translate3d(-50%, ${offset}vh, 0)`;
     }
@@ -208,18 +224,19 @@
   window.addEventListener('scroll', requestFilmUpdate, { passive: true });
   window.addEventListener('resize', requestFilmUpdate, { passive: true });
 
+  // Keep the medusa up until the scroll film is decoded and seekable.
   const videoReady = reducedMotion
     ? Promise.resolve()
     : Promise.race([
         prepareVideo(),
-        new Promise((_, reject) => window.setTimeout(() => reject(new Error('Video preparation timeout')), 9000))
+        new Promise((_, reject) => window.setTimeout(() => reject(new Error('Video preparation timeout')), 16000))
       ]);
   const fontsReady = document.fonts?.ready ?? Promise.resolve();
 
   Promise.all([
     videoReady,
     fontsReady,
-    new Promise((resolve) => window.setTimeout(resolve, 800))
+    new Promise((resolve) => window.setTimeout(resolve, 500))
   ]).catch(() => {
     filmStage?.classList.remove('is-video-ready');
   }).finally(() => {
