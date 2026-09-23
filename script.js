@@ -124,10 +124,15 @@
   const filmStage = film.querySelector('.scroll-film-sticky');
   let frameId = 0;
   let targetTime = 0;
+  let pendingSeekTime = null;
+  let isSeeking = false;
 
   video.pause();
+  video.muted = true;
+  video.playsInline = true;
+  video.defaultMuted = true;
 
-  const waitForVideo = (eventName, readyState, timeout = 20000) => new Promise((resolve, reject) => {
+  const waitForVideo = (eventName, readyState, timeout = 30000) => new Promise((resolve, reject) => {
     if (video.readyState >= readyState) {
       resolve();
       return;
@@ -153,6 +158,39 @@
     video.addEventListener('error', onError, { once: true });
   });
 
+  const seekOnce = (time) => new Promise((resolve, reject) => {
+    const target = Math.max(0, Math.min(time, Math.max(0, (video.duration || 0) - .05)));
+    if (video.readyState >= 2 && !video.seeking && Math.abs(video.currentTime - target) < .02) {
+      resolve();
+      return;
+    }
+    const cleanup = () => {
+      window.clearTimeout(timeoutId);
+      video.removeEventListener('seeked', onSeeked);
+      video.removeEventListener('error', onError);
+    };
+    const timeoutId = window.setTimeout(() => {
+      cleanup();
+      if (video.readyState >= 2) resolve();
+      else reject(new Error('Seek timeout'));
+    }, 4000);
+    const onSeeked = () => {
+      cleanup();
+      isSeeking = false;
+      resolve();
+    };
+    const onError = () => {
+      cleanup();
+      isSeeking = false;
+      reject(new Error('Seek failed'));
+    };
+    video.addEventListener('seeked', onSeeked, { once: true });
+    video.addEventListener('error', onError, { once: true });
+    pendingSeekTime = null;
+    isSeeking = true;
+    video.currentTime = target;
+  });
+
   const prepareVideo = async () => {
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     const constrainedConnection = connection?.saveData
@@ -175,23 +213,39 @@
     video.src = URL.createObjectURL(blob);
     video.load();
 
-    await waitForVideo('loadedmetadata', 1);
+    await waitForVideo('loadedmetadata', 1, 20000);
+    // Force a decode of the first frames on iOS without leaving playback on.
     const playback = video.play();
     playback?.catch(() => {});
-    await waitForVideo('loadeddata', 2);
+    await waitForVideo('loadeddata', 2, 20000);
     video.pause();
-    video.currentTime = 0;
-    if (video.seeking) {
-      await new Promise((resolve) => {
-        const done = () => {
-          video.removeEventListener('seeked', done);
-          resolve();
-        };
-        video.addEventListener('seeked', done, { once: true });
-        window.setTimeout(done, 2000);
-      });
+
+    // Prove mid-timeline scrubbing before revealing the page.
+    const duration = Number.isFinite(video.duration) ? video.duration : 0;
+    if (duration > 1) {
+      await seekOnce(duration * .5);
+      await seekOnce(0);
+    } else {
+      await seekOnce(0);
     }
+    isSeeking = false;
     filmStage?.classList.add('is-video-ready');
+    updateFilm();
+  };
+
+  const commitSeek = () => {
+    if (pendingSeekTime === null || isSeeking) return;
+    const next = pendingSeekTime;
+    pendingSeekTime = null;
+    if (Math.abs(video.currentTime - next) < .025 && !video.seeking) return;
+    isSeeking = true;
+    const done = () => {
+      video.removeEventListener('seeked', done);
+      isSeeking = false;
+      commitSeek();
+    };
+    video.addEventListener('seeked', done);
+    video.currentTime = next;
   };
 
   const updateFilm = () => {
@@ -201,8 +255,11 @@
     const progress = Math.min(1, Math.max(0, (window.scrollY - start) / travel));
     const duration = Number.isFinite(video.duration) ? Math.max(0, video.duration - .05) : 0;
     targetTime = reducedMotion ? 0 : progress * duration * .88;
-    if (duration && Math.abs(video.currentTime - targetTime) > .025) {
-      video.currentTime = targetTime;
+    if (duration && filmStage?.classList.contains('is-video-ready')) {
+      if (Math.abs(video.currentTime - targetTime) > .025) {
+        pendingSeekTime = targetTime;
+        commitSeek();
+      }
     }
     if (progressLabel) progressLabel.textContent = `${String(Math.round(progress * 100)).padStart(2, '0')} — 100`;
     if (product) {
@@ -225,22 +282,22 @@
   window.addEventListener('resize', requestFilmUpdate, { passive: true });
 
   // Keep the medusa up until the scroll film is decoded and seekable.
-  const videoReady = reducedMotion
-    ? Promise.resolve()
-    : Promise.race([
-        prepareVideo(),
-        new Promise((_, reject) => window.setTimeout(() => reject(new Error('Video preparation timeout')), 16000))
-      ]);
+  // Soft timeout only uncovers the page; preparation continues and enables the film after.
+  const preparation = reducedMotion ? Promise.resolve() : prepareVideo().catch(() => {
+    filmStage?.classList.remove('is-video-ready');
+  });
   const fontsReady = document.fonts?.ready ?? Promise.resolve();
+  const minimumLoaderTime = new Promise((resolve) => window.setTimeout(resolve, 500));
+  const softReveal = new Promise((resolve) => window.setTimeout(resolve, 45000));
 
   Promise.all([
-    videoReady,
+    Promise.race([preparation, softReveal]),
     fontsReady,
-    new Promise((resolve) => window.setTimeout(resolve, 500))
-  ]).catch(() => {
-    filmStage?.classList.remove('is-video-ready');
-  }).finally(() => {
+    minimumLoaderTime
+  ]).finally(() => {
     updateFilm();
     finishLoading();
+    // If the film becomes ready after the soft reveal, arm scrubbing then.
+    preparation.finally(() => updateFilm());
   });
 })();
