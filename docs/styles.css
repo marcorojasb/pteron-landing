@@ -7,8 +7,8 @@
   --sand: #e6d8c0;
   --line: #ded5c8;
   --muted: #616c78;
-  --sans: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --serif: "Newsreader", Georgia, serif;
+  --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --serif: "IBM Plex Serif", "Iowan Old Style", Baskerville, Georgia, serif;
 }
 
 * { box-sizing: border-box; }
@@ -184,7 +184,7 @@ button, input { font: inherit; }
   text-decoration: none;
   border-radius: 5px;
 }
-.search-results a:hover, .search-results a:focus { background: var(--paper); }
+.search-results a:hover, .search-results a:focus, .search-results a.is-cursor { background: var(--paper); }
 .search-results small { color: var(--muted); }
 .search-results p { margin: 8px 12px; color: var(--muted); }
 
@@ -208,7 +208,7 @@ button, input { font: inherit; }
 .docs-sidebar section { margin: 0 0 30px; }
 .docs-sidebar h2, .page-toc > p {
   margin: 0 0 9px;
-  color: #96590f;
+  color: #c9a261;
   font-size: 11px;
   font-weight: 700;
   line-height: 1.4;
@@ -388,7 +388,7 @@ button, input { font: inherit; }
   border-bottom: 1px solid var(--line);
 }
 .path-list a:hover strong { color: var(--blue); }
-.path-list span { color: #96590f; font-variant-numeric: tabular-nums; }
+.path-list span { color: #c9a261; font-variant-numeric: tabular-nums; }
 .path-list strong { font-size: 15px; }
 .path-list small { color: var(--muted); font-size: 13px; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }

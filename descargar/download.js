@@ -103,10 +103,14 @@
   const video = document.querySelector("[data-download-video]");
   const year = document.querySelector("[data-year]");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const mobile = window.matchMedia("(max-width: 700px)").matches;
 
   if (year) year.textContent = new Date().getFullYear();
   if (!video || reducedMotion) return;
+
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const constrainedConnection = connection?.saveData
+    || ["slow-2g", "2g", "3g"].includes(connection?.effectiveType);
+  const mobile = window.matchMedia("(max-width: 700px)").matches || constrainedConnection;
 
   const reveal = () => {
     video.classList.add("is-ready");
@@ -114,6 +118,7 @@
   };
 
   video.addEventListener("canplay", reveal, { once: true });
+  // Poster already paints the page; pick the lightest MP4 the client can take.
   video.src = mobile
     ? "/assets/download-jellyfish-mobile.mp4"
     : "/assets/download-jellyfish.mp4";

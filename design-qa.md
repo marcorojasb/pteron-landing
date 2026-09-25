@@ -157,3 +157,93 @@ Final result: passed locally. Production verification remains required after dep
 
 - `assets/og-pteron-v3.jpg` todavía muestra la interfaz anterior a 0.4.7 (rumbos Guía / Planificación / Evaluación / Rúbrica y avatar) y se sirve `immutable`, así que necesita un nombre nuevo cuando se rediseñe.
 - Los 16 recursos reemplazados (`assets/docs/app-*.webp` y `assets/product-home-0-4-7.webp`) ya no están referenciados y esperan autorización para su borrado.
+
+## Sistema visual alineado con la app — 2026-09-23
+
+Target: landing + planes + cuenta + legal + docs. La web no se parecía al
+sistema visual de pteron (`docs/INTERFAZ.md`); se refactorizó el sistema
+compartido y se revisó el proyecto línea a línea.
+
+### Referencia
+
+- Gramática oficial: `pteron/docs/INTERFAZ.md` (tokens Blue/Sky/Gold/Sand/Ivory,
+  IBM Plex Serif/Sans, wordmark Iowan/Baskerville, controles de tres roles).
+- Captura de producto del editor Write (cinta, papel, panel Organizar material).
+
+### Cambios verificados
+
+- Tokens: Blue `#0F2238`, Sky `#496A8E`, Gold `#C9A261` (sólo decoración),
+  Sand `#E6D8C0`, Ivory `#F6F2EC`. Foco con anillo Gold.
+- Tipografía: IBM Plex Serif/Sans en todas las páginas; wordmark Iowan/Baskerville.
+- Controles: dominante relleno Blue; secundario píldora Sand; discreto texto.
+  Se retiró el override que pintaba `.button-outline` como botón sólido.
+- Oro fuera de interacciones (enlaces/hover usan Blue).
+- Motion: `--mo-xs…--mo-xl` + curvas `--ease-out`/`--ease-inout`. Stagger 45 ms
+  en las tarjetas de principios. `prefers-reduced-motion` cancela desplazamiento
+  y conserva opacidad.
+- Dead CSS retirado: `.editor-window`, `.process-list`, `.statement`.
+- Loader medusa y descarga con la paleta nueva.
+- Cuenta: bordes Sand, radios 10 px, tipografía de marca, escala tipográfica
+  alineada; se eliminó el uso de `--line-strong` inexistente.
+- Caché compartida sincronizada en `?v=2026-09-25.1` en los HTML que cargan
+  CSS/JS compartidos (incluye `script.js`, `release-data.js`, `download.js`,
+  `docs/*.js`).
+
+### Comprobaciones
+
+- Tokens computados en navegador: body IBM Plex Sans `rgb(15,34,56)` sobre
+  `rgb(246,242,236)`; botón dominante Blue; tarjetas con borde Sand `#E6D8C0`.
+- 1440×1024 y 393×852: desborde horizontal 0; consola 0 errores/avisos.
+- `/planes/`: overflow 0; `.button-outline` como píldora secundaria.
+
+### Capturas de esta pasada
+
+- `.playwright-cli/page-2026-09-23T20-54-07-996Z.png` — principios 1440.
+- `/tmp/qa-new-hero.png`, `/tmp/qa-new-principios.png`, `/tmp/qa-new-mobile.png`
+  (clasificación de paleta por píxeles).
+
+Final result: passed locally.
+
+## Eficiencia y pulido general — 2026-09-25
+
+Target: landing, planes, descargar, docs, cuenta y legal. Sin regresiones
+visuales sobre el sistema IBM Plex ya publicado.
+
+### Mejoras de funcionamiento
+
+- **Revelado desacoplado del vídeo**: la página aparece al terminar fuentes + el
+  tiempo mínimo de la medusa (~380 ms). El scroll-film pinta su póster hasta que
+  el MP4 está decodificado y es scrubbable. Antes el sitio esperaba la descarga
+  completa (13–22 MB) o un soft-timeout de 45 s.
+- **Fuente de vídeo adaptativa**: se prefiere `src` directo con range requests;
+  iOS/WebKit siguen con Blob para scrubbing fiable; si un host no permite
+  scrubbing (p. ej. `http.server` sin Range), cae a Blob automáticamente.
+- **Watchdog de seek**: un seek colgado ya no congela el film para el resto de
+  la sesión.
+- **Geometría del film cacheada**: `offsetTop`/`offsetHeight` se miden en resize,
+  no en cada frame de scroll.
+- **Medusa más ligera**: 3 600 partículas con la misma silueta (espacio de
+  parámetros original remapeado), ~3× menos trabajo por frame.
+- **Descarga**: elige el MP4 ligero también con `saveData` o conexión 3G.
+- **Docs**: el índice «En esta página» marca la sección visible (scroll-spy) y
+  la búsqueda admite flechas ↑↓ y Enter.
+- **Fuentes**: se retiró el peso Serif 600 no usado de la URL de Google Fonts.
+- **Caché**: revisión de sitio `?v=2026-09-25.1` en todos los HTML que cargan
+  CSS/JS compartidos (incluye `cuenta.js`).
+
+### Comprobaciones
+
+- `node --check` en `script.js`, `download.js`, `docs/app.js`, `release-data.js`,
+  `cuenta.js`. `node --test tests/*.test.js` 35/35.
+- Sweep 8 rutas × 2 viewports (1440×900 y 393×852): desborde horizontal 0,
+  consola 0 errores, tipografía IBM Plex activa.
+- Revelado home: ~630 ms locales (antes condicionado a la descarga del vídeo).
+  Planes/cuenta ~410 ms (tiempo mínimo de medusa coherente).
+- Scroll-film frame a frame: `currentTime` 0.00 → 4.86 → 9.73 → 14.59 → 19.46 s
+  con `progress` 00/25/50/75/100 y `is-video-ready` activo.
+- `prefers-reduced-motion: reduce`: revelado inmediato, reveals visibles,
+  desborde 0.
+- Menú móvil, búsqueda de docs con cursor de teclado, tarjetas de principios,
+  planes, cuenta, legal y descarga inspeccionados en captura real.
+
+Final result: passed locally. Production verification remains required after deployment.

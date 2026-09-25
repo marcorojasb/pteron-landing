@@ -13,21 +13,29 @@
   let loaderLastPaint = 0;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Fewer particles keeps the medusa silhouette while cutting main-thread work
+  // during the critical first paint of every page.
+  const MEDUSA_POINTS = 3600;
+  const MEDUSA_PAINT_MS = 32;
+
   const drawMedusa = (now = 0) => {
     if (!loaderCanvas || loader?.classList.contains('is-complete')) return;
     if (!reducedMotion) loaderFrameId = window.requestAnimationFrame(drawMedusa);
-    if (!reducedMotion && now - loaderLastPaint < 32) return;
+    if (!reducedMotion && now - loaderLastPaint < MEDUSA_PAINT_MS) return;
     loaderLastPaint = now;
 
     const context = loaderCanvas.getContext('2d');
     const size = 400;
-    context.fillStyle = 'rgb(247, 243, 236)';
+    context.fillStyle = 'rgb(246, 242, 236)';
     context.fillRect(0, 0, size, size);
     loaderTime += Math.PI / 80;
 
-    for (let index = 10000; index > 0; index -= 1) {
-      const y = index / 235;
-      const k = (4 + Math.cos(index / 9 - loaderTime * 2)) * Math.cos(index / 35);
+    for (let index = MEDUSA_POINTS; index > 0; index -= 1) {
+      // Map the sparser sample onto the original 10k-index parameter space so
+      // the medusa silhouette stays identical while drawing ~3× fewer pixels.
+      const t = index / MEDUSA_POINTS;
+      const y = t * 42.55;
+      const k = (4 + Math.cos(t * 1111 - loaderTime * 2)) * Math.cos(t * 285);
       const e = y / 7 - 13;
       const d = Math.hypot(k, e) + Math.sin(e / 9 + loaderTime / 2) - 4;
       const q = 2 * Math.sin(k * 3) - y / 35 * k * (9 + k * Math.sin(Math.cos(e) * 9 - d * 2 + loaderTime));
@@ -35,8 +43,8 @@
       const x = q + 40 * Math.cos(c) + 200;
       const pointY = q * Math.sin(c) + d * 35;
       context.fillStyle = index % 19 === 0
-        ? 'rgba(189, 120, 35, .42)'
-        : 'rgba(16, 36, 59, .38)';
+        ? 'rgba(201, 162, 97, .48)'
+        : 'rgba(15, 34, 56, .40)';
       context.fillRect(x, pointY, 1, 1);
     }
   };
@@ -100,7 +108,7 @@
   });
 
   const revealElements = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if ('IntersectionObserver' in window && !reducedMotion) {
     const observer = new IntersectionObserver((entries, obs) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
@@ -118,7 +126,13 @@
   const progressLabel = document.querySelector('[data-scroll-progress]');
   const product = film?.querySelector('.hero-product');
   if (!film || !video) {
-    finishLoading();
+    // Pages without the scroll film still hold the medusa for the minimum beat
+    // so the loader does not flash and vanish.
+    const fontsReady = document.fonts?.ready ?? Promise.resolve();
+    Promise.all([
+      fontsReady,
+      new Promise((resolve) => window.setTimeout(resolve, reducedMotion ? 0 : 380)),
+    ]).finally(finishLoading);
     return;
   }
   const filmStage = film.querySelector('.scroll-film-sticky');
@@ -126,6 +140,14 @@
   let targetTime = 0;
   let pendingSeekTime = null;
   let isSeeking = false;
+  let filmTop = 0;
+  let filmTravel = 1;
+
+  const measureFilm = () => {
+    const rect = film.getBoundingClientRect();
+    filmTop = rect.top + window.scrollY;
+    filmTravel = Math.max(1, film.offsetHeight - window.innerHeight);
+  };
 
   video.pause();
   video.muted = true;
@@ -171,9 +193,10 @@
     };
     const timeoutId = window.setTimeout(() => {
       cleanup();
+      isSeeking = false;
       if (video.readyState >= 2) resolve();
       else reject(new Error('Seek timeout'));
-    }, 4000);
+    }, 3500);
     const onSeeked = () => {
       cleanup();
       isSeeking = false;
@@ -191,7 +214,17 @@
     video.currentTime = target;
   });
 
-  const prepareVideo = async () => {
+  // iOS Safari needs a local Blob before it will scrub reliably. Other engines
+  // stream the MP4 with range requests, which avoids a 13–22 MB download before
+  // the page can appear.
+  const needsBlobSource = () => {
+    const ua = navigator.userAgent;
+    const iOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const webkit = /AppleWebKit/.test(ua) && !/Chrome|Chromium|Edg\//.test(ua);
+    return iOS || webkit;
+  };
+
+  const chooseVideoUrl = () => {
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     const constrainedConnection = connection?.saveData
       || ['slow-2g', '2g', '3g'].includes(connection?.effectiveType);
@@ -200,36 +233,61 @@
     const useHighQualityVideo = window.matchMedia('(min-width: 1200px)').matches
       && window.devicePixelRatio > 1
       && !constrainedConnection;
-    const videoUrl = useMobileVideo
+    return useMobileVideo
       ? '/assets/pteron-scroll-mobile.mp4'
       : useHighQualityVideo
         ? '/assets/pteron-scroll-hq.mp4'
         : '/assets/pteron-scroll.mp4';
+  };
 
-    // Blob first so iOS Safari can scrub the scroll film reliably.
+  const loadBlobSource = async (videoUrl) => {
     const response = await fetch(videoUrl, { priority: 'high' });
     if (!response.ok) throw new Error(`Video fetch failed: ${response.status}`);
     const blob = await response.blob();
     video.src = URL.createObjectURL(blob);
     video.load();
-
-    await waitForVideo('loadedmetadata', 1, 20000);
-    // Force a decode of the first frames on iOS without leaving playback on.
+    await waitForVideo('loadedmetadata', 1, 12000);
     const playback = video.play();
     playback?.catch(() => {});
-    await waitForVideo('loadeddata', 2, 20000);
+    await waitForVideo('loadeddata', 2, 12000);
     video.pause();
-
-    // Prove mid-timeline scrubbing before revealing the page.
-    const duration = Number.isFinite(video.duration) ? video.duration : 0;
-    if (duration > 1) {
-      await seekOnce(duration * .5);
-      await seekOnce(0);
-    } else {
-      await seekOnce(0);
-    }
+    await seekOnce(0);
     isSeeking = false;
+  };
+
+  const prepareVideo = async () => {
+    const videoUrl = chooseVideoUrl();
+
+    if (needsBlobSource()) {
+      await loadBlobSource(videoUrl);
+    } else {
+      // Streaming via range requests is lighter; fall back to a Blob when the
+      // host or codec cannot scrub (some static servers omit Range support).
+      video.src = videoUrl;
+      video.load();
+      await waitForVideo('loadedmetadata', 1, 12000);
+      const playback = video.play();
+      playback?.catch(() => {});
+      await waitForVideo('loadeddata', 2, 12000);
+      video.pause();
+      const mid = Math.max(0, Math.min((video.duration || 1) * 0.4, (video.duration || 1) - 0.1));
+      const scrubWorks = await seekOnce(mid).then(() => {
+        isSeeking = false;
+        return Math.abs(video.currentTime - mid) < 0.35;
+      }).catch(() => {
+        isSeeking = false;
+        return false;
+      });
+      if (!scrubWorks) {
+        await loadBlobSource(videoUrl);
+      } else {
+        await seekOnce(0);
+        isSeeking = false;
+      }
+    }
+
     filmStage?.classList.add('is-video-ready');
+    measureFilm();
     updateFilm();
   };
 
@@ -240,19 +298,24 @@
     if (Math.abs(video.currentTime - next) < .025 && !video.seeking) return;
     isSeeking = true;
     const done = () => {
+      window.clearTimeout(seekWatchdog);
       video.removeEventListener('seeked', done);
       isSeeking = false;
       commitSeek();
     };
+    // A stuck seek must not freeze the film for the rest of the session.
+    const seekWatchdog = window.setTimeout(() => {
+      video.removeEventListener('seeked', done);
+      isSeeking = false;
+      commitSeek();
+    }, 2500);
     video.addEventListener('seeked', done);
     video.currentTime = next;
   };
 
   const updateFilm = () => {
     frameId = 0;
-    const start = film.offsetTop;
-    const travel = Math.max(1, film.offsetHeight - window.innerHeight);
-    const progress = Math.min(1, Math.max(0, (window.scrollY - start) / travel));
+    const progress = Math.min(1, Math.max(0, (window.scrollY - filmTop) / filmTravel));
     const duration = Number.isFinite(video.duration) ? Math.max(0, video.duration - .05) : 0;
     targetTime = reducedMotion ? 0 : progress * duration * .88;
     if (duration && filmStage?.classList.contains('is-video-ready')) {
@@ -277,27 +340,34 @@
     if (!frameId) frameId = window.requestAnimationFrame(updateFilm);
   };
 
-  video.addEventListener('loadedmetadata', updateFilm);
+  measureFilm();
+  video.addEventListener('loadedmetadata', () => {
+    measureFilm();
+    updateFilm();
+  });
   window.addEventListener('scroll', requestFilmUpdate, { passive: true });
-  window.addEventListener('resize', requestFilmUpdate, { passive: true });
+  window.addEventListener('resize', () => {
+    measureFilm();
+    requestFilmUpdate();
+  }, { passive: true });
 
-  // Keep the medusa up until the scroll film is decoded and seekable.
-  // Soft timeout only uncovers the page; preparation continues and enables the film after.
+  // Reveal as soon as fonts and the short medusa beat allow. The film paints
+  // from its poster until the video is decoded and seekable; preparation keeps
+  // running and arms scrubbing when ready. A slow network can no longer hold
+  // the whole page hostage behind a 13–22 MB download.
   const preparation = reducedMotion ? Promise.resolve() : prepareVideo().catch(() => {
     filmStage?.classList.remove('is-video-ready');
   });
   const fontsReady = document.fonts?.ready ?? Promise.resolve();
-  const minimumLoaderTime = new Promise((resolve) => window.setTimeout(resolve, 500));
-  const softReveal = new Promise((resolve) => window.setTimeout(resolve, 45000));
+  const minimumLoaderTime = new Promise((resolve) => window.setTimeout(resolve, reducedMotion ? 0 : 380));
 
-  Promise.all([
-    Promise.race([preparation, softReveal]),
-    fontsReady,
-    minimumLoaderTime
-  ]).finally(() => {
+  Promise.all([fontsReady, minimumLoaderTime]).finally(() => {
+    measureFilm();
     updateFilm();
     finishLoading();
-    // If the film becomes ready after the soft reveal, arm scrubbing then.
-    preparation.finally(() => updateFilm());
+    preparation.finally(() => {
+      measureFilm();
+      updateFilm();
+    });
   });
 })();

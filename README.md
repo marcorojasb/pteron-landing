@@ -19,6 +19,24 @@ registro de tarjeta y activación de licencias en la aplicación de escritorio.
   versiones publicadas.
 - `vercel.json`: URLs limpias, caché de assets y cabeceras de seguridad.
 - `assets/`: imágenes, favicons y recursos públicos.
+- `design-qa.md`: registro de verificación visual y decisiones de interfaz.
+
+## Sistema visual
+
+La landing sigue la gramática visual de la aplicación (`pteron/docs/INTERFAZ.md`):
+
+| Token | Valor | Uso |
+| --- | --- | --- |
+| Blue | `#0F2238` | Texto, acciones dominantes |
+| Sky | `#496A8E` | Texto secundario |
+| Gold | `#C9A261` | Sólo decoración (reglas, foco, numerales) |
+| Sand | `#E6D8C0` | Bordes de controles y tarjetas |
+| Ivory | `#F6F2EC` | Fondo de página |
+
+Tipografía: **IBM Plex Serif** para títulos, **IBM Plex Sans** para interfaz y
+cuerpo, wordmark en `Iowan Old Style` / `Baskerville`. Controles: dominante
+relleno Blue; secundario píldora con borde Sand; discreto sólo texto. El oro no
+se usa en estados interactivos.
 
 ## Arquitectura
 
@@ -46,7 +64,7 @@ combina ese JSON con la API pública de GitHub y conserva un fallback local.
 
 Los HTML cargan el CSS y JavaScript compartidos con un parámetro `?v=` para
 evitar que un archivo antiguo de la caché reemplace los enlaces actuales. Ese
-valor es una revisión del sitio (`2026-09-18.1`), no la versión de pteron: sube
+valor es una revisión del sitio (`2026-09-25.1`), no la versión de pteron: sube
 cuando se modifica `styles.css` o alguno de los JavaScript compartidos, y no
 cambia al publicar una versión nueva del producto. La versión publicada se
 resuelve sola en el navegador desde `docs/data/releases.json` y la API pública
@@ -122,7 +140,11 @@ Comprobaciones rápidas:
 
 ```bash
 for file in $(find api -type f -name '*.js' -print); do node --check "$file"; done
+node --check script.js
 node --check cuenta/cuenta.js
+node --check descargar/download.js
+node --check release-data.js
+node --test tests/*.test.js
 ```
 
 ## Antes del lanzamiento comercial

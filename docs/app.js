@@ -37,11 +37,28 @@
     `).join("");
   };
 
+  let tocObserver = null;
+
   const renderToc = () => {
     const headings = [...article.querySelectorAll("h2[id]")];
     toc.innerHTML = headings.map((heading, index) =>
       `<a href="#${heading.id}"${index === 0 ? ' class="is-active"' : ""}>${heading.textContent}</a>`
     ).join("");
+    tocObserver?.disconnect();
+    if (!headings.length || !("IntersectionObserver" in window)) return;
+    const links = [...toc.querySelectorAll("a")];
+    const setActive = id => {
+      links.forEach(link => {
+        link.classList.toggle("is-active", link.getAttribute("href") === `#${id}`);
+      });
+    };
+    tocObserver = new IntersectionObserver(entries => {
+      const visible = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (visible[0]) setActive(visible[0].target.id);
+    }, { rootMargin: "-18% 0px -62% 0px", threshold: [0, 1] });
+    headings.forEach(heading => tocObserver.observe(heading));
   };
 
   // Sin catálogo esta página no anuncia ninguna versión: lo dice y ofrece la
@@ -157,8 +174,21 @@
     return next ? `<span>Siguiente</span><a href="${pageUrl(next.slug)}">${next.title}</a>` : `<span>Ayuda</span><a href="mailto:pteron@patagua.dev">Escribir a pteron</a>`;
   };
 
+  let searchCursor = -1;
+
+  const searchLinks = () => [...results.querySelectorAll("a")];
+
+  const highlightSearchCursor = () => {
+    const links = searchLinks();
+    links.forEach((link, index) => {
+      link.classList.toggle("is-cursor", index === searchCursor);
+      if (index === searchCursor) link.scrollIntoView({ block: "nearest" });
+    });
+  };
+
   const showSearchResults = value => {
     const query = value.trim().toLocaleLowerCase("es");
+    searchCursor = -1;
     if (!query) {
       results.hidden = true;
       return;
@@ -196,9 +226,24 @@
   window.addEventListener("popstate", () => renderPage(slugFromLocation()));
   search.addEventListener("input", () => showSearchResults(search.value));
   search.addEventListener("keydown", event => {
+    const links = searchLinks();
     if (event.key === "Escape") {
       search.value = "";
       setSearchOpen(false, true);
+      return;
+    }
+    if (!links.length) return;
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      searchCursor = (searchCursor + 1) % links.length;
+      highlightSearchCursor();
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      searchCursor = (searchCursor - 1 + links.length) % links.length;
+      highlightSearchCursor();
+    } else if (event.key === "Enter" && searchCursor >= 0) {
+      event.preventDefault();
+      links[searchCursor].click();
     }
   });
   searchToggle.addEventListener("click", () => {
