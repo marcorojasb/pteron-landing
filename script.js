@@ -271,13 +271,30 @@
       await waitForVideo('loadeddata', 2, 12000);
       video.pause();
       const mid = Math.max(0, Math.min((video.duration || 1) * 0.4, (video.duration || 1) - 0.1));
-      const scrubWorks = await seekOnce(mid).then(() => {
-        isSeeking = false;
-        return Math.abs(video.currentTime - mid) < 0.35;
-      }).catch(() => {
-        isSeeking = false;
-        return false;
+      const settle = () => new Promise((resolve) => {
+        const started = performance.now();
+        const check = () => {
+          if (!video.seeking && Math.abs(video.currentTime - mid) < 0.6) {
+            resolve(true);
+            return;
+          }
+          if (performance.now() - started > 1200) {
+            resolve(Math.abs(video.currentTime - mid) < 0.6);
+            return;
+          }
+          requestAnimationFrame(check);
+        };
+        check();
       });
+      let scrubWorks = false;
+      try {
+        await seekOnce(mid);
+        isSeeking = false;
+        scrubWorks = await settle();
+      } catch {
+        isSeeking = false;
+        scrubWorks = false;
+      }
       if (!scrubWorks) {
         await loadBlobSource(videoUrl);
       } else {

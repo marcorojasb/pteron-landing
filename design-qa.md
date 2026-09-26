@@ -185,7 +185,7 @@ compartido y se revisó el proyecto línea a línea.
 - Loader medusa y descarga con la paleta nueva.
 - Cuenta: bordes Sand, radios 10 px, tipografía de marca, escala tipográfica
   alineada; se eliminó el uso de `--line-strong` inexistente.
-- Caché compartida sincronizada en `?v=2026-09-25.1` en los HTML que cargan
+- Caché compartida sincronizada en `?v=2026-09-25.2` en los HTML que cargan
   CSS/JS compartidos (incluye `script.js`, `release-data.js`, `download.js`,
   `docs/*.js`).
 
@@ -228,7 +228,7 @@ visuales sobre el sistema IBM Plex ya publicado.
 - **Docs**: el índice «En esta página» marca la sección visible (scroll-spy) y
   la búsqueda admite flechas ↑↓ y Enter.
 - **Fuentes**: se retiró el peso Serif 600 no usado de la URL de Google Fonts.
-- **Caché**: revisión de sitio `?v=2026-09-25.1` en todos los HTML que cargan
+- **Caché**: revisión de sitio `?v=2026-09-25.2` en todos los HTML que cargan
   CSS/JS compartidos (incluye `cuenta.js`).
 
 ### Comprobaciones

@@ -64,7 +64,7 @@ combina ese JSON con la API pública de GitHub y conserva un fallback local.
 
 Los HTML cargan el CSS y JavaScript compartidos con un parámetro `?v=` para
 evitar que un archivo antiguo de la caché reemplace los enlaces actuales. Ese
-valor es una revisión del sitio (`2026-09-25.1`), no la versión de pteron: sube
+valor es una revisión del sitio (`2026-09-25.2`), no la versión de pteron: sube
 cuando se modifica `styles.css` o alguno de los JavaScript compartidos, y no
 cambia al publicar una versión nueva del producto. La versión publicada se
 resuelve sola en el navegador desde `docs/data/releases.json` y la API pública
