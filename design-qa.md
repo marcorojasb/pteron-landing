@@ -295,3 +295,16 @@ que sí publica el editor Write completo.
 - Sin cambios en el repositorio de pteron (sólo lectura de `out/` y scripts).
 
 Final result: passed locally. Production verification remains required after deployment.
+
+## Material rico y GIFs en docs — 2026-09-27
+
+- Figuras nuevas desde el fixture de pteron 0.6.0: `app-guia-encabezado` (guía
+  con encabezado tipado, ítems y estructura), `app-guia-top` (figuras, diagrama
+  Mermaid y tabla), `app-write-doc`, `app-biblioteca-detalle`,
+  `app-presentacion-lienzo`, `app-rumbo-compositor`.
+- GIFs animados (1100 px, ~110–210 KB): `guia-completa`, `biblioteca`,
+  `presentacion`, `home-rumbo`, `guia-scroll` en `assets/docs/gifs/`.
+- Página Documentos (`artefactos`) reescrita para mostrar el nivel real de
+  guías/evaluaciones y el formato de ítems, pauta y exportación.
+- Pipeline: `scripts/capture-rich-media.mjs` (Playwright Electron + ffmpeg).
+  Sin escritura en el repositorio de pteron.
