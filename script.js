@@ -263,7 +263,12 @@
     }
   };
 
+  let stuckSeeks = 0;
+  let usingBlobSource = false;
+  let activeVideoUrl = '';
+
   const loadBlobSource = async (videoUrl) => {
+    usingBlobSource = true;
     const response = await fetch(videoUrl, { priority: 'high' });
     if (!response.ok) throw new Error(`Video fetch failed: ${response.status}`);
     const blob = await response.blob();
@@ -279,6 +284,7 @@
   };
 
   const loadStreamSource = async (videoUrl) => {
+    usingBlobSource = false;
     video.src = videoUrl;
     video.load();
     await waitForVideo('loadedmetadata', 1, 12000);
@@ -295,6 +301,7 @@
 
   const prepareVideo = async () => {
     const videoUrl = chooseVideoUrl();
+    activeVideoUrl = videoUrl;
     const streamable = !needsBlobSource() && await supportsByteRange(videoUrl);
     if (streamable) {
       await loadStreamSource(videoUrl);
@@ -306,29 +313,51 @@
     updateFilm();
   };
 
+  const promoteToBlob = async () => {
+    if (usingBlobSource || !activeVideoUrl) return;
+    usingBlobSource = true;
+    filmStage?.classList.remove('is-video-ready');
+    try {
+      await loadBlobSource(activeVideoUrl);
+      filmStage?.classList.add('is-video-ready');
+      stuckSeeks = 0;
+      measureFilm();
+      updateFilm();
+    } catch {
+      filmStage?.classList.remove('is-video-ready');
+    }
+  };
+
   const commitSeek = () => {
     if (pendingSeekTime === null || isSeeking) return;
     const next = pendingSeekTime;
-    pendingSeekTime = null;
-    if (Math.abs(video.currentTime - next) < .025 && !video.seeking) return;
-    // No current frame yet: keep the target and retry once data arrives.
-    if (video.readyState < 2) {
-      pendingSeekTime = next;
+    if (Math.abs(video.currentTime - next) < .025 && !video.seeking) {
+      pendingSeekTime = null;
       return;
     }
+    // No current frame yet: keep the target and retry once data arrives.
+    if (video.readyState < 2) return;
+    pendingSeekTime = null;
     isSeeking = true;
     const done = () => {
       window.clearTimeout(seekWatchdog);
       video.removeEventListener('seeked', done);
       isSeeking = false;
+      stuckSeeks = 0;
       commitSeek();
     };
     // A stuck seek must not freeze the film for the rest of the session.
     const seekWatchdog = window.setTimeout(() => {
       video.removeEventListener('seeked', done);
       isSeeking = false;
+      // Re-queue the target so the next chance (or scroll tick) can retry.
+      if (Math.abs(video.currentTime - next) > 0.35) {
+        pendingSeekTime = next;
+        stuckSeeks += 1;
+        if (stuckSeeks >= 3) promoteToBlob();
+      }
       commitSeek();
-    }, 2500);
+    }, 2800);
     video.addEventListener('seeked', done);
     video.currentTime = next;
   };
@@ -364,6 +393,13 @@
   video.addEventListener('loadedmetadata', () => {
     measureFilm();
     updateFilm();
+  });
+  // A seek parked while readyState dipped resumes as soon as a frame exists.
+  video.addEventListener('loadeddata', () => {
+    if (pendingSeekTime !== null) commitSeek();
+  });
+  video.addEventListener('canplay', () => {
+    if (pendingSeekTime !== null) commitSeek();
   });
   window.addEventListener('scroll', requestFilmUpdate, { passive: true });
   window.addEventListener('resize', () => {
