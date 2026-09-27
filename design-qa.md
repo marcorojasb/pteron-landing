@@ -247,3 +247,51 @@ visuales sobre el sistema IBM Plex ya publicado.
   planes, cuenta, legal y descarga inspeccionados en captura real.
 
 Final result: passed locally. Production verification remains required after deployment.
+
+## Capturas 0.6.0 en documentación — 2026-09-27
+
+Target: figuras de `/docs/` y hero de la home. Fuente: build de pteron 0.6.0
+(`out/`), extraído con `scripts/extract-pteron-captures.mjs` hacia
+`output/captures-0-6-0/` sin escribir en el repositorio de pteron.
+
+### Correspondencia de escenas
+
+| Figura docs | Escena del arnés |
+| --- | --- |
+| app-inicio / product-home-window | home |
+| app-rumbo | home-rumbo |
+| app-sesiones | tabs |
+| app-memoria | memory |
+| app-conversacion | conversacion |
+| app-biblioteca | library |
+| app-plan | plan-ready |
+| app-revision | revision |
+| app-referencia | pdf (layout dual, ADR-134) |
+| app-artefacto / app-write | writer |
+| app-presentacion | presentation |
+| app-datos | privacy |
+| app-modelo | settings-model |
+| app-error-exportar | export-error |
+
+Las escenas `artifact` / `artifact-fin` fallan en 0.6.0 su gate de semántica
+(`.document-page[contenteditable="true"]`); esa figura se cubre con `writer`,
+que sí publica el editor Write completo.
+
+### Producción
+
+- Capturas crudas 2880 × 1760 (1440 × 880 @2x) recodificadas a webp q82
+  1760 × 1076, el mismo encuadre que las figuras 0-5-4.
+- `docs/content.js` apunta a `*-0-6-0.webp`; alts y pies ajustados a la UI
+  vigente (biblioteca integrada, plan listo, revisión comparada, proveedores
+  Xiaomi MiMo / Z.AI / personalizados).
+- Hero: `assets/product-home-window-0-6-0.webp` (1760 × 1076).
+- Caché de docs `?v=2026-09-27.1`.
+
+### Comprobaciones
+
+- 15 figuras 0.6.0 en `assets/docs/`; barrido de 15 páginas de docs: 0 imágenes
+  rotas, `naturalWidth` 1760 en todas.
+- `node --check` en `content.js` y `app.js`; `node --test tests/*.test.js` 35/35.
+- Sin cambios en el repositorio de pteron (sólo lectura de `out/` y scripts).
+
+Final result: passed locally. Production verification remains required after deployment.
