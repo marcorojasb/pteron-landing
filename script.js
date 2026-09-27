@@ -190,6 +190,12 @@
       window.clearTimeout(timeoutId);
       video.removeEventListener('seeked', onSeeked);
       video.removeEventListener('error', onError);
+      video.removeEventListener('loadeddata', onLoaded);
+    };
+    const begin = () => {
+      pendingSeekTime = null;
+      isSeeking = true;
+      video.currentTime = target;
     };
     const timeoutId = window.setTimeout(() => {
       cleanup();
@@ -207,11 +213,14 @@
       isSeeking = false;
       reject(new Error('Seek failed'));
     };
+    const onLoaded = () => {
+      if (video.readyState >= 2) begin();
+    };
     video.addEventListener('seeked', onSeeked, { once: true });
     video.addEventListener('error', onError, { once: true });
-    pendingSeekTime = null;
-    isSeeking = true;
-    video.currentTime = target;
+    // Seeking before a current frame exists stalls the media pipeline.
+    if (video.readyState >= 2) begin();
+    else video.addEventListener('loadeddata', onLoaded, { once: true });
   });
 
   // iOS Safari needs a local Blob before it will scrub reliably. Other engines
@@ -240,6 +249,20 @@
         : '/assets/pteron-scroll.mp4';
   };
 
+  // Probing with a timeline seek stalls Chrome when the MP4 is still thin on
+  // data. Ask the host for byte ranges instead: 206 means we can stream.
+  const supportsByteRange = async (url) => {
+    try {
+      const response = await fetch(url, {
+        headers: { Range: 'bytes=0-1' },
+        priority: 'high',
+      });
+      return response.status === 206;
+    } catch {
+      return false;
+    }
+  };
+
   const loadBlobSource = async (videoUrl) => {
     const response = await fetch(videoUrl, { priority: 'high' });
     if (!response.ok) throw new Error(`Video fetch failed: ${response.status}`);
@@ -255,54 +278,29 @@
     isSeeking = false;
   };
 
+  const loadStreamSource = async (videoUrl) => {
+    video.src = videoUrl;
+    video.load();
+    await waitForVideo('loadedmetadata', 1, 12000);
+    const playback = video.play();
+    playback?.catch(() => {});
+    await waitForVideo('loadeddata', 2, 12000);
+    video.pause();
+    // Land on frame 0 only after there is a current frame to decode.
+    if (Math.abs(video.currentTime) > 0.02) {
+      await seekOnce(0);
+      isSeeking = false;
+    }
+  };
+
   const prepareVideo = async () => {
     const videoUrl = chooseVideoUrl();
-
-    if (needsBlobSource()) {
-      await loadBlobSource(videoUrl);
+    const streamable = !needsBlobSource() && await supportsByteRange(videoUrl);
+    if (streamable) {
+      await loadStreamSource(videoUrl);
     } else {
-      // Streaming via range requests is lighter; fall back to a Blob when the
-      // host or codec cannot scrub (some static servers omit Range support).
-      video.src = videoUrl;
-      video.load();
-      await waitForVideo('loadedmetadata', 1, 12000);
-      const playback = video.play();
-      playback?.catch(() => {});
-      await waitForVideo('loadeddata', 2, 12000);
-      video.pause();
-      const mid = Math.max(0, Math.min((video.duration || 1) * 0.4, (video.duration || 1) - 0.1));
-      const settle = () => new Promise((resolve) => {
-        const started = performance.now();
-        const check = () => {
-          if (!video.seeking && Math.abs(video.currentTime - mid) < 0.6) {
-            resolve(true);
-            return;
-          }
-          if (performance.now() - started > 1200) {
-            resolve(Math.abs(video.currentTime - mid) < 0.6);
-            return;
-          }
-          requestAnimationFrame(check);
-        };
-        check();
-      });
-      let scrubWorks = false;
-      try {
-        await seekOnce(mid);
-        isSeeking = false;
-        scrubWorks = await settle();
-      } catch {
-        isSeeking = false;
-        scrubWorks = false;
-      }
-      if (!scrubWorks) {
-        await loadBlobSource(videoUrl);
-      } else {
-        await seekOnce(0);
-        isSeeking = false;
-      }
+      await loadBlobSource(videoUrl);
     }
-
     filmStage?.classList.add('is-video-ready');
     measureFilm();
     updateFilm();
@@ -313,6 +311,11 @@
     const next = pendingSeekTime;
     pendingSeekTime = null;
     if (Math.abs(video.currentTime - next) < .025 && !video.seeking) return;
+    // No current frame yet: keep the target and retry once data arrives.
+    if (video.readyState < 2) {
+      pendingSeekTime = next;
+      return;
+    }
     isSeeking = true;
     const done = () => {
       window.clearTimeout(seekWatchdog);
