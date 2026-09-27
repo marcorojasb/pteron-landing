@@ -283,7 +283,11 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
           <h2 id="abrir">El selector de recursos</h2>
           <p>Busca por nombre o filtra por formato —<strong>Documentos</strong>, <strong>Presentaciones</strong>, <strong>PDF</strong>, <strong>Planillas</strong>, <strong>Imágenes</strong> y <strong>Otros</strong>—. La barra lateral separa el origen: <em>Todos los materiales</em>, <em>Mi carpeta</em>, <em>Creados en pteron</em> y <em>Banco Begonia</em>. Cada fila lleva su badge —GUÍA, PAUTA, MATERIAL DOCENTE…— y el detalle declara el origen, por ejemplo <em>Material de tu carpeta</em>.</p>
           <figure class="product-shot"><img src="/assets/docs/app-biblioteca-0-6-0.webp" width="1760" height="1076" loading="lazy" alt="Biblioteca de pteron con chips de formato, origen en la barra lateral, lista de resultados y el detalle del recurso"><figcaption>Formato, origen y detalle: lo creado en pteron y los archivos de tu carpeta, en una sola lista.</figcaption></figure>
-          <figure class="product-shot"><img class="product-shot-gif" src="/assets/docs/gifs/biblioteca.gif" width="1100" height="672" loading="lazy" alt="Animación de la biblioteca de pteron: origen, resultados y detalle del recurso"><figcaption>De la lista al recurso: búsqueda, filtros y detalle en un solo sitio.</figcaption></figure>
+        </section>
+        <section>
+          <h2 id="recorrido">De la lista al recurso</h2>
+          <p>Al recorrer la biblioteca, la lista se desplaza, el detalle se actualiza y el recurso queda listo para abrir.</p>
+          <figure class="product-shot product-shot-gif-wrap"><img class="product-shot-gif" src="/assets/docs/gifs/biblioteca.gif" width="1100" height="672" loading="eager" alt="Animación de la biblioteca de pteron: origen, resultados y detalle del recurso"><figcaption>Animación · de la lista al recurso.</figcaption></figure>
         </section>
         <section>
           <h2 id="volver">Volver a un material</h2>
@@ -422,9 +426,12 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="nivel">Lo que sale de pteron</h2>
           <p>El material llega compuesto como hoja de clase: encabezado tipado, objetivo, instrucciones, ítems con su puntaje y —cuando el encargo incluye soluciones— la pauta docente aparte. Todo se abre en Write, se corrige con el criterio del profesor y recién entonces se imprime o se exporta.</p>
-          <figure class="product-shot"><img src="/assets/docs/app-guia-encabezado-0-6-0.webp" width="1760" height="1076" loading="lazy" alt="Guía de Práctica de Matemática en Write: encabezado tipado con curso, docente, fecha y puntaje, objetivo de aprendizaje, instrucciones e ítem de selección múltiple, y la estructura del documento a la derecha"><figcaption>Encabezado tipado, objetivo, instrucciones e ítems puntuados. La estructura a la derecha resume el total.</figcaption></figure>
-          <figure class="product-shot"><img src="/assets/docs/app-guia-top-0-6-0.webp" width="1760" height="1076" loading="lazy" alt="Detalle de una guía en Write con figuras, tabla para completar y bloques de contenido"><figcaption>Figuras y tabla conviven con la prosa y los ítems en la misma hoja.</figcaption></figure>
-          <figure class="product-shot"><img class="product-shot-gif" src="/assets/docs/gifs/guia-completa.gif" width="1100" height="672" loading="lazy" alt="Recorrido animado de la guía: figuras, diagrama de flujo, tabla para completar y espacio de respuesta"><figcaption>El recorrido completo: figuras, diagrama, tabla y espacio de respuesta.</figcaption></figure>
+          <figure class="product-shot product-shot-hero"><img src="/assets/docs/app-guia-encabezado-0-6-0.webp" width="1760" height="1076" loading="eager" alt="Guía de Práctica de Matemática en Write: encabezado tipado con curso, docente, fecha y puntaje, objetivo de aprendizaje, instrucciones e ítem de selección múltiple, y la estructura del documento a la derecha"><figcaption>Encabezado tipado, objetivo, instrucciones e ítems puntuados. La estructura a la derecha resume el total.</figcaption></figure>
+        </section>
+        <section>
+          <h2 id="recorrido">El documento completo, en movimiento</h2>
+          <p>Debajo del encabezado viven los ítems, las figuras, el diagrama, la tabla para completar y el espacio de respuesta. El recorrido muestra esa hoja entera.</p>
+          <figure class="product-shot product-shot-gif-wrap"><img class="product-shot-gif" src="/assets/docs/gifs/guia-completa.gif" width="1100" height="672" loading="eager" alt="Animación que recorre la guía desde el encabezado hasta la tabla y el espacio de respuesta"><figcaption>Animación · recorrido de la guía completa.</figcaption></figure>
         </section>
         <section>
           <h2 id="formato-guia">Formato de guía y evaluación</h2>
@@ -439,7 +446,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="formatos">Tamaños y orientación</h2>
           <p>Los documentos admiten A4, Carta y Oficio, con márgenes y saltos de página que se respetan al exportar. Puedes trabajar en vertical o apaisado, y la barra de edición permanece visible mientras recorres el material.</p>
-          <figure class="product-shot"><img src="/assets/docs/app-write-doc-0-6-0.webp" width="1760" height="1076" loading="lazy" alt="Editor Write de pteron con la cinta por pestañas y un documento de fracciones equivalentes con título, objetivo y actividad"><figcaption>El editor Write: cinta por pestañas, estructura del documento y hojas físicas.</figcaption></figure>
+          <figure class="product-shot"><img src="/assets/docs/app-write-doc-0-6-0.webp" width="1760" height="1076" loading="lazy" alt="Cinta del editor Write de pteron con las pestañas Archivo, Inicio, Insertar, Disposición, Página, Revisar y Vista sobre un documento abierto"><figcaption>La cinta de Write sobre el documento abierto: Archivo, Inicio, Insertar y el resto de pestañas.</figcaption></figure>
         </section>
         <section>
           <h2 id="cinta">La cinta del editor</h2>
@@ -554,12 +561,16 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
           <h2 id="editor">El editor de diapositivas</h2>
           <p>La columna izquierda lista las diapositivas y permite añadir, duplicar, mover y eliminar. La barra de estado indica la diapositiva actual, el total y el tamaño del lienzo —por ejemplo <em>Slide 1 de 7 · 960 × 540</em>—. El panel derecho controla el diseño de la diapositiva: fondo y capas.</p>
           <figure class="product-shot"><img src="/assets/docs/app-presentacion-0-6-0.webp" width="1760" height="1076" loading="lazy" alt="Editor de presentaciones de pteron con la lista de diapositivas, el lienzo y el panel de diseño a la derecha"><figcaption>El editor Present: diapositivas a la izquierda, lienzo al centro y diseño a la derecha.</figcaption></figure>
-          <figure class="product-shot"><img src="/assets/docs/app-presentacion-lienzo-0-6-0.webp" width="1760" height="1076" loading="lazy" alt="Lienzo de presentación de pteron con la diapositiva en edición y el panel de notas disponible"><figcaption>El lienzo con la diapositiva en edición; las notas del orador se abren desde la barra inferior.</figcaption></figure>
-          <figure class="product-shot"><img class="product-shot-gif" src="/assets/docs/gifs/presentacion.gif" width="1100" height="672" loading="lazy" alt="Animación del editor de presentaciones recorriendo las diapositivas"><figcaption>Recorrido por las diapositivas del editor Present.</figcaption></figure>
+        </section>
+        <section>
+          <h2 id="recorrido">Las diapositivas en movimiento</h2>
+          <p>El recorrido por la lista cambia el lienzo y el panel de diseño se adapta a la diapositiva activa.</p>
+          <figure class="product-shot product-shot-gif-wrap"><img class="product-shot-gif" src="/assets/docs/gifs/presentacion.gif" width="1100" height="672" loading="eager" alt="Animación del editor de presentaciones recorriendo las diapositivas"><figcaption>Animación · recorrido por las diapositivas.</figcaption></figure>
         </section>
         <section>
           <h2 id="notas">Notas del orador</h2>
           <p>Cada diapositiva tiene su campo de notas, rotulado <em>Sólo para ti · no se proyecta</em>. Las notas viajan al PPTX exportado.</p>
+          <figure class="product-shot"><img src="/assets/docs/app-presentacion-lienzo-0-6-0.webp" width="1760" height="1076" loading="lazy" alt="Lienzo de presentación de pteron con la diapositiva en edición y el panel de notas disponible"><figcaption>El lienzo con la diapositiva en edición; las notas del orador se abren desde la barra inferior.</figcaption></figure>
         </section>
         <section>
           <h2 id="inspector">Listas e imágenes desde el inspector</h2>
