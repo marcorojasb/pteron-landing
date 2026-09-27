@@ -287,7 +287,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="recorrido">De la lista al recurso</h2>
           <p>Al recorrer la biblioteca, la lista se desplaza, el detalle se actualiza y el recurso queda listo para abrir.</p>
-          <figure class="product-shot product-shot-gif-wrap"><img class="product-shot-gif" src="/assets/docs/gifs/biblioteca.gif" width="1100" height="672" loading="eager" alt="Animación de la biblioteca de pteron: origen, resultados y detalle del recurso"><figcaption>Animación · de la lista al recurso.</figcaption></figure>
+          <figure class="product-shot product-shot-gif-wrap"><img class="product-shot-gif" src="/assets/docs/gifs/biblioteca.gif" width="1100" height="672" loading="eager" alt="Animación de la biblioteca de pteron: origen, resultados y detalle del recurso"><figcaption>De los 11 materiales a un recurso concreto: buscar, filtrar y ver el detalle.</figcaption></figure>
         </section>
         <section>
           <h2 id="volver">Volver a un material</h2>
@@ -431,7 +431,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="recorrido">El documento completo, en movimiento</h2>
           <p>Debajo del encabezado viven los ítems, las figuras, el diagrama, la tabla para completar y el espacio de respuesta. El recorrido muestra esa hoja entera.</p>
-          <figure class="product-shot product-shot-gif-wrap"><img class="product-shot-gif" src="/assets/docs/gifs/guia-completa.gif" width="1100" height="672" loading="eager" alt="Animación que recorre la guía desde el encabezado hasta la tabla y el espacio de respuesta"><figcaption>Animación · recorrido de la guía completa.</figcaption></figure>
+          <figure class="product-shot product-shot-gif-wrap"><img class="product-shot-gif" src="/assets/docs/gifs/guia-completa.gif" width="1100" height="672" loading="eager" alt="Animación que recorre la guía desde el encabezado hasta la tabla y el espacio de respuesta"><figcaption>Cabecera tipada, instrucciones, ejercicio con alternativas y espacio de respuesta.</figcaption></figure>
         </section>
         <section>
           <h2 id="formato-guia">Formato de guía y evaluación</h2>
@@ -565,7 +565,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         <section>
           <h2 id="recorrido">Las diapositivas en movimiento</h2>
           <p>El recorrido por la lista cambia el lienzo y el panel de diseño se adapta a la diapositiva activa.</p>
-          <figure class="product-shot product-shot-gif-wrap"><img class="product-shot-gif" src="/assets/docs/gifs/presentacion.gif" width="1100" height="672" loading="eager" alt="Animación del editor de presentaciones recorriendo las diapositivas"><figcaption>Animación · recorrido por las diapositivas.</figcaption></figure>
+          <figure class="product-shot product-shot-gif-wrap"><img class="product-shot-gif" src="/assets/docs/gifs/presentacion.gif" width="1100" height="672" loading="eager" alt="Animación del editor de presentaciones recorriendo las diapositivas"><figcaption>De la portada a una diapositiva de contenido, con el panel de diseño al lado.</figcaption></figure>
         </section>
         <section>
           <h2 id="notas">Notas del orador</h2>
