@@ -130,21 +130,105 @@
     }).format(date);
   };
 
-  const cleanNote = value => String(value || "")
-    .trim()
-    .replace(/^#{1,6}\s+/, "")
-    .replace(/^[-*]\s+/, "")
-    .replace(/\*\*/g, "")
+  const NOTE_BLOCK_LIMIT = 24;
+  const NOTE_HEADING_LIMIT = 140;
+  const NOTE_PARAGRAPH_LIMIT = 620;
+  const NOTE_ITEM_LIMIT = 400;
+
+  const cleanNoteText = value => String(value || "")
+    .replace(/\*\*|__/g, "")
     .replace(/`/g, "")
-    .slice(0, 600);
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // Un recorte a mitad de palabra se lee como un error; se corta en el límite
+  // si la última palabra es razonable, y si no, en el borde anterior.
+  const trimNote = (value, limit) => {
+    if (value.length <= limit) return value;
+    const cut = value.slice(0, limit);
+    const boundary = cut.lastIndexOf(" ");
+    const head = boundary > limit * 0.5 ? cut.slice(0, boundary) : cut;
+    return `${head.replace(/[.,;:]+$/, "")}…`;
+  };
+
+  const noteBlocksFromValue = value => {
+    if (!Array.isArray(value)) return null;
+    const blocks = [];
+    value.forEach(block => {
+      if (!block || typeof block !== "object") return;
+      if (block.type === "list" && Array.isArray(block.items)) {
+        const items = block.items
+          .map(item => trimNote(cleanNoteText(item), NOTE_ITEM_LIMIT))
+          .filter(Boolean);
+        if (items.length) blocks.push({ type: "list", items });
+        return;
+      }
+      if ((block.type === "heading" || block.type === "paragraph") && typeof block.text === "string") {
+        const text = cleanNoteText(block.text);
+        if (!text) return;
+        blocks.push({
+          type: block.type,
+          text: trimNote(text, block.type === "heading" ? NOTE_HEADING_LIMIT : NOTE_PARAGRAPH_LIMIT),
+        });
+      }
+    });
+    return blocks.slice(0, NOTE_BLOCK_LIMIT);
+  };
+
+  // Subconjunto de markdown suficiente para los cuerpos de release: títulos,
+  // párrafos y listas. Las líneas consecutivas forman un solo párrafo.
+  const noteBlocksFromBody = (body, version) => {
+    const blocks = [];
+    let list = null;
+    let paragraph = null;
+
+    const flushList = () => { if (list) { blocks.push(list); list = null; } };
+    const flushParagraph = () => {
+      if (!paragraph) return;
+      blocks.push({ type: "paragraph", text: trimNote(paragraph, NOTE_PARAGRAPH_LIMIT) });
+      paragraph = null;
+    };
+    const flush = () => { flushList(); flushParagraph(); };
+
+    String(body || "").split(/\r?\n/).forEach(rawLine => {
+      const line = rawLine.trim();
+      if (!line) { flush(); return; }
+
+      const heading = line.match(/^#{1,6}\s+(.+)$/);
+      if (heading) {
+        flush();
+        const text = cleanNoteText(heading[1]);
+        if (!text) return;
+        // El título del cuerpo repite la versión que la página ya muestra.
+        if (!blocks.length && (text === version || /^pteron\b/i.test(text))) return;
+        blocks.push({ type: "heading", text: trimNote(text, NOTE_HEADING_LIMIT) });
+        return;
+      }
+
+      const item = line.match(/^(?:[-*+•]|\d+[.)])\s+(.+)$/);
+      if (item) {
+        flushParagraph();
+        const text = cleanNoteText(item[1]);
+        if (!text) return;
+        list = list || { type: "list", items: [] };
+        list.items.push(trimNote(text, NOTE_ITEM_LIMIT));
+        return;
+      }
+
+      flushList();
+      const text = cleanNoteText(line);
+      if (text) paragraph = paragraph ? `${paragraph} ${text}` : text;
+    });
+
+    flush();
+    return blocks.slice(0, NOTE_BLOCK_LIMIT);
+  };
 
   const releaseNotes = raw => {
-    const source = Array.isArray(raw?.notes)
-      ? raw.notes
-      : typeof raw?.body === "string"
-        ? raw.body.split("\n")
-        : [];
-    return source.map(cleanNote).filter(Boolean).slice(0, 8);
+    const structured = noteBlocksFromValue(raw?.notes);
+    if (structured) return structured;
+    return noteBlocksFromBody(raw?.body, parseSemver(raw?.version || raw?.tag_name)?.version || "");
   };
 
   const normalizeRelease = raw => {

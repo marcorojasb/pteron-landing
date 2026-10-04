@@ -308,3 +308,23 @@ Final result: passed locally. Production verification remains required after dep
   guías/evaluaciones y el formato de ítems, pauta y exportación.
 - Pipeline: `scripts/capture-rich-media.mjs` (Playwright Electron + ffmpeg).
   Sin escritura en el repositorio de pteron.
+
+## Versiones legibles y contraste en descargas — 2026-10-04
+
+Target: `/docs/?pagina=versiones` y `/descargar/`.
+
+- Las notas de versión dejaron de ser un listado plano: `release-data.js` parsea
+  el cuerpo markdown del release en bloques (resumen, lista, notas al pie,
+  secciones), descarta el título que repetía la versión y recorta por palabra.
+  `docs/data/releases.json` se regeneró con el mismo parser.
+- La última versión se lee completa; las anteriores quedan plegadas en
+  `<details>`. La página pasó de ~8400 px a ~2700 px de alto en escritorio.
+- `/descargar/`: el wordmark y el titular vuelven a ser blancos sobre el video,
+  el velo de la columna de contenido sube y los botones secundarios ganan
+  opacidad. Verificado en dos fotogramas con la medusa brillante detrás del
+  titular y en móvil.
+- Capturas: `.playwright-cli/review/after-versiones-*` y
+  `.playwright-cli/review/after2-descargar-*`.
+- Comprobaciones: fallback sin API (JSON empaquetado) renderiza igual;
+  axe 0 violaciones (contraste sobre video queda como revisión manual);
+  `node --test tests/*.test.js` 36/36.

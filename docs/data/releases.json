@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-04T14:34:17.017Z",
+  "generatedAt": "2026-10-04T16:05:06.634Z",
   "latest": {
     "version": "0.5.6",
     "publishedAt": "2026-09-23T12:29:58Z",
@@ -98,13 +98,26 @@
       }
     ],
     "notes": [
-      "pteron 0.5.6",
-      "Materiales para estudiantes y pautas docentes mejor separados.",
-      "La pauta se guarda como un documento enlazado, con acceso desde la hoja del estudiante y viceversa.",
-      "Puedes abrir un documento Word como material editable nuevo. El original se conserva; algunas imágenes y detalles de formato no se trasladan.",
-      "Mejora la distribución de preguntas, fórmulas y espacios de respuesta al guardar en Word.",
-      "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
-      "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+      {
+        "type": "paragraph",
+        "text": "Materiales para estudiantes y pautas docentes mejor separados."
+      },
+      {
+        "type": "list",
+        "items": [
+          "La pauta se guarda como un documento enlazado, con acceso desde la hoja del estudiante y viceversa.",
+          "Puedes abrir un documento Word como material editable nuevo. El original se conserva; algunas imágenes y detalles de formato no se trasladan.",
+          "Mejora la distribución de preguntas, fórmulas y espacios de respuesta al guardar en Word."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
+      },
+      {
+        "type": "paragraph",
+        "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+      }
     ],
     "channel": "beta"
   },
@@ -208,13 +221,26 @@
         }
       ],
       "notes": [
-        "pteron 0.5.6",
-        "Materiales para estudiantes y pautas docentes mejor separados.",
-        "La pauta se guarda como un documento enlazado, con acceso desde la hoja del estudiante y viceversa.",
-        "Puedes abrir un documento Word como material editable nuevo. El original se conserva; algunas imágenes y detalles de formato no se trasladan.",
-        "Mejora la distribución de preguntas, fórmulas y espacios de respuesta al guardar en Word.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Materiales para estudiantes y pautas docentes mejor separados."
+        },
+        {
+          "type": "list",
+          "items": [
+            "La pauta se guarda como un documento enlazado, con acceso desde la hoja del estudiante y viceversa.",
+            "Puedes abrir un documento Word como material editable nuevo. El original se conserva; algunas imágenes y detalles de formato no se trasladan.",
+            "Mejora la distribución de preguntas, fórmulas y espacios de respuesta al guardar en Word."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -316,14 +342,27 @@
         }
       ],
       "notes": [
-        "pteron 0.5.5",
-        "Presentaciones y herramientas de edición más cómodas.",
-        "Puedes insertar y editar fórmulas en las diapositivas.",
-        "Las herramientas del editor se organizan por pestañas, con búsqueda y modo compacto.",
-        "Las notas del orador se abren desde la barra inferior y se incluyen en PowerPoint.",
-        "Los comandos de trabajo pueden seguir tus plantillas; se corrigen avisos y textos que quedaban ocultos.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Presentaciones y herramientas de edición más cómodas."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Puedes insertar y editar fórmulas en las diapositivas.",
+            "Las herramientas del editor se organizan por pestañas, con búsqueda y modo compacto.",
+            "Las notas del orador se abren desde la barra inferior y se incluyen en PowerPoint.",
+            "Los comandos de trabajo pueden seguir tus plantillas; se corrigen avisos y textos que quedaban ocultos."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -425,14 +464,27 @@
         }
       ],
       "notes": [
-        "pteron 0.5.4",
-        "Una hoja que se parece más al documento que vas a entregar.",
-        "El editor muestra páginas y conserva tamaño, márgenes y ajustes al guardar en PDF.",
-        "Listas, imágenes y fórmulas se editan dentro de la hoja, con un historial de deshacer más fiable.",
-        "Las herramientas se agrupan por pestañas y vuelven a estar disponibles después de cerrar menús.",
-        "Se mejora la organización del planificador y la claridad de los controles.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Una hoja que se parece más al documento que vas a entregar."
+        },
+        {
+          "type": "list",
+          "items": [
+            "El editor muestra páginas y conserva tamaño, márgenes y ajustes al guardar en PDF.",
+            "Listas, imágenes y fórmulas se editan dentro de la hoja, con un historial de deshacer más fiable.",
+            "Las herramientas se agrupan por pestañas y vuelven a estar disponibles después de cerrar menús.",
+            "Se mejora la organización del planificador y la claridad de los controles."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -534,13 +586,26 @@
         }
       ],
       "notes": [
-        "pteron 0.5.3",
-        "Recursos y opciones con un lenguaje más claro.",
-        "Se actualiza la consulta al Banco Begonia.",
-        "Configuración, el planificador y el banco usan nombres más consistentes y comprensibles.",
-        "Se ordenan las opciones de configuración para encontrar mejor lo que necesitas.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Recursos y opciones con un lenguaje más claro."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Se actualiza la consulta al Banco Begonia.",
+            "Configuración, el planificador y el banco usan nombres más consistentes y comprensibles.",
+            "Se ordenan las opciones de configuración para encontrar mejor lo que necesitas."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -642,13 +707,26 @@
         }
       ],
       "notes": [
-        "pteron 0.5.2",
-        "Mejoras de claridad y estabilidad en el trabajo diario.",
-        "La interfaz usa controles y estilos más consistentes.",
-        "Se refuerza el planificador docente y la protección de las operaciones con archivos.",
-        "Se corrigen problemas de estabilidad y se comprueba el funcionamiento en Windows 11.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Mejoras de claridad y estabilidad en el trabajo diario."
+        },
+        {
+          "type": "list",
+          "items": [
+            "La interfaz usa controles y estilos más consistentes.",
+            "Se refuerza el planificador docente y la protección de las operaciones con archivos.",
+            "Se corrigen problemas de estabilidad y se comprueba el funcionamiento en Windows 11."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -750,14 +828,27 @@
         }
       ],
       "notes": [
-        "pteron 0.5.1",
-        "Una versión de prueba con nuevos espacios de trabajo en desarrollo.",
-        "La conversación, los materiales y la evidencia se organizan en espacios propios.",
-        "Se incorporan editores para documentos y presentaciones, y acceso a Begonia en línea.",
-        "El planificador y la revisión de PDF siguen en construcción; esta versión permite probar sus avances.",
-        "Se mejora el arranque y la recuperación frente a errores.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Una versión de prueba con nuevos espacios de trabajo en desarrollo."
+        },
+        {
+          "type": "list",
+          "items": [
+            "La conversación, los materiales y la evidencia se organizan en espacios propios.",
+            "Se incorporan editores para documentos y presentaciones, y acceso a Begonia en línea.",
+            "El planificador y la revisión de PDF siguen en construcción; esta versión permite probar sus avances.",
+            "Se mejora el arranque y la recuperación frente a errores."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -859,14 +950,27 @@
         }
       ],
       "notes": [
-        "pteron 0.5.0",
-        "Más formas de trabajar con tus materiales y conversar sobre ellos.",
-        "La conversación incorpora imágenes y documentos como referencias.",
-        "Se amplían las opciones de voz y de reflexión sobre el trabajo docente.",
-        "Mejoran la edición de documentos, los encabezados escolares y la composición de los materiales.",
-        "Se refuerza la recuperación cuando un servicio de inteligencia artificial falla.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Más formas de trabajar con tus materiales y conversar sobre ellos."
+        },
+        {
+          "type": "list",
+          "items": [
+            "La conversación incorpora imágenes y documentos como referencias.",
+            "Se amplían las opciones de voz y de reflexión sobre el trabajo docente.",
+            "Mejoran la edición de documentos, los encabezados escolares y la composición de los materiales.",
+            "Se refuerza la recuperación cuando un servicio de inteligencia artificial falla."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -968,13 +1072,26 @@
         }
       ],
       "notes": [
-        "pteron 0.4.11",
-        "Documentos más fáciles de revisar y guardar.",
-        "La hoja muestra páginas con tamaños reales y permite insertar saltos de página.",
-        "Guardar en Word o PDF queda al alcance desde la barra del documento.",
-        "Se mejoran los encabezados del establecimiento y la navegación por teclado al planificar.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Documentos más fáciles de revisar y guardar."
+        },
+        {
+          "type": "list",
+          "items": [
+            "La hoja muestra páginas con tamaños reales y permite insertar saltos de página.",
+            "Guardar en Word o PDF queda al alcance desde la barra del documento.",
+            "Se mejoran los encabezados del establecimiento y la navegación por teclado al planificar."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -1076,13 +1193,26 @@
         }
       ],
       "notes": [
-        "pteron 0.4.10",
-        "Más control sobre el trabajo y menos ruido en pantalla.",
-        "Labs reúne las funciones experimentales y permite decidir cuándo empezar o posponer una ayuda.",
-        "Se simplifica la biblioteca y el reordenamiento del contenido.",
-        "La barra de conversación muestra mejor la acción principal y se corrige el cierre de Configuración.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Más control sobre el trabajo y menos ruido en pantalla."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Labs reúne las funciones experimentales y permite decidir cuándo empezar o posponer una ayuda.",
+            "Se simplifica la biblioteca y el reordenamiento del contenido.",
+            "La barra de conversación muestra mejor la acción principal y se corrige el cierre de Configuración."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -1134,14 +1264,28 @@
         }
       ],
       "notes": [
-        "pteron 0.4.9",
-        "Configuración más compacta y fácil de recorrer.",
-        "Perfil reúne tus datos, carpeta de trabajo, tema y licencia.",
-        "Los complementos se presentan con sus opciones de activación y acceso.",
-        "Se simplifica la organización de las opciones.",
-        "Los pedidos de varios materiales conservan sus entregables y las revisiones respetan mejor el contenido que no pediste cambiar.",
-        "Se corrigen tablas, espacios para completar y detalles que aparecían como texto al guardar.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11."
+        {
+          "type": "paragraph",
+          "text": "Configuración más compacta y fácil de recorrer."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Perfil reúne tus datos, carpeta de trabajo, tema y licencia.",
+            "Los complementos se presentan con sus opciones de activación y acceso.",
+            "Se simplifica la organización de las opciones.",
+            "Los pedidos de varios materiales conservan sus entregables y las revisiones respetan mejor el contenido que no pediste cambiar.",
+            "Se corrigen tablas, espacios para completar y detalles que aparecían como texto al guardar."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -1193,13 +1337,26 @@
         }
       ],
       "notes": [
-        "pteron 0.4.8",
-        "Nuevo tema oscuro para toda la aplicación.",
-        "Puedes elegir claro, oscuro o seguir el aspecto del sistema.",
-        "La preferencia se conserva al volver a abrir pteron.",
-        "Se ajustan colores y contrastes para trabajar con mayor comodidad.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Nuevo tema oscuro para toda la aplicación."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Puedes elegir claro, oscuro o seguir el aspecto del sistema.",
+            "La preferencia se conserva al volver a abrir pteron.",
+            "Se ajustan colores y contrastes para trabajar con mayor comodidad."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -1251,13 +1408,26 @@
         }
       ],
       "notes": [
-        "pteron 0.4.7",
-        "Un inicio más limpio y conversaciones más fáciles de retomar.",
-        "Abrir pteron ya no crea una conversación vacía; la sesión comienza cuando empiezas a trabajar.",
-        "Se unifica la pantalla de inicio y se mejora el seguimiento del último mensaje.",
-        "Se corrigen materiales con tablas y detalles que aparecían de más al guardar documentos.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Un inicio más limpio y conversaciones más fáciles de retomar."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Abrir pteron ya no crea una conversación vacía; la sesión comienza cuando empiezas a trabajar.",
+            "Se unifica la pantalla de inicio y se mejora el seguimiento del último mensaje.",
+            "Se corrigen materiales con tablas y detalles que aparecían de más al guardar documentos."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -1309,14 +1479,27 @@
         }
       ],
       "notes": [
-        "pteron 0.4.6",
-        "Diagramas que puedes revisar y corregir en tus materiales.",
-        "Puedes pedir diagramas para guías y presentaciones y ajustar sus pasos, rótulos y formas.",
-        "Los diagramas se guardan como formas editables en Word y PowerPoint.",
-        "Puedes incorporar imágenes propias con una descripción para lectores de pantalla.",
-        "Se corrige la aparición de respuestas correctas en una presentación destinada a estudiantes.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Diagramas que puedes revisar y corregir en tus materiales."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Puedes pedir diagramas para guías y presentaciones y ajustar sus pasos, rótulos y formas.",
+            "Los diagramas se guardan como formas editables en Word y PowerPoint.",
+            "Puedes incorporar imágenes propias con una descripción para lectores de pantalla.",
+            "Se corrige la aparición de respuestas correctas en una presentación destinada a estudiantes."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -1368,13 +1551,26 @@
         }
       ],
       "notes": [
-        "pteron 0.4.5",
-        "La conversación te acompaña mejor mientras trabajas.",
-        "El hilo sigue la respuesta si estás al final y respeta tu posición cuando relees mensajes.",
-        "Las respuestas completas se muestran a un ritmo más cómodo de leer.",
-        "Se eliminan textos repetidos y se aprovecha mejor el espacio de la barra de edición.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "La conversación te acompaña mejor mientras trabajas."
+        },
+        {
+          "type": "list",
+          "items": [
+            "El hilo sigue la respuesta si estás al final y respeta tu posición cuando relees mensajes.",
+            "Las respuestas completas se muestran a un ritmo más cómodo de leer.",
+            "Se eliminan textos repetidos y se aprovecha mejor el espacio de la barra de edición."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -1476,13 +1672,26 @@
         }
       ],
       "notes": [
-        "pteron 0.4.4",
-        "El PDF vuelve a mostrar el material completo.",
-        "La vista imprimible permite revisar la hoja y guardar exactamente ese contenido en PDF.",
-        "Guardar en Word queda como acción principal para obtener una copia editable.",
-        "Se ordenan las opciones de guardado y se corrigen elementos de la aplicación que aparecían en el PDF.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "El PDF vuelve a mostrar el material completo."
+        },
+        {
+          "type": "list",
+          "items": [
+            "La vista imprimible permite revisar la hoja y guardar exactamente ese contenido en PDF.",
+            "Guardar en Word queda como acción principal para obtener una copia editable.",
+            "Se ordenan las opciones de guardado y se corrigen elementos de la aplicación que aparecían en el PDF."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -1584,13 +1793,26 @@
         }
       ],
       "notes": [
-        "pteron 0.4.3",
-        "Una interfaz más clara al trabajar con materiales.",
-        "El nombre del material deja de repetirse y las herramientas aparecen cuando puedes usarlas.",
-        "Los bloques se pueden mover desde el margen de la hoja.",
-        "Las presentaciones muestran controles propios y un espacio accesible para las notas del orador.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Una interfaz más clara al trabajar con materiales."
+        },
+        {
+          "type": "list",
+          "items": [
+            "El nombre del material deja de repetirse y las herramientas aparecen cuando puedes usarlas.",
+            "Los bloques se pueden mover desde el margen de la hoja.",
+            "Las presentaciones muestran controles propios y un espacio accesible para las notas del orador."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -1692,12 +1914,25 @@
         }
       ],
       "notes": [
-        "pteron 0.4.2",
-        "Hojas más limpias y pedidos de materiales más fiables.",
-        "Los encabezados dejan de repetir etiquetas o mostrar valores incorrectos.",
-        "Se corrigen detalles de creación y presentación de materiales.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Hojas más limpias y pedidos de materiales más fiables."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Los encabezados dejan de repetir etiquetas o mostrar valores incorrectos.",
+            "Se corrigen detalles de creación y presentación de materiales."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -1799,14 +2034,27 @@
         }
       ],
       "notes": [
-        "pteron 0.4.0",
-        "Puedes conversar, analizar y crear sin elegir un modo antes de empezar.",
-        "Una consulta permanece en la conversación; una propuesta de material se revisa antes de aceptarla.",
-        "El curso, la asignatura y los documentos orientan el trabajo sin modificar automáticamente lo que tienes abierto.",
-        "Los planes se proponen cuando hacen falta y se pueden ajustar conversando.",
-        "Las preguntas ofrecen alternativas y siempre permiten responder con tus propias palabras.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Puedes conversar, analizar y crear sin elegir un modo antes de empezar."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Una consulta permanece en la conversación; una propuesta de material se revisa antes de aceptarla.",
+            "El curso, la asignatura y los documentos orientan el trabajo sin modificar automáticamente lo que tienes abierto.",
+            "Los planes se proponen cuando hacen falta y se pueden ajustar conversando.",
+            "Las preguntas ofrecen alternativas y siempre permiten responder con tus propias palabras."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -1858,13 +2106,26 @@
         }
       ],
       "notes": [
-        "pteron 0.3.1",
-        "Corrección de la actualización en Windows 11.",
-        "Si Windows bloquea la instalación, pteron abre el instalador para que puedas confirmar el aviso.",
-        "Si la actualización no se aplica, al volver a abrir se informa y puedes reintentar.",
-        "Los equipos con el actualizador anterior pueden necesitar descargar esta versión e instalarla manualmente.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Corrección de la actualización en Windows 11."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Si Windows bloquea la instalación, pteron abre el instalador para que puedas confirmar el aviso.",
+            "Si la actualización no se aplica, al volver a abrir se informa y puedes reintentar.",
+            "Los equipos con el actualizador anterior pueden necesitar descargar esta versión e instalarla manualmente."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     },
@@ -1966,14 +2227,27 @@
         }
       ],
       "notes": [
-        "pteron 0.3.0",
-        "Una beta de escritorio más consistente de principio a fin.",
-        "La planificación vive en la conversación y produce materiales que puedes revisar y editar.",
-        "Se afina el trabajo con guías, evaluaciones, pautas y presentaciones, y su guardado en Word y PowerPoint.",
-        "Se mejora el uso en ventanas pequeñas y la claridad de los estados del trabajo.",
-        "Se refuerza la protección de las claves de servicios y la separación de respuestas docentes.",
-        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
-        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        {
+          "type": "paragraph",
+          "text": "Una beta de escritorio más consistente de principio a fin."
+        },
+        {
+          "type": "list",
+          "items": [
+            "La planificación vive en la conversación y produce materiales que puedes revisar y editar.",
+            "Se afina el trabajo con guías, evaluaciones, pautas y presentaciones, y su guardado en Word y PowerPoint.",
+            "Se mejora el uso en ventanas pequeñas y la claridad de los estados del trabajo.",
+            "Se refuerza la protección de las claves de servicios y la separación de respuestas docentes."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
       ],
       "channel": "beta"
     }

@@ -84,6 +84,117 @@
     }
   };
 
+  const releaseNoteList = block => {
+    const list = document.createElement("ul");
+    list.className = "release-note-list";
+    block.items.forEach(text => {
+      const item = document.createElement("li");
+      item.textContent = text;
+      list.append(item);
+    });
+    return list;
+  };
+
+  // El primer párrafo presenta la versión; los que siguen a la lista son
+  // notas fijas (plataformas disponibles, avisos), y las secciones conservan
+  // el orden del cuerpo publicado.
+  const releaseNoteBody = release => {
+    const body = document.createElement("div");
+    body.className = "release-note-body";
+    let seenParagraph = false;
+    let seenList = false;
+    release.notes.forEach(block => {
+      if (block.type === "list") {
+        seenList = true;
+        body.append(releaseNoteList(block));
+        return;
+      }
+      if (block.type === "heading") {
+        const heading = document.createElement("h3");
+        heading.className = "release-note-section";
+        heading.textContent = block.text;
+        body.append(heading);
+        return;
+      }
+      const paragraph = document.createElement("p");
+      paragraph.className = !seenParagraph
+        ? "release-note-summary"
+        : seenList ? "release-note-footnote" : "release-note-text";
+      paragraph.textContent = block.text;
+      seenParagraph = true;
+      body.append(paragraph);
+    });
+    return body;
+  };
+
+  const renderCurrentRelease = latest => {
+    const current = document.createElement("div");
+    current.className = "release-current";
+    const version = document.createElement("p");
+    version.className = "release-current-version";
+    version.textContent = latest.version;
+    const channel = document.createElement("span");
+    channel.className = "release-channel";
+    channel.textContent = latest.channel === "stable" ? "Estable" : "Beta";
+    version.append(channel);
+    const meta = document.createElement("p");
+    meta.className = "release-current-meta";
+    meta.append(
+      document.createTextNode(latest.publishedLabel === "sin fecha"
+        ? "Sin fecha de publicación"
+        : `Publicada en ${latest.publishedLabel}`),
+      document.createTextNode(" · ")
+    );
+    const link = document.createElement("a");
+    link.href = latest.url;
+    link.textContent = "Ver en GitHub";
+    meta.append(link);
+    current.append(version, meta);
+    return current;
+  };
+
+  // La versión actual se lee completa; las anteriores quedan plegadas para que
+  // la página no sea un muro de notas.
+  const renderReleaseNotes = (releases, latestVersion) => {
+    const fragment = document.createDocumentFragment();
+    const featured = releases.find(release => release.version === latestVersion) || releases[0];
+
+    if (featured) {
+      const note = document.createElement("article");
+      note.className = "release-note";
+      const header = document.createElement("p");
+      header.className = "release-note-heading";
+      const version = document.createElement("strong");
+      version.textContent = featured.version;
+      const published = document.createElement("span");
+      published.textContent = featured.publishedLabel;
+      header.append(version, published);
+      note.append(header, releaseNoteBody(featured));
+      fragment.append(note);
+    }
+
+    const history = releases.filter(release => release !== featured);
+    if (history.length) {
+      const title = document.createElement("h3");
+      title.className = "release-history-title";
+      title.textContent = "Versiones anteriores";
+      fragment.append(title);
+      history.forEach(release => {
+        const details = document.createElement("details");
+        details.className = "release-history";
+        const summary = document.createElement("summary");
+        const version = document.createElement("strong");
+        version.textContent = release.version;
+        const published = document.createElement("span");
+        published.textContent = release.publishedLabel;
+        summary.append(version, published);
+        details.append(summary, releaseNoteBody(release));
+        fragment.append(details);
+      });
+    }
+    return fragment;
+  };
+
   const renderReleaseData = async () => {
     const table = article.querySelector("[data-release-table]");
     const notes = article.querySelector("[data-release-notes]");
@@ -95,46 +206,8 @@
         renderReleaseUnavailable(table, notes);
         return;
       }
-      if (table) {
-        const metadata = document.createElement("dl");
-        metadata.className = "release-meta";
-        [
-          ["Versión", data.latest.version],
-          ["Canal", data.latest.channel],
-          ["Publicada", data.latest.publishedLabel],
-        ].forEach(([label, value]) => {
-          const row = document.createElement("div");
-          const term = document.createElement("dt");
-          const description = document.createElement("dd");
-          term.textContent = label;
-          description.textContent = value;
-          row.append(term, description);
-          metadata.append(row);
-        });
-        table.replaceChildren(metadata);
-      }
-      if (notes) {
-        const fragment = document.createDocumentFragment();
-        data.releases.forEach(release => {
-          const releaseArticle = document.createElement("article");
-          const heading = document.createElement("p");
-          const version = document.createElement("strong");
-          const published = document.createElement("span");
-          const list = document.createElement("ul");
-          releaseArticle.className = "release-note";
-          version.textContent = release.version;
-          published.textContent = release.publishedLabel;
-          heading.append(version, published);
-          release.notes.forEach(note => {
-            const item = document.createElement("li");
-            item.textContent = note;
-            list.append(item);
-          });
-          releaseArticle.append(heading, list);
-          fragment.append(releaseArticle);
-        });
-        notes.replaceChildren(fragment);
-      }
+      if (table) table.replaceChildren(renderCurrentRelease(data.latest));
+      if (notes) notes.replaceChildren(renderReleaseNotes(data.releases, data.latest.version));
     } catch {
       renderReleaseUnavailable(table, notes);
     }

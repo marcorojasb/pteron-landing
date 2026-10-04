@@ -10,7 +10,7 @@ const completeRelease = (version, overrides = {}) => ({
     name,
     url: `https://github.com/marcorojasb/pteron-beta/releases/download/v${version}/${name}`,
   })),
-  notes: ["Versión completa"],
+  notes: [{ type: "paragraph", text: "Versión completa" }],
   ...overrides,
 });
 
@@ -76,7 +76,10 @@ test("combina el JSON incluido y la API pública antes de escoger la versión", 
   const catalog = await releases.loadReleaseCatalog({ fetchImpl });
   assert.equal(requests.length, 2);
   assert.equal(catalog.latest.version, "1.2.4");
-  assert.deepEqual(catalog.latest.notes, ["Novedades", "Nota desde API"]);
+  assert.deepEqual(catalog.latest.notes, [
+    { type: "heading", text: "Novedades" },
+    { type: "list", items: ["Nota desde API"] },
+  ]);
 });
 
 test("sin fuentes disponibles el catálogo queda vacío y no inventa una versión", async () => {
@@ -133,5 +136,29 @@ test("las notas remotas se conservan como texto acotado para render seguro", () 
     assets: [],
     body: "- <img src=x onerror=alert(1)>",
   });
-  assert.deepEqual(normalized.notes, ["<img src=x onerror=alert(1)>"]);
+  assert.deepEqual(normalized.notes, [
+    { type: "list", items: ["<img src=x onerror=alert(1)>"] },
+  ]);
+});
+
+test("el cuerpo de un release se separa en resumen, lista y notas al pie sin repetir el título", () => {
+  const normalized = releases.normalizeRelease({
+    tag_name: "v1.2.4",
+    assets: [],
+    body: [
+      "# pteron 1.2.4",
+      "",
+      "Un resumen breve de la versión.",
+      "",
+      "- Primer cambio.",
+      "- Segundo cambio.",
+      "",
+      "Disponible para macOS en equipos Apple serie M.",
+    ].join("\n"),
+  });
+  assert.deepEqual(normalized.notes, [
+    { type: "paragraph", text: "Un resumen breve de la versión." },
+    { type: "list", items: ["Primer cambio.", "Segundo cambio."] },
+    { type: "paragraph", text: "Disponible para macOS en equipos Apple serie M." },
+  ]);
 });
