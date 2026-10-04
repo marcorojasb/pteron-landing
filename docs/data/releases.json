@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-23T12:30:20.422Z",
+  "generatedAt": "2026-10-04T14:34:17.017Z",
   "latest": {
     "version": "0.5.6",
     "publishedAt": "2026-09-23T12:29:58Z",
@@ -99,13 +99,12 @@
     ],
     "notes": [
       "pteron 0.5.6",
-      "Corte de desarrollo (prerelease) que separa la pauta docente del material del estudiante y la guarda como documento enlazado, permite abrir un DOCX de la carpeta autorizada como material Write nuevo sin tocar el original, y pule la hoja y la exportación DOCX del editor. Además actualiza el catálogo de modelos y los SDK del agente.",
-      "Novedades",
-      "Pauta docente separada y enlazada (ADR-126): una guía, actividad o evaluación destinada a estudiantes ya no lleva el solucionario al final. Cuando la propuesta incluye respuestas o marca alternativas correctas, pteron extrae esa sección antes de guardar y crea o actualiza una pauta docente independiente, enlazada al material del estudiante. El editor ofrece el enlace en ambos sentidos: «Abrir pauta docente» desde la hoja y «Abrir material del estudiante» desde la pauta. Cada revisión de pauta conserva el ID de la revisión estudiantil que la originó; una propuesta pendiente no sustituye la paut",
-      "La hoja del estudiante conserva preguntas y espacios de respuesta, sin soluciones ni metadatos de alternativa correcta; el espacio de respuesta nuevo se inserta dentro de la tarjeta de su pregunta.",
-      "Abrir un DOCX como material Write (ADR-125): el visor de un DOCX de la carpeta de trabajo ofrece «Abrir en Write» y convierte el contenido editable en un material nuevo, avisando de que la maquetación, los encabezados, los pies y las imágenes del archivo no se conservan. El original permanece intacto; toda salida es un archivo nuevo. Main re-resuelve la ruta real dentro de la carpeta autorizada, valida tamaño y paquete, y no abre DOCM, documentos cifrados ni paquetes corruptos.",
-      "Hoja y exportación de Write: la repaginación del DOCX mantiene la ecuación y la primera línea de respuesta junto a su enunciado, une la primera línea del espacio al enunciado, separa tablas adyacentes y elimina el pie duplicado de Word. La hoja en pantalla deja de fijar altura y crece con el reflujo del contenido.",
-      "Modelos: catálogo, defaults y presets al día (gpt-6-luna con 1,05 M de contexto, deepseek-flash con su alias, Meta 1.3 y MiMo 2.6 Flash), con tarifas del ledger para las variantes nuevas. pi-ai y pi-agent-core suben a 0.87.1 con la migración del agente (getCurrentTools, finishTurn)."
+      "Materiales para estudiantes y pautas docentes mejor separados.",
+      "La pauta se guarda como un documento enlazado, con acceso desde la hoja del estudiante y viceversa.",
+      "Puedes abrir un documento Word como material editable nuevo. El original se conserva; algunas imágenes y detalles de formato no se trasladan.",
+      "Mejora la distribución de preguntas, fórmulas y espacios de respuesta al guardar en Word.",
+      "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
+      "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
     ],
     "channel": "beta"
   },
@@ -210,13 +209,12 @@
       ],
       "notes": [
         "pteron 0.5.6",
-        "Corte de desarrollo (prerelease) que separa la pauta docente del material del estudiante y la guarda como documento enlazado, permite abrir un DOCX de la carpeta autorizada como material Write nuevo sin tocar el original, y pule la hoja y la exportación DOCX del editor. Además actualiza el catálogo de modelos y los SDK del agente.",
-        "Novedades",
-        "Pauta docente separada y enlazada (ADR-126): una guía, actividad o evaluación destinada a estudiantes ya no lleva el solucionario al final. Cuando la propuesta incluye respuestas o marca alternativas correctas, pteron extrae esa sección antes de guardar y crea o actualiza una pauta docente independiente, enlazada al material del estudiante. El editor ofrece el enlace en ambos sentidos: «Abrir pauta docente» desde la hoja y «Abrir material del estudiante» desde la pauta. Cada revisión de pauta conserva el ID de la revisión estudiantil que la originó; una propuesta pendiente no sustituye la paut",
-        "La hoja del estudiante conserva preguntas y espacios de respuesta, sin soluciones ni metadatos de alternativa correcta; el espacio de respuesta nuevo se inserta dentro de la tarjeta de su pregunta.",
-        "Abrir un DOCX como material Write (ADR-125): el visor de un DOCX de la carpeta de trabajo ofrece «Abrir en Write» y convierte el contenido editable en un material nuevo, avisando de que la maquetación, los encabezados, los pies y las imágenes del archivo no se conservan. El original permanece intacto; toda salida es un archivo nuevo. Main re-resuelve la ruta real dentro de la carpeta autorizada, valida tamaño y paquete, y no abre DOCM, documentos cifrados ni paquetes corruptos.",
-        "Hoja y exportación de Write: la repaginación del DOCX mantiene la ecuación y la primera línea de respuesta junto a su enunciado, une la primera línea del espacio al enunciado, separa tablas adyacentes y elimina el pie duplicado de Word. La hoja en pantalla deja de fijar altura y crece con el reflujo del contenido.",
-        "Modelos: catálogo, defaults y presets al día (gpt-6-luna con 1,05 M de contexto, deepseek-flash con su alias, Meta 1.3 y MiMo 2.6 Flash), con tarifas del ledger para las variantes nuevas. pi-ai y pi-agent-core suben a 0.87.1 con la migración del agente (getCurrentTools, finishTurn)."
+        "Materiales para estudiantes y pautas docentes mejor separados.",
+        "La pauta se guarda como un documento enlazado, con acceso desde la hoja del estudiante y viceversa.",
+        "Puedes abrir un documento Word como material editable nuevo. El original se conserva; algunas imágenes y detalles de formato no se trasladan.",
+        "Mejora la distribución de preguntas, fórmulas y espacios de respuesta al guardar en Word.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -319,13 +317,13 @@
       ],
       "notes": [
         "pteron 0.5.5",
-        "Corte de desarrollo (prerelease) que lleva las ecuaciones inline a las presentaciones con el mismo campo vivo que Write, ordena la cinta de los editores en filas horizontales estilo Word y saca las notas del orador del lienzo a la barra de estado. Además corrige el reset de estilos vendoreado que imponía white-space: nowrap al contenido de cualquier botón de la aplicación y ordena el revelado de la frase en los rumbos de Home.",
-        "Novedades",
-        "Ecuaciones inline en Present: una isla LaTeX de una diapositiva deja de pintarse cruda en el lienzo y se tipografía en una capa DOM con la misma caja y tipografía; doble clic o Intro abre el campo MathLive, la cinta muestra la pestaña contextual Ecuación e «Insertar → Ecuación» inserta en el cursor del texto en edición. El PPTX conserva OMML nativo con alternativa legible y el SVG/HTML de la presentación incrusta la fórmula. Aplica a Write y a Present, que comparten el renderizador.",
-        "El índice de una raíz, un exponente o un límite deja de agrandarse a tamaño display: la isla en línea se compone en \\displaystyle y el estilo resuelve cada script.",
-        "Cinta de los editores estilo Word: sin fila de título, con QAT, buscador y modo compacto como iconos a la derecha de las pestañas, interruptor de estado declarado (aria-pressed) y tooltip de acción. Los controles consecutivos comparten una fila horizontal, la pestaña Página usa menús grandes con etiquetas que envuelven, la galería de fondos rotula con nombres y el buscador abre sus resultados con Enter.",
-        "Notas del orador desde la barra de estado: la franja fija bajo la mesa desaparece y el lienzo queda para la presentación y el chat. La barra ofrece «Notas» —con punto cuando la diapositiva tiene texto— y abre un panel con el contador y su alcance declarado («Van al PPTX · no se ven al presentar»).",
-        "Comandos y plantillas: seis comandos / insertan pautas de trabajo extensas y reescribibles desde Memoria y contexto, cada uno puede seguir la estructura de una plantilla DOCX asignada en Plantillas, y la referencia adjunta al turno precede a la plantilla, muestra su estructura y puede guardarse como modelo (ADR-121..123)."
+        "Presentaciones y herramientas de edición más cómodas.",
+        "Puedes insertar y editar fórmulas en las diapositivas.",
+        "Las herramientas del editor se organizan por pestañas, con búsqueda y modo compacto.",
+        "Las notas del orador se abren desde la barra inferior y se incluyen en PowerPoint.",
+        "Los comandos de trabajo pueden seguir tus plantillas; se corrigen avisos y textos que quedaban ocultos.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -428,13 +426,13 @@
       ],
       "notes": [
         "pteron 0.5.4",
-        "Corte de desarrollo (prerelease) centrado en los editores Write y Present: cinta por pestañas con recuperación total ante menús y búsquedas, paginación física con reflujo automático, configuración de página persistente que el PDF honra, listas e imágenes integradas sin ventanas flotantes, ecuaciones inline estilo Word y un historial de deshacer que atraviesa repaginaciones. Además completa la reconstrucción visual del planificador (F0–F7) y una oleada transversal de botones y pestañas.",
-        "Novedades",
-        "Cinta Write/Present por pestañas:",
-        "Pestañas Inicio, Insertar, Disposición, Página, Revisar y Vista con grupos adaptativos, modo compacto, backstage de Archivo y búsqueda de comandos que ejecuta acciones reales.",
-        "Ningún desplegable puede atrapar al docente: Escape y clic fuera siempre devuelven el control, con foco restaurado.",
-        "Write pagina en hojas físicas:",
-        "Reflujo automático al desbordar, con aviso único por hoja tocada en vez de una ráfaga de re-guardados."
+        "Una hoja que se parece más al documento que vas a entregar.",
+        "El editor muestra páginas y conserva tamaño, márgenes y ajustes al guardar en PDF.",
+        "Listas, imágenes y fórmulas se editan dentro de la hoja, con un historial de deshacer más fiable.",
+        "Las herramientas se agrupan por pestañas y vuelven a estar disponibles después de cerrar menús.",
+        "Se mejora la organización del planificador y la claridad de los controles.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -537,13 +535,12 @@
       ],
       "notes": [
         "pteron 0.5.3",
-        "Corte de desarrollo (prerelease) que lleva el Banco Begonia en vivo al espejo v0.4 y completa una oleada de unificación de lenguaje en todas las superficies: un solo nombre para Configuración, planificador íntegramente en español docente y etiquetas del banco sin jerga técnica.",
-        "Novedades",
-        "Banco Begonia en vivo, espejo v0.4:",
-        "El detalle muestra la verdad servida canon ⊕ addenda: título y temas con procedencia, enunciado completo, pauta con su estilo (respuesta o rúbrica) y OA del ítem.",
-        "Nuevos filtros de material, OA y «con archivos», poblados desde facetas globales; la lista trae miniaturas con caché en memoria acotada por release.",
-        "Vigilancia del snapshot_id con aviso cuando el banco se actualiza; un ítem retirado se explica como despublicado, no como error.",
-        "Nueva escena de captura library-begonia: la matriz visual cubre 33 escenas × 3 tamaños."
+        "Recursos y opciones con un lenguaje más claro.",
+        "Se actualiza la consulta al Banco Begonia.",
+        "Configuración, el planificador y el banco usan nombres más consistentes y comprensibles.",
+        "Se ordenan las opciones de configuración para encontrar mejor lo que necesitas.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -646,13 +643,12 @@
       ],
       "notes": [
         "pteron 0.5.2",
-        "Corte de desarrollo (prerelease) que consolida la unificación del sistema de diseño, robustece el planificador docente, refuerza las cotas de seguridad en el proceso principal y acredita la compatibilidad en Windows 11 sobre hardware real.",
-        "Novedades",
-        "Unificación visual y sistema de diseño:",
-        "Jerarquía visual cohesiva entre los tres espacios principales (Asistente, Biblioteca y Planificador), con franjas de cabecera y campos de búsqueda uniformados en dimensiones, foco y tipografía.",
-        "Puente integral de tokens de diseño: adaptación limpia para temas claro y oscuro, retiro del dorado en estados interactivos oscuros y normalización del lienzo y tarjetas al lenguaje pteron.",
-        "Homogeneización de navegación en Configuración, avisos del sistema, controles de guardado y diálogos.",
-        "Planificador docente:"
+        "Mejoras de claridad y estabilidad en el trabajo diario.",
+        "La interfaz usa controles y estilos más consistentes.",
+        "Se refuerza el planificador docente y la protección de las operaciones con archivos.",
+        "Se corrigen problemas de estabilidad y se comprueba el funcionamiento en Windows 11.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -755,13 +751,13 @@
       ],
       "notes": [
         "pteron 0.5.1",
-        "Corte de desarrollo (prerelease) para probar el trabajo en construcción en varios",
-        "equipos. Incluye frentes activos todavía sin acreditar: el planificador nativo y",
-        "el editor de revisión PDF.",
-        "Novedades",
-        "Tres espacios de trabajo: la interfaz se reorganiza en tres espacios con navegación contextual (ADR-118) y una página de biblioteca integrada con gestión de archivos y visor (ADR-117).",
-        "Editores nativos Meridian: Write como editor documental único con matemática nativa (ADR-114) sobre la base MeridianOffice (ADR-112/113), editor a pantalla completa con pestaña pteron para los controles del material, composición Write compartida y paneles de Present; exportación Write en serie con diagnóstico de ciclo de vida y tablas DOCX partibles.",
-        "Planificador nativo (en construcción): primer corte del planificador de unidades sobre el renderer MeridianPlan (ADR-119, spec 008), con servicio en el proceso principal, historial deshacer/rehacer y guardado sólo por diálogo, y herramientas de conversación leer/editar/deshacer planificador. Sin pruebas live ni acreditación."
+        "Una versión de prueba con nuevos espacios de trabajo en desarrollo.",
+        "La conversación, los materiales y la evidencia se organizan en espacios propios.",
+        "Se incorporan editores para documentos y presentaciones, y acceso a Begonia en línea.",
+        "El planificador y la revisión de PDF siguen en construcción; esta versión permite probar sus avances.",
+        "Se mejora el arranque y la recuperación frente a errores.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -864,13 +860,13 @@
       ],
       "notes": [
         "pteron 0.5.0",
-        "Novedades",
-        "Entrada Multimodal Dinámica (Visión y Documentos):",
-        "Soporte de entrada multimodal dinámica para imágenes y documentos en el flujo de conversación pedagógica.",
-        "Incorporación y registro oficial de Google Gemini 3.7 Flash y Gemini 3.5 Flash Lite en el catálogo multiproveedor.",
-        "Integración del proveedor Z.AI (glm-5.3-flash) con control fino de capacidades.",
-        "Modo Voz Nativo y Reflexión Pedagógica:",
-        "Diálogo reflexivo hablado y dictado por voz de primer orden, con integración limpia en el compositor y tarjeta de reflexión en Home."
+        "Más formas de trabajar con tus materiales y conversar sobre ellos.",
+        "La conversación incorpora imágenes y documentos como referencias.",
+        "Se amplían las opciones de voz y de reflexión sobre el trabajo docente.",
+        "Mejoran la edición de documentos, los encabezados escolares y la composición de los materiales.",
+        "Se refuerza la recuperación cuando un servicio de inteligencia artificial falla.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -973,13 +969,12 @@
       ],
       "notes": [
         "pteron 0.4.11",
-        "Novedades",
-        "Editor de Hojas Físicas Paginadas (WYSIWYG):",
-        "El lienzo de trabajo renderiza el documento sobre hojas de papel físicas con proporciones reales (Carta / A4), sombras de papel suaves y separación física entre páginas.",
-        "Paginación dinámica y continua mediante el bloque de «Salto de página», disponible con 1 clic en la barra de inserción.",
-        "Pie de página real en cada hoja con el título del material y la numeración correspondiente (*«Página X de Y»*).",
-        "Retiro de la vista previa modal separada: lo que el profesor ve en pantalla es exactamente lo que se imprime y exporta.",
-        "Muelle de Guardado Rápido de Documentos:"
+        "Documentos más fáciles de revisar y guardar.",
+        "La hoja muestra páginas con tamaños reales y permite insertar saltos de página.",
+        "Guardar en Word o PDF queda al alcance desde la barra del documento.",
+        "Se mejoran los encabezados del establecimiento y la navegación por teclado al planificar.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -1082,13 +1077,12 @@
       ],
       "notes": [
         "pteron 0.4.10",
-        "Novedades",
-        "Labs y asistencia proactiva (ADR-096): Ajustes incorpora su quinta sección",
-        "permanente, Labs, agrupando la vinculación iPhone y el nuevo asistente",
-        "proactivo opt-in. En Home, el asistente puede proponer un próximo paso",
-        "derivado del contexto visible o la memoria confirmada, con procedencia explícita",
-        "y sometido a Empezar o Ahora no; no opera en segundo plano ni ejecuta",
-        "acciones sin confirmación docente."
+        "Más control sobre el trabajo y menos ruido en pantalla.",
+        "Labs reúne las funciones experimentales y permite decidir cuándo empezar o posponer una ayuda.",
+        "Se simplifica la biblioteca y el reordenamiento del contenido.",
+        "La barra de conversación muestra mejor la acción principal y se corrige el cierre de Configuración.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -1141,13 +1135,13 @@
       ],
       "notes": [
         "pteron 0.4.9",
-        "Novedades",
-        "Ajustes más compactos: Perfil reúne identidad, carpeta, tema y licencia;",
-        "Complementos presenta Begonia, Currículum Nacional, búsqueda web y correo",
-        ".eml; Sobre pteron concentra versión, privacidad, atajos y actualizaciones.",
-        "Planificación más predecible: cada pregunta se responde en su propio plan, un",
-        "tipo de material visible no salta el acuerdo y un plan incompleto no ofrece",
-        "crear un resultado parcial."
+        "Configuración más compacta y fácil de recorrer.",
+        "Perfil reúne tus datos, carpeta de trabajo, tema y licencia.",
+        "Los complementos se presentan con sus opciones de activación y acceso.",
+        "Se simplifica la organización de las opciones.",
+        "Los pedidos de varios materiales conservan sus entregables y las revisiones respetan mejor el contenido que no pediste cambiar.",
+        "Se corrigen tablas, espacios para completar y detalles que aparecían como texto al guardar.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11."
       ],
       "channel": "beta"
     },
@@ -1200,13 +1194,12 @@
       ],
       "notes": [
         "pteron 0.4.8",
-        "Novedades",
-        "Nuevo tema oscuro completo. Puedes elegir claro, oscuro o seguir el sistema",
-        "desde Ajustes; la preferencia se conserva al volver a abrir pteron.",
-        "Inicio más ágil: la superficie utilizable aparece entre un 19 % y un 21 % antes",
-        "en los escenarios medidos en macOS, sin quitar validaciones ni aislamiento.",
-        "Mejor contraste y consistencia en Home, conversación, planes, artefactos,",
-        "presentaciones, memoria, ajustes y estados interactivos."
+        "Nuevo tema oscuro para toda la aplicación.",
+        "Puedes elegir claro, oscuro o seguir el aspecto del sistema.",
+        "La preferencia se conserva al volver a abrir pteron.",
+        "Se ajustan colores y contrastes para trabajar con mayor comodidad.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -1258,14 +1251,13 @@
         }
       ],
       "notes": [
-        "pteron 0.4.7 — abrir, retomar y confiar en lo que sale",
-        "Lo que vas a notar",
-        "Abrir pteron ya no crea una conversación. Partes en la pantalla de inicio, y la sesión nace cuando empiezas a trabajar de verdad. Si vuelves dentro de la media hora, retoma donde ibas. Tu historial deja de llenarse de conversaciones vacías.",
-        "Una sola pantalla de inicio. Antes había dos preguntando lo mismo con distintas palabras.",
-        "La conversación vuelve a seguirte. Al abrir un chat largo se quedaba arriba del todo, con el último botón tapado por el compositor. Ahora te muestra donde ibas.",
-        "Una tabla ya no te deja sin material. Si el modelo armaba una tabla sin títulos de columna, pteron le pedía algo imposible y la petición moría sin entregarte nada.",
-        "El documento sale limpio. Los ### del modelo se imprimían literales en el Word, y un monto como $5.100 rompía las fórmulas cercanas.",
-        "Por dentro"
+        "pteron 0.4.7",
+        "Un inicio más limpio y conversaciones más fáciles de retomar.",
+        "Abrir pteron ya no crea una conversación vacía; la sesión comienza cuando empiezas a trabajar.",
+        "Se unifica la pantalla de inicio y se mejora el seguimiento del último mensaje.",
+        "Se corrigen materiales con tablas y detalles que aparecían de más al guardar documentos.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -1317,14 +1309,14 @@
         }
       ],
       "notes": [
-        "pteron 0.4.6 — figuras que se pueden corregir",
-        "Hasta ahora, si querías una figura en una guía, pteron te dejaba el hueco y tú lo llenabas a mano. 0.4.6 trae diagramas de verdad —cajas, nubes, rombos y flechas con texto— y los entrega como formas nativas de Word y PowerPoint, no como una imagen.",
-        "La diferencia importa: una imagen dentro de un documento es materia muerta. Si un rótulo salió mal, no puedes arreglarlo, tienes que pedir el material de nuevo. Un diagrama de formas lo mueves, lo recoloreas y lo reescribes en tu propio Word, como cualquier figura que hubieras hecho tú.",
-        "Lo principal",
-        "Diagramas en guías y presentaciones. Un ciclo, un proceso, una clasificación. Pídelos junto con el material («agrega un diagrama del ciclo del agua») y aparecen en el lienzo, en el PDF, en el DOCX y en la diapositiva, dibujados desde la misma disposición: lo que apruebas en pantalla es lo que se imprime.",
-        "Y los corriges sin volver a pedir el material. Elige un paso en el lienzo y puedes arreglarle el texto, cambiarle la forma, agregar otro paso o quitarlo. Al quitar un paso el camino se recose solo, en vez de dejar el diagrama partido en dos mitades sueltas.",
-        "Puedes poner tus propias imágenes. Una figura acepta una imagen de tu equipo y viaja dentro del DOCX y del PPTX, con su texto alternativo para quien usa lector de pantalla. pteron no inventa imágenes ni las descarga de internet: las pones tú.",
-        "Una diapositiva ya no revelaba la respuesta correcta. Al exportar una presentación con selección múltiple, la alternativa correcta salía marcada y con su justificación, proyectada al curso. Es la corrección más importante de esta versión: si proyectaste una presentación con preguntas hecha con 0.4.4 o anterior, tus estudiantes vieron las respuestas."
+        "pteron 0.4.6",
+        "Diagramas que puedes revisar y corregir en tus materiales.",
+        "Puedes pedir diagramas para guías y presentaciones y ajustar sus pasos, rótulos y formas.",
+        "Los diagramas se guardan como formas editables en Word y PowerPoint.",
+        "Puedes incorporar imágenes propias con una descripción para lectores de pantalla.",
+        "Se corrige la aparición de respuestas correctas en una presentación destinada a estudiantes.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -1376,14 +1368,13 @@
         }
       ],
       "notes": [
-        "pteron 0.4.5 — que cada cosa se diga una vez, y que el hilo te siga",
-        "0.4.5 es un parche de consolidación: pule, unifica y corrige lo que ya existía. Los controles que aparecen —volver al último mensaje, elegir el tema de proyección— arreglan funciones que estaban rotas o inalcanzables; no son funciones nuevas.",
-        "Lo principal",
-        "La conversación te sigue. El hilo no tenía anclaje de ningún tipo: mientras cabía en la ventana no se notaba, y en cuanto la excedía la respuesta crecía fuera de tu vista y tenías que bajar a mano en cada turno. Ahora se comporta como un lector: si estás mirando el final, se te sigue mostrando el final; si subiste a releer, no se te mueve el suelo, y un botón te devuelve abajo cuando quieras.",
-        "El texto ya no aparece de golpe. Cuando un modelo entrega la respuesta entera de una vez, se revela a ritmo legible en vez de saltar de un renglón a treinta. Con los que escriben de a poco, no notarás diferencia.",
-        "La pantalla dejó de repetirse. El recuadro de instrucciones ya no dice",
-        "«Instrucciones» dos veces; el objetivo de aprendizaje ya no aparece en el encabezado y otra vez como primer párrafo; «Ver avance» habla con una sola voz en vez de contar las mismas acciones con dos vocabularios; y la pantalla de revisión ya no repite cinco veces que la propuesta está sin aplicar.",
-        "La barra de edición dejó de explicarse a sí misma. Gastaba un tercio de su ancho en decirte que estabas editando. Con ese espacio ahora caben todos sus controles, incluida la lista, que antes quedaba fuera del borde. «Formato base» dejó de parecer un botón que no respondía: es un icono de información."
+        "pteron 0.4.5",
+        "La conversación te acompaña mejor mientras trabajas.",
+        "El hilo sigue la respuesta si estás al final y respeta tu posición cuando relees mensajes.",
+        "Las respuestas completas se muestran a un ritmo más cómodo de leer.",
+        "Se eliminan textos repetidos y se aprovecha mejor el espacio de la barra de edición.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -1485,14 +1476,13 @@
         }
       ],
       "notes": [
-        "pteron 0.4.4 — el PDF vuelve a ser el material",
-        "Un profesor exportó una guía y recibió un archivo de una página con la barra superior de pteron impresa dentro, empezando a mitad de una tabla. Esta versión arregla eso y ordena lo que lo rodeaba.",
-        "Guardar el material",
-        "Un material tiene ahora dos salidas, y cada una dice para qué sirve.",
-        "Editable → «Guardar DOCX…», la acción principal junto al cuadro de conversación. Es el documento que abres en Word.",
-        "Imprimible → «Guardar PDF…», dentro de «Documento imprimible». Esa pantalla te muestra la hoja tal como saldrá, y el botón guarda exactamente eso.",
-        "No hay ninguna otra forma de imprimir. «Imprimir…» desaparece: llamaba a la impresión del navegador, que imprime la ventana de la aplicación —por eso salían las pestañas, «Compartir» y el avatar dentro del PDF, y por eso terminaba en la primera página—. «Compartir» sale de la barra superior: era una tercera puerta al mismo PDF, con otro nombre y peor resultado, porque escribía texto plano sin encabezado, sin tablas y sin fórmulas.",
-        "El PDF se arma ahora desde el documento y no desde la pantalla: la paginación la hace el motor, el tamaño y los márgenes salen de la configuración de página del material, y las fórmulas se componen de verdad. Su tipografía y sus medidas son las mismas del DOCX, así que el editable y el imprimible son la misma hoja en dos formatos."
+        "pteron 0.4.4",
+        "El PDF vuelve a mostrar el material completo.",
+        "La vista imprimible permite revisar la hoja y guardar exactamente ese contenido en PDF.",
+        "Guardar en Word queda como acción principal para obtener una copia editable.",
+        "Se ordenan las opciones de guardado y se corrigen elementos de la aplicación que aparecían en el PDF.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -1594,14 +1584,13 @@
         }
       ],
       "notes": [
-        "pteron 0.4.3 — el visor deja de repetirse y el panel deja de adivinar",
-        "Esta versión es de interfaz. No cambia lo que pteron sabe hacer: cambia cuánto de la pantalla ocupa diciendo lo mismo dos veces, y cuánto de lo que ofrece tiene efecto de verdad. La decisión que la gobierna es.",
-        "En el material abierto",
-        "El nombre del material se dice una vez menos. Vivía tres veces en 260 px: arriba, en una franja intermedia y en el papel. La franja se fue, y con ella «Volver al chat», que llamaba exactamente a lo mismo que «Cerrar archivo».",
-        "La barra de formato deja de nacer apagada. Los ocho controles sólo se encienden con un bloque seleccionado, y ninguno lo está al abrir el material: era una fila entera de botones sin efecto en el sitio más visible. Ahora aparecen cuando pueden hacer algo, y mientras tanto la franja dice qué hacer y nombra el bloque que estás editando.",
-        "Mover un bloque es un gesto. Estaba a dos niveles dentro de un menú. Ahora hay un carril al margen del papel con subir y bajar, que además dice de qué tipo es cada bloque.",
-        "El muelle deja de ser un fantasma. Flotaba semitransparente y debajo se leía medio texto. Ahora la página se ve continuar debajo, y mientras escribes dentro de un bloque la fila de decisión se retrae para devolverte el papel.",
-        "En las presentaciones"
+        "pteron 0.4.3",
+        "Una interfaz más clara al trabajar con materiales.",
+        "El nombre del material deja de repetirse y las herramientas aparecen cuando puedes usarlas.",
+        "Los bloques se pueden mover desde el margen de la hoja.",
+        "Las presentaciones muestran controles propios y un espacio accesible para las notas del orador.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -1703,14 +1692,12 @@
         }
       ],
       "notes": [
-        "pteron 0.4.2 — la hoja que imprimes se parece a la que ves",
-        "Esta versión reúne todo lo que no alcanzó a publicarse desde 0.4.0: el parche de correcciones que iba a ser 0.4.1 —nunca etiquetado— y el trabajo de forma sobre el material exportado. Sigue siendo un parche: corrige y mide, no incorpora funciones.",
-        "Lo que cambia en el material que entregas",
-        "La hoja se lee como una guía, no como una transcripción. Tipografía con jerarquía, interlineado y aire entre párrafos donde antes había un muro de texto en Times New Roman.",
-        "Las listas son listas. Un guion o una viñeta que escribe el asistente ahora llegan a Word como lista real, con la segunda línea alineada bajo el texto y no bajo la marca. Las alternativas «A) B) C)» y las casillas conservan su marca: renumerarlas cambiaría lo que recibe el estudiante.",
-        "Las tablas usan la hoja completa. Una planificación apaisada desperdiciaba cuatro centímetros de papel mientras la columna de actividades partía cada palabra; ahora cada columna recibe el ancho que su contenido necesita.",
-        "Un material apaisado nace apaisado. Si pides formato horizontal, o la tabla no cabe a lo ancho, la primera versión ya sale así. Antes sólo lo hacía a partir de la segunda, con cualquier modelo.",
-        "El enunciado de una pregunta se distingue y ya no queda separado de sus alternativas al cambiar de página. La instrucción tiene su recuadro con rótulo."
+        "pteron 0.4.2",
+        "Hojas más limpias y pedidos de materiales más fiables.",
+        "Los encabezados dejan de repetir etiquetas o mostrar valores incorrectos.",
+        "Se corrigen detalles de creación y presentación de materiales.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -1812,14 +1799,14 @@
         }
       ],
       "notes": [
-        "pteron 0.4.0 — conversación pedagógica abierta",
-        "Hasta 0.3 el chat elegía un modo por ti a partir de lo que escribías: pedir algo podía convertirse en un encargo de material aunque sólo quisieras pensar en voz alta. 0.4 abre el turno. Preguntas, analizas, buscas, transformas o creas sin elegir un modo, y pteron interviene sólo donde tiene autoridad: permisos, privacidad, contratos, persistencia y reversibilidad.",
-        "Lo que cambia al conversar",
-        "Una consulta se queda en el chat. Una respuesta conversacional termina en el hilo, con «Guardar esta respuesta…» si la quieres conservar. Sólo una propuesta persistente abre el ciclo de aceptar o descartar.",
-        "El contexto ya no es una orden. Curso, asignatura, OA, documentos elegidos y material abierto orientan la conversación, pero no convierten tu siguiente mensaje en una modificación de lo que está abierto. Para eso hace falta una acción visible, acotada a ese turno.",
-        "El plan es una opción, no un peaje. Cuando el pedido lo justifica, pteron propone un plan con objetivo, entregables, decisiones confirmadas y las preguntas que faltan; puedes ajustarlo conversando antes de que escriba nada. Una consulta simple no pasa por ahí.",
-        "Las preguntas traen alternativas. Entre dos y cuatro, la recomendada primero y su efecto en una frase, y siempre puedes responder con tus palabras.",
-        "Lo que cambia al esperar"
+        "pteron 0.4.0",
+        "Puedes conversar, analizar y crear sin elegir un modo antes de empezar.",
+        "Una consulta permanece en la conversación; una propuesta de material se revisa antes de aceptarla.",
+        "El curso, la asignatura y los documentos orientan el trabajo sin modificar automáticamente lo que tienes abierto.",
+        "Los planes se proponen cuando hacen falta y se pueden ajustar conversando.",
+        "Las preguntas ofrecen alternativas y siempre permiten responder con tus propias palabras.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -1871,14 +1858,13 @@
         }
       ],
       "notes": [
-        "pteron 0.3.1 — actualizador de Windows",
-        "pteron 0.3.1 corrige un fallo del actualizador en Windows 11: la versión nueva se descargaba y, al aceptar instalar, la aplicación se cerraba sin reemplazarse.",
-        "Esta versión sigue siendo beta.",
-        "Lo principal",
-        "Si Windows bloquea el instalador silencioso, pteron lo abre de forma visible para que puedas confirmar el aviso de SmartScreen. Ya no pide elevación de administrador en una instalación por usuario.",
-        "Si la instalación no llega a aplicarse, al volver a abrir pteron avisa que sigues en la versión anterior y permite reintentar.",
-        "El instalador de Windows sigue sin firma. Puede aparecer Microsoft Defender SmartScreen; no es un error de pteron. La firma de código sigue pendiente antes de una difusión estable.",
-        "Plataformas"
+        "pteron 0.3.1",
+        "Corrección de la actualización en Windows 11.",
+        "Si Windows bloquea la instalación, pteron abre el instalador para que puedas confirmar el aviso.",
+        "Si la actualización no se aplica, al volver a abrir se informa y puedes reintentar.",
+        "Los equipos con el actualizador anterior pueden necesitar descargar esta versión e instalarla manualmente.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     },
@@ -1980,14 +1966,14 @@
         }
       ],
       "notes": [
-        "pteron 0.3.0 — consolidación de la beta de escritorio",
-        "pteron 0.3.0 afianza el trabajo desarrollado durante las versiones anteriores antes de ampliar el producto con integraciones nuevas. Esta versión sigue siendo beta: prioriza un núcleo docente local-first, resultados revisables y una experiencia coherente de principio a fin.",
-        "Lo principal",
-        "El modo Plan funciona dentro del hilo y conduce a materiales independientes, revisables y editables, sin convertir la conversación en un asistente rígido.",
-        "Guías, evaluaciones, pautas, planificaciones y presentaciones viven como artefactos propios. El editor documental, las presentaciones 16:9 y las exportaciones DOCX/PPTX conservan una ruta visible de revisión y guardado.",
-        "La interfaz completa el pulido de desplazamiento, paneles, dock del compositor, estados finales y controles progresivos en tamaños de ventana de 1440, 1100 y 900 px.",
-        "El núcleo del agente por sesión integra Pi con cancelación, compactación y un conjunto acotado de herramientas docentes; los proveedores siguen siendo reemplazables y opt-in.",
-        "Las claves de proveedores se guardan únicamente en el almacén seguro del sistema operativo. Si el llavero no responde, pteron corta la espera con un error visible y no degrada a texto plano."
+        "pteron 0.3.0",
+        "Una beta de escritorio más consistente de principio a fin.",
+        "La planificación vive en la conversación y produce materiales que puedes revisar y editar.",
+        "Se afina el trabajo con guías, evaluaciones, pautas y presentaciones, y su guardado en Word y PowerPoint.",
+        "Se mejora el uso en ventanas pequeñas y la claridad de los estados del trabajo.",
+        "Se refuerza la protección de las claves de servicios y la separación de respuestas docentes.",
+        "Disponible para macOS en equipos Apple serie M, Windows 11, Linux.",
+        "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
       ],
       "channel": "beta"
     }
