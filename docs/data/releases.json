@@ -1,113 +1,123 @@
 {
-  "generatedAt": "2026-10-04T16:05:06.634Z",
+  "generatedAt": "2026-10-04T18:50:49.976Z",
   "latest": {
-    "version": "0.5.6",
-    "publishedAt": "2026-09-23T12:29:58Z",
-    "publishedLabel": "septiembre de 2026",
-    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.5.6",
+    "version": "0.6.0",
+    "publishedAt": "2026-10-04T18:50:34Z",
+    "publishedLabel": "octubre de 2026",
+    "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.6.0",
     "assets": [
       {
         "name": "beta-linux.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/beta-linux.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/beta-linux.yml",
         "bytes": 685
       },
       {
         "name": "beta-mac.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/beta-mac.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/beta-mac.yml",
         "bytes": 494
       },
       {
         "name": "beta.yml",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/beta.yml",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/beta.yml",
         "bytes": 337
       },
       {
-        "name": "pteron-0.5.6-amd64.deb",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/pteron-0.5.6-amd64.deb",
-        "bytes": 139788844
+        "name": "pteron-0.6.0-amd64.deb",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-amd64.deb",
+        "bytes": 133315340
       },
       {
-        "name": "pteron-0.5.6-amd64.deb.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/pteron-0.5.6-amd64.deb.asc",
+        "name": "pteron-0.6.0-amd64.deb.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-amd64.deb.asc",
         "bytes": 833
       },
       {
-        "name": "pteron-0.5.6-arm64.dmg",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/pteron-0.5.6-arm64.dmg",
-        "bytes": 177772628
+        "name": "pteron-0.6.0-arm64.dmg",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-arm64.dmg",
+        "bytes": 170979466
       },
       {
-        "name": "pteron-0.5.6-arm64.dmg.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/pteron-0.5.6-arm64.dmg.blockmap",
-        "bytes": 186674
+        "name": "pteron-0.6.0-arm64.dmg.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-arm64.dmg.blockmap",
+        "bytes": 179937
       },
       {
-        "name": "pteron-0.5.6-arm64.zip",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/pteron-0.5.6-arm64.zip",
-        "bytes": 177203364
+        "name": "pteron-0.6.0-arm64.zip",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-arm64.zip",
+        "bytes": 170398880
       },
       {
-        "name": "pteron-0.5.6-arm64.zip.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/pteron-0.5.6-arm64.zip.blockmap",
-        "bytes": 181714
+        "name": "pteron-0.6.0-arm64.zip.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-arm64.zip.blockmap",
+        "bytes": 179112
       },
       {
-        "name": "pteron-0.5.6-x64.exe",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/pteron-0.5.6-x64.exe",
-        "bytes": 134659748
+        "name": "pteron-0.6.0-x64.exe",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-x64.exe",
+        "bytes": 132780442
       },
       {
-        "name": "pteron-0.5.6-x64.exe.blockmap",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/pteron-0.5.6-x64.exe.blockmap",
-        "bytes": 140650
+        "name": "pteron-0.6.0-x64.exe.blockmap",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-x64.exe.blockmap",
+        "bytes": 138129
       },
       {
-        "name": "pteron-0.5.6-x64.tar.gz",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/pteron-0.5.6-x64.tar.gz",
-        "bytes": 176917314
+        "name": "pteron-0.6.0-x64.tar.gz",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-x64.tar.gz",
+        "bytes": 169710705
       },
       {
-        "name": "pteron-0.5.6-x64.tar.gz.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/pteron-0.5.6-x64.tar.gz.asc",
+        "name": "pteron-0.6.0-x64.tar.gz.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-x64.tar.gz.asc",
         "bytes": 833
       },
       {
-        "name": "pteron-0.5.6-x86_64.AppImage",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/pteron-0.5.6-x86_64.AppImage",
-        "bytes": 183165238
+        "name": "pteron-0.6.0-x86_64.AppImage",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-x86_64.AppImage",
+        "bytes": 180333043
       },
       {
-        "name": "pteron-0.5.6-x86_64.AppImage.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/pteron-0.5.6-x86_64.AppImage.asc",
+        "name": "pteron-0.6.0-x86_64.AppImage.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-x86_64.AppImage.asc",
         "bytes": 833
       },
       {
-        "name": "pteron-0.5.6-x86_64.rpm",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/pteron-0.5.6-x86_64.rpm",
-        "bytes": 114239961
+        "name": "pteron-0.6.0-x86_64.rpm",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-x86_64.rpm",
+        "bytes": 111914153
       },
       {
-        "name": "pteron-0.5.6-x86_64.rpm.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/pteron-0.5.6-x86_64.rpm.asc",
+        "name": "pteron-0.6.0-x86_64.rpm.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-x86_64.rpm.asc",
         "bytes": 833
       },
       {
         "name": "pteron-releases-public.asc",
-        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.5.6/pteron-releases-public.asc",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-releases-public.asc",
         "bytes": 1680
+      },
+      {
+        "name": "release-integrity.json",
+        "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/release-integrity.json",
+        "bytes": 4988
       }
     ],
     "notes": [
       {
         "type": "paragraph",
-        "text": "Materiales para estudiantes y pautas docentes mejor separados."
+        "text": "Esta versión mejora la creación, edición y guardado de guías, evaluaciones y presentaciones."
       },
       {
         "type": "list",
         "items": [
-          "La pauta se guarda como un documento enlazado, con acceso desde la hoja del estudiante y viceversa.",
-          "Puedes abrir un documento Word como material editable nuevo. El original se conserva; algunas imágenes y detalles de formato no se trasladan.",
-          "Mejora la distribución de preguntas, fórmulas y espacios de respuesta al guardar en Word."
+          "Hoja más clara: preguntas, puntajes, habilidades y espacios de respuesta se organizan para trabajar e imprimir.",
+          "Edición más cómoda: agregar, mover o eliminar preguntas y alternativas mantiene su numeración. Puedes deshacer los cambios.",
+          "Más de 300 ejemplos de figuras para tus materiales. Puedes cambiar sus textos, datos y formato y conservarlas al guardar en Word o PowerPoint.",
+          "Pautas docentes separadas y enlazadas al material del estudiante, con respuestas y criterios de corrección más completos.",
+          "Guías organizadas en activación, explicación, práctica y cierre; evaluaciones con espacio para justificar cuando lo solicitas.",
+          "Presentaciones con una composición más uniforme, notas del orador y fórmulas que puedes editar.",
+          "Guardado más seguro: el atajo Guardar conserva tus cambios y, al cerrar, puedes guardarlos, descartarlos o seguir trabajando.",
+          "Correcciones en fórmulas, figuras y exportaciones, y en la preparación de la versión para Windows."
         ]
       },
       {
@@ -123,6 +133,137 @@
   },
   "stable": null,
   "releases": [
+    {
+      "version": "0.6.0",
+      "publishedAt": "2026-10-04T18:50:34Z",
+      "publishedLabel": "octubre de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.6.0",
+      "assets": [
+        {
+          "name": "beta-linux.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/beta-linux.yml",
+          "bytes": 685
+        },
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.6.0-amd64.deb",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-amd64.deb",
+          "bytes": 133315340
+        },
+        {
+          "name": "pteron-0.6.0-amd64.deb.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-amd64.deb.asc",
+          "bytes": 833
+        },
+        {
+          "name": "pteron-0.6.0-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-arm64.dmg",
+          "bytes": 170979466
+        },
+        {
+          "name": "pteron-0.6.0-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-arm64.dmg.blockmap",
+          "bytes": 179937
+        },
+        {
+          "name": "pteron-0.6.0-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-arm64.zip",
+          "bytes": 170398880
+        },
+        {
+          "name": "pteron-0.6.0-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-arm64.zip.blockmap",
+          "bytes": 179112
+        },
+        {
+          "name": "pteron-0.6.0-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-x64.exe",
+          "bytes": 132780442
+        },
+        {
+          "name": "pteron-0.6.0-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-x64.exe.blockmap",
+          "bytes": 138129
+        },
+        {
+          "name": "pteron-0.6.0-x64.tar.gz",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-x64.tar.gz",
+          "bytes": 169710705
+        },
+        {
+          "name": "pteron-0.6.0-x64.tar.gz.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-x64.tar.gz.asc",
+          "bytes": 833
+        },
+        {
+          "name": "pteron-0.6.0-x86_64.AppImage",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-x86_64.AppImage",
+          "bytes": 180333043
+        },
+        {
+          "name": "pteron-0.6.0-x86_64.AppImage.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-x86_64.AppImage.asc",
+          "bytes": 833
+        },
+        {
+          "name": "pteron-0.6.0-x86_64.rpm",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-x86_64.rpm",
+          "bytes": 111914153
+        },
+        {
+          "name": "pteron-0.6.0-x86_64.rpm.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-0.6.0-x86_64.rpm.asc",
+          "bytes": 833
+        },
+        {
+          "name": "pteron-releases-public.asc",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/pteron-releases-public.asc",
+          "bytes": 1680
+        },
+        {
+          "name": "release-integrity.json",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.6.0/release-integrity.json",
+          "bytes": 4988
+        }
+      ],
+      "notes": [
+        {
+          "type": "paragraph",
+          "text": "Esta versión mejora la creación, edición y guardado de guías, evaluaciones y presentaciones."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Hoja más clara: preguntas, puntajes, habilidades y espacios de respuesta se organizan para trabajar e imprimir.",
+            "Edición más cómoda: agregar, mover o eliminar preguntas y alternativas mantiene su numeración. Puedes deshacer los cambios.",
+            "Más de 300 ejemplos de figuras para tus materiales. Puedes cambiar sus textos, datos y formato y conservarlas al guardar en Word o PowerPoint.",
+            "Pautas docentes separadas y enlazadas al material del estudiante, con respuestas y criterios de corrección más completos.",
+            "Guías organizadas en activación, explicación, práctica y cierre; evaluaciones con espacio para justificar cuando lo solicitas.",
+            "Presentaciones con una composición más uniforme, notas del orador y fórmulas que puedes editar.",
+            "Guardado más seguro: el atajo Guardar conserva tus cambios y, al cerrar, puedes guardarlos, descartarlos o seguir trabajando.",
+            "Correcciones en fórmulas, figuras y exportaciones, y en la preparación de la versión para Windows."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
+      ],
+      "channel": "beta"
+    },
     {
       "version": "0.5.6",
       "publishedAt": "2026-09-23T12:29:58Z",
@@ -2121,128 +2262,6 @@
         {
           "type": "paragraph",
           "text": "Disponible para macOS en equipos Apple serie M, Windows 11."
-        },
-        {
-          "type": "paragraph",
-          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
-        }
-      ],
-      "channel": "beta"
-    },
-    {
-      "version": "0.3.0",
-      "publishedAt": "2026-08-12T15:25:03Z",
-      "publishedLabel": "agosto de 2026",
-      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.3.0",
-      "assets": [
-        {
-          "name": "beta-linux.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/beta-linux.yml",
-          "bytes": 685
-        },
-        {
-          "name": "beta-mac.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/beta-mac.yml",
-          "bytes": 494
-        },
-        {
-          "name": "beta.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/beta.yml",
-          "bytes": 337
-        },
-        {
-          "name": "pteron-0.3.0-amd64.deb",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-amd64.deb",
-          "bytes": 133045388
-        },
-        {
-          "name": "pteron-0.3.0-amd64.deb.asc",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-amd64.deb.asc",
-          "bytes": 833
-        },
-        {
-          "name": "pteron-0.3.0-arm64.dmg",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-arm64.dmg",
-          "bytes": 171344942
-        },
-        {
-          "name": "pteron-0.3.0-arm64.dmg.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-arm64.dmg.blockmap",
-          "bytes": 179488
-        },
-        {
-          "name": "pteron-0.3.0-arm64.zip",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-arm64.zip",
-          "bytes": 170777176
-        },
-        {
-          "name": "pteron-0.3.0-arm64.zip.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-arm64.zip.blockmap",
-          "bytes": 179646
-        },
-        {
-          "name": "pteron-0.3.0-x64.exe",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x64.exe",
-          "bytes": 133305643
-        },
-        {
-          "name": "pteron-0.3.0-x64.exe.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x64.exe.blockmap",
-          "bytes": 138403
-        },
-        {
-          "name": "pteron-0.3.0-x64.tar.gz",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x64.tar.gz",
-          "bytes": 171397634
-        },
-        {
-          "name": "pteron-0.3.0-x64.tar.gz.asc",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x64.tar.gz.asc",
-          "bytes": 833
-        },
-        {
-          "name": "pteron-0.3.0-x86_64.AppImage",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x86_64.AppImage",
-          "bytes": 182242997
-        },
-        {
-          "name": "pteron-0.3.0-x86_64.AppImage.asc",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x86_64.AppImage.asc",
-          "bytes": 833
-        },
-        {
-          "name": "pteron-0.3.0-x86_64.rpm",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x86_64.rpm",
-          "bytes": 111339269
-        },
-        {
-          "name": "pteron-0.3.0-x86_64.rpm.asc",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-0.3.0-x86_64.rpm.asc",
-          "bytes": 833
-        },
-        {
-          "name": "pteron-releases-public.asc",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.3.0/pteron-releases-public.asc",
-          "bytes": 1680
-        }
-      ],
-      "notes": [
-        {
-          "type": "paragraph",
-          "text": "Una beta de escritorio más consistente de principio a fin."
-        },
-        {
-          "type": "list",
-          "items": [
-            "La planificación vive en la conversación y produce materiales que puedes revisar y editar.",
-            "Se afina el trabajo con guías, evaluaciones, pautas y presentaciones, y su guardado en Word y PowerPoint.",
-            "Se mejora el uso en ventanas pequeñas y la claridad de los estados del trabajo.",
-            "Se refuerza la protección de las claves de servicios y la separación de respuestas docentes."
-          ]
-        },
-        {
-          "type": "paragraph",
-          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
         },
         {
           "type": "paragraph",
