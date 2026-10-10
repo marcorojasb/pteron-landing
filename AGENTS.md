@@ -30,8 +30,9 @@ Si existe una contradicción, detente y solicita aclaración antes de actuar.
 
 Una petición del usuario para diseñar, implementar, corregir, auditar o verificar
 la landing autoriza el trabajo local necesario dentro de este repositorio. Esto
-incluye inspeccionar y editar archivos, iniciar el servidor local, usar el
-navegador, capturar pantallas y ejecutar comprobaciones proporcionales al cambio.
+incluye inspeccionar y editar archivos, iniciar el servidor local (`npm run dev`),
+usar el navegador, capturar pantallas y ejecutar `npm run verify` y las
+comprobaciones proporcionales al cambio.
 No se requiere una reactivación ni una aprobación de fase de Patagua.
 
 Esta autorización no incluye:
@@ -39,7 +40,7 @@ Esta autorización no incluye:
 - instalar o actualizar dependencias;
 - abrir `.env*`, credenciales, volcados o datos privados;
 - usar servicios externos, proveedores o bases de datos;
-- desplegar o modificar Vercel, DNS o dominios;
+- desplegar o modificar el Worker de Cloudflare, sus secretos, DNS o dominios;
 - hacer commit, push, merge, reset o reescribir historial;
 - borrar fuente o realizar otras operaciones destructivas.
 
@@ -68,6 +69,16 @@ Cada una de esas acciones requiere autorización específica.
 - Respetar accesibilidad, legibilidad y `prefers-reduced-motion`.
 - No aceptar recortes accidentales, espacios vacíos inexplicables, saltos de
   layout, pantallas negras ni recursos que nunca terminan de cargar.
+
+## Estructura y despliegue
+
+- `public/` es lo publicado; `src/` es el Worker; `tests/` prueba sin red.
+- Un cambio en `src/` o en `public/*.js` incluye pruebas proporcionales y pasa
+  `npm run verify` antes de cerrarse.
+- Producción se despliega desde `main` por la integración Git de Cloudflare;
+  una rama produce una URL de previsualización. Nada se despliega a mano desde
+  una sesión sin autorización específica.
+- Los secretos viven en el Worker, nunca en el repositorio ni en `wrangler.jsonc`.
 
 ## Calidad
 

@@ -1,0 +1,11 @@
+# Copia este archivo a .dev.vars para `npm run dev`. Nunca lo subas al repositorio.
+# Las variables públicas (PUBLIC_SITE_URL, SUPABASE_URL, LICENSE_KID) viven en wrangler.jsonc.
+SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+FLOW_BASE_URL=https://sandbox.flow.cl/api
+FLOW_API_KEY=
+FLOW_SECRET_KEY=
+LICENSE_PRIVATE_KEY_PEM=
+GATEWAY_UPSTREAM_BASE_URL=https://opencode.ai/zen/go/v1
+GATEWAY_UPSTREAM_MODEL_ID=deepseek-v4-flash
+GATEWAY_UPSTREAM_API_KEY=

@@ -34,7 +34,7 @@ if (!releases.length) throw new Error("No hay releases publicados; se conserva e
 const latest = releases.find(isCompleteRelease);
 if (!latest) throw new Error("No hay un release publicado con la matriz completa de artefactos.");
 const stable = releases.find(release => release.channel === "stable") || null;
-const outputPath = "docs/data/releases.json";
+const outputPath = "public/docs/data/releases.json";
 let previousData = null;
 
 try {
@@ -53,7 +53,7 @@ const data = {
   ...releaseState
 };
 
-await mkdir("docs/data", { recursive: true });
+await mkdir("public/docs/data", { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(data, null, 2)}\n`);
 console.log(
   releasesChanged

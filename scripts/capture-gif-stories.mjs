@@ -10,7 +10,7 @@ import { spawn } from "node:child_process";
 
 const pteronRoot = "/Users/marcorojasbelmar/Developer/pteron";
 const base = "/Users/marcorojasbelmar/Developer/pteron-landing/output/captures-0-6-0";
-const gifDir = "/Users/marcorojasbelmar/Developer/pteron-landing/assets/docs/gifs";
+const gifDir = "/Users/marcorojasbelmar/Developer/pteron-landing/public/assets/docs/gifs";
 const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function openScene(scene, delayMs) {

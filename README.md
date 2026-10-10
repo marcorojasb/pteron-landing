@@ -2,23 +2,39 @@
 
 Sitio público de `pteron`, con la cuenta web para autenticación, planes,
 registro de tarjeta y activación de licencias en la aplicación de escritorio.
+Todo se despliega en Cloudflare: la web como assets estáticos y la API como un
+Worker, desde este repositorio en GitHub.
 
 ## Contenido
 
-- `index.html`: landing principal.
-- `planes/index.html`: planes, precios y funcionamiento de las licencias.
-- `cuenta/`: cuenta web, acceso por enlace mágico, checkout y activación.
-- `api/`: funciones serverless de autenticación, Flow, licencias y activación.
+- `public/`: la web tal como se publica. Cloudflare la sirve directamente, con
+  URLs limpias y sin barra final.
+  - `index.html`: landing principal.
+  - `planes/index.html`: planes, precios y funcionamiento de las licencias.
+  - `cuenta/`: cuenta web, acceso por enlace mágico, checkout y activación.
+  - `descargar/`: descargas por plataforma y clave pública de firmas.
+  - `docs/`: documentación en una sola página; `docs/data/releases.json` es el
+    catálogo de versiones que mantiene el workflow.
+  - `styles.css` y `cuenta/styles.css`: sistema visual responsive.
+  - `script.js` y `cuenta/cuenta.js`: interacción del sitio y de la cuenta.
+  - `release-data.js`: selección semver de la última versión completa a partir
+    del JSON incluido y la API pública de GitHub. No contiene ninguna versión
+    escrita a mano: si no hay datos, la web no anuncia versión y enlaza a las
+    versiones publicadas.
+  - `_headers`: cabeceras de seguridad y caché de `assets/`.
+  - `assets/`: imágenes, vídeos, favicons y recursos públicos.
+- `src/worker.js`: el Worker. Atiende `/api/*` y reescribe `/docs/:slug` a la
+  página de documentación; todo lo demás lo sirven los assets.
+  - `src/lib/`: ayudantes HTTP, cliente de Supabase, cliente de Flow, firma y
+    verificación de licencias (Ed25519 con Web Crypto) y contabilidad del
+    gateway de IA.
+  - `src/routes/`: `auth`, `billing`, `activation`, `license`, `account` y `ai`.
 - `supabase/migrations/`: esquema de perfiles, suscripciones, licencias,
   activaciones, eventos de cobro y uso.
-- `styles.css` y `cuenta/styles.css`: sistema visual responsive.
-- `script.js` y `cuenta/cuenta.js`: interacción del sitio y de la cuenta.
-- `release-data.js`: selección semver de la última versión completa a partir
-  del JSON incluido y la API pública de GitHub. No contiene ninguna versión
-  escrita a mano: si no hay datos, la web no anuncia versión y enlaza a las
-  versiones publicadas.
-- `vercel.json`: URLs limpias, caché de assets y cabeceras de seguridad.
-- `assets/`: imágenes, favicons y recursos públicos.
+- `tests/`: pruebas con `node --test`, sin red: Supabase, Flow y el proveedor
+  de IA se simulan.
+- `scripts/`: sincronización de versiones, capturas y comprobaciones.
+- `wrangler.jsonc`: configuración del Worker, los assets y las variables públicas.
 - `design-qa.md`: registro de verificación visual y decisiones de interfaz.
 
 ## Sistema visual
@@ -40,11 +56,18 @@ se usa en estados interactivos.
 
 ## Arquitectura
 
-La web estática y las funciones API viven en Vercel. Supabase mantiene sólo
-metadatos de cuenta y suscripción; los archivos de trabajo permanecen en el
-equipo del profesor. Flow gestiona el registro de tarjeta y los cobros. La
-aplicación `pteron` recibe un enlace de un solo uso y guarda localmente una
-licencia firmada con protección del sistema operativo.
+La web estática y la API viven en un único Worker de Cloudflare. Supabase
+mantiene sólo metadatos de cuenta y suscripción; los archivos de trabajo
+permanecen en el equipo del profesor. Flow gestiona el registro de tarjeta y los
+cobros. La aplicación `pteron` recibe un enlace de un solo uso y guarda
+localmente una licencia firmada con protección del sistema operativo.
+
+Las URLs públicas de la API no cambiaron con la migración desde Vercel: la
+cuenta web, Flow y la aplicación de escritorio siguen llamando a
+`/api/auth/*`, `/api/billing/*`, `/api/activation/*`, `/api/license/*`,
+`/api/account` y `/api/ai/v1/*`. Las licencias conservan su formato y su
+clave: la firma Ed25519 que produce Web Crypto es la misma que verifica
+`node:crypto` en la aplicación, y una prueba lo comprueba en cada corrida.
 
 Proyecto Supabase configurado:
 
@@ -57,95 +80,91 @@ aplicarse en orden si se prepara otro entorno.
 
 ## Versiones públicas
 
-El workflow `sync-pteron-releases.yml` actualiza `docs/data/releases.json` a
-partir de los releases publicados. Una versión sólo pasa a ser la actual cuando
-su matriz de artefactos está completa. En el navegador, `release-data.js`
-combina ese JSON con la API pública de GitHub y conserva un fallback local.
+El workflow `sync-pteron-releases.yml` actualiza `public/docs/data/releases.json`
+a partir de los releases publicados. Una versión sólo pasa a ser la actual
+cuando su matriz de artefactos está completa. En el navegador,
+`release-data.js` combina ese JSON con la API pública de GitHub y conserva un
+fallback local. Cada commit del workflow en `main` despliega el sitio de nuevo.
 
 Los HTML cargan el CSS y JavaScript compartidos con un parámetro `?v=` para
 evitar que un archivo antiguo de la caché reemplace los enlaces actuales. Ese
-valor es una revisión del sitio (`2026-09-25.4`), no la versión de pteron: sube
-cuando se modifica `styles.css` o alguno de los JavaScript compartidos, y no
-cambia al publicar una versión nueva del producto. La versión publicada se
-resuelve sola en el navegador desde `docs/data/releases.json` y la API pública
-de GitHub.
+valor es una revisión del sitio, no la versión de pteron: sube cuando se
+modifica `styles.css` o alguno de los JavaScript compartidos, y no cambia al
+publicar una versión nueva del producto.
 
-## Variables de Vercel
+## Variables y secretos
 
-Configúralas por entorno desde Vercel; nunca las guardes en el repositorio ni
-las pegues en la interfaz del navegador.
-
-Variables públicas o de configuración:
+Las variables públicas viven en `wrangler.jsonc`:
 
 - `PUBLIC_SITE_URL=https://pteron.patagua.dev`
 - `SUPABASE_URL=https://swzqblyllbudwbmbcthr.supabase.co`
-- `SUPABASE_PUBLISHABLE_KEY`
-- `FLOW_BASE_URL=https://sandbox.flow.cl/api` durante las pruebas, o
-  `https://www.flow.cl/api` al pasar a producción.
 - `LICENSE_KID=k1`
 
-Variables sensibles que aún deben introducirse de forma segura si no están
-configuradas:
+Los secretos se cargan con `npx wrangler secret put <NOMBRE>` o desde el panel
+del Worker, nunca en el repositorio ni en la interfaz del navegador:
 
-- `SUPABASE_SERVICE_ROLE_KEY`: la usan sólo las funciones serverless para
-  escribir suscripciones, eventos y licencias.
+- `SUPABASE_PUBLISHABLE_KEY`: clave publicable de Supabase Auth.
+- `SUPABASE_SERVICE_ROLE_KEY`: la usa sólo el Worker para escribir
+  suscripciones, eventos y licencias.
 - `FLOW_API_KEY` y `FLOW_SECRET_KEY`: credenciales del entorno de Flow que
   corresponda a `FLOW_BASE_URL`.
-- `LICENSE_PRIVATE_KEY_PEM`: clave privada de firma; su clave pública ya está
-  incluida en la aplicación de escritorio.
+- `LICENSE_PRIVATE_KEY_PEM`: clave privada de firma (PKCS8); su clave pública
+  ya está incluida en la aplicación de escritorio.
+- `GATEWAY_UPSTREAM_API_KEY`: clave del proveedor detrás del gateway de IA.
 
-También pueden definirse `FLOW_BASIC_PLAN_ID` y `FLOW_PRO_PLAN_ID` si los planes
-se crean previamente en Flow con identificadores distintos de
-`pteron_basic` y `pteron_pro`.
+Variables opcionales, también como secretos o en `vars`: `FLOW_BASE_URL`
+(`https://sandbox.flow.cl/api` durante las pruebas, `https://www.flow.cl/api`
+en producción; por defecto sandbox), `FLOW_BASIC_PLAN_ID`, `FLOW_PRO_PLAN_ID`,
+`GATEWAY_UPSTREAM_BASE_URL` y `GATEWAY_UPSTREAM_MODEL_ID`.
 
-## Configuración externa antes de publicar
-
-1. En Supabase Auth, establece como Site URL
-   `https://pteron.patagua.dev/cuenta/` y permite ese mismo destino como URL de
-   redirección.
-2. En Cloudflare, configura el CNAME exacto que muestra la tarjeta del dominio
-   `pteron.patagua.dev` en Vercel. No sustituyas ese destino por una IP.
-3. En Flow, prueba primero con sandbox: registro de tarjeta, callback,
-   suscripción Basic con siete días de prueba, cancelación y callback de pago.
-4. Antes de cobrar, cambia las credenciales y `FLOW_BASE_URL` al entorno de
-   producción, confirma los precios publicados y revisa las condiciones de
-   devolución.
-5. Define la cuota de IA antes de habilitar capacidad adicional; el esquema
-   deja `ai_units_limit` como `null` hasta tomar esa decisión.
+Para desarrollo local, copia `.dev.vars.example` a `.dev.vars`; ese archivo
+está ignorado por Git.
 
 ## Despliegue
 
-Desde esta carpeta:
+El Worker se despliega desde GitHub con la integración Git de Cloudflare
+(Workers Builds): cada push a `main` publica producción y cada rama recibe una
+URL de previsualización. Configuración del proyecto en el panel:
+
+1. Crear el Worker desde el repositorio `marcorojasb/pteron-landing`, rama de
+   producción `main`, comando de build vacío y comando de deploy
+   `npx wrangler deploy`.
+2. Cargar los secretos listados arriba.
+3. En Supabase Auth, mantener como Site URL `https://pteron.patagua.dev/cuenta`
+   y permitir ese destino como URL de redirección. Las URLs de previsualización
+   no sirven para el enlace mágico salvo que se añadan ahí.
+4. En Flow, probar primero con sandbox: registro de tarjeta, callback,
+   suscripción Basic con siete días de prueba, cancelación y callback de pago.
+5. Al momento del corte, asignar el dominio `pteron.patagua.dev` al Worker
+   desde Custom Domains; Cloudflare reemplaza el CNAME anterior. Hasta
+   entonces el despliegue anterior sigue respondiendo.
+6. Antes de cobrar, cambiar las credenciales y `FLOW_BASE_URL` al entorno de
+   producción, confirmar los precios publicados y revisar las condiciones de
+   devolución.
+7. Definir la cuota de IA antes de habilitar capacidad adicional; el esquema
+   deja `ai_units_limit` como `null` hasta tomar esa decisión.
+
+El gateway de IA retransmite respuestas largas del proveedor; el plan Workers
+Paid evita el tope de CPU del plan gratuito en esas peticiones.
+
+Despliegue manual desde una máquina autenticada:
 
 ```bash
-vercel
-vercel --prod
+npx wrangler login
+npm run deploy
 ```
 
-El despliegue requiere que las variables anteriores estén completas. La
-integración automática con GitHub es opcional; Vercel puede desplegar mediante
-su proyecto conectado o desde la CLI.
-
-## Probar localmente
+## Desarrollo y comprobaciones
 
 ```bash
-python3 -m http.server 4173
+npm ci
+npm run dev        # http://localhost:8787 con assets y API
+npm run verify     # sintaxis, empaquetado en seco del Worker y pruebas
 ```
 
-Luego abre `http://localhost:4173`, `/planes/` o `/cuenta/`. La cuenta necesita
-un despliegue con las funciones API y variables configuradas para completar
-autenticación, Flow y activación.
-
-Comprobaciones rápidas:
-
-```bash
-for file in $(find api -type f -name '*.js' -print); do node --check "$file"; done
-node --check script.js
-node --check cuenta/cuenta.js
-node --check descargar/download.js
-node --check release-data.js
-node --test tests/*.test.js
-```
+`npm run dev` necesita `.dev.vars` para la cuenta, Flow y el gateway; sin él,
+esas rutas responden 503 con un código que nombra la configuración ausente.
+La web estática, la documentación y las descargas funcionan sin secretos.
 
 ## Antes del lanzamiento comercial
 

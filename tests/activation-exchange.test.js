@@ -1,65 +1,20 @@
-const { test } = require("node:test");
-const assert = require("node:assert/strict");
-const { generateKeyPairSync } = require("node:crypto");
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import worker from "../src/worker.js";
+import { fakeExecution, fakeSupabase, jsonRequest, testEnv, testKeyPair, withFetch } from "./helpers/fakes.js";
 
-process.env.SUPABASE_URL = "https://fake.supabase.co";
-process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-fake";
-process.env.SUPABASE_PUBLISHABLE_KEY = "publishable-fake";
-const { privateKey } = generateKeyPairSync("ed25519");
-process.env.LICENSE_PRIVATE_KEY_PEM = privateKey.export({ type: "pkcs8", format: "pem" }).toString();
-process.env.LICENSE_KID = "k1";
+const keys = testKeyPair();
+const env = testEnv({ LICENSE_PRIVATE_KEY_PEM: keys.privatePem });
 
-// api/activation/exchange.js se fusionó en api/activation/[action].js (12
-// funciones máx. en el plan Hobby de Vercel); "require" con corchetes en el
-// nombre funciona porque es sólo una ruta de archivo, no un glob.
-const activation = require("../api/activation/[action]");
-
-// Enruta por tabla + método: el mismo endpoint dispara varias llamadas
-// PostgREST distintas (leer el intent, leer la suscripción, guardar la
-// licencia, marcar el intent consumido) y cada test define sólo las que le
-// importan.
-function fakeSupabase(routes) {
-  const calls = [];
-  return {
-    calls,
-    async fetch(url, init = {}) {
-      const method = init.method || "GET";
-      calls.push({ url: String(url), method });
-      const route = routes.find((entry) => entry.method === method && String(url).includes(`/rest/v1/${entry.table}`));
-      if (!route) throw new Error(`Sin mock para ${method} ${url}`);
-      const result = typeof route.respond === "function" ? route.respond(calls.length) : route.respond;
-      return new Response(JSON.stringify(result.body), {
-        status: result.status ?? 200,
-        headers: { "content-type": "application/json" },
-      });
-    },
-  };
-}
-
-function fakeReq(body) {
-  return { method: "POST", body, headers: {}, query: { action: "exchange" } };
-}
-
-function exchange(req, res) {
-  return activation(req, res);
-}
-
-function fakeRes() {
-  const res = { statusCode: 0, headers: {}, body: "" };
-  res.setHeader = (key, value) => {
-    res.headers[key] = value;
-  };
-  res.end = (chunk) => {
-    if (chunk) res.body += chunk;
-  };
-  return res;
+function exchange(payload) {
+  return worker.fetch(jsonRequest("https://pteron.test/api/activation/exchange", payload), env, fakeExecution());
 }
 
 const pendingIntent = { id: "intent-1", user_id: "user-1", expires_at: new Date(Date.now() + 60_000).toISOString() };
 const activeSubscription = {
   plan_id: "pro",
   current_period_end: new Date(Date.now() + 30 * 86400000).toISOString(),
-  // issueLicense firma plan_catalog.license_plan, no plan_id (v. 7ae2270).
+  // issueLicense firma plan_catalog.license_plan, no plan_id.
   plan_catalog: { license_plan: "pro" },
 };
 
@@ -70,37 +25,31 @@ test("exchange devuelve una licencia válida cuando el intent ya está autorizad
     { table: "licenses", method: "POST", respond: { body: [{ id: "license-1" }] } },
     { table: "activation_intents", method: "PATCH", respond: { body: [{ id: "intent-1" }] } },
   ]);
-  const globalFetch = globalThis.fetch;
-  globalThis.fetch = supabase.fetch;
-  try {
-    const res = fakeRes();
-    await exchange(fakeReq({ code: "codigo-de-prueba" }), res);
-
-    assert.equal(res.statusCode, 200);
-    const payload = JSON.parse(res.body);
+  await withFetch(supabase.fetch, async () => {
+    const res = await exchange({ code: "codigo-de-prueba" });
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get("cache-control"), "no-store");
+    const payload = await res.json();
     assert.equal(payload.ok, true);
     assert.equal(payload.plan, "pro");
+    assert.equal(payload.keyId, "k1");
     assert.equal(typeof payload.token, "string");
     assert.equal(supabase.calls.length, 4);
-  } finally {
-    globalThis.fetch = globalFetch;
-  }
+    const upsert = supabase.calls[2];
+    assert.match(upsert.url, /on_conflict=subject/);
+    assert.equal(upsert.body.subject, "user-1");
+    assert.match(upsert.body.token_hash, /^[0-9a-f]{64}$/);
+  });
 });
 
 test("exchange rechaza un código sin intent autorizado (410, no gastó nada)", async () => {
   const supabase = fakeSupabase([{ table: "activation_intents", method: "GET", respond: { body: [] } }]);
-  const globalFetch = globalThis.fetch;
-  globalThis.fetch = supabase.fetch;
-  try {
-    const res = fakeRes();
-    await exchange(fakeReq({ code: "codigo-sin-autorizar" }), res);
-
-    assert.equal(res.statusCode, 410);
-    assert.equal(JSON.parse(res.body).error, "activation_not_ready");
+  await withFetch(supabase.fetch, async () => {
+    const res = await exchange({ code: "codigo-sin-autorizar" });
+    assert.equal(res.status, 410);
+    assert.equal((await res.json()).error, "activation_not_ready");
     assert.equal(supabase.calls.length, 1, "no debe llamar a subscriptions ni licenses si el intent no está listo");
-  } finally {
-    globalThis.fetch = globalFetch;
-  }
+  });
 });
 
 test("exchange no emite licencia si el usuario no tiene un plan activo", async () => {
@@ -108,17 +57,11 @@ test("exchange no emite licencia si el usuario no tiene un plan activo", async (
     { table: "activation_intents", method: "GET", respond: { body: [pendingIntent] } },
     { table: "subscriptions", method: "GET", respond: { body: [] } },
   ]);
-  const globalFetch = globalThis.fetch;
-  globalThis.fetch = supabase.fetch;
-  try {
-    const res = fakeRes();
-    await exchange(fakeReq({ code: "codigo-de-prueba" }), res);
-
-    assert.equal(res.statusCode, 403);
-    assert.equal(JSON.parse(res.body).error, "plan_required");
-  } finally {
-    globalThis.fetch = globalFetch;
-  }
+  await withFetch(supabase.fetch, async () => {
+    const res = await exchange({ code: "codigo-de-prueba" });
+    assert.equal(res.status, 403);
+    assert.equal((await res.json()).error, "plan_required");
+  });
 });
 
 test("exchange rechaza un enlace ya canjeado por otra llamada concurrente (409)", async () => {
@@ -129,21 +72,27 @@ test("exchange rechaza un enlace ya canjeado por otra llamada concurrente (409)"
     // La carrera real: otra corrida ya lo marcó consumido, el update no encuentra la fila pendiente.
     { table: "activation_intents", method: "PATCH", respond: { body: [] } },
   ]);
-  const globalFetch = globalThis.fetch;
-  globalThis.fetch = supabase.fetch;
-  try {
-    const res = fakeRes();
-    await exchange(fakeReq({ code: "codigo-de-prueba" }), res);
-
-    assert.equal(res.statusCode, 409);
-    assert.equal(JSON.parse(res.body).error, "activation_used");
-  } finally {
-    globalThis.fetch = globalFetch;
-  }
+  await withFetch(supabase.fetch, async () => {
+    const res = await exchange({ code: "codigo-de-prueba" });
+    assert.equal(res.status, 409);
+    assert.equal((await res.json()).error, "activation_used");
+  });
 });
 
 test("exchange rechaza un cuerpo sin código", async () => {
-  const res = fakeRes();
-  await exchange(fakeReq({}), res);
-  assert.equal(res.statusCode, 400);
+  const res = await exchange({});
+  assert.equal(res.status, 400);
+  assert.equal((await res.json()).error, "invalid_input");
+});
+
+test("start crea un intent y devuelve el enlace de cuenta sin barra final", async () => {
+  const supabase = fakeSupabase([{ table: "activation_intents", method: "POST", respond: { body: [{ id: "intent-2" }] } }]);
+  await withFetch(supabase.fetch, async () => {
+    const res = await worker.fetch(jsonRequest("https://pteron.test/api/activation/start", { appInstanceId: "mac-01" }), env, fakeExecution());
+    assert.equal(res.status, 200);
+    const payload = await res.json();
+    assert.match(payload.browserUrl, /^https:\/\/pteron\.test\/cuenta\?activate=[0-9a-f]{64}$/);
+    assert.match(payload.deepLink, /^pteron:\/\/activate\?code=[0-9a-f]{64}$/);
+    assert.match(supabase.calls[0].body.code_hash, /^[0-9a-f]{64}$/);
+  });
 });

@@ -1,24 +1,19 @@
-const { test } = require("node:test");
-const assert = require("node:assert/strict");
-const { generateKeyPairSync } = require("node:crypto");
-const { signLicense } = require("../api/_lib/license");
-const { authenticateGateway, latestUsageAndModelFromSseChunk, totalTokensFromUsage } = require("../api/_lib/gateway");
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { createLicenseService } from "../src/lib/license.js";
+import { authenticateGateway, createSseTracker, latestUsageAndModelFromSseChunk, totalTokensFromUsage } from "../src/lib/gateway.js";
+import { testKeyPair } from "./helpers/fakes.js";
 
-const { publicKey, privateKey } = generateKeyPairSync("ed25519");
-process.env.LICENSE_PRIVATE_KEY_PEM = privateKey.export({ type: "pkcs8", format: "pem" }).toString();
-process.env.LICENSE_KID = "k1";
-const testKeys = { k1: publicKey.export({ type: "spki", format: "pem" }).toString() };
+const keys = testKeyPair();
+const env = { LICENSE_PRIVATE_KEY_PEM: keys.privatePem, LICENSE_KID: "k1" };
+const testKeys = { k1: keys.publicPem };
 
 function reqWithToken(token) {
-  return { headers: { authorization: token ? `Bearer ${token}` : "" } };
+  return new Request("https://pteron.test/api/ai/v1/models", { headers: token ? { authorization: `Bearer ${token}` } : {} });
 }
 
-function firmar(overrides = {}) {
-  // Vuelve a fijar la clave en cada llamada: otro test de este archivo puede
-  // haberla cambiado a propósito para probar un rechazo por firma.
-  process.env.LICENSE_PRIVATE_KEY_PEM = privateKey.export({ type: "pkcs8", format: "pem" }).toString();
-  process.env.LICENSE_KID = "k1";
-  return signLicense({
+function firmar(overrides = {}, customEnv = env) {
+  return createLicenseService(customEnv, null).signLicense({
     subject: "sub-opaco-1",
     plan: "pro",
     expiresAt: new Date(Date.now() + 60_000).toISOString(),
@@ -26,36 +21,29 @@ function firmar(overrides = {}) {
   });
 }
 
-test("authenticateGateway acepta una licencia Basic o Pro vigente", () => {
-  const verified = authenticateGateway(reqWithToken(firmar({ plan: "pro" })), testKeys);
+test("authenticateGateway acepta una licencia Basic o Pro vigente", async () => {
+  const verified = await authenticateGateway(reqWithToken(await firmar({ plan: "pro" })), testKeys);
   assert.equal(verified.sub, "sub-opaco-1");
   assert.equal(verified.plan, "pro");
 });
 
-test("authenticateGateway exige un Authorization Bearer", () => {
-  assert.throws(() => authenticateGateway(reqWithToken(""), testKeys), { code: "not_authenticated" });
+test("authenticateGateway exige un Authorization Bearer", async () => {
+  await assert.rejects(authenticateGateway(reqWithToken(""), testKeys), { code: "not_authenticated" });
 });
 
-test("authenticateGateway rechaza una firma que no verifica", () => {
-  const originalPem = process.env.LICENSE_PRIVATE_KEY_PEM;
-  const otra = generateKeyPairSync("ed25519");
-  process.env.LICENSE_PRIVATE_KEY_PEM = otra.privateKey.export({ type: "pkcs8", format: "pem" }).toString();
-  try {
-    const token = signLicense({ subject: "sub-x", plan: "pro", expiresAt: new Date(Date.now() + 60_000).toISOString() });
-    assert.throws(() => authenticateGateway(reqWithToken(token), testKeys), { code: "invalid_license" });
-  } finally {
-    // Los demás tests de este archivo firman con la clave original vía firmar().
-    process.env.LICENSE_PRIVATE_KEY_PEM = originalPem;
-  }
+test("authenticateGateway rechaza una firma que no verifica", async () => {
+  const otra = testKeyPair();
+  const token = await firmar({ subject: "sub-x" }, { LICENSE_PRIVATE_KEY_PEM: otra.privatePem, LICENSE_KID: "k1" });
+  await assert.rejects(authenticateGateway(reqWithToken(token), testKeys), { code: "invalid_license" });
 });
 
-test("authenticateGateway rechaza una licencia vencida — a diferencia de la renovación, acá sí importa", () => {
-  const vencida = firmar({ expiresAt: new Date(Date.now() - 1000).toISOString() });
-  assert.throws(() => authenticateGateway(reqWithToken(vencida), testKeys), { code: "license_expired" });
+test("authenticateGateway rechaza una licencia vencida — a diferencia de la renovación, acá sí importa", async () => {
+  const vencida = await firmar({ expiresAt: new Date(Date.now() - 1000).toISOString() });
+  await assert.rejects(authenticateGateway(reqWithToken(vencida), testKeys), { code: "license_expired" });
 });
 
-test("authenticateGateway rechaza formato inválido sin lanzar un error distinto", () => {
-  assert.throws(() => authenticateGateway(reqWithToken("no-es-una-licencia"), testKeys), { code: "invalid_license" });
+test("authenticateGateway rechaza formato inválido sin lanzar un error distinto", async () => {
+  await assert.rejects(authenticateGateway(reqWithToken("no-es-una-licencia"), testKeys), { code: "invalid_license" });
 });
 
 test("latestUsageAndModelFromSseChunk toma el usage y el modelo real del último evento con datos", () => {
@@ -78,6 +66,24 @@ test("latestUsageAndModelFromSseChunk devuelve null sin ningún evento de usage"
     usage: null,
     model: "deepseek-v4-flash",
   });
+});
+
+test("createSseTracker recompone una línea data: partida entre dos chunks", () => {
+  const tracker = createSseTracker();
+  tracker.push('data: {"model":"deepseek-v4-flash","choices":[],"usage":{"prompt_tok');
+  assert.deepEqual(tracker.current(), { usage: null, model: null });
+  tracker.push('ens":10,"completion_tokens":5,"total_tokens":15}}\n\ndata: [DONE]');
+  assert.deepEqual(tracker.flush(), {
+    usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
+    model: "deepseek-v4-flash",
+  });
+});
+
+test("createSseTracker procesa en flush una última línea sin salto final", () => {
+  const tracker = createSseTracker();
+  tracker.push('data: {"model":"m","usage":{"total_tokens":3}}');
+  assert.deepEqual(tracker.current(), { usage: null, model: null });
+  assert.deepEqual(tracker.flush(), { usage: { total_tokens: 3 }, model: "m" });
 });
 
 test("totalTokensFromUsage usa total_tokens cuando está presente", () => {

@@ -1,6 +1,10 @@
-const { test } = require("node:test");
-const assert = require("node:assert/strict");
-const releases = require("../release-data");
+import { test } from "node:test";
+import assert from "node:assert/strict";
+// El módulo es UMD: cargado como ESM expone su API en globalThis.PTERON_RELEASES,
+// igual que en el navegador.
+import "../public/release-data.js";
+
+const releases = globalThis.PTERON_RELEASES;
 
 const completeRelease = (version, overrides = {}) => ({
   version,

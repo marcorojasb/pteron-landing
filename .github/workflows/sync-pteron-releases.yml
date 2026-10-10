@@ -33,13 +33,13 @@ jobs:
         run: node scripts/update-pteron-releases.mjs
       - name: Publicar cambios
         run: |
-          if git diff --quiet -- docs/data/releases.json; then
+          if git diff --quiet -- public/docs/data/releases.json; then
             echo "No hay cambios"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/releases.json
+          git add public/docs/data/releases.json
           git commit -m "docs: actualiza versiones publicadas"
           git pull --rebase origin main
           git push origin HEAD:main

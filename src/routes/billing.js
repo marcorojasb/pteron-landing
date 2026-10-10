@@ -1,35 +1,9 @@
-const { createHash } = require("node:crypto");
-const {
-  body,
-  handler,
-  HttpError,
-  json,
-  method,
-  redirect,
-  requestUrl,
-  requireAuth,
-  requireString,
-  siteUrl,
-} = require("../_lib/http");
-const { authUser, insert, select, update } = require("../_lib/supabase");
-const {
-  cancelSubscription,
-  createCustomer,
-  createPlan,
-  createSubscription,
-  flowSuccess,
-  flowValue,
-  paymentStatus,
-  planId,
-  registerCustomer,
-  registerStatus,
-} = require("../_lib/flow");
+import { HttpError, body, json, method, redirect, requireAuth, requireString, siteUrl } from "../lib/http.js";
+import { sha256Hex } from "../lib/crypto.js";
+import { flowSuccess, flowValue } from "../lib/flow.js";
 
-// Un solo archivo detrás de las cuatro rutas de /api/billing/*: el plan
-// Hobby de Vercel tope a 12 funciones por deployment, y el proyecto ya
-// estaba en el límite antes de sumar el gateway. Las URLs externas no
-// cambian — Flow y la cuenta web siguen llamando exactamente a
-// /api/billing/checkout, /cancel, /card-callback y /flow-callback.
+// Acciones detrás de /api/billing/{checkout,cancel,card-callback,flow-callback}.
+// Flow y la cuenta web siguen llamando exactamente a esas URLs.
 
 const PLAN_DEFAULTS = {
   basic: { name: "pteron Basic", amount: 2999, trialPeriodDays: 7 },
@@ -40,11 +14,11 @@ function existingCustomer(rows) {
   return rows?.find((row) => row.provider_customer_id)?.provider_customer_id || null;
 }
 
-async function ensureFlowPlan(plan, callbackUrl) {
+async function ensureFlowPlan(flow, plan, callbackUrl) {
   const defaults = PLAN_DEFAULTS[plan];
-  const id = planId(plan);
+  const id = flow.planId(plan);
   try {
-    await createPlan({ id, ...defaults, callbackUrl });
+    await flow.createPlan({ id, ...defaults, callbackUrl });
   } catch (error) {
     // Flow identifica un plan ya creado como error de API. Conservar el id
     // configurado deja que los reintentos avancen sin crear duplicados.
@@ -69,37 +43,39 @@ function flowDate(value) {
   return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
 }
 
-async function checkout(req, res) {
-  method(req, "POST");
-  const token = requireAuth(req);
-  const user = await authUser(token);
-  const input = await body(req);
+async function checkout({ request, env, services }) {
+  method(request, "POST");
+  const { supabase, flow } = services;
+  const token = requireAuth(request);
+  const user = await supabase.authUser(token);
+  const input = await body(request);
   const plan = requireString(input.plan, "plan", 20).toLowerCase();
-  if (!PLAN_DEFAULTS[plan]) throw new HttpError(400, "invalid_plan", "Ese plan no está disponible.");
+  if (!Object.hasOwn(PLAN_DEFAULTS, plan)) throw new HttpError(400, "invalid_plan", "Ese plan no está disponible.");
 
   const userId = encodeURIComponent(user.id);
-  const current = await select(
+  const current = await supabase.select(
     "subscriptions",
     `user_id=eq.${userId}&status=in.(incomplete,trialing,active,past_due,paused)&select=id,plan_id,status&limit=1`,
     { admin: true },
   );
   if (current?.[0]) throw new HttpError(409, "subscription_exists", "Ya tienes un plan en curso. Puedes administrarlo desde tu cuenta.");
 
-  const previousIntents = await select(
+  const previousIntents = await supabase.select(
     "billing_checkout_intents",
     `user_id=eq.${userId}&provider_customer_id=not.is.null&select=provider_customer_id&order=created_at.desc&limit=5`,
     { admin: true },
   );
-  const customerId = existingCustomer(previousIntents) || String((await createCustomer({
+  const customerId = existingCustomer(previousIntents) || String((await flow.createCustomer({
     name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split("@")[0] || "pteron",
     email: user.email,
     externalId: user.id,
   })).customerId || "").trim();
   if (!customerId) throw new HttpError(502, "flow_error", "Flow no entregó el identificador del cliente.");
 
-  const providerPlanId = await ensureFlowPlan(plan, `${siteUrl(req)}/api/billing/flow-callback`);
+  const base = siteUrl(env, request);
+  const providerPlanId = await ensureFlowPlan(flow, plan, `${base}/api/billing/flow-callback`);
   const expiresAt = new Date(Date.now() + 20 * 60 * 1000).toISOString();
-  const intentRows = await insert("billing_checkout_intents", {
+  const intentRows = await supabase.insert("billing_checkout_intents", {
     user_id: user.id,
     plan_id: plan,
     provider_customer_id: customerId,
@@ -110,11 +86,11 @@ async function checkout(req, res) {
   const intent = intentRows[0];
   if (!intent?.id) throw new HttpError(502, "server_error", "No pudimos preparar el checkout.");
   try {
-    const registration = await registerCustomer({
+    const registration = await flow.registerCustomer({
       customerId,
-      returnUrl: `${siteUrl(req)}/api/billing/card-callback?intent=${encodeURIComponent(intent.id)}`,
+      returnUrl: `${base}/api/billing/card-callback?intent=${encodeURIComponent(intent.id)}`,
     });
-    json(res, 200, {
+    return json(200, {
       ok: true,
       redirectUrl: registration.redirectUrl,
       plan,
@@ -122,17 +98,18 @@ async function checkout(req, res) {
       expiresAt,
     });
   } catch (error) {
-    await update("billing_checkout_intents", `id=eq.${encodeURIComponent(intent.id)}`, { status: "failed" }, { admin: true }).catch(() => undefined);
+    await supabase.update("billing_checkout_intents", `id=eq.${encodeURIComponent(intent.id)}`, { status: "failed" }, { admin: true }).catch(() => undefined);
     throw error;
   }
 }
 
-async function cancel(req, res) {
-  method(req, "POST");
-  const user = await authUser(requireAuth(req));
-  await body(req);
+async function cancel({ request, services }) {
+  method(request, "POST");
+  const { supabase, flow } = services;
+  const user = await supabase.authUser(requireAuth(request));
+  await body(request);
   const userId = encodeURIComponent(user.id);
-  const rows = await select(
+  const rows = await supabase.select(
     "subscriptions",
     `user_id=eq.${userId}&status=in.(trialing,active,past_due,paused)&select=id,provider_subscription_id,current_period_end&order=created_at.desc&limit=1`,
     { admin: true },
@@ -140,44 +117,43 @@ async function cancel(req, res) {
   const subscription = rows?.[0];
   if (!subscription) throw new HttpError(404, "subscription_missing", "No encontramos un plan activo.");
   if (!subscription.provider_subscription_id) throw new HttpError(409, "subscription_pending", "El plan todavía está terminando de configurarse.");
-  await cancelSubscription({ subscriptionId: subscription.provider_subscription_id, atPeriodEnd: 1 });
-  await update(
+  await flow.cancelSubscription({ subscriptionId: subscription.provider_subscription_id, atPeriodEnd: 1 });
+  await supabase.update(
     "subscriptions",
     `id=eq.${encodeURIComponent(subscription.id)}`,
     { cancel_at_period_end: true },
     { admin: true },
   );
-  json(res, 200, { ok: true, cancelAt: subscription.current_period_end || null });
+  return json(200, { ok: true, cancelAt: subscription.current_period_end || null });
 }
 
-async function cardCallback(req, res) {
-  const url = requestUrl(req);
-  const input = await body(req);
+async function cardCallback({ request, env, url, services }) {
+  const { supabase, flow } = services;
+  const input = await body(request);
   const intentId = String(url.searchParams.get("intent") || "").trim();
   const token = String(url.searchParams.get("token") || input.token || "").trim();
   if (!intentId || !token) throw new HttpError(400, "invalid_callback", "El retorno de Flow no está completo.");
-  const intents = await select(
+  const intents = await supabase.select(
     "billing_checkout_intents",
     `id=eq.${encodeURIComponent(intentId)}&select=id,user_id,plan_id,provider_customer_id,provider_plan_id,status,expires_at&limit=1`,
     { admin: true },
   );
   const intent = intents?.[0];
   if (!intent || Date.parse(intent.expires_at) <= Date.now()) throw new HttpError(410, "checkout_expired", "Este checkout ya venció.");
+  const base = siteUrl(env, request);
   if (intent.status === "completed") {
-    redirect(res, `${siteUrl(req)}/cuenta/?billing=success`);
-    return;
+    return redirect(`${base}/cuenta?billing=success`);
   }
-  const status = await registerStatus(token);
+  const status = await flow.registerStatus(token);
   if (!flowSuccess(status)) {
-    await update("billing_checkout_intents", `id=eq.${encodeURIComponent(intent.id)}`, { status: "failed" }, { admin: true });
-    redirect(res, `${siteUrl(req)}/cuenta/?billing=cancelled`);
-    return;
+    await supabase.update("billing_checkout_intents", `id=eq.${encodeURIComponent(intent.id)}`, { status: "failed" }, { admin: true });
+    return redirect(`${base}/cuenta?billing=cancelled`);
   }
   const customerId = String(flowValue(status, "customerId", "customer_id") || intent.provider_customer_id || "");
   if (!customerId) throw new HttpError(502, "flow_error", "Flow no confirmó el cliente.");
-  await update("billing_checkout_intents", `id=eq.${encodeURIComponent(intent.id)}`, { status: "subscription_pending" }, { admin: true });
+  await supabase.update("billing_checkout_intents", `id=eq.${encodeURIComponent(intent.id)}`, { status: "subscription_pending" }, { admin: true });
   const trialDays = intent.plan_id === "basic" ? 7 : 0;
-  const subscriptionResult = await createSubscription({ planId: intent.provider_plan_id, customerId, trialPeriodDays: trialDays });
+  const subscriptionResult = await flow.createSubscription({ planId: intent.provider_plan_id, customerId, trialPeriodDays: trialDays });
   const now = new Date();
   const trialEnd = flowDate(flowValue(subscriptionResult, "trial_end", "trialEnd")) || (trialDays ? new Date(now.getTime() + trialDays * 86400000).toISOString() : null);
   const trialStart = flowDate(flowValue(subscriptionResult, "trial_start", "trialStart")) || (trialEnd ? now.toISOString() : null);
@@ -185,7 +161,7 @@ async function cardCallback(req, res) {
   const currentPeriodStart = flowDate(flowValue(subscriptionResult, "currentPeriodStart", "current_period_start", "period_start", "periodStart", "subscription_start", "subscriptionStart")) || now.toISOString();
   const currentPeriodEnd = flowDate(flowValue(subscriptionResult, "currentPeriodEnd", "current_period_end", "period_end", "periodEnd", "nextBillingDate", "next_billing_date", "next_invoice_date", "nextInvoiceDate", "subscription_end", "subscriptionEnd")) || trialEnd || new Date(now.getTime() + 30 * 86400000).toISOString();
   try {
-    await insert("subscriptions", {
+    await supabase.insert("subscriptions", {
       user_id: intent.user_id,
       plan_id: intent.plan_id,
       provider: "flow",
@@ -197,10 +173,10 @@ async function cardCallback(req, res) {
       current_period_start: currentPeriodStart,
       current_period_end: currentPeriodEnd,
     }, { admin: true });
-    await update("billing_checkout_intents", `id=eq.${encodeURIComponent(intent.id)}`, { status: "completed" }, { admin: true });
+    await supabase.update("billing_checkout_intents", `id=eq.${encodeURIComponent(intent.id)}`, { status: "completed" }, { admin: true });
   } catch (error) {
-    const externalEventId = createHash("sha256").update(`${intent.id}:${providerSubscriptionId || token}`).digest("hex");
-    await insert("billing_events", {
+    const externalEventId = await sha256Hex(`${intent.id}:${providerSubscriptionId || token}`);
+    await supabase.insert("billing_events", {
       user_id: intent.user_id,
       external_event_id: externalEventId,
       event_type: "subscription_creation_failed",
@@ -209,29 +185,29 @@ async function cardCallback(req, res) {
     }, { admin: true }).catch(() => undefined);
     throw error;
   }
-  redirect(res, `${siteUrl(req)}/cuenta/?billing=success`);
+  return redirect(`${base}/cuenta?billing=success`);
 }
 
-async function flowCallback(req, res) {
-  const url = requestUrl(req);
-  const input = await body(req);
+async function flowCallback({ request, url, services }) {
+  const { supabase, flow } = services;
+  const input = await body(request);
   const token = String(url.searchParams.get("token") || input.token || "").trim();
   if (!token) throw new HttpError(400, "invalid_callback", "Falta el token de Flow.");
-  const status = await paymentStatus(token);
-  const externalEventId = createHash("sha256").update(token).digest("hex");
+  const status = await flow.paymentStatus(token);
+  const externalEventId = await sha256Hex(token);
   const providerSubscriptionId = flowValue(status, "subscriptionId", "subscription_id");
   const providerPaymentId = flowValue(status, "paymentId", "payment_id", "order");
   const mapped = paymentState(flowValue(status, "status", "paymentStatus", "payment_status"));
   let subscription = null;
   if (providerSubscriptionId) {
-    const rows = await select(
+    const rows = await supabase.select(
       "subscriptions",
       `provider_subscription_id=eq.${encodeURIComponent(providerSubscriptionId)}&select=id,user_id,status&limit=1`,
       { admin: true },
     );
     subscription = rows?.[0] || null;
   }
-  await insert("billing_events", {
+  await supabase.insert("billing_events", {
     user_id: subscription?.user_id || null,
     external_event_id: externalEventId,
     event_type: "flow_payment_callback",
@@ -245,17 +221,10 @@ async function flowCallback(req, res) {
     const nextPeriodEnd = flowDate(flowValue(status, "next_invoice_date", "nextInvoiceDate", "current_period_end", "currentPeriodEnd", "subscription_end", "subscriptionEnd"));
     if (nextPeriodEnd) values.current_period_end = nextPeriodEnd;
     if (Object.keys(values).length) {
-      await update("subscriptions", `id=eq.${encodeURIComponent(subscription.id)}`, values, { admin: true });
+      await supabase.update("subscriptions", `id=eq.${encodeURIComponent(subscription.id)}`, values, { admin: true });
     }
   }
-  json(res, 200, { ok: true });
+  return json(200, { ok: true });
 }
 
-const ACTIONS = { checkout, cancel, "card-callback": cardCallback, "flow-callback": flowCallback };
-
-module.exports = handler(async (req, res) => {
-  const action = req.query?.action;
-  const fn = typeof action === "string" ? ACTIONS[action] : undefined;
-  if (!fn) throw new HttpError(404, "not_found", "Ruta no encontrada.");
-  await fn(req, res);
-});
+export const ACTIONS = { checkout, cancel, "card-callback": cardCallback, "flow-callback": flowCallback };
