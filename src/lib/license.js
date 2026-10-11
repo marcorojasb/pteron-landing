@@ -18,7 +18,11 @@ import {
  * renovar una licencia que el cliente ya tenía guardada.
  */
 export const PUBLIC_KEYS = {
+  // k1: la privada se perdió con el proyecto de Vercel. Sigue verificando las
+  // licencias ya emitidas hasta que venzan; no firma ninguna nueva.
   k1: "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAIiyVbE5TARxOvkmsybhjZimWX0D9DMulrhT6ToBw4PY=\n-----END PUBLIC KEY-----\n",
+  // k2: clave vigente desde 2026-10-11; la app 0.7.0 la incorpora.
+  k2: "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAIWGm5jH/yZJ2b5hsQ3UusUn+HIxC5dGiqc1gwOqvrrY=\n-----END PUBLIC KEY-----\n",
 };
 
 /**

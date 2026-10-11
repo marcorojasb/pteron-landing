@@ -1,7 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createPublicKey, verify as nodeVerify } from "node:crypto";
-import { createLicenseService, normalizePem, verifyLicense } from "../src/lib/license.js";
+import { PUBLIC_KEYS, createLicenseService, normalizePem, verifyLicense } from "../src/lib/license.js";
+import { importEd25519PublicKey } from "../src/lib/crypto.js";
 import { testKeyPair } from "./helpers/fakes.js";
 
 // Par de pruebas, nunca la clave real: verifyLicense acepta un mapa de claves
@@ -98,4 +99,13 @@ test("signLicense acepta un PEM aplastado o con saltos literales, como llega des
 test("sin clave configurada o con una clave inválida responde 503 con un código distinto", async () => {
   await assert.rejects(firmar({}, { LICENSE_KID: "k1" }), { status: 503, code: "license_not_configured" });
   await assert.rejects(firmar({}, { LICENSE_PRIVATE_KEY_PEM: "-----BEGIN PRIVATE KEY-----\nAAAA\n-----END PRIVATE KEY-----\n" }), { status: 503, code: "license_key_invalid" });
+});
+
+test("las claves públicas de producción son Ed25519 válidas y k2 es la vigente", async () => {
+  assert.deepEqual(Object.keys(PUBLIC_KEYS), ["k1", "k2"]);
+  for (const pem of Object.values(PUBLIC_KEYS)) {
+    const key = await importEd25519PublicKey(pem);
+    assert.equal(key.algorithm.name, "Ed25519");
+  }
+  assert.notEqual(PUBLIC_KEYS.k1, PUBLIC_KEYS.k2);
 });

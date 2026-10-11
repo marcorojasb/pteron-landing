@@ -29,7 +29,7 @@
   "vars": {
     "PUBLIC_SITE_URL": "https://pteron.patagua.dev",
     "SUPABASE_URL": "https://swzqblyllbudwbmbcthr.supabase.co",
-    "LICENSE_KID": "k1",
+    "LICENSE_KID": "k2",
     "GATEWAY_MODEL_ID": "claude-haiku-5-5"
   },
   // Dominio de producción como Custom Domain: Cloudflare mantiene el registro
