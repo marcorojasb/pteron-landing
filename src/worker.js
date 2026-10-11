@@ -9,6 +9,7 @@ import { ACTIONS as activation } from "./routes/activation.js";
 import { ACTIONS as license } from "./routes/license.js";
 import { account } from "./routes/account.js";
 import { chatCompletions, messages, models } from "./routes/ai.js";
+import { admin } from "./routes/admin.js";
 
 /**
  * Worker de pteron-landing. La web estática la sirve Cloudflare como assets
@@ -38,6 +39,7 @@ export function createServices(env) {
 export function matchApi(pathname) {
   const path = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
   if (Object.hasOwn(EXACT_ROUTES, path)) return EXACT_ROUTES[path];
+  if (path === "/api/admin" || path.startsWith("/api/admin/")) return (ctx) => admin(ctx, path.slice("/api/admin".length));
   const match = /^\/api\/(auth|billing|activation|license)\/([a-z-]+)$/.exec(path);
   if (!match) return null;
   const actions = ACTION_ROUTES[match[1]];

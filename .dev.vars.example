@@ -11,3 +11,5 @@ FLOW_SECRET_KEY=
 LICENSE_PRIVATE_KEY_PEM=
 ANTHROPIC_API_KEY=
 # Opcionales: GATEWAY_MODEL_ID (por defecto claude-haiku-5-5) y ANTHROPIC_BASE_URL.
+# Correos que pueden entrar en /admin, separados por coma.
+ADMIN_EMAILS=
