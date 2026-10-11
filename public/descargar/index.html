@@ -4,81 +4,463 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Descargar pteron — Beta pública para macOS, Windows y Linux</title>
-  <meta name="description" content="Descarga gratis la beta pública de pteron para macOS con Apple Silicon, Windows 11 y Linux x86_64.">
-  <meta name="theme-color" content="#07101b">
+  <meta name="description" content="Descarga la beta pública de pteron para macOS con Apple Silicon, Windows 11 y Linux x86_64. Gratis, local y con firmas verificables.">
+  <meta name="theme-color" content="#07090d">
   <meta name="color-scheme" content="dark">
   <link rel="canonical" href="https://pteron.patagua.dev/descargar">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_CL">
   <meta property="og:site_name" content="pteron">
-  <meta property="og:title" content="pteron para macOS, Windows y Linux">
-  <meta property="og:description" content="Beta pública gratis. Construido por profes, para profes.">
-  <meta property="og:url" content="https://pteron.patagua.dev/descargar/">
-  <meta property="og:image" content="https://pteron.patagua.dev/assets/download-jellyfish-poster.jpg">
+  <meta property="og:title" content="Descargar pteron — Beta pública para macOS, Windows y Linux">
+  <meta property="og:description" content="Descarga la beta pública de pteron para macOS con Apple Silicon, Windows 11 y Linux x86_64. Gratis, local y con firmas verificables.">
+  <meta property="og:url" content="https://pteron.patagua.dev/descargar">
+  <meta property="og:image" content="https://pteron.patagua.dev/assets/og-pteron-v4.jpg">
+  <meta property="og:image:secure_url" content="https://pteron.patagua.dev/assets/og-pteron-v4.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="pteron: construido por profes, para profes">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Descargar pteron — Beta pública para macOS, Windows y Linux">
+  <meta name="twitter:description" content="Descarga la beta pública de pteron para macOS con Apple Silicon, Windows 11 y Linux x86_64. Gratis, local y con firmas verificables.">
+  <meta name="twitter:image" content="https://pteron.patagua.dev/assets/og-pteron-v4.jpg">
+  <meta name="twitter:image:alt" content="pteron: construido por profes, para profes">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-v2-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-v2-16.png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v2.png">
-  <link rel="preload" as="image" href="/assets/download-jellyfish-poster.jpg">
+  <link rel="manifest" href="/manifest.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@400;500&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=2026-10-04.1">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..600&amp;family=Geist+Mono:wght@400;500&amp;family=Newsreader:opsz,wght@6..72,300..500&amp;display=swap">
+  <link rel="preload" as="image" href="/assets/video/paranal-mar-de-nubes-loop-poster-1920x1080.webp?v=2026-10-12.1" media="(min-width: 761px)">
+  <link rel="preload" as="image" href="/assets/video/paranal-mar-de-nubes-loop-poster-movil-720x1280.webp?v=2026-10-12.1" media="(max-width: 760px)">
+  <script>document.documentElement.classList.add("js")</script>
+  <link rel="stylesheet" href="/styles.css?v=2026-10-12.1">
+  <link rel="stylesheet" href="/descargar/descargar.css?v=2026-10-12.1">
+  <script src="/release-data.js?v=2026-10-12.1" defer></script>
+  <script src="/script.js?v=2026-10-12.1" defer></script>
+  <script src="/descargar/download.js?v=2026-10-12.1" defer></script>
 </head>
-<body class="download-page">
-  <div class="download-background" aria-hidden="true">
-    <video
-      class="download-video"
-      data-download-video
-      muted
-      loop
-      playsinline
-      preload="metadata"
-      poster="/assets/download-jellyfish-poster.jpg"
-    ></video>
-  </div>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
-  <div class="download-shell">
-    <header class="download-header">
+  <!-- Marcas de plataforma en línea: se usan grandes y en el color de cada franja -->
+  <svg class="descargar-sprite" width="0" height="0" aria-hidden="true" focusable="false">
+    <symbol id="m-apple" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.73-1.35-.14-2.65.8-3.33.8-.69 0-1.75-.78-2.88-.76-1.48.02-2.85.86-3.61 2.19-1.54 2.67-.39 6.62 1.11 8.79.73 1.06 1.6 2.25 2.74 2.21 1.1-.05 1.52-.71 2.85-.71 1.33 0 1.71.71 2.87.69 1.19-.02 1.94-1.08 2.66-2.15.84-1.23 1.19-2.42 1.21-2.48-.03-.01-2.32-.89-2.34-3.54zM14.19 6.15c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.54 1.31-.56.64-1.05 1.67-.92 2.66.97.08 1.96-.49 2.56-1.21z"/></symbol>
+    <symbol id="m-windows" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M3 3h8.4v8.4H3zM12.6 3H21v8.4h-8.4zM3 12.6h8.4V21H3zM12.6 12.6H21V21h-8.4z"/></symbol>
+    <symbol id="m-tux" viewBox="0 0 48 48"><path fill="currentColor" stroke="none" fill-rule="evenodd" d="M24 4C27.9 4 30.6 7 30.6 11.2C30.6 13.6 30 15 30.6 16.8C31.3 18.9 33.3 21 35.4 24.6C37.2 27.7 38.6 31.4 37.6 33C36.9 34.1 35.7 33.2 35.2 32.4C35.4 34.8 34.6 37.2 32.8 38.6L15.2 38.6C13.4 37.2 12.6 34.8 12.8 32.4C12.3 33.2 11.1 34.1 10.4 33C9.4 31.4 10.8 27.7 12.6 24.6C14.7 21 16.7 18.9 17.4 16.8C18 15 17.4 13.6 17.4 11.2C17.4 7 20.1 4 24 4ZM19.85 10.2a1.45 2 0 1 0 2.9 0a1.45 2 0 1 0-2.9 0ZM25.25 10.2a1.45 2 0 1 0 2.9 0a1.45 2 0 1 0-2.9 0ZM20.6 14.2C21.8 12.9 26.2 12.9 27.4 14.2C26.2 15.6 21.8 15.6 20.6 14.2ZM16.8 29.4a7.2 8.2 0 1 0 14.4 0a7.2 8.2 0 1 0-14.4 0Z"/><ellipse fill="currentColor" stroke="none" cx="17.4" cy="40.2" rx="5.8" ry="2.6" transform="rotate(-7 17.4 40.2)"/><ellipse fill="currentColor" stroke="none" cx="30.6" cy="40.2" rx="5.8" ry="2.6" transform="rotate(7 30.6 40.2)"/></symbol>
+  </svg>
+
+  <header class="nav" data-nav>
+    <div class="nav-bar">
       <a class="wordmark" href="/" aria-label="pteron, inicio">pteron</a>
-      <nav class="download-nav" aria-label="Navegación principal">
-        <a href="/docs/">Documentación</a>
-        <a href="/planes/">Planes</a>
-        <a href="/cuenta/">Mi cuenta</a>
+      <nav class="nav-links" aria-label="Principal">
+        <a href="/docs">Documentación</a>
+        <a href="/planes">Planes</a>
+        <a href="/cuenta">Cuenta</a>
       </nav>
-    </header>
-
-    <main class="download-content">
-      <p class="eyebrow">Construido por profes, para profes</p>
-      <h1>pteron para macOS, Windows y Linux.</h1>
-      <p class="download-lead">La beta pública es gratis. Elige la versión para tu equipo.</p>
-      <div class="download-options">
-        <a class="download-option button button-light" data-download-windows href="https://github.com/marcorojasb/pteron-beta/releases/latest">
-          <span>Descargar para Windows</span>
-          <small data-download-windows-label>Windows 11 · x64</small>
-        </a>
-        <a class="download-option button download-option-secondary" data-download-macos href="https://github.com/marcorojasb/pteron-beta/releases/latest">
-          <span>Descargar para macOS</span>
-          <small data-download-macos-label>Apple Silicon</small>
-        </a>
-        <a class="download-option button download-option-secondary" data-download-linux href="https://github.com/marcorojasb/pteron-beta/releases/latest">
-          <span>Descargar para Linux</span>
-          <small data-download-linux-label>x86_64 · AppImage</small>
-        </a>
+      <div class="nav-end">
+        <a class="button button-light button-small nav-cta" href="/descargar" aria-current="page"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Descargar</a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú" data-menu-button><span></span><span></span></button>
       </div>
-      <div class="download-linux-details">
-        <p><strong>Otros formatos Linux:</strong> <a data-download-linux-deb href="https://github.com/marcorojasb/pteron-beta/releases/latest">.deb</a> · <a data-download-linux-rpm href="https://github.com/marcorojasb/pteron-beta/releases/latest">.rpm</a> · <a data-download-linux-tar href="https://github.com/marcorojasb/pteron-beta/releases/latest">.tar.gz</a>. <a href="/docs/?pagina=instalar-linux">Ver instalación y actualizaciones</a>.</p>
-        <p><strong>Firmas GPG:</strong> <a data-download-linux-appimage-signature href="https://github.com/marcorojasb/pteron-beta/releases/latest">AppImage</a> · <a data-download-linux-deb-signature href="https://github.com/marcorojasb/pteron-beta/releases/latest">.deb</a> · <a data-download-linux-rpm-signature href="https://github.com/marcorojasb/pteron-beta/releases/latest">.rpm</a> · <a data-download-linux-tar-signature href="https://github.com/marcorojasb/pteron-beta/releases/latest">.tar.gz</a>. <a href="/descargar/pteron-releases-public.asc" download>Clave pública</a> · huella <code>5DDC 795B EFB7 EC2F EC93 0227 EAFB 54AE A175 0DCF</code>.</p>
+    </div>
+    <div class="nav-menu" id="menu" hidden data-menu>
+      <nav aria-label="Principal">
+        <ul>
+          <li><a href="/docs">Documentación<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></li>
+          <li><a href="/planes">Planes<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></li>
+          <li><a href="/cuenta">Cuenta<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></li>
+        </ul>
+      </nav>
+      <a class="button button-ember button-large button-block" href="/descargar" aria-current="page"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Descargar gratis</a>
+      <p class="nav-menu-note">Beta pública · macOS, Windows y Linux</p>
+    </div>
+  </header>
+
+  <main id="contenido" class="descargar">
+
+    <!-- Héroe: mar de nubes sobre Paranal al atardecer, en bucle (quieto con movimiento reducido o ahorro de datos),
+         el icono real de la app sobre su placa y las tres descargas -->
+    <section class="band page-hero descargar-hero" aria-labelledby="titulo">
+      <div class="band-photo" data-parallax="0.08" aria-hidden="true">
+        <picture>
+          <source media="(max-width: 760px)" srcset="/assets/video/paranal-mar-de-nubes-loop-poster-movil-720x1280.webp?v=2026-10-12.1" width="720" height="1280">
+          <img src="/assets/video/paranal-mar-de-nubes-loop-poster-1920x1080.webp?v=2026-10-12.1" width="1920" height="1080" alt="" fetchpriority="high" decoding="async">
+        </picture>
+        <video class="band-video" muted loop playsinline preload="none" tabindex="-1" data-bg-video data-src-wide="/assets/video/paranal-mar-de-nubes-loop-1920x1080" data-src-narrow="/assets/video/paranal-mar-de-nubes-loop-movil-720x1280"></video>
       </div>
-      <p class="download-warning"><strong>Windows:</strong> el instalador beta todavía no está firmado. SmartScreen puede mostrar una advertencia antes de permitir la instalación. <a href="/docs/?pagina=instalar-windows">Ver instrucciones</a>.</p>
-      <p class="download-status" data-download-status>También puedes consultar <a data-download-release href="https://github.com/marcorojasb/pteron-beta/releases">la versión y sus archivos en GitHub</a>.</p>
-    </main>
+      <div class="band-shade" aria-hidden="true"></div>
+      <div class="descargar-hero-sun" data-parallax="0.22" aria-hidden="true"></div>
+      <div class="descargar-grain" aria-hidden="true"></div>
 
-    <footer class="download-footer">
-      <span>© <span data-year></span> pteron · Patagua</span>
-      <span>Construido por profes, para profes</span>
-    </footer>
-  </div>
+      <div class="wrap page-hero-copy">
+        <div class="die-mark" aria-hidden="true" data-intro style="--d:0">
+          <span class="die-mark-plate">
+            <svg class="descargar-appicon" viewBox="0 0 1024 1024" width="72" height="72"><defs><linearGradient id="icono-fondo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16304C"/><stop offset="1" stop-color="#0F2238"/></linearGradient></defs><rect width="1024" height="1024" rx="229" fill="url(#icono-fondo)"/><path fill="#C9A261" fill-rule="evenodd" d="M448.5 401.0 450.5 400.8 451.2 401.5 451.2 462.5 452.0 463.5 454.5 463.4 461.0 450.8 470.0 438.2 479.7 428.0 489.0 420.0 500.0 412.9 510.2 408.0 516.0 405.8 528.5 402.9 541.5 400.9 554.5 400.6 569.5 401.2 587.0 403.9 600.9 408.0 615.0 413.9 627.4 421.0 638.5 429.0 650.5 440.0 662.5 454.3 669.6 464.5 677.5 478.7 684.6 495.0 690.6 513.0 694.6 529.5 697.5 547.0 699.6 568.0 700.4 591.5 699.7 613.5 697.6 635.5 694.6 653.5 690.6 670.0 684.5 688.3 677.5 704.5 670.5 717.1 661.5 730.4 652.1 741.5 635.5 756.5 621.9 765.5 607.5 772.6 593.0 777.6 585.1 779.5 572.5 781.6 554.5 782.7 529.0 780.6 517.0 777.6 509.0 774.7 498.5 769.6 489.3 763.5 479.0 754.5 471.0 746.1 461.0 732.5 455.3 721.5 454.0 720.2 452.5 720.2 451.1 721.5 451.2 776.5 451.2 871.5 452.5 872.3 509.5 872.4 509.5 914.1 315.5 914.3 314.7 913.0 315.0 872.5 358.5 872.3 359.6 871.0 359.6 473.5 357.5 472.0 315.0 463.5 314.8 429.0 317.0 428.0ZM515.1 458.0 532.5 457.9 548.5 461.0 562.5 467.0 575.0 476.0 585.5 487.6 593.6 501.5 598.7 516.0 601.6 533.5 602.5 549.5 602.5 634.5 600.6 657.5 596.6 674.0 590.5 687.9 586.5 694.2 580.7 701.5 574.5 707.5 563.5 715.5 555.5 719.5 549.5 721.7 537.5 724.3 524.0 725.3 507.0 723.7 492.7 719.5 481.1 713.5 473.0 707.6 468.0 702.9 464.0 698.5 459.0 691.1 454.0 679.4 451.6 665.5 451.2 524.5 451.9 514.0 453.9 504.0 456.9 496.0 462.0 487.3 469.0 479.2 475.2 474.0 482.5 468.9 497.0 461.9Z"/></svg>
+          </span>
+        </div>
+        <a class="kicker descargar-release" href="https://github.com/marcorojasb/pteron-beta/releases" data-download-release data-intro style="--d:0">Beta pública<span class="sr-only">, versión</span><span class="release-version" data-release-version hidden></span></a>
+        <h1 class="display-xl" id="titulo" data-intro style="--d:1">pteron para macOS, Windows y Linux.</h1>
+        <p class="lead" data-intro style="--d:2">La beta pública es gratis. Elige la versión para tu equipo.</p>
+      </div>
 
-  <script src="/release-data.js?v=2026-10-04.1" defer></script>
-  <script src="/descargar/download.js?v=2026-10-04.1" defer></script>
+      <div class="wrap descargar-platforms" id="plataformas">
+        <ul class="platforms" role="list">
+          <li class="platform" data-intro style="--d:3">
+            <div class="platform-top"><span class="os-ico"><svg class="icon" aria-hidden="true"><use href="#m-apple"/></svg></span><span class="tag tag-ember detected-tag">Tu equipo</span></div>
+            <h2 class="platform-name">macOS</h2>
+            <p class="platform-meta" data-download-macos-label>Apple Silicon</p>
+            <p class="platform-file" data-release-file="macosDmg">Instalador .dmg</p>
+            <p class="platform-note">Archivo .dmg firmado y notarizado.</p>
+            <a class="button button-glass button-block" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-download-macos><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Descargar para macOS</a>
+          </li>
+          <li class="platform" data-intro style="--d:3">
+            <div class="platform-top"><span class="os-ico"><svg class="icon" aria-hidden="true"><use href="#m-windows"/></svg></span><span class="tag tag-ember detected-tag">Tu equipo</span></div>
+            <h2 class="platform-name">Windows</h2>
+            <p class="platform-meta" data-download-windows-label>Windows 11 · x64</p>
+            <p class="platform-file" data-release-file="windowsExe">Instalador .exe</p>
+            <p class="platform-note">El instalador beta aún no tiene firma digital: SmartScreen puede pedir confirmación.</p>
+            <a class="button button-glass button-block" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-download-windows><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Descargar para Windows</a>
+          </li>
+          <li class="platform" data-intro style="--d:3">
+            <div class="platform-top"><span class="os-ico"><svg class="icon" aria-hidden="true" viewBox="0 0 48 48"><use href="#m-tux"/></svg></span><span class="tag tag-ember detected-tag">Tu equipo</span></div>
+            <h2 class="platform-name">Linux</h2>
+            <p class="platform-meta" data-download-linux-label>x86_64 · AppImage</p>
+            <p class="platform-file" data-release-file="linuxAppImage">Archivo AppImage</p>
+            <p class="platform-note">También en <a href="#formatos">.deb, .rpm y .tar.gz</a>, con firma GPG separada.</p>
+            <a class="button button-glass button-block" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-download-linux><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Descargar para Linux</a>
+          </li>
+        </ul>
+        <p class="status-note descargar-status" data-download-status data-tone="info" aria-live="polite"></p>
+        <p class="download-links">
+          <a href="/docs?pagina=requisitos">Requisitos</a>
+          <a href="#instalar">Instalación paso a paso</a>
+          <a href="/docs?pagina=versiones">Notas de versión</a>
+          <a href="#firmas">Verificar la firma GPG</a>
+          <a href="https://github.com/marcorojasb/pteron-beta/releases">Versiones en GitHub</a>
+        </p>
+        <p class="band-credit">Mar de nubes en Paranal. <a href="https://www.eso.org/public/videos/pao-sunsetclouds/">Vídeo: ESO/B. Tafreshi</a>, <a href="https://creativecommons.org/licenses/by/4.0/deed.es">CC BY 4.0</a>, recortado y recodificado.</p>
+      </div>
+    </section>
+
+    <!-- Instalación: la ventana real sale del atardecer y cada sistema tiene su franja -->
+    <section class="sheet section descargar-instalar" id="instalar" aria-labelledby="instalar-title">
+      <div class="wrap descargar-product">
+        <div class="descargar-rise" data-reveal="scale">
+          <div class="descargar-rise-layer" data-parallax="-0.06">
+            <figure class="window descargar-window">
+              <span class="lights" aria-hidden="true"><span></span><span></span><span></span></span>
+              <img src="/assets/app/01-inicio.webp?v=2026-10-12.1" srcset="/assets/app/01-inicio.webp?v=2026-10-12.1 1440w, /assets/app/01-inicio-2x.webp?v=2026-10-12.1 2880w" sizes="(max-width: 760px) 140vw, 1060px" width="1440" height="880" loading="lazy" decoding="async" alt="Pantalla de inicio de pteron 0.7: las sesiones abiertas arriba, el nombre pteron al centro, los cuatro rumbos Planificar, Crear, Evaluar y Adaptar, el compositor y los accesos Retomar y Reflexión por voz">
+            </figure>
+            <p class="descargar-caption">La pantalla de inicio de pteron 0.7: cuatro rumbos, el compositor y «Retomar».</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="wrap descargar-install">
+        <header class="head" data-reveal>
+          <p class="kicker"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-laptop"/></svg>Instalación</p>
+          <h2 class="display" id="instalar-title">Instala pteron en tu equipo. <span class="soft">Sin cuenta para empezar.</span></h2>
+          <p class="lead">Lo que necesita cada sistema y cómo se instala, en tres pasos. Las guías completas están en la documentación.</p>
+          <p><a class="link-arrow" href="/docs?pagina=requisitos">Ver todos los requisitos<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></p>
+        </header>
+
+        <div class="cols section-body descargar-os-grid" style="--cols:3">
+          <article class="card descargar-os os-mac" data-reveal style="--d:0" aria-labelledby="os-mac">
+            <div class="os-strip" aria-hidden="true">
+              <span class="os-aurora"><span></span><span></span><span></span></span>
+              <span class="die-mark die-mark--strip" data-parallax="-0.04"><span class="die-mark-plate"><span class="die-mark-core"><svg viewBox="0 0 24 24"><use href="#m-apple"/></svg></span></span></span>
+              <span class="os-strip-cap">arm64 · dmg</span>
+            </div>
+            <div class="descargar-os-body">
+              <div class="descargar-os-head"><h3 id="os-mac">macOS</h3><span class="tag tag-ok"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-check"/></svg>Firmado y notarizado</span></div>
+              <p class="label">Requisitos</p>
+              <ul class="descargar-req" role="list">
+                <li>Procesador Apple serie M.</li>
+                <li>Una versión reciente y compatible de macOS.</li>
+                <li>Espacio para la aplicación, tus documentos y el modelo local que elijas.</li>
+              </ul>
+              <p class="label">Instalación</p>
+              <ol class="descargar-steps" role="list">
+                <li>Abre el archivo <code>.dmg</code>.</li>
+                <li>Arrastra pteron a la carpeta Aplicaciones.</li>
+                <li>Abre pteron desde Aplicaciones. macOS puede verificarlo antes de la primera apertura.</li>
+              </ol>
+              <p class="descargar-os-link"><a class="link-arrow" href="/docs?pagina=instalar-macos">Guía para macOS<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></p>
+            </div>
+          </article>
+
+          <article class="card descargar-os os-win" data-reveal style="--d:1" aria-labelledby="os-win">
+            <div class="os-strip" aria-hidden="true">
+              <span class="os-aurora"><span></span><span></span><span></span></span>
+              <span class="die-mark die-mark--strip" data-parallax="-0.04"><span class="die-mark-plate"><span class="die-mark-core"><svg viewBox="0 0 24 24"><use href="#m-windows"/></svg></span></span></span>
+              <span class="os-strip-cap">x64 · exe</span>
+            </div>
+            <div class="descargar-os-body">
+              <div class="descargar-os-head"><h3 id="os-win">Windows 11</h3><span class="tag tag-warn"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-alert"/></svg>Sin firma digital</span></div>
+              <p class="label">Requisitos</p>
+              <ul class="descargar-req" role="list">
+                <li>Windows 11 en un equipo de 64 bits.</li>
+                <li>Permiso para instalar aplicaciones descargadas desde la web.</li>
+                <li>Espacio disponible para documentos y modelos locales.</li>
+              </ul>
+              <p class="label">Instalación</p>
+              <ol class="descargar-steps" role="list">
+                <li>Abre el archivo <code>.exe</code>.</li>
+                <li>Si aparece SmartScreen, selecciona <strong>Más información</strong> y después <strong>Ejecutar de todas formas</strong>.</li>
+                <li>Completa los pasos del instalador y abre pteron desde el menú Inicio.</li>
+              </ol>
+              <p class="descargar-os-link"><a class="link-arrow" href="/docs?pagina=instalar-windows">Guía para Windows<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></p>
+            </div>
+          </article>
+
+          <article class="card descargar-os os-linux" data-reveal style="--d:2" aria-labelledby="os-linux">
+            <div class="os-strip" aria-hidden="true">
+              <span class="os-aurora"><span></span><span></span><span></span></span>
+              <span class="die-mark die-mark--strip" data-parallax="-0.04"><span class="die-mark-plate"><span class="die-mark-core"><svg viewBox="0 0 48 48"><use href="#m-tux"/></svg></span></span></span>
+              <span class="os-strip-cap">x86_64 · appimage</span>
+            </div>
+            <div class="descargar-os-body">
+              <div class="descargar-os-head"><h3 id="os-linux">Linux</h3><span class="tag tag-ok"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-key"/></svg>Firma GPG</span></div>
+              <p class="label">Requisitos</p>
+              <ul class="descargar-req" role="list">
+                <li>Sistema x86_64.</li>
+                <li>Permiso para instalar un paquete o ejecutar una AppImage.</li>
+                <li>Espacio para la aplicación, tus documentos y el modelo local que elijas.</li>
+              </ul>
+              <p class="label">Instalación de la <span class="wm">AppImage</span></p>
+              <ol class="descargar-steps" role="list">
+                <li>Márcala como ejecutable en sus propiedades o con <code>chmod +x pteron-&lt;versión&gt;-x86_64.AppImage</code>.</li>
+                <li>Abre <code>pteron-&lt;versión&gt;-x86_64.AppImage</code>.</li>
+                <li>Completa el primer inicio y elige tu carpeta de trabajo.</li>
+              </ol>
+              <p class="descargar-os-link"><a class="link-arrow" href="/docs?pagina=instalar-linux">Guía para Linux<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a><a class="link-arrow" href="#formatos">.deb, .rpm y .tar.gz<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow-down"/></svg></a></p>
+            </div>
+          </article>
+        </div>
+
+        <div class="notice notice-prominent descargar-notice" data-reveal>
+          <strong>Windows puede mostrar una advertencia</strong>
+          <p>El instalador de la beta todavía no tiene firma digital. Microsoft Defender SmartScreen puede pedirte confirmar la instalación. Esta limitación se mantendrá visible mientras pteron siga en beta. <a href="/docs?pagina=instalar-windows">Ver instrucciones para Windows</a>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Primera apertura: el selector de modelo de pteron 0.7 con lupa -->
+    <section class="night section descargar-apertura" id="primera-apertura" aria-labelledby="apertura-title">
+      <div class="descargar-apertura-aura" data-parallax="0.12" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="wrap split descargar-apertura-grid">
+        <div class="band-copy" data-reveal>
+          <p class="kicker"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-settings"/></svg>Después de instalar</p>
+          <h2 class="display" id="apertura-title">Dos decisiones y estás trabajando.</h2>
+          <p class="lead">En el primer inicio, pteron deja lista tu carpeta de trabajo dentro de Documentos y te ofrece preparar el asistente local o usar un proveedor en la nube. Las dos cosas se cambian después en Configuración.</p>
+          <ol class="legend" role="list">
+            <li><span class="marker" aria-hidden="true">1</span><div><strong>Quién prepara el material</strong><p>«En este equipo» funciona sin enviar tus materiales a internet. Si prefieres la nube, conectas un proveedor como OpenAI con tu propia clave.</p></div></li>
+            <li><span class="marker" aria-hidden="true">2</span><div><strong>Lo recomendado, primero</strong><p>El selector marca los modelos recomendados y probados para cada versión de pteron, con su contexto y su precio por millón de tokens.</p></div></li>
+            <li><span class="marker" aria-hidden="true">3</span><div><strong>Nada cambia sin tu permiso</strong><p>Elegir un modelo activa ese proveedor y los ajustes se aplican al pulsar «Guardar cambios». Si el material trae datos de estudiantes, pteron se detiene antes de enviarlo a la nube.</p></div></li>
+          </ol>
+          <p><a class="link-arrow" href="/docs?pagina=primera-apertura">Primera apertura, paso a paso<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></p>
+        </div>
+
+        <div class="descargar-apertura-visual" data-reveal="scale" style="--d:1">
+          <div class="lupa">
+            <figure class="window">
+              <span class="lights" aria-hidden="true"><span></span><span></span><span></span></span>
+              <img src="/assets/app/09-modelo-de-ia-2x.webp?v=2026-10-12.1" width="1440" height="880" alt="Configuración › Modelo de IA de pteron 0.7: el selector «Elegir modelo · OpenAI» con el buscador, los filtros Razona, Lee imágenes y Económico, el aviso «Pega la clave de OpenAI para ver cuáles habilita», gpt-6-luna marcado «Recomendado 0.7.0», dos modelos «Probado 0.3.0» y, al pie, «Elegir un modelo activa este proveedor.»" loading="lazy" decoding="async">
+            </figure>
+            <div class="lupa-zoom" aria-hidden="true" style="left:13.75cqw;top:6.25cqw;width:72.50cqw;height:9.17cqw"><img src="/assets/app/09-modelo-de-ia-2x.webp?v=2026-10-12.1" width="2880" height="1760" alt="" loading="lazy" decoding="async" style="width:150cqw;left:-38.75cqw;top:-11.67cqw"></div>
+            <div class="lupa-zoom" aria-hidden="true" style="left:14.90cqw;top:22.50cqw;width:70.21cqw;height:7.92cqw"><img src="/assets/app/09-modelo-de-ia-2x.webp?v=2026-10-12.1" width="2880" height="1760" alt="" loading="lazy" decoding="async" style="width:150cqw;left:-39.90cqw;top:-35.73cqw"></div>
+            <div class="lupa-zoom" aria-hidden="true" style="left:14.84cqw;top:49.38cqw;width:70.52cqw;height:4.58cqw"><img src="/assets/app/09-modelo-de-ia-2x.webp?v=2026-10-12.1" width="2880" height="1760" alt="" loading="lazy" decoding="async" style="width:150cqw;left:-39.90cqw;top:-75.21cqw"></div>
+            <span class="marker" aria-hidden="true" style="left:12.15cqw;top:10.83cqw">1</span>
+            <span class="marker" aria-hidden="true" style="left:13.30cqw;top:26.46cqw">2</span>
+            <span class="marker" aria-hidden="true" style="left:13.24cqw;top:51.67cqw">3</span>
+            <span class="cursor cursor-anim" aria-hidden="true" style="left:calc(58cqw - 5px);top:calc(28cqw - 4px)"><svg viewBox="0 0 26 26"><use href="/assets/icons.svg?v=2026-10-12.1#i-cursor"/></svg><span class="cursor-label">Tú</span></span>
+            <span class="ripple ripple-anim" aria-hidden="true" style="left:calc(58cqw - 15px);top:calc(28cqw - 15px)"></span>
+          </div>
+          <div class="lupa-m" aria-hidden="true">
+            <div class="lupa-m-card">
+              <span class="marker">1</span>
+              <div class="crop" style="--sw:2880;--cx:744;--cy:224;--cw:776;--ch:376"><img src="/assets/app/09-modelo-de-ia-2x.webp?v=2026-10-12.1" width="2880" height="1760" alt="" loading="lazy" decoding="async"></div>
+            </div>
+            <div class="lupa-m-card">
+              <span class="marker">2</span>
+              <div class="crop" style="--sw:2880;--cx:766;--cy:686;--cw:674;--ch:150"><img src="/assets/app/09-modelo-de-ia-2x.webp?v=2026-10-12.1" width="2880" height="1760" alt="" loading="lazy" decoding="async"></div>
+            </div>
+            <div class="lupa-m-card">
+              <span class="marker">3</span>
+              <div class="crop" style="--sw:2880;--cx:766;--cy:1444;--cw:834;--ch:86"><img src="/assets/app/09-modelo-de-ia-2x.webp?v=2026-10-12.1" width="2880" height="1760" alt="" loading="lazy" decoding="async"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Archivos y firmas: formatos Linux, clave pública, huella y comandos -->
+    <section class="sheet section descargar-archivos" id="firmas" aria-labelledby="firmas-title">
+      <div class="wrap">
+        <header class="head-split" data-reveal>
+          <div class="band-copy">
+            <p class="kicker"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-key"/></svg>Firmas verificables</p>
+            <h2 class="display" id="firmas-title">Comprueba cada archivo. <span class="soft">Antes de abrirlo.</span></h2>
+          </div>
+          <div class="band-copy">
+            <p class="lead">Los archivos para Linux traen una firma GPG separada. Descarga la firma <code>.asc</code> de tu archivo y la clave pública de pteron, y confirma que la huella coincida.</p>
+            <p><a class="link-arrow" href="/docs?pagina=instalar-linux">Instalación y firma en Linux<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></p>
+          </div>
+        </header>
+
+        <div class="descargar-archivos-grid section-body">
+          <div class="descargar-formatos" id="formatos" data-reveal>
+            <div class="descargar-block-head">
+              <h3 class="title">Linux en otros formatos</h3>
+              <p>AppImage es la descarga principal. También hay paquetes <code>.deb</code> y <code>.rpm</code>, y un <code>.tar.gz</code> para instalar a mano. Cada archivo trae su firma separada.</p>
+            </div>
+            <div class="file-list">
+              <div class="file-row">
+                <div><strong>AppImage</strong><span>Formato principal. Se actualiza desde pteron con tu confirmación.</span><code class="descargar-file" data-release-file="linuxAppImage">Archivo AppImage</code></div>
+                <div class="actions"><a class="button button-small" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-release-asset="linuxAppImage">Descargar<span class="sr-only"> la AppImage</span></a><a class="button button-outline button-small" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-download-linux-appimage-signature>Firma .asc<span class="sr-only"> de la AppImage</span></a></div>
+              </div>
+              <div class="file-row">
+                <div><strong>.deb</strong><span>Debian, Ubuntu y derivados, con el instalador de paquetes.</span><code class="descargar-file" data-release-file="linuxDeb">Paquete .deb</code></div>
+                <div class="actions"><a class="button button-small" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-download-linux-deb>Descargar<span class="sr-only"> el paquete .deb</span></a><a class="button button-outline button-small" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-download-linux-deb-signature>Firma .asc<span class="sr-only"> del paquete .deb</span></a></div>
+              </div>
+              <div class="file-row">
+                <div><strong>.rpm</strong><span>Paquete RPM, con el instalador de paquetes de tu sistema.</span><code class="descargar-file" data-release-file="linuxRpm">Paquete .rpm</code></div>
+                <div class="actions"><a class="button button-small" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-download-linux-rpm>Descargar<span class="sr-only"> el paquete .rpm</span></a><a class="button button-outline button-small" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-download-linux-rpm-signature>Firma .asc<span class="sr-only"> del paquete .rpm</span></a></div>
+              </div>
+              <div class="file-row">
+                <div><strong>.tar.gz</strong><span>Se extrae a mano y no registra un paquete en el sistema.</span><code class="descargar-file" data-release-file="linuxTar">Archivo .tar.gz</code></div>
+                <div class="actions"><a class="button button-small" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-download-linux-tar>Descargar<span class="sr-only"> el archivo .tar.gz</span></a><a class="button button-outline button-small" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-download-linux-tar-signature>Firma .asc<span class="sr-only"> del archivo .tar.gz</span></a></div>
+              </div>
+            </div>
+            <p class="descargar-formatos-note"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-history"/></svg><span>Las instalaciones <code>.deb</code>, <code>.rpm</code> y <code>.tar.gz</code> avisan cuando hay una versión nueva y abren la descarga para que la reemplaces a mano.</span></p>
+          </div>
+
+          <div class="descargar-key on-dark" data-reveal="scale" style="--d:1">
+            <canvas class="descargar-seal" width="560" height="560" aria-hidden="true"></canvas>
+            <div class="descargar-key-head">
+              <span class="descargar-key-ico" aria-hidden="true"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-key"/></svg></span>
+              <div><h3>Clave pública de releases</h3><p class="mono">pteron-releases-public.asc</p></div>
+              <a class="button button-light button-small" href="/descargar/pteron-releases-public.asc" download><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Descargar la clave</a>
+            </div>
+            <p class="label" id="huella-label">Huella</p>
+            <div class="code-wrap descargar-huella">
+              <code class="code-block" id="huella">5DDC 795B EFB7 EC2F EC93 0227 EAFB 54AE A175 0DCF</code>
+              <button class="button button-glass button-small code-copy" type="button" data-copy-target="#huella" aria-describedby="huella-label"><span data-copy-label>Copiar</span></button>
+            </div>
+            <p class="label" id="comandos-label">Comandos</p>
+            <p class="descargar-key-help">Muestra la huella, importa la clave y verifica, por ejemplo, la AppImage:</p>
+            <div class="code-wrap descargar-comandos">
+              <pre class="code-block" id="gpg-comandos"><span class="descargar-cmd">gpg --show-keys --fingerprint <span>pteron-releases-public.asc</span>
+</span><span class="descargar-cmd">gpg --import <span>pteron-releases-public.asc</span>
+</span><span class="descargar-cmd">gpg --verify <span>pteron-&lt;versión&gt;-x86_64.AppImage.asc</span> <span>pteron-&lt;versión&gt;-x86_64.AppImage</span></span></pre>
+              <button class="button button-glass button-small code-copy" type="button" data-copy-target="#gpg-comandos" aria-describedby="comandos-label"><span data-copy-label>Copiar</span></button>
+            </div>
+            <p class="descargar-key-note"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-shield"/></svg><span>Comprueba que GPG muestre exactamente la huella publicada antes de confiar en el archivo.</span></p>
+          </div>
+        </div>
+
+        <ul class="descargar-facts" role="list" data-reveal>
+          <li><span class="descargar-fact-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-check-circle"/></svg></span><div><strong>macOS: firmado y notarizado</strong><p>En macOS la firma se valida antes de instalar una actualización.</p></div></li>
+          <li><span class="descargar-fact-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-history"/></svg></span><div><strong>Actualizaciones con tu permiso</strong><p>En macOS, Windows y AppImage, pteron descarga la versión nueva y pide tu consentimiento antes de instalarla al reiniciar.</p></div></li>
+          <li><span class="descargar-fact-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-layers"/></svg></span><div><strong>Sólo versiones completas</strong><p>Una versión pasa a esta página sólo cuando sus archivos están completos para las tres plataformas.</p><p class="descargar-facts-links"><a href="/docs?pagina=versiones">Notas de versión</a><a href="https://github.com/marcorojasb/pteron-beta/releases">Todas en GitHub</a></p></div></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p class="signature">Tus fuentes. <span>Tu criterio.</span></p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="wordmark" href="/">pteron</a>
+          <p>Construido por profes, para profes. Diseñado en Chile para el trabajo docente.</p>
+        </div>
+        <nav aria-labelledby="pie-producto">
+          <h2 id="pie-producto">Producto</h2>
+          <ul>
+            <li><a href="/descargar" aria-current="page">Descargar</a></li>
+            <li><a href="/planes">Planes</a></li>
+            <li><a href="/cuenta">Cuenta</a></li>
+            <li><a href="/docs">Documentación</a></li>
+          </ul>
+        </nav>
+        <nav aria-labelledby="pie-ayuda">
+          <h2 id="pie-ayuda">Ayuda</h2>
+          <ul>
+            <li><a href="/docs?pagina=inicio">Primeros pasos</a></li>
+            <li><a href="/docs?pagina=preguntas">Preguntas frecuentes</a></li>
+            <li><a href="/docs?pagina=solucion-problemas">Solución de problemas</a></li>
+            <li><a href="/docs?pagina=versiones">Versiones</a></li>
+          </ul>
+        </nav>
+        <nav aria-labelledby="pie-patagua">
+          <h2 id="pie-patagua">Patagua</h2>
+          <ul>
+            <li><a href="/privacidad">Privacidad</a></li>
+            <li><a href="/terminos">Términos</a></li>
+            <li><a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <p>© <span data-year>2026</span> pteron · Patagua</p>
+        <p>Beta pública para macOS, Windows y Linux</p>
+      </div>
+      <details class="credits">
+        <summary>Créditos de imágenes y vídeo</summary>
+        <p>Fotografías de Wikimedia Commons: «<a href="https://commons.wikimedia.org/wiki/File:Atardecer_entre_Araucarias.jpg">Atardecer entre Araucarias</a>», Jclavero92 · «<a href="https://commons.wikimedia.org/wiki/File:Parque_Nacional_Nahuelbuta,_puesta_de_sol,_araucaria_2.jpg">Parque Nacional Nahuelbuta, puesta de sol</a>», Gonzalo Palacios · «<a href="https://commons.wikimedia.org/wiki/File:Parque_Nacional_Torres_del_Paine_-_XII_Region_de_Magallanes_y_la_Antartica_Chilena_-_Laguna_Cisnes_-_Almirante_Nieto.jpg">Laguna Cisnes, Almirante Nieto</a>», Ferna.mf · «<a href="https://commons.wikimedia.org/wiki/File:Macizo_Paine_al_Amanecer_Torres_del_Paine.jpg">Macizo Paine al Amanecer</a>», Natalia Reyes Escobar · «<a href="https://commons.wikimedia.org/wiki/File:Sunset_at_General_Carrera_Lake.jpg" lang="en">Sunset at General Carrera Lake</a>», Andreizaaa (<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">CC BY-SA 4.0</a>) · «<a href="https://commons.wikimedia.org/wiki/File:Working_on_a_planning_session_with_stationery_items,_notebook,_and_colorful_pencils_on_a_wooden_desk.jpg" lang="en">Planning session with stationery items</a>», Shixart1985 (<a href="https://creativecommons.org/licenses/by/2.0/deed.es">CC BY 2.0</a>). Vídeos: <a href="https://www.eso.org/public/videos/armazones-venusbelt/">ESO/M. Zamani</a> y <a href="https://www.eso.org/public/videos/pao-sunsetclouds/">ESO/B. Tafreshi</a> (<a href="https://creativecommons.org/licenses/by/4.0/deed.es">CC BY 4.0</a>), recortados y recodificados. Láminas y mapas de dominio público de The Metropolitan Museum of Art, la Library of Congress e Internet Archive. Adaptadas para este sitio; lista completa en <a href="/privacidad#creditos">Privacidad</a>.</p>
+      </details>
+      <p class="footer-mark" aria-hidden="true">pteron</p>
+    </div>
+  </footer>
+
+  <script>
+    /* Sello guilloché de la tarjeta de firmas: arte generativo y decorativo, como el grabado de seguridad
+       de un billete. Se dibuja una vez; el giro lento es CSS y se detiene con movimiento reducido. */
+    (() => {
+      const canvas = document.querySelector(".descargar-seal");
+      const ctx = canvas && canvas.getContext ? canvas.getContext("2d") : null;
+      if (!ctx) return;
+      const size = 560, dpr = Math.min(2, window.devicePixelRatio || 1), mid = size / 2, tau = Math.PI * 2;
+      canvas.width = size * dpr;
+      canvas.height = size * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.lineWidth = 0.7;
+      const trace = (point, steps) => {
+        ctx.beginPath();
+        for (let i = 0; i <= steps; i += 1) {
+          const [x, y] = point((i / steps) * tau);
+          if (i) ctx.lineTo(mid + x, mid + y); else ctx.moveTo(mid + x, mid + y);
+        }
+        ctx.stroke();
+      };
+      const rope = (radius, amp, waves, copies, color) => {
+        ctx.strokeStyle = color;
+        for (let j = 0; j < copies; j += 1) {
+          const shift = (j / copies) * tau;
+          trace((t) => { const r = radius + amp * Math.sin(waves * t + shift); return [r * Math.cos(t), r * Math.sin(t)]; }, 960);
+        }
+      };
+      const rosette = (big, small, arm, copies, color) => {
+        ctx.strokeStyle = color;
+        const k = (big - small) / small;
+        for (let j = 0; j < copies; j += 1) {
+          const turn = (j / copies) * (tau / 9), c = Math.cos(turn), s = Math.sin(turn);
+          trace((t) => {
+            const x = (big - small) * Math.cos(t) + arm * Math.cos(k * t);
+            const y = (big - small) * Math.sin(t) - arm * Math.sin(k * t);
+            return [x * c - y * s, x * s + y * c];
+          }, 2400);
+        }
+      };
+      rope(262, 11, 36, 10, "rgba(233,162,91,.34)");
+      rope(226, 15, 24, 12, "rgba(233,162,91,.26)");
+      rosette(162, 18, 58, 6, "rgba(246,196,138,.24)");
+      rope(90, 13, 18, 8, "rgba(156,203,238,.26)");
+      canvas.classList.add("is-drawn");
+    })();
+  </script>
 </body>
 </html>

@@ -15,14 +15,27 @@ Worker, desde este repositorio en GitHub.
   - `descargar/`: descargas por plataforma y clave pública de firmas.
   - `docs/`: documentación en una sola página; `docs/data/releases.json` es el
     catálogo de versiones que mantiene el workflow.
-  - `styles.css` y `cuenta/styles.css`: sistema visual responsive.
-  - `script.js` y `cuenta/cuenta.js`: interacción del sitio y de la cuenta.
+  - `admin/`: panel interno de cuentas, cortesías, consumo de IA y planes;
+    reutiliza la sesión de `/cuenta` y sólo entra quien figura en `ADMIN_EMAILS`.
+  - `styles.css`: el sistema visual compartido; `inicio.css`, `legal.css`,
+    `planes/planes.css`, `descargar/descargar.css`, `cuenta/cuenta.css`,
+    `admin/admin.css` y `docs/styles.css` son las hojas propias de cada página.
+  - `script.js`: menú móvil, cabecera que se vuelve píldora, apariciones,
+    parallax, película con scroll, vídeo de fondo y aurora generativa, todo con
+    `prefers-reduced-motion`; `cuenta/cuenta.js`, `admin/admin.js` y
+    `descargar/download.js` son los scripts de página.
   - `release-data.js`: selección semver de la última versión completa a partir
     del JSON incluido y la API pública de GitHub. No contiene ninguna versión
     escrita a mano: si no hay datos, la web no anuncia versión y enlaza a las
     versiones publicadas.
   - `_headers`: cabeceras de seguridad y caché de `assets/`.
-  - `assets/`: imágenes, vídeos, favicons y recursos públicos.
+  - `assets/app/`: capturas reales de pteron 0.7 (1x, `-2x` y `-marco` con el
+    marco de ventana real) y `LEEME.md` con su uso; `assets/docs/`: capturas de
+    la documentación; `assets/photos/`, `assets/video/`, `assets/atlas/` y
+    `assets/arte/`: fotografías, vídeos, baldosas del atlas de asignaturas y
+    piezas generativas, con sus licencias en `assets/photos/CREDITOS.md`
+    (los créditos visibles van en el pie de cada página y en `/privacidad`).
+  - `assets/icons.svg`: sprite de iconos; favicons y `og-pteron-v4.jpg`.
 - `src/worker.js`: el Worker. Atiende `/api/*` y reescribe `/docs/:slug` a la
   página de documentación; todo lo demás lo sirven los assets.
   - `src/lib/`: ayudantes HTTP, cliente de Supabase, cliente de Flow, firma y
@@ -44,20 +57,22 @@ Worker, desde este repositorio en GitHub.
 
 ## Sistema visual
 
-La landing sigue la gramática visual de la aplicación (`pteron/docs/INTERFAZ.md`):
+Sistema «La hora azul»: fotografía del sur de Chile y timelapses de Atacama al
+anochecer, la ventana real de pteron 0.7 como protagonista, baldosas del atlas de
+asignaturas (láminas y mapas de dominio público, texturas propias) y movimiento
+ligado al scroll. Tokens en `styles.css`: noche (`--night`, `--vault`), papel
+(`--paper`, `--snow`), tinta (`--ink`) y ámbar (`--ember`).
 
-| Token | Valor | Uso |
-| --- | --- | --- |
-| Blue | `#0F2238` | Texto, acciones dominantes |
-| Sky | `#496A8E` | Texto secundario |
-| Gold | `#C9A261` | Sólo decoración (reglas, foco, numerales) |
-| Sand | `#E6D8C0` | Bordes de controles y tarjetas |
-| Ivory | `#F6F2EC` | Fondo de página |
+Tipografía: **Newsreader** para titulares, **Geist** para interfaz y cuerpo,
+**Geist Mono** sólo para datos técnicos. Sin cursivas salvo el wordmark. Sin
+píldoras de estado con punto ni avisos con borde izquierdo. Todo asset propio
+lleva `?v=<fecha>` para invalidar la caché; al cambiar hojas, scripts o
+imágenes se sube la versión en todas las páginas.
 
-Tipografía: **IBM Plex Serif** para títulos, **IBM Plex Sans** para interfaz y
-cuerpo, wordmark en `Iowan Old Style` / `Baskerville`. Controles: dominante
-relleno Blue; secundario píldora con borde Sand; discreto sólo texto. El oro no
-se usa en estados interactivos.
+Verificación visual: capturas de las nueve páginas a 1440 y 390 px, en claro y
+oscuro, con y sin JavaScript y con movimiento reducido; sin desborde
+horizontal, sin errores de consola, hooks de los scripts intactos y peso del
+inicio por debajo de 2,5 MB. El registro vive en `design-qa.md`.
 
 ## Arquitectura
 
@@ -108,6 +123,18 @@ https://swzqblyllbudwbmbcthr.supabase.co
 Las migraciones ya aplicadas deben conservarse en `supabase/migrations/` y
 aplicarse en orden si se prepara otro entorno.
 
+## Administración
+
+`/admin` usa la misma sesión que `/cuenta` y sólo responde a los correos de
+`ADMIN_EMAILS`. Muestra el resumen (cuentas, pagos, cortesías, tokens del mes,
+licencias vigentes), la lista y el detalle de cada cuenta (suscripciones,
+licencias, activaciones, consumo mensual, peticiones de IA y eventos de cobro),
+el consumo por mes, por modelo y por cuenta, y el catálogo de planes con su
+límite mensual de tokens. Desde el detalle se concede o retira una cortesía
+(`provider = comp`), que cancela el plan vigente y emite licencia como un plan
+pagado. La API vive en `src/routes/admin.js` y sus pruebas en
+`tests/admin.test.js`.
+
 ## Versiones públicas
 
 El workflow `sync-pteron-releases.yml` actualiza `public/docs/data/releases.json`
@@ -128,7 +155,8 @@ Las variables públicas viven en `wrangler.jsonc`:
 
 - `PUBLIC_SITE_URL=https://pteron.patagua.dev`
 - `SUPABASE_URL=https://swzqblyllbudwbmbcthr.supabase.co`
-- `LICENSE_KID=k1`
+- `LICENSE_KID=k2`
+- `GATEWAY_MODEL_ID=claude-haiku-5-5`
 
 Los secretos se cargan con `npx wrangler secret put <NOMBRE>` o desde el panel
 del Worker, nunca en el repositorio ni en la interfaz del navegador:
@@ -142,11 +170,13 @@ del Worker, nunca en el repositorio ni en la interfaz del navegador:
   indica `LICENSE_KID`; la pública correspondiente debe estar en `PUBLIC_KEYS`
   y en la aplicación de escritorio.
 - `ANTHROPIC_API_KEY`: clave de Anthropic del gateway de IA incluida.
+- `ADMIN_EMAILS`: correos autorizados para `/admin` y `/api/admin/*`, separados
+  por comas. Sin esta variable, la administración responde 503.
 
 Variables opcionales, también como secretos o en `vars`: `FLOW_BASE_URL`
 (`https://sandbox.flow.cl/api` durante las pruebas, `https://www.flow.cl/api`
 en producción; por defecto sandbox), `FLOW_BASIC_PLAN_ID`, `FLOW_PRO_PLAN_ID`,
-`GATEWAY_MODEL_ID` (por defecto `claude-haiku-5-5`) y `ANTHROPIC_BASE_URL`.
+y `ANTHROPIC_BASE_URL`.
 
 Para desarrollo local, copia `.dev.vars.example` a `.dev.vars`; ese archivo
 está ignorado por Git.

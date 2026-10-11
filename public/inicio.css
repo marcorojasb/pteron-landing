@@ -1,0 +1,169 @@
+/* pteron · Inicio (2026-10-12.1). Lo que sólo usa la página de inicio: héroe con la ventana, el pedido de rumbos,
+   banda «propone», banda local, composiciones del bento y banda de descarga. El resto es styles.css. */
+.hero{position:relative;overflow-x:clip;padding-top:clamp(118px,11vw,148px);background:linear-gradient(180deg,#0f1925,#16253a)}
+.hero-copy{position:relative;z-index:3;display:grid;justify-items:center;text-align:center;gap:22px}
+.hero-copy::before{content:"";position:absolute;z-index:-1;inset:-40px -8% -30px;background:radial-gradient(50% 55% at 50% 50%,#060a1094,#060a103d 62%,transparent 80%);pointer-events:none}
+.hero-copy>.kicker{display:block}
+.hero-copy h1{color:var(--snow);text-shadow:0 2px 30px #05090f73}
+.hero-copy .lead{max-width:640px;color:#dcdee2;text-shadow:0 1px 18px #05090f99}
+.hero-copy .actions{justify-content:center;margin-top:10px}
+.hero-stage{position:relative;margin-top:clamp(44px,5vw,64px);container-type:inline-size}
+.hero-media{position:absolute;z-index:0;left:50%;width:100vw;aspect-ratio:3/2;transform:translateX(-50%);top:calc(14px - 100vw * 2/3 * .86);pointer-events:none}
+.hero-media::after{content:"";position:absolute;left:0;right:0;top:calc(100% - 220px);height:1620px;background:linear-gradient(180deg,#03030400,#030304 220px,#07090d 600px)}
+.hero-media>div{position:absolute;inset:0}
+.hero-media img{width:100%;height:100%;object-fit:cover;-webkit-mask-image:linear-gradient(180deg,transparent,#000 16%,#000 70%,transparent);mask-image:linear-gradient(180deg,transparent,#000 16%,#000 70%,transparent)}
+.hero-glow{position:absolute;z-index:1;left:50%;top:0;width:min(1500px,125cqw);height:260px;transform:translate(-50%,-62%);background:radial-gradient(50% 50% at 50% 50%,#f6b06842,#e98c4614 48%,transparent 72%);mix-blend-mode:screen;pointer-events:none}
+.hero-product{position:relative;z-index:3;width:min(100%,1120px);margin-inline:auto}
+.hero-window{transform-origin:50% 100%;transform:perspective(2400px) rotateX(calc(var(--tilt,0)*1deg)) translate3d(0,calc(var(--lift,0)*1px),0);will-change:transform}
+.hero-ground{position:absolute;z-index:2;left:50%;width:100vw;transform:translateX(-50%);top:calc(min(100cqw,1120px)/1.6364*.6);bottom:0;background:var(--paper);border-radius:var(--r-sheet) var(--r-sheet) 0 0;box-shadow:0 -30px 60px -30px #00000080}
+.hero .float{position:absolute;z-index:4}
+.hero .float-plan{left:-62px;top:38%;width:340px}
+.hero .float-result{right:-52px;top:9%;width:300px}
+.truth{position:relative;z-index:3;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:20px 48px;padding:clamp(40px,5vw,64px) 0 clamp(8px,2vw,24px);color:var(--ink)}
+.truth-label{max-width:16ch;font-size:14px;line-height:1.4;font-weight:500;color:var(--ink-3)}
+.truth ul{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:14px 34px}
+.truth li{display:flex;align-items:center;gap:10px;font-size:15.5px;line-height:1.3;font-weight:500;white-space:nowrap}
+.truth .icon{color:var(--copper);width:19px;height:19px}
+.pedido{max-width:1120px;margin:clamp(44px,5vw,64px) auto 0}
+.pedido-shot{position:relative;container-type:inline-size}
+.pedido-shot .crop{border-radius:clamp(14px,2cqw,22px);box-shadow:var(--sh-window-l)}
+.pedido-m{display:none}
+.pedido-legend{grid-template-columns:repeat(3,minmax(0,1fr));gap:22px clamp(24px,3vw,44px);margin-top:clamp(30px,3.4vw,44px)}
+.hero .float-plan .ui-compose{margin-top:10px;line-height:1.5}
+.propone-grid{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:clamp(40px,5vw,80px);align-items:center}
+.propone-lupa>.ui{position:absolute;z-index:4}
+.propone-change{left:-5cqw;top:8.5cqw;width:74cqw;padding:12px 14px 14px}
+.propone-change .ui-label{margin-bottom:10px}
+.propone-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.propone-cols>div{padding:10px 12px;border-radius:10px;background:#f3f1ec}
+.propone-cols>.is-new{background:#fbeedd}
+.propone-cols small{display:block;margin-bottom:5px;font:600 11.5px/1.2 var(--sans);color:#5a677a}
+.propone-cols>.is-new small{color:#7d4c12}
+.propone-cols p{font-size:12.5px;line-height:1.5}
+.propone-dock{left:21cqw;top:38.5cqw;width:58cqw;padding:12px 14px 14px}
+.propone-dock>p{margin-bottom:10px;font:600 13px/1.35 var(--sans)}
+.propone-change>.marker,.propone-dock>.marker{left:0;top:0}
+.propone-dock .cursor{left:84px;top:54px}
+.propone-dock .ripple{left:74px;top:43px}
+.propone .band-shade{background:linear-gradient(90deg,#07090de0,#07090d99 40%,#07090d40 75%),linear-gradient(180deg,#07090da6,#07090d26 30%,#07090d40 70%,#07090de6)}
+.tile .tile-stage-desk{height:clamp(300px,30vw,380px)}
+.doc-sheet{left:9%;top:12%;width:520px;rotate:-2deg;border-radius:4px;box-shadow:0 2px 3px #140c0440,0 30px 50px -20px #140c04a6}
+.doc-menu{position:absolute;right:6%;bottom:9%;width:210px}
+.tile-stage-ui{display:grid;place-items:center;padding:24px}
+.item-types{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:min(100%,340px);margin:0;padding:0;list-style:none}
+.item-types li{display:grid;gap:8px;padding:12px;border-radius:12px;background:#fff;box-shadow:var(--sh-float-l);font:600 12.5px/1.25 var(--sans);color:#13253b}
+.glyph{display:flex;flex-direction:column;justify-content:center;height:22px;font:600 12px/1 var(--sans);color:var(--copper);letter-spacing:.08em}
+.glyph span{display:block;height:2px;margin:2px 0;border-radius:2px;background:#d9cdbb}
+.local-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(40px,6vw,96px);align-items:center}
+.facts{display:grid;gap:20px;margin:34px 0 0;padding:0;list-style:none}
+.facts li{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:start}
+.fact-ico{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#9ccbee1a;border:1px solid #9ccbee38;color:var(--glacier)}
+.facts strong{display:block;margin-bottom:2px;font-weight:560;color:var(--snow)}
+.facts p{color:var(--mist);font-size:15px;line-height:1.55}
+.local-visual{position:relative;min-height:640px}
+.local-visual>*{position:absolute}
+.local-window{--sw:2880;--cx:720;--cy:200;--cw:1440;--ch:1360;left:0;top:0;width:min(100%,560px);border-radius:13px}
+.local-alert{left:-28px;top:430px;z-index:2;width:min(432px,86%)}
+.local-alert-title{display:flex;align-items:center;gap:8px;margin-bottom:6px;font:600 14px/1.3 var(--sans)}
+.local-alert-title .icon{width:15px;height:15px;color:#7d4c12}
+.local-plugins{right:-12px;top:-26px;width:292px;z-index:3}
+.download .band-shade{background:radial-gradient(60% 34% at 50% 26%,#07090d99,transparent 75%),linear-gradient(180deg,#07090de6,#07090d80 32%,#07090d61 58%,#07090df0)}
+.download .head .lead{color:#dcdad5;text-shadow:0 1px 14px #07090de6}
+.band.download{padding-bottom:clamp(64px,7vw,104px)}
+/* Atlas de asignaturas: cinco baldosas escalonadas que el arco cruza a ~70 % de su alto (posiciones en cqw de la escena) */
+.atlas{padding-block:clamp(56px,6vw,88px) clamp(28px,3vw,44px)}
+.atlas-scene{position:relative;aspect-ratio:100/26;container-type:inline-size}
+.atlas-tile{position:absolute;left:var(--l);top:var(--t);width:var(--s);aspect-ratio:1;filter:drop-shadow(0 2px 2px #0f22381f) drop-shadow(0 18px 22px #0f223829)}
+.atlas-tile img{width:100%;height:100%}
+.atlas-t1{--l:3cqw;--t:12.3cqw;--s:12cqw}
+.atlas-t2{--l:22.25cqw;--t:5.6cqw;--s:13.5cqw}
+.atlas-t3{--l:42.5cqw;--t:2.5cqw;--s:15cqw}
+.atlas-t4{--l:64.25cqw;--t:5.6cqw;--s:13.5cqw}
+.atlas-t5{--l:85cqw;--t:12.3cqw;--s:12cqw}
+.atlas-arc{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.atlas-arc path{fill:none;stroke:var(--ink);stroke-opacity:.62;stroke-width:1.35;vector-effect:non-scaling-stroke;stroke-dasharray:1;stroke-dashoffset:0;transition:stroke-dashoffset 2.4s var(--ease) .2s}
+.reveal-on .atlas-scene:not(.is-in) .atlas-arc path{stroke-dashoffset:1}
+.atlas-head{position:relative;margin-top:-5.5%}
+.rumbos{padding-top:clamp(64px,7vw,104px)}
+/* Película: el cielo de Atacama queda fijo (sticky) mientras pasan el texto y la ventana; script.js fija --fh en px y liga el vídeo al scroll */
+.film{--fh:clamp(560px,56.25vw,900px);--focus:var(--ember-hi);--lead:#d6d8dc;--soft:#f4f1eba6;--muted:var(--mist);--kc:var(--ember-hi);position:relative;overflow-x:clip;isolation:isolate;color:var(--snow);color-scheme:dark;background:linear-gradient(180deg,#2c2230,#171522 34%,#0c1523 66%,#06111c)}
+.sheet+.film{margin-top:calc(-1*var(--r-sheet))}
+.film-backdrop{position:absolute;inset:0;z-index:-1;overflow:hidden}
+.js .film-backdrop{position:sticky;top:0;bottom:auto;height:var(--fh);margin-bottom:calc(-1*var(--fh))}
+.film-backdrop :is(picture,img,video){position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.film-backdrop video{opacity:0;transition:opacity .45s ease}
+.film-backdrop.is-ready video{opacity:1}
+.film-backdrop::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#07090dc2,#07090d7a 34%,#07090d00 62%),linear-gradient(180deg,#07090d99,#07090d1f 16%,#07090d00 40%,#07090d26 70%,#06111cd9)}
+.film-content{position:relative;display:grid;grid-template-columns:minmax(0,1fr);justify-items:start;padding-block:calc(var(--fh)*.55) calc(var(--fh)*.36)}
+.film-copy{max-width:760px}
+.film-copy h2{text-shadow:0 2px 30px #05090f80}
+.film-copy .lead{max-width:34em;color:#e2e3e6;text-shadow:0 1px 16px #05090fcc}
+.film-window{justify-self:end;width:min(1140px,100%);margin-top:calc(var(--fh)*.1);transform-origin:50% 100%;transform:perspective(2400px) rotateX(calc(var(--tilt,0)*1deg)) translate3d(0,calc(var(--lift,0)*1px),0);will-change:transform}
+.film-credit{justify-self:end;margin-top:clamp(24px,3vw,40px);text-align:right}
+/* Aurora del lago: canvas de 320×180 escalado; el póster sólo se ve sin JavaScript */
+.lake-aurora{position:absolute;z-index:-1;left:0;top:0;width:100%;height:78%;pointer-events:none;background:url("/assets/arte/aurora-lago.webp?v=2026-10-12.1") center/100% 100% no-repeat;-webkit-mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent);mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent)}
+.lake-aurora.is-drawn{background:none}
+.js .hero-media>div{animation:settle 2.6s var(--ease) both}
+.js .hero-product{animation:rise 1.6s var(--ease) .35s both}
+@keyframes settle{from{opacity:.4;scale:1.06}to{opacity:1;scale:1}}
+@keyframes rise{from{opacity:0;translate:0 60px}to{opacity:1;translate:0 0}}
+@media (prefers-reduced-motion:reduce){
+.hero-window,.film-window{transform:none!important}
+.js .film-backdrop{position:absolute;inset:0;height:auto;margin:0}
+.film-content{padding-block:clamp(110px,12vw,170px)}}
+@media (max-width:1180px){
+.hero .float-plan{display:none}
+.hero .float-result{right:-12px;width:272px}}
+@media (max-width:1024px){
+.propone-grid,.local-grid{grid-template-columns:minmax(0,1fr)}
+.propone-visual{padding-inline:clamp(52px,6.8vw,76px)}
+.truth{grid-template-columns:1fr}
+.truth ul{justify-content:flex-start}}
+@media (max-width:760px){
+.atlas-scene{aspect-ratio:100/46}
+.atlas-t2,.atlas-t4{display:none}
+.atlas-t1{--l:1.5cqw;--t:16cqw;--s:25cqw}
+.atlas-t3{--l:35cqw;--t:2cqw;--s:30cqw}
+.atlas-t5{--l:73.5cqw;--t:16cqw;--s:25cqw}
+.atlas-head{margin-top:14px}
+.film-content{padding-block:calc(var(--fh)*.42) calc(var(--fh)*.3)}
+.film-copy::before{content:"";position:absolute;z-index:-1;inset:-12% -10%;background:radial-gradient(closest-side,#07090db3,#07090d66 60%,transparent);pointer-events:none}
+.film-window{justify-self:start;width:1010px;max-width:none;margin:56px 0 0}
+.film-credit{justify-self:start;text-align:left}
+.lake-aurora{height:46%}
+.hero{padding-top:104px}
+.hero-copy{gap:18px}
+.hero-copy .actions{width:100%;flex-direction:column;align-items:stretch}
+.hero-stage{margin-top:64px}
+.hero-media{width:132vw;aspect-ratio:4/5;top:calc(30px - 132vw * 1.25 * .87)}
+.hero-product{width:calc(100% + var(--gutter))}
+/* La ventana completa, más ancha que la pantalla: anclada a la izquierda con su esquina, sus luces y la fila de
+   pestañas reales, y sangrando a la derecha (sin recortar la captura por dentro) */
+.hero-window{width:140%;max-width:none;margin-left:0}
+.hero .float-result{right:calc(var(--gutter) + 6px);top:auto;bottom:-62px;width:276px}
+.hero-ground{top:calc((100cqw + var(--gutter))*1.4/1.6364*.62)}
+.truth{padding-top:72px}
+.truth ul{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px}
+.truth li{align-items:flex-start;font-size:14.5px;white-space:normal}
+.truth-label{color:var(--ink-2)}
+.tile .tile-stage-desk{height:250px}
+.propone .band-shade{background:linear-gradient(180deg,#07090dcc,#07090db8 45%,#07090de6)}
+.propone-visual{padding-inline:0}
+.local-visual{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;min-height:0}
+.local-visual>*{position:relative;left:auto;top:auto;right:auto;width:auto;max-width:100%}
+.local-window{--cx:750;--cy:220;--cw:780;--ch:620}
+.pedido-shot{display:none}
+.pedido-m{display:grid;gap:16px;padding:18px 14px 16px;background:#faf9f6}
+.pedido-rumbos{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;text-align:center;font:600 12.5px/1.2 var(--sans)}
+.pedido-rumbos>span:not(.marker){display:grid;justify-items:center;gap:7px}
+.pedido-rumbos .icon{width:18px;height:18px}
+.pedido-box{position:relative;display:grid;gap:10px;padding:12px;border:1px solid #ebe7e0;border-radius:14px;background:#fff;box-shadow:0 12px 26px -18px #0f223866}
+.pedido-box .ui-compose{margin:0;font-size:14.5px;line-height:1.5}
+.pedido-m .marker{left:-10px;top:-10px;margin:0}
+.pedido-box .ui-suggest>.marker{position:static;order:9;margin:0 0 0 2px}
+.pedido-legend{grid-template-columns:minmax(0,1fr)}
+.doc-sheet{left:6%;top:9%;width:420px}
+.propone-lupa{display:grid;gap:14px}
+.propone-lupa>.ui{position:relative;left:auto;top:auto;width:auto}
+.propone-cols{grid-template-columns:minmax(0,1fr)}
+.propone-change>.marker,.propone-dock>.marker{left:auto;right:-6px;top:-6px;margin:0}}

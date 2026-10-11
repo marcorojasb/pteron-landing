@@ -78,21 +78,32 @@
     if (latest?.url && releaseLink) releaseLink.href = latest.url;
   };
 
-  // El boton solido marcaba siempre Windows, incluso a un profesor en Mac.
-  // Se traslada el enfasis a la plataforma desde la que se visita la pagina.
+  // Se destaca la plataforma desde la que se visita la página sólo cuando se
+  // reconoce con claridad: sin detección (o desde un teléfono, una tableta,
+  // ChromeOS o Linux ARM) no se marca ninguna, en vez de suponer Windows.
+  const detectPlatform = () => {
+    const ua = navigator.userAgent || "";
+    const hint = navigator.userAgentData?.platform || "";
+    if (/Android|iPhone|iPad|iPod|CrOS/i.test(ua)) return null;
+    if (/Win/i.test(hint) || /Windows NT/i.test(ua)) return windowsDownload;
+    if (/mac/i.test(hint) || /Macintosh|Mac OS X/i.test(ua)) {
+      return navigator.maxTouchPoints > 1 ? null : macosDownload;
+    }
+    if ((/Linux/i.test(hint) || /Linux|X11/i.test(ua)) && !/aarch64|arm64|armv\d/i.test(ua)) {
+      return linuxDownload;
+    }
+    return null;
+  };
+
+  // El enlace lleva download-option-primary (botón ámbar) y su tarjeta
+  // .platform, is-detected (borde ámbar y rótulo «Tu equipo»).
   const highlightPlatform = () => {
-    const signature = `${navigator.userAgentData?.platform || ""} ${navigator.userAgent}`;
-    const isAndroid = /Android/i.test(signature);
-    const target = /Mac|iPad|iPhone/i.test(signature)
-      ? macosDownload
-      : /Linux|X11/i.test(signature) && !isAndroid
-        ? linuxDownload
-        : windowsDownload;
-    if (!target) return;
+    const target = detectPlatform();
     [windowsDownload, macosDownload, linuxDownload].forEach((option) => {
       if (!option) return;
-      option.classList.toggle("button-light", option === target);
-      option.classList.toggle("download-option-secondary", option !== target);
+      const active = option === target;
+      option.classList.toggle("download-option-primary", active);
+      option.closest(".platform")?.classList.toggle("is-detected", active);
     });
   };
 
@@ -100,27 +111,6 @@
 
   loadLatestRelease().catch(announceUnavailable);
 
-  const video = document.querySelector("[data-download-video]");
   const year = document.querySelector("[data-year]");
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
   if (year) year.textContent = new Date().getFullYear();
-  if (!video || reducedMotion) return;
-
-  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  const constrainedConnection = connection?.saveData
-    || ["slow-2g", "2g", "3g"].includes(connection?.effectiveType);
-  const mobile = window.matchMedia("(max-width: 700px)").matches || constrainedConnection;
-
-  const reveal = () => {
-    video.classList.add("is-ready");
-    video.play().catch(() => {});
-  };
-
-  video.addEventListener("canplay", reveal, { once: true });
-  // Poster already paints the page; pick the lightest MP4 the client can take.
-  video.src = mobile
-    ? "/assets/download-jellyfish-mobile.mp4"
-    : "/assets/download-jellyfish.mp4";
-  video.load();
 })();

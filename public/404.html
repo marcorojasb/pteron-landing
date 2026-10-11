@@ -4,25 +4,146 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Página no encontrada — pteron</title>
+  <meta name="description" content="La página que buscas no existe o cambió de ubicación.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#07090d">
+  <meta name="color-scheme" content="dark">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_CL">
+  <meta property="og:site_name" content="pteron">
+  <meta property="og:title" content="Página no encontrada — pteron">
+  <meta property="og:description" content="La página que buscas no existe o cambió de ubicación.">
+  <meta property="og:image" content="https://pteron.patagua.dev/assets/og-pteron-v4.jpg">
+  <meta property="og:image:secure_url" content="https://pteron.patagua.dev/assets/og-pteron-v4.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="pteron: construido por profes, para profes">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Página no encontrada — pteron">
+  <meta name="twitter:description" content="La página que buscas no existe o cambió de ubicación.">
+  <meta name="twitter:image" content="https://pteron.patagua.dev/assets/og-pteron-v4.jpg">
+  <meta name="twitter:image:alt" content="pteron: construido por profes, para profes">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-v2-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-v2-16.png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v2.png">
+  <link rel="manifest" href="/manifest.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@400;500&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=2026-10-04.1">
-  <style>
-    .not-found{min-height:100vh;display:grid;place-items:center;text-align:center;padding:40px}.not-found .wordmark{display:inline-block;margin-bottom:38px}.not-found h1{font-size:clamp(70px,15vw,150px);line-height:.8}.not-found h2{font-family:var(--serif);font-size:34px;font-weight:500;margin-top:28px}.not-found p{color:var(--ink-soft);max-width:480px;margin:14px auto 25px}
-  </style>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..600&amp;family=Geist+Mono:wght@400;500&amp;family=Newsreader:opsz,wght@6..72,300..500&amp;display=swap">
+  <link rel="preload" as="image" href="/assets/photos/cuernos-2400.webp?v=2026-10-12.1" media="(min-width: 761px)">
+  <link rel="preload" as="image" href="/assets/photos/cuernos-movil.webp?v=2026-10-12.1" media="(max-width: 760px)">
+  <script>document.documentElement.classList.add("js")</script>
+  <link rel="stylesheet" href="/styles.css?v=2026-10-12.1">
+  <link rel="stylesheet" href="/legal.css?v=2026-10-12.1">
+  <script src="/script.js?v=2026-10-12.1" defer></script>
 </head>
 <body>
-  <main class="not-found">
-    <div>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <header class="nav" data-nav>
+    <div class="nav-bar">
       <a class="wordmark" href="/" aria-label="pteron, inicio">pteron</a>
-      <h1>404</h1>
-      <h2>Esta ruta no está en la carpeta.</h2>
-      <p>La página que buscas no existe o cambió de ubicación.</p>
-      <a class="button" href="/">Volver al inicio</a>
+      <nav class="nav-links" aria-label="Principal">
+        <a href="/docs">Documentación</a>
+        <a href="/planes">Planes</a>
+        <a href="/cuenta">Cuenta</a>
+      </nav>
+      <div class="nav-end">
+        <a class="button button-light button-small nav-cta" href="/descargar"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Descargar</a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú" data-menu-button><span></span><span></span></button>
+      </div>
     </div>
+    <div class="nav-menu" id="menu" hidden data-menu>
+      <nav aria-label="Principal">
+        <ul>
+          <li><a href="/docs">Documentación<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></li>
+          <li><a href="/planes">Planes<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></li>
+          <li><a href="/cuenta">Cuenta<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></li>
+        </ul>
+      </nav>
+      <a class="button button-ember button-large button-block" href="/descargar"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Descargar gratis</a>
+      <p class="nav-menu-note">Beta pública · macOS, Windows y Linux</p>
+    </div>
+  </header>
+
+  <main id="contenido">
+
+    <!-- 404: el macizo del Paine en penumbra; la acción principal vuelve al inicio -->
+    <section class="band page-hero nf-hero" aria-labelledby="titulo">
+      <div class="band-photo" data-parallax="0.08" aria-hidden="true">
+        <picture>
+          <source media="(max-width: 760px)" srcset="/assets/photos/cuernos-movil.webp?v=2026-10-12.1" width="960" height="960">
+          <img src="/assets/photos/cuernos-2400.webp?v=2026-10-12.1" width="2400" height="981" alt="" fetchpriority="high" decoding="async">
+        </picture>
+      </div>
+      <div class="band-shade" aria-hidden="true"></div>
+      <div class="wrap page-hero-copy">
+        <p class="kicker" data-intro style="--d:0">404 · Página no encontrada</p>
+        <h1 class="display" id="titulo" data-intro style="--d:1">Esta ruta no está en la carpeta.</h1>
+        <p class="lead" data-intro style="--d:2">La página que buscas no existe o cambió de ubicación.</p>
+        <div class="actions" data-intro style="--d:3">
+          <a class="button button-ember button-large" href="/">Volver al inicio</a>
+          <a class="link-arrow" href="/docs">Buscar en la documentación<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a>
+        </div>
+      </div>
+      <div class="wrap">
+        <nav aria-label="Otros destinos">
+          <ul class="nf-links" role="list" data-intro style="--d:3">
+            <li><a href="/descargar"><span class="os-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg></span><span><strong>Descargar</strong><small>Instaladores para macOS, Windows y Linux.</small></span><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></li>
+            <li><a href="/planes"><span class="os-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-layers"/></svg></span><span><strong>Planes</strong><small>Núcleo local gratis, Basic y Pro.</small></span><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></li>
+            <li><a href="/cuenta"><span class="os-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-user"/></svg></span><span><strong>Cuenta</strong><small>Tu plan, la activación y tus licencias.</small></span><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></li>
+          </ul>
+        </nav>
+      </div>
+    </section>
   </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p class="signature">Tus fuentes. <span>Tu criterio.</span></p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="wordmark" href="/">pteron</a>
+          <p>Construido por profes, para profes. Diseñado en Chile para el trabajo docente.</p>
+        </div>
+        <nav aria-labelledby="pie-producto">
+          <h2 id="pie-producto">Producto</h2>
+          <ul>
+            <li><a href="/descargar">Descargar</a></li>
+            <li><a href="/planes">Planes</a></li>
+            <li><a href="/cuenta">Cuenta</a></li>
+            <li><a href="/docs">Documentación</a></li>
+          </ul>
+        </nav>
+        <nav aria-labelledby="pie-ayuda">
+          <h2 id="pie-ayuda">Ayuda</h2>
+          <ul>
+            <li><a href="/docs?pagina=inicio">Primeros pasos</a></li>
+            <li><a href="/docs?pagina=preguntas">Preguntas frecuentes</a></li>
+            <li><a href="/docs?pagina=solucion-problemas">Solución de problemas</a></li>
+            <li><a href="/docs?pagina=versiones">Versiones</a></li>
+          </ul>
+        </nav>
+        <nav aria-labelledby="pie-patagua">
+          <h2 id="pie-patagua">Patagua</h2>
+          <ul>
+            <li><a href="/privacidad">Privacidad</a></li>
+            <li><a href="/terminos">Términos</a></li>
+            <li><a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <p>© <span data-year>2026</span> pteron · Patagua</p>
+        <p>Beta pública para macOS, Windows y Linux</p>
+      </div>
+      <details class="credits">
+        <summary>Créditos de imágenes y vídeo</summary>
+        <p>Fotografías de Wikimedia Commons: «<a href="https://commons.wikimedia.org/wiki/File:Atardecer_entre_Araucarias.jpg">Atardecer entre Araucarias</a>», Jclavero92 · «<a href="https://commons.wikimedia.org/wiki/File:Parque_Nacional_Nahuelbuta,_puesta_de_sol,_araucaria_2.jpg">Parque Nacional Nahuelbuta, puesta de sol</a>», Gonzalo Palacios · «<a href="https://commons.wikimedia.org/wiki/File:Parque_Nacional_Torres_del_Paine_-_XII_Region_de_Magallanes_y_la_Antartica_Chilena_-_Laguna_Cisnes_-_Almirante_Nieto.jpg">Laguna Cisnes, Almirante Nieto</a>», Ferna.mf · «<a href="https://commons.wikimedia.org/wiki/File:Macizo_Paine_al_Amanecer_Torres_del_Paine.jpg">Macizo Paine al Amanecer</a>», Natalia Reyes Escobar · «<a href="https://commons.wikimedia.org/wiki/File:Sunset_at_General_Carrera_Lake.jpg" lang="en">Sunset at General Carrera Lake</a>», Andreizaaa (<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">CC BY-SA 4.0</a>) · «<a href="https://commons.wikimedia.org/wiki/File:Working_on_a_planning_session_with_stationery_items,_notebook,_and_colorful_pencils_on_a_wooden_desk.jpg" lang="en">Planning session with stationery items</a>», Shixart1985 (<a href="https://creativecommons.org/licenses/by/2.0/deed.es">CC BY 2.0</a>). Vídeos: <a href="https://www.eso.org/public/videos/armazones-venusbelt/">ESO/M. Zamani</a> y <a href="https://www.eso.org/public/videos/pao-sunsetclouds/">ESO/B. Tafreshi</a> (<a href="https://creativecommons.org/licenses/by/4.0/deed.es">CC BY 4.0</a>), recortados y recodificados. Láminas y mapas de dominio público de The Metropolitan Museum of Art, la Library of Congress e Internet Archive. Adaptadas para este sitio; lista completa en <a href="/privacidad#creditos">Privacidad</a>.</p>
+      </details>
+      <p class="footer-mark" aria-hidden="true">pteron</p>
+    </div>
+  </footer>
 </body>
 </html>

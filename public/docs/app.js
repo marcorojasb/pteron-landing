@@ -15,6 +15,9 @@
   const allPages = docs.groups.flatMap(group =>
     group.pages.map(([slug, title]) => ({ slug, title, group: group.label }))
   );
+  // Texto plano de cada página para el buscador (sin etiquetas ni entidades), calculado una vez.
+  const plainText = html => String(html || "").replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ");
+  const bodyText = new Map(allPages.map(page => [page.slug, plainText(docs.pages[page.slug]?.html).toLocaleLowerCase("es")]));
 
   const slugFromLocation = () => {
     const requestedPage = new URLSearchParams(location.search).get("pagina");
@@ -24,18 +27,36 @@
     return path.split("/").pop() || "inicio";
   };
 
-  const pageUrl = slug => slug === "inicio" ? "/docs/" : `/docs/?pagina=${encodeURIComponent(slug)}`;
+  const pageUrl = slug => slug === "inicio" ? "/docs" : `/docs?pagina=${encodeURIComponent(slug)}`;
+  // La marca va siempre en minúscula, también dentro de un rótulo en mayúsculas.
+  const brand = text => String(text).replace(/\bpteron\b/g, '<span class="wm">pteron</span>');
 
   const renderNav = active => {
     nav.innerHTML = docs.groups.map(group => `
       <section>
-        <h2>${group.label}</h2>
+        <h2>${brand(group.label)}</h2>
         ${group.pages.map(([slug, title]) =>
           `<a href="${pageUrl(slug)}"${slug === active ? ' class="is-active" aria-current="page"' : ""}>${title}</a>`
         ).join("")}
       </section>
     `).join("");
+    // Si el índice tiene su propio desplazamiento, el enlace activo queda a la vista.
+    const scroller = nav.closest(".docs-index");
+    const current = nav.querySelector(".is-active");
+    if (scroller && current && scroller.scrollHeight > scroller.clientHeight) {
+      scroller.scrollTop += current.getBoundingClientRect().top - scroller.getBoundingClientRect().top - scroller.clientHeight / 2;
+    }
   };
+
+  let renderedSlug = "";
+
+  // Las guías de instalación abren con la misma franja de color por sistema que /descargar (.os-strip del sistema).
+  const platformStrip = ([variant, icon, caption]) => `
+        <figure class="os-strip os-${variant} docs-os" aria-hidden="true">
+          <span class="os-aurora"><span></span><span></span><span></span></span>
+          <span class="die-mark die-mark--strip"><span class="die-mark-plate"><span class="die-mark-core"><svg viewBox="0 0 24 24"><use href="/assets/icons.svg?v=2026-10-12.1#i-${icon}"/></svg></span></span></span>
+          <span class="os-strip-cap">${caption}</span>
+        </figure>`;
 
   let tocObserver = null;
 
@@ -219,15 +240,16 @@
 
   const renderPage = (slug, push = false) => {
     const resolvedSlug = resolveSlug(slug);
+    renderedSlug = resolvedSlug;
     const page = docs.pages[resolvedSlug];
     if (push) history.pushState({ slug: resolvedSlug }, "", pageUrl(resolvedSlug));
     else if (resolvedSlug !== slug) history.replaceState({ slug: resolvedSlug }, "", pageUrl(resolvedSlug));
     document.title = `${page.title} — pteron`;
     article.innerHTML = `
       <header class="article-header">
-        <p>${page.eyebrow}</p>
+        <p>${brand(page.eyebrow)}</p>
         <h1>${page.title}</h1>
-        <div>${page.lead}</div>
+        <div>${page.lead}</div>${page.platform ? platformStrip(page.platform) : ""}
       </header>
       ${page.html}
       <nav class="article-pagination" aria-label="Siguiente página">${nextPageLink(resolvedSlug)}</nav>`;
@@ -235,11 +257,19 @@
     renderToc();
     renderReleaseData();
     window.scrollTo({ top: 0, behavior: "auto" });
-    sidebar.classList.remove("is-open");
-    navToggle.setAttribute("aria-expanded", "false");
-    navToggle.setAttribute("aria-label", "Abrir navegación");
-    navToggle.textContent = "Menú";
+    setIndexOpen(false);
+    // script.js vuelve a medir el parallax y las apariciones del contenido nuevo.
+    document.dispatchEvent(new CustomEvent("pteron:content"));
   };
+
+  // El nombre accesible contiene el texto visible («Menú» / «Cerrar»), como pide WCAG 2.5.3.
+  function setIndexOpen(open, returnFocus = false) {
+    sidebar.classList.toggle("is-open", open);
+    navToggle.setAttribute("aria-expanded", String(open));
+    navToggle.setAttribute("aria-label", open ? "Cerrar el índice de la documentación" : "Menú de la documentación");
+    navToggle.textContent = open ? "Cerrar" : "Menú";
+    if (!open && returnFocus) navToggle.focus();
+  }
 
   const nextPageLink = slug => {
     const index = allPages.findIndex(page => page.slug === slug);
@@ -248,46 +278,81 @@
   };
 
   let searchCursor = -1;
+  const searchStatus = document.querySelector("[data-search-status]");
 
   const searchLinks = () => [...results.querySelectorAll("a")];
 
+  // El foco se queda en el campo (combobox); el resultado activo se anuncia con aria-activedescendant.
   const highlightSearchCursor = () => {
     const links = searchLinks();
     links.forEach((link, index) => {
-      link.classList.toggle("is-cursor", index === searchCursor);
-      if (index === searchCursor) link.scrollIntoView({ block: "nearest" });
+      const active = index === searchCursor;
+      link.classList.toggle("is-cursor", active);
+      link.setAttribute("aria-selected", String(active));
+      if (active) link.scrollIntoView({ block: "nearest" });
     });
+    if (searchCursor >= 0 && links[searchCursor]) search.setAttribute("aria-activedescendant", links[searchCursor].id);
+    else search.removeAttribute("aria-activedescendant");
   };
 
   const showSearchResults = value => {
     const query = value.trim().toLocaleLowerCase("es");
     searchCursor = -1;
+    search.removeAttribute("aria-activedescendant");
     if (!query) {
       results.hidden = true;
+      search.setAttribute("aria-expanded", "false");
+      if (searchStatus) searchStatus.textContent = "";
       return;
     }
-    const matches = allPages.filter(page =>
-      `${page.title} ${page.group} ${docs.pages[page.slug]?.lead || ""}`.toLocaleLowerCase("es").includes(query)
-    ).slice(0, 7);
+    const inSummary = page => `${page.title} ${page.group} ${docs.pages[page.slug]?.lead || ""}`.toLocaleLowerCase("es").includes(query);
+    const matches = [
+      ...allPages.filter(inSummary),
+      ...allPages.filter(page => !inSummary(page) && bodyText.get(page.slug)?.includes(query)),
+    ].slice(0, 7);
     results.innerHTML = matches.length
-      ? matches.map(page => `<a href="${pageUrl(page.slug)}"><span>${page.title}</span><small>${page.group}</small></a>`).join("")
-      : "<p>No encontramos una página con esas palabras.</p>";
+      ? matches.map((page, index) => `<a id="docs-resultado-${index}" role="option" aria-selected="false" href="${pageUrl(page.slug)}"><span>${page.title}</span><small>${brand(page.group)}</small></a>`).join("")
+      : '<p role="presentation">No encontramos una página con esas palabras.</p>';
     results.hidden = false;
+    search.setAttribute("aria-expanded", String(matches.length > 0));
+    if (searchStatus) {
+      searchStatus.textContent = matches.length
+        ? `${matches.length} ${matches.length === 1 ? "resultado" : "resultados"}`
+        : "No encontramos una página con esas palabras.";
+    }
+  };
+
+  // Diálogo modal de verdad: mientras el buscador está abierto, el resto de la página queda inerte
+  // (ni el foco ni el lector de pantalla llegan a lo que está bajo el velo).
+  const setPageInert = inert => {
+    for (const node of document.body.children) {
+      if (node !== searchPanel && node.tagName !== "SCRIPT") node.inert = inert;
+    }
   };
 
   const setSearchOpen = (open, returnFocus = false) => {
+    const wasOpen = !searchPanel.hidden;
+    if (open) document.querySelector('[data-menu-button][aria-expanded="true"]')?.click();
     searchPanel.hidden = !open;
     searchToggle.setAttribute("aria-expanded", String(open));
+    if (open || wasOpen) setPageInert(open);
     if (open) {
-      requestAnimationFrame(() => search.focus());
+      // Al reabrir, lo escrito queda seleccionado (se reemplaza al teclear) y sus resultados a la vista.
+      requestAnimationFrame(() => {
+        search.focus();
+        search.select();
+        if (search.value.trim()) showSearchResults(search.value);
+      });
     } else {
       results.hidden = true;
+      search.setAttribute("aria-expanded", "false");
+      search.removeAttribute("aria-activedescendant");
       if (returnFocus) searchToggle.focus();
     }
   };
 
   document.addEventListener("click", event => {
-    const link = event.target.closest('a[href^="/docs/"]');
+    const link = event.target.closest('a[href^="/docs"]');
     if (!link) return;
     const url = new URL(link.href);
     if (url.origin !== location.origin) return;
@@ -296,7 +361,12 @@
     renderPage(url.searchParams.get("pagina") || url.pathname.split("/").filter(Boolean).pop() || "inicio", true);
   });
 
-  window.addEventListener("popstate", () => renderPage(slugFromLocation()));
+  // Un salto a un ancla de la misma página no vuelve a pintarla (ni a pedir los datos de versión).
+  window.addEventListener("popstate", () => {
+    const slug = slugFromLocation();
+    if (resolveSlug(slug) === renderedSlug) return;
+    renderPage(slug);
+  });
   search.addEventListener("input", () => showSearchResults(search.value));
   search.addEventListener("keydown", event => {
     const links = searchLinks();
@@ -312,7 +382,7 @@
       highlightSearchCursor();
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
-      searchCursor = (searchCursor - 1 + links.length) % links.length;
+      searchCursor = searchCursor <= 0 ? links.length - 1 : searchCursor - 1;
       highlightSearchCursor();
     } else if (event.key === "Enter" && searchCursor >= 0) {
       event.preventDefault();
@@ -321,6 +391,20 @@
   });
   searchToggle.addEventListener("click", () => {
     setSearchOpen(searchPanel.hidden);
+  });
+  // Tab y Mayús+Tab recorren sólo el campo y los resultados, en ciclo, sin salir del diálogo.
+  searchPanel.addEventListener("keydown", event => {
+    if (event.key !== "Tab") return;
+    const items = [search, ...(results.hidden ? [] : searchLinks())];
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   });
   document.addEventListener("keydown", event => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
@@ -332,15 +416,17 @@
     }
   });
   document.addEventListener("click", event => {
+    // Con la página inerte, un clic fuera del panel sólo puede caer en el velo: cierra y devuelve el foco al botón.
     if (!searchPanel.hidden && !event.target.closest("[data-search-panel]") && !event.target.closest("[data-search-toggle]")) {
-      setSearchOpen(false);
+      setSearchOpen(false, true);
     }
   });
-  navToggle.addEventListener("click", () => {
-    const open = sidebar.classList.toggle("is-open");
-    navToggle.setAttribute("aria-expanded", String(open));
-    navToggle.setAttribute("aria-label", open ? "Cerrar navegación" : "Abrir navegación");
-    navToggle.textContent = open ? "Cerrar" : "Menú";
+  navToggle.addEventListener("click", () => setIndexOpen(!sidebar.classList.contains("is-open")));
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && sidebar.classList.contains("is-open") && searchPanel.hidden) setIndexOpen(false, true);
+  });
+  document.addEventListener("click", event => {
+    if (sidebar.classList.contains("is-open") && !event.target.closest("[data-sidebar]")) setIndexOpen(false);
   });
 
   if (year) year.textContent = new Date().getFullYear();

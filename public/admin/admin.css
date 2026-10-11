@@ -1,0 +1,138 @@
+/* pteron · /admin · revisión 2026-10-12.1. Panel interno sobre papel.
+   Primero, los componentes que genera admin.js (sólo existen aquí); después, cómo se afinan dentro de .admin. Las tablas son del sistema. */
+/* Componentes que genera admin.js (sólo se usan aquí; antes vivían en styles.css): pestañas, paneles, barra de herramientas, indicadores y barras */
+.tabs{display:inline-flex;width:fit-content;flex-wrap:wrap;gap:4px;padding:4px;border-radius:999px;background:var(--paper-2);border:1px solid var(--line-l)}
+.tabs [role=tab]{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 17px;border:0;border-radius:999px;background:none;color:var(--ink-2);font:500 14.5px/1 var(--sans);transition:background-color .3s,color .2s,box-shadow .3s}
+.tabs .icon{width:16px;height:16px}
+.tabs [role=tab]:hover{color:var(--ink)}
+.tabs [role=tab][aria-selected=true]{background:var(--ink);color:#fff;box-shadow:0 6px 16px -8px #0f223899}
+.panel{display:grid;gap:14px;align-content:start;min-width:0;padding:clamp(18px,2.2vw,24px);border-radius:20px;background:#fff;border:1px solid var(--line-l);box-shadow:var(--sh-card);color:var(--ink);color-scheme:light}
+.panel-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px}
+.panel-head :is(h2,h3){font:600 17px/1.3 var(--sans);letter-spacing:-.01em}
+.panel-head p{color:var(--ink-3);font-size:14.5px}
+.panel-row{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
+.account-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.toolbar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px}
+.toolbar .field{flex:1 1 180px}
+/* Indicadores en una sola tira con filetes; .stats-3 / .stats-6 fijan las columnas */
+.stats{--n:4;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:1px;overflow:hidden;border:1px solid var(--line-l);border-radius:22px;background:var(--line-l);box-shadow:var(--sh-card)}
+.stats-3{--n:3}.stats-6{--n:6}
+.stats:empty{display:none}
+.stat{display:grid;gap:6px;align-content:start;padding:20px 22px 22px;background:#fff;color:var(--ink)}
+.stat span{font:600 11px/1.35 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.stat strong{margin-top:4px;font:360 clamp(30px,1.5rem + .8vw,38px)/1.05 var(--serif);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat small{font-size:13px;color:var(--ink-3)}
+/* Barras: las columnas se alinean entre filas (subgrid) y cada barra tiene su riel */
+.bars{display:grid;grid-template-columns:fit-content(300px) minmax(0,1fr) auto;gap:12px 16px}
+.bars>p{grid-column:1/-1}
+.bar{grid-column:1/-1;display:grid;grid-template-columns:subgrid;align-items:center;gap:12px 16px;min-height:24px;font-size:13.5px}
+.bar::before{content:"";grid-area:1/2;height:8px;border-radius:999px;background:var(--paper-2)}
+.bar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-2)}
+.bar i{grid-area:1/2;display:block;height:8px;min-width:3px;border-radius:999px;background:linear-gradient(90deg,var(--ink),#3b5a86)}
+.bar b{font:500 13px/1 var(--mono);text-align:right;color:var(--ink)}
+.toolbar .button{--bh:48px}
+@media (max-width:1100px){.stats-6{--n:3}}
+@media (max-width:760px){
+.account-grid{grid-template-columns:1fr}
+.bars{grid-template-columns:minmax(0,1fr) auto}
+.bar{row-gap:8px}
+.bar span{grid-column:1/-1}
+.bar::before,.bar i{grid-area:2/1}
+.bar b{grid-area:2/2}
+.tabs{display:flex;width:100%;flex-wrap:nowrap}
+.tabs [role=tab]{flex:1 1 0;justify-content:center;height:44px;padding:0 6px;font-size:14px}
+.tabs .icon{display:none}
+.stats{--n:2}
+.stats>.stat:first-child:nth-last-child(odd){grid-column:1/-1}
+.stats .stat{padding:16px 16px 18px}
+.stat strong{font-size:clamp(22px,7.2vw,28px);overflow-wrap:anywhere}}
+
+.admin{--i-back:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 12H5M11 5l-7 7 7 7'/%3E%3C/svg%3E")}
+
+/* Encabezado */
+.admin-head .kicker{margin-bottom:18px}
+.admin-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:18px 64px;align-items:end;padding-bottom:clamp(28px,3.2vw,40px);border-bottom:1px solid var(--line-l)}
+.admin-head .lead{justify-self:end;max-width:46ch}
+.admin-notice{margin-top:24px}
+/* Sin permiso: si la primera carga falla (403), sólo el aviso y la salida, no un panel a medio armar */
+.admin-noaccess{display:none;margin-top:18px}
+.admin:has(.admin-notice[data-tone=error]:not([hidden])):has([data-resumen-stats]:empty) .admin-noaccess{display:block}
+.admin:has(.admin-notice[data-tone=error]:not([hidden])) .admin-app:has([data-resumen-stats]:empty){display:none}
+
+/* Sin sesión: banda de acceso a lo ancho */
+.admin-login{padding-top:clamp(24px,3vw,36px)}
+.admin-login-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 22px;align-items:center;padding:clamp(22px,3vw,34px);border-radius:var(--r-l);background:#fff;box-shadow:var(--sh-card)}
+.admin-login-ico{grid-row:span 2;display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:var(--paper-2);color:var(--copper)}
+.admin-login-ico .icon{width:21px;height:21px}
+.admin-login-card h2{grid-column:2;font:400 clamp(1.6rem,1.3rem + .9vw,2.1rem)/1.1 var(--serif);letter-spacing:-.02em}
+.admin-login-card p{grid-column:2;color:var(--ink-2)}
+.admin-login-card p a{font-weight:500;color:var(--ink)}
+.admin-login-card .actions{grid-column:3;grid-row:1/span 2}
+
+/* Pestañas y sesión */
+.admin-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 24px;margin:clamp(26px,3vw,36px) 0 clamp(18px,2vw,24px)}
+.admin-session{display:flex;align-items:center;gap:10px;min-width:0;font-size:14px;color:var(--ink-3)}
+.admin-session strong{color:var(--ink);font-weight:560;overflow-wrap:anywhere}
+.admin-avatar{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:50%;background:#fff;color:var(--ink-2);box-shadow:var(--sh-card)}
+.admin-avatar .icon{width:16px;height:16px}
+.admin-view,.admin-detail{display:grid;gap:clamp(16px,1.8vw,22px)}
+.admin-view,.admin-detail,.admin-list{animation:admin-in .45s var(--ease)}
+@keyframes admin-in{from{opacity:0;transform:translateY(6px)}}
+
+/* Consumo: el mes y sus indicadores en una sola tarjeta */
+.admin-period{display:grid;grid-template-columns:minmax(250px,.8fr) minmax(0,2.2fr);overflow:hidden;border:1px solid var(--line-l);border-radius:22px;background:#fff;box-shadow:var(--sh-card)}
+.admin-period .toolbar{align-content:center;padding:20px 22px 22px}
+.admin-period .field{flex:1 1 150px}
+.admin-period .field label{font:600 11px/1.35 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.admin-period .stats{border:0;border-left:1px solid var(--line-l);border-radius:0;box-shadow:none}
+
+/* Paneles con la tabla a sangre */
+.admin .panel{--pp:clamp(18px,2.2vw,26px);gap:16px;padding:var(--pp);border-radius:22px;overflow:hidden}
+.admin .panel>.table-wrap{margin:0 calc(-1*var(--pp)) calc(-1*var(--pp));border-width:1px 0 0;border-radius:0}
+.admin .panel>.table-wrap :is(th,td):first-child{padding-left:var(--pp)}
+.admin .panel>.table-wrap :is(th,td):last-child{padding-right:var(--pp)}
+.admin .table th{background:var(--paper)}
+.admin .table td{padding-block:13px;white-space:nowrap}
+.admin .table td:first-child{font-weight:500}
+.admin .table td:has(>code){min-width:300px;white-space:normal}
+.admin .table td:last-child:has(>.button){text-align:right}
+.admin .table td[colspan]{padding-block:30px;text-align:center;font-weight:400;color:var(--ink-3)}
+
+/* Formularios en fila */
+.admin-input-icon{position:relative}
+.admin-input-icon .icon{position:absolute;left:15px;top:50%;width:17px;height:17px;transform:translateY(-50%);color:var(--ink-3);pointer-events:none}
+.admin-input-icon input{padding-left:42px}
+.admin-search .field{flex:0 1 420px}
+.admin-total{margin-left:auto;padding-bottom:14px}
+
+/* Detalle: encabezado y plan vigente a la izquierda, cortesía a la derecha */
+.admin-detail>.panel-row{padding:4px 0 6px}
+.admin-detail>.panel-row h2{margin-top:10px;font:400 clamp(1.8rem,1.35rem + 1.4vw,2.6rem)/1.08 var(--serif);letter-spacing:-.022em;overflow-wrap:anywhere}
+.admin-detail>.panel-row .small{margin-top:10px;overflow-wrap:anywhere}
+.admin-detail>.panel-row>.button::before{content:"";width:16px;height:16px;background:currentColor;-webkit-mask:var(--i-back) center/contain no-repeat;mask:var(--i-back) center/contain no-repeat}
+.admin-detail>.panel-row+.panel{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:18px clamp(24px,4vw,56px);align-items:start}
+.admin-detail>.panel-row+.panel>.actions{display:contents}
+/* El estado cabe en una línea: así no se corta una fecha en su guion */
+.admin-detail>.panel-row+.panel>.panel-head{grid-area:1/1;display:grid;gap:10px;container-type:inline-size}
+.admin-detail>.panel-row+.panel>.panel-head p{font:400 clamp(16px,5.4cqi,1.6rem)/1.3 var(--serif);letter-spacing:-.015em;color:var(--ink)}
+.admin-detail>.panel-row+.panel>.actions>form{grid-area:1/2}
+.admin-detail>.panel-row+.panel>.actions>.button{grid-area:2/1;justify-self:start}
+.admin-detail>.panel-row+.panel>.help{grid-area:2/2}
+.admin-detail .help{display:flex;gap:8px;align-items:flex-start;color:var(--warn-ink)}
+.admin-detail .help::before{content:"";flex:none;width:16px;height:16px;margin-top:2px;background:currentColor;-webkit-mask:var(--ic-alert) center/contain no-repeat;mask:var(--ic-alert) center/contain no-repeat}
+
+@media (max-width:1180px){
+.admin-detail>.panel-row+.panel{grid-template-columns:minmax(0,1fr)}
+.admin-detail>.panel-row+.panel>:is(.panel-head,.help),.admin-detail>.panel-row+.panel>.actions>:is(form,.button){grid-area:auto}}
+@media (max-width:1024px){
+.admin-head,.admin-period,.admin .account-grid{grid-template-columns:minmax(0,1fr)}
+.admin-head .lead{justify-self:start}
+.admin-period .stats{border-left:0;border-top:1px solid var(--line-l)}}
+@media (max-width:760px){
+.admin-login-card{grid-template-columns:minmax(0,1fr);justify-items:start;gap:14px}
+.admin-login-card>:is(h2,p,.actions,.admin-login-ico){grid-column:auto;grid-row:auto}
+.admin-search .field{flex:1 1 200px}
+.admin-total{flex-basis:100%;margin-left:0;padding-bottom:0}
+.admin-detail .toolbar .button{flex:1 1 auto}
+.admin-detail>.panel-row+.panel>.actions>.button{justify-self:stretch}
+.admin .table td[colspan]{text-align:left}}

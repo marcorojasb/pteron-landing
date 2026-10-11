@@ -19,11 +19,15 @@
   <url><loc>https://pteron.patagua.dev/docs?pagina=adaptar</loc><priority>0.6</priority></url>
   <url><loc>https://pteron.patagua.dev/docs?pagina=revisar-exportar</loc><priority>0.6</priority></url>
   <url><loc>https://pteron.patagua.dev/docs?pagina=artefactos</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs?pagina=formatos-guia</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs?pagina=pauta-docente</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs?pagina=copia-local</loc><priority>0.6</priority></url>
   <url><loc>https://pteron.patagua.dev/docs?pagina=presentaciones</loc><priority>0.6</priority></url>
   <url><loc>https://pteron.patagua.dev/docs?pagina=exportar</loc><priority>0.6</priority></url>
   <url><loc>https://pteron.patagua.dev/docs?pagina=trabajo-local</loc><priority>0.6</priority></url>
   <url><loc>https://pteron.patagua.dev/docs?pagina=datos-estudiantes</loc><priority>0.6</priority></url>
   <url><loc>https://pteron.patagua.dev/docs?pagina=modelos-permisos</loc><priority>0.6</priority></url>
+  <url><loc>https://pteron.patagua.dev/docs?pagina=atajos</loc><priority>0.6</priority></url>
   <url><loc>https://pteron.patagua.dev/docs?pagina=preguntas</loc><priority>0.7</priority></url>
   <url><loc>https://pteron.patagua.dev/docs?pagina=solucion-problemas</loc><priority>0.7</priority></url>
   <url><loc>https://pteron.patagua.dev/docs?pagina=versiones</loc><priority>0.7</priority></url>

@@ -346,6 +346,20 @@
     );
   };
 
+  // Una página puede pedir el catálogo desde varios scripts (script.js, download.js, docs/app.js):
+  // sin opciones se comparte una sola consulta por carga de página. Con opciones (pruebas) no se guarda.
+  let sharedCatalog = null;
+  const loadSharedReleaseCatalog = (options) => {
+    if (options) return loadReleaseCatalog(options);
+    if (!sharedCatalog) {
+      sharedCatalog = loadReleaseCatalog().catch((error) => {
+        sharedCatalog = null;
+        throw error;
+      });
+    }
+    return sharedCatalog;
+  };
+
   const findAsset = (release, kind) => {
     if (!release?.version) return null;
     const name = artifactNames(release.version)[kind];
@@ -371,7 +385,7 @@
     findAsset,
     findSignature,
     isCompleteRelease,
-    loadReleaseCatalog,
+    loadReleaseCatalog: loadSharedReleaseCatalog,
     normalizeRelease,
     requiredAssetNames,
   };

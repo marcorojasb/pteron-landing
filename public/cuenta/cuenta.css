@@ -1,0 +1,252 @@
+/* pteron · Cuenta (2026-10-12.1). Sólo lo propio de /cuenta; el resto es styles.css.
+   Tres estados: sin sesión (acceso + recorrido), esperando /api/account (html.has-session, esqueleto) y con sesión (panel). */
+
+/* Avisos de cuenta.js: flotan bajo la píldora para verse desde cualquier punto de la página */
+.cuenta-notice{position:fixed;z-index:58;top:86px;left:50%;width:max-content;max-width:min(100% - 24px,620px);translate:-50% 0;padding:13px 18px 13px 48px;border-radius:18px;box-shadow:0 0 0 1px #0f22381f,0 2px 6px #07090d29,0 26px 54px -18px #07090dc7;animation:cuenta-in .6s var(--ease) both}
+.cuenta-notice::before{left:17px;top:15px}
+html:has(.cuenta-notice:not([hidden])){scroll-padding-top:156px}
+@keyframes cuenta-in{from{opacity:0;translate:-50% -10px}}
+@keyframes cuenta-in-m{from{opacity:0;translate:0 -10px}}
+
+/* Héroe: Almirante Nieto a la izquierda, la tarjeta de acceso a la derecha */
+.band.page-hero.cuenta-hero{padding-top:clamp(124px,11vw,158px);padding-bottom:calc(clamp(72px,7vw,104px) + var(--r-sheet))}
+.cuenta-hero .band-photo img{object-position:50% 56%}
+.cuenta-hero .band-shade{background:radial-gradient(60% 66% at 24% 48%,#07090dc7,#07090d73 58%,transparent 88%),linear-gradient(90deg,#07090d99,#07090d4d 48%,#07090d14 72%),linear-gradient(180deg,#07090dad,#07090d14 24%,#07090d0d 58%,#07090dcc 90%,#07090d)}
+.cuenta-hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,456px);grid-template-areas:"copy access" "points access";gap:34px clamp(40px,5vw,72px);align-items:center}
+.cuenta-hero-copy{grid-area:copy;align-self:end;display:grid;gap:22px;justify-items:start}
+.cuenta-hero-copy h1{text-shadow:0 2px 30px #05090f80}
+.cuenta-hero-copy .lead{max-width:520px;color:#d6d8dc;text-shadow:0 1px 16px #05090fb2}
+.cuenta-points{grid-area:points;align-self:start;display:grid;gap:14px;max-width:470px}
+/* El texto va por encima de la luz cálida de la tarjeta de acceso (que en móvil queda justo encima) */
+.cuenta-hero-copy,.cuenta-points{position:relative;z-index:1}
+.cuenta-points li{display:grid;grid-template-columns:42px minmax(0,1fr);gap:14px;align-items:center;color:#c9ccd1;font-size:14.5px;line-height:1.45}
+.cuenta-points strong{display:block;color:var(--snow);font-size:15.5px;font-weight:560}
+.cuenta-point-ico{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#0d0f149e;border:1px solid #ffffff21;color:var(--ember-hi);box-shadow:inset 0 1px 0 #ffffff0f;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+
+/* Tarjeta de acceso: luz cálida detrás, una segunda hoja de vidrio y la foto del escritorio como portada (uno de sus dos usos) */
+.cuenta-access{grid-area:access;align-self:start;position:relative;isolation:isolate}
+.cuenta-access::before{content:"";position:absolute;z-index:-2;inset:-18% -22% -12%;background:radial-gradient(closest-side,#e9a25b30,#e9a25b0d 55%,transparent);pointer-events:none}
+.cuenta-access::after{content:"";position:absolute;z-index:-1;inset:34px -26px -22px 30px;border-radius:32px;background:linear-gradient(160deg,#ffffff24,#ffffff0a);border:1px solid #ffffff2e;box-shadow:0 40px 80px -40px #000000b3;rotate:3.5deg;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);pointer-events:none}
+.cuenta-login{gap:0;padding:8px;border-radius:30px;box-shadow:0 0 0 1px #ffffff5c,0 2px 6px #07090d2e,0 34px 70px -30px #07090de0,0 80px 120px -60px #000000b3}
+.cuenta-login-cover{position:relative;height:clamp(118px,10vw,146px);overflow:hidden;border-radius:22px;background:#3b2a1d}
+.cuenta-login-cover img{width:100%;height:100%;object-fit:cover;object-position:50% 24%}
+.cuenta-login-cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#07090d00 30%,#07090da8 72%,#07090dc4)}
+.cuenta-login-badge{position:absolute;z-index:1;left:16px;bottom:15px;display:inline-flex;align-items:center;gap:8px;color:var(--snow);font:600 11.5px/1 var(--sans);letter-spacing:.09em;text-transform:uppercase;text-shadow:0 1px 10px #000000d9}
+.cuenta-login-badge .icon{width:15px;height:15px;color:var(--ember-hi)}
+.cuenta-login-body{display:grid;gap:18px;padding:clamp(20px,2.2vw,26px) clamp(16px,1.8vw,22px) clamp(16px,1.8vw,20px)}
+.cuenta-login-head{display:grid;gap:8px}
+.cuenta-login-head h2{font:400 clamp(1.65rem,1.3rem + .9vw,2.05rem)/1.1 var(--serif);letter-spacing:-.02em}
+.cuenta-login-head p:last-child{color:var(--ink-2);font-size:15px;line-height:1.55}
+.cuenta-login-error::before{content:"";flex:none;width:17px;height:17px;margin-top:1px;background:currentColor;-webkit-mask:var(--ic-alert) center/contain no-repeat;mask:var(--ic-alert) center/contain no-repeat}
+.cuenta-login-submit:disabled,[data-current=false] [data-checkout-plan]:disabled,:is([data-confirm-activation],[data-cancel-subscription]):disabled{opacity:.82}
+/* Botones ocupados (enviar enlace, elegir plan, autorizar, cancelar): giro con el color del propio botón */
+:is(.cuenta-login-submit,[data-confirm-activation],[data-cancel-subscription]):disabled::after,[data-current=false] [data-checkout-plan]:disabled::after{content:"";width:15px;height:15px;border-radius:50%;border:2px solid;border-color:currentColor currentColor currentColor transparent;opacity:.7;animation:cuenta-spin .8s linear infinite}
+@keyframes cuenta-spin{to{rotate:1turn}}
+.cuenta-sent{display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;align-items:start;padding:14px 16px 15px;border-radius:18px;background:var(--ok-bg);color:var(--ok-ink);animation:cuenta-rise .5s var(--ease) both}
+.cuenta-sent-ico{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#fff;box-shadow:0 1px 2px #1d674726}
+.cuenta-sent strong{display:block;margin-bottom:2px;font-weight:600;color:#154f37}
+.cuenta-sent p{font-size:14px;line-height:1.5}
+@keyframes cuenta-rise{from{opacity:0;translate:0 8px}}
+/* Con el enlace enviado, reenviar pasa a segundo plano */
+.cuenta-login:has([data-link-sent]:not([hidden])) .cuenta-login-submit{background:transparent;color:var(--ink);border-color:var(--line-l2);box-shadow:none}
+
+/* Con sesión, o esperando /api/account con una sesión guardada: sin acceso, puntos ni recorrido */
+:is(.cuenta-main:has([data-dashboard]:not([hidden])),.has-session .cuenta-main:has([data-dashboard][hidden]):not(:has(.cuenta-notice[data-tone=error]:not([hidden])))) :is(.cuenta-points,[data-auth-panel],.cuenta-tour){display:none}
+:is(.cuenta-main:has([data-dashboard]:not([hidden])),.has-session .cuenta-main:has([data-dashboard][hidden]):not(:has(.cuenta-notice[data-tone=error]:not([hidden])))) .cuenta-hero-grid{display:block}
+.has-session .cuenta-main:has([data-dashboard][hidden]):not(:has(.cuenta-notice[data-tone=error]:not([hidden]))) .cuenta-skeleton{display:grid}
+.cuenta-skeleton{display:none;gap:28px}
+.cuenta-sk{display:block;border-radius:14px;background:linear-gradient(90deg,var(--paper-2) 30%,#fbfaf7 50%,var(--paper-2) 70%) 0 0/300% 100%;animation:cuenta-shimmer 1.6s ease-in-out infinite}
+@keyframes cuenta-shimmer{from{background-position:100% 0}to{background-position:0 0}}
+.cuenta-sk-head{display:flex;align-items:center;gap:22px;padding-bottom:30px;border-bottom:1px solid var(--line-l)}
+.cuenta-sk-avatar{width:68px;height:68px;border-radius:50%}
+.cuenta-sk-lines{display:grid;gap:12px;flex:1}
+.cuenta-sk-lines :first-child{width:min(340px,70%);height:34px}
+.cuenta-sk-lines :last-child{width:min(220px,50%);height:16px}
+.cuenta-sk-bar{height:150px;border-radius:var(--r-l)}
+.cuenta-sk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.cuenta-sk-grid .cuenta-sk{height:300px;border-radius:var(--r-l)}
+
+/* Panel con sesión */
+.cuenta-dash{display:grid;gap:clamp(30px,3.4vw,44px);animation:cuenta-rise .7s var(--ease) both}
+.cuenta-session{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px 24px;padding-bottom:clamp(26px,3vw,36px);border-bottom:1px solid var(--line-l)}
+.cuenta-avatar{display:grid;place-items:center;width:68px;height:68px;border-radius:50%;background:radial-gradient(120% 120% at 30% 20%,#2c4c74,var(--ink) 70%);color:#f2e4d2;box-shadow:0 0 0 5px #fff,0 0 0 6px var(--line-l),0 16px 30px -14px #0f223899}
+.cuenta-avatar .icon{width:28px;height:28px;stroke-width:1.5}
+.cuenta-session-copy{display:grid;gap:8px;min-width:0}
+.cuenta-session-copy h2{overflow-wrap:anywhere}
+.cuenta-email{display:inline-flex;align-items:center;gap:8px;min-width:0;color:var(--ink-2);font-size:15.5px;overflow-wrap:anywhere}
+.cuenta-email .icon{width:16px;height:16px;color:var(--copper)}
+
+/* Activar pteron: tarjeta clara en espera; noche de lago con una solicitud o un resultado (idle oculto) */
+.cuenta-activation{--lead:var(--ink-2);position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px clamp(32px,5vw,80px);align-items:center;padding:clamp(24px,3vw,40px);border-radius:var(--r-l);background:#fff;box-shadow:var(--sh-card);color:var(--ink);isolation:isolate}
+.cuenta-activation-copy{display:grid;gap:10px;align-content:start}
+.cuenta-activation h2{font:400 clamp(1.65rem,1.25rem + 1.15vw,2.35rem)/1.1 var(--serif);letter-spacing:-.022em;text-wrap:balance}
+.cuenta-activation-lead{max-width:52ch;color:var(--lead);font-size:15.5px;line-height:1.6}
+.cuenta-expira{display:inline-flex;align-items:center;gap:8px;margin-top:4px;color:var(--muted);font-size:14px}
+.cuenta-expira .icon{width:16px;height:16px;color:var(--copper)}
+.cuenta-state{position:relative;display:grid;gap:12px;justify-items:start;align-content:center;min-width:0}
+.cuenta-state-title{font:560 clamp(1.15rem,1.05rem + .3vw,1.3rem)/1.3 var(--sans);letter-spacing:-.015em}
+.cuenta-state-text{color:var(--lead);font-size:15.5px;line-height:1.55}
+.cuenta-state .button{margin-top:8px}
+.cuenta-state-idle{gap:16px;padding:22px 24px;border-radius:22px;background:var(--paper);border:1px solid var(--line-l)}
+.cuenta-path{display:flex;flex-wrap:wrap;align-items:center;gap:8px 6px;font:500 13.5px/1 var(--sans);color:var(--ink-2)}
+/* La ruta es texto; sólo «Activar este equipo» replica el botón real de la app (.is-key) */
+.cuenta-path>span{display:inline;font-weight:500;color:var(--ink)}
+.cuenta-path>span.is-key{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 12px;border-radius:9px}
+.cuenta-path .icon{width:14px;height:14px;color:var(--ink-3)}
+.cuenta-path .is-key{background:var(--ink);border-color:var(--ink);color:#fff;box-shadow:0 8px 18px -10px #0f2238b3}
+.cuenta-path .is-key .icon{color:var(--ember-hi)}
+.cuenta-activation:has(>[data-activation-idle][hidden]){--lead:#c3c8cf;--muted:var(--mist);--focus:var(--ember-hi);background:radial-gradient(80% 120% at 100% 110%,#1a5683eb,#0c2740e6 46%,#08121d 82%),#08121d;color:var(--snow);box-shadow:0 0 0 1px #ffffff12,0 50px 90px -46px #07090de6;color-scheme:dark}
+.cuenta-activation:has(>[data-activation-idle][hidden]) .cuenta-expira .icon{color:var(--ember-hi)}
+.cuenta-activation:has(>[data-activation-idle][hidden])::before{content:"";position:absolute;z-index:-1;right:0;top:-20%;width:60%;height:120%;background:radial-gradient(closest-side,#e9a25b26,transparent);pointer-events:none}
+.cuenta-state-pending,.cuenta-state-result{animation:cuenta-rise .6s var(--ease) both;padding:clamp(22px,2.6vw,32px);border-radius:24px;background:#0b0e13b8;border:1px solid #ffffff1f;box-shadow:inset 0 1px 0 #ffffff12,0 30px 60px -36px #000000d9}
+.cuenta-state-pending{padding-right:300px}
+.cuenta-state-app{position:absolute;right:22px;top:50%;width:258px;translate:0 -50%;rotate:2.5deg;box-shadow:0 0 0 1px #0f22381a,0 30px 60px -24px #000000e6}
+.cuenta-state-app .url{font-size:11px}
+.cuenta-state-app .mini-body{gap:8px;min-height:0;padding:13px 14px 15px}
+.cuenta-state-app .ui-title{font:500 15.5px/1.2 var(--serif)}
+.cuenta-ui-note{display:flex;gap:8px;align-items:flex-start;padding:9px 10px;border-radius:10px;background:#eef3f8;color:#2b4766;font:500 12px/1.45 var(--sans)}
+.cuenta-ui-note .icon{width:14px;height:14px;margin-top:1px}
+.cuenta-state-ico{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:var(--ok);color:#fff;box-shadow:0 0 0 6px #3f9d7833,0 12px 26px -10px #3f9d78cc}
+.cuenta-state-ico .icon{width:22px;height:22px;stroke-width:2.4}
+
+/* Plan vigente y planes */
+.cuenta-plans-block{display:grid;gap:24px}
+.cuenta-block-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 48px}
+.cuenta-block-head h2{margin-top:10px;font:400 clamp(1.85rem,1.3rem + 1.5vw,2.7rem)/1.06 var(--serif);letter-spacing:-.024em}
+.cuenta-block-head>p{max-width:440px;color:var(--ink-2);font-size:15.5px;line-height:1.55}
+.cuenta-plan-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:20px}
+.cuenta-status{gap:12px}
+.cuenta-status h3{margin-bottom:6px}
+.cuenta-status [data-subscription-summary],.cuenta-empty{display:grid;gap:12px;padding:20px;border-radius:20px;background:var(--paper);border:1px solid var(--line-l)}
+.cuenta-empty p{color:var(--ink-2);font-size:15px}
+.cuenta-empty .link-arrow{justify-self:start;margin-top:4px;font-size:15px}
+.cuenta-status .subscription-plan{margin-bottom:2px}
+.cuenta-cancel{justify-self:start;margin-top:4px}
+.cuenta-plans{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cuenta-plans .plan-box{margin-top:auto}
+.cuenta-plans .plan-name{font-size:32px}
+.cuenta-plans [data-current=true] .button:disabled{opacity:1;cursor:default;transform:none;background:var(--ok-bg);color:var(--ok-ink);border-color:#1d674733;box-shadow:none}
+.cuenta-plans [data-current=true] .button:disabled::before{content:"";width:16px;height:16px;background:currentColor;-webkit-mask:var(--ic-check) center/contain no-repeat;mask:var(--ic-check) center/contain no-repeat}
+.cuenta-fine{display:flex;gap:10px;align-items:flex-start;max-width:none}
+.cuenta-fine .icon{width:16px;height:16px;margin-top:2px;color:var(--copper)}
+
+/* Licencias: cada fila con su equipo */
+.cuenta-licenses{gap:18px}
+.cuenta-card-head{display:flex;align-items:center;gap:16px}
+.cuenta-card-head>div{display:grid;gap:6px}
+.cuenta-card-ico{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;background:var(--paper-2);color:var(--copper)}
+.cuenta-license-list{--equipo:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a5a1c' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='12' rx='2'/%3E%3Cpath d='M8 21h8M12 17v4'/%3E%3C/svg%3E")}
+.cuenta-license-list .license-row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:4px 16px;padding:16px 2px}
+.cuenta-license-list .license-row::before{content:"";width:44px;height:44px;border-radius:14px;background:var(--paper-2) var(--equipo) center/20px no-repeat}
+.cuenta-license-list .license-row>div{min-width:0}
+.cuenta-license-list .license-row>div>span{display:block;margin-top:3px}
+.cuenta-license-list .account-muted{display:flex;align-items:center;gap:12px;padding:18px 20px;border-radius:18px;border:1px dashed var(--line-l2);background:var(--paper)}
+.cuenta-license-list .account-muted::before{content:"";flex:none;width:20px;height:20px;background:var(--equipo) center/contain no-repeat}
+.cuenta-license-foot{padding-top:14px;border-top:1px solid var(--line-l);color:var(--ink-3);font-size:14px}
+
+/* Recorrido sin sesión: arco de horizonte bajo el titular y escenarios con una caja de 360×264 que escala */
+.cuenta-tour-head .display{position:relative;z-index:1}
+.cuenta-horizon{position:relative;height:clamp(56px,7vw,96px);margin-top:clamp(-30px,-2vw,-14px)}
+.cuenta-arc{position:relative;z-index:1;display:block;width:100%;height:100%;overflow:visible}
+.cuenta-arc path{fill:none;stroke:var(--ink-3);stroke-width:1.2;stroke-dasharray:1;stroke-dashoffset:0;transition:stroke-dashoffset 2.6s var(--ease) .2s}
+.reveal-on .cuenta-horizon:not(.is-in) .cuenta-arc path{stroke-dashoffset:1}
+/* Baldosas en L: el arco pasa por su base; se desplazan con el scroll a velocidades distintas */
+.cuenta-tile-l{position:absolute;bottom:-14px;width:clamp(84px,9vw,128px);aspect-ratio:1;filter:drop-shadow(0 2px 2px #0f22381a) drop-shadow(0 14px 16px #0f223829)}
+.cuenta-tile-l img{width:100%;height:100%}
+.cuenta-tile-a{left:2.5%}
+.cuenta-tile-b{right:2.5%;bottom:-6px}
+.cuenta-tour-lead{max-width:680px;margin:clamp(4px,1vw,14px) auto 0;text-align:center}
+.cuenta-tour .step-num{color:var(--copper)}
+.cuenta-tile .tile-copy{gap:10px}
+.cuenta-stage{height:clamp(250px,23vw,300px);container-type:inline-size}
+.cuenta-comp{position:absolute;left:50%;top:50%;width:360px;height:264px;translate:-50% -50%}
+.cuenta-comp>*{position:absolute}
+@container (max-width:384px){.cuenta-comp{scale:.93}}
+@container (max-width:352px){.cuenta-comp{scale:.86}}
+@container (max-width:324px){.cuenta-comp{scale:.8}}
+.cuenta-mini-plan{width:172px;padding:15px 16px 14px;border-radius:16px}
+.cuenta-mini-basic{left:8px;top:16px;z-index:2;background:linear-gradient(180deg,#151922,#0d1016);color:var(--snow);box-shadow:0 0 0 1px #ffffff14,0 26px 46px -20px #07090dcc}
+.cuenta-mini-pro{left:172px;top:32px;rotate:3deg;padding-left:24px}
+.cuenta-mini-tag{display:block;font:600 10.5px/1.3 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--ember-hi)}
+.cuenta-mini-name{margin-top:8px;font:400 25px/1.05 var(--serif);letter-spacing:-.02em}
+.cuenta-mini-price{margin:8px 0 12px;font:400 27px/1 var(--serif);letter-spacing:-.03em;white-space:nowrap}
+.cuenta-mini-price small{font:400 11.5px/1 var(--sans);letter-spacing:0;color:#5a677a}
+.cuenta-mini-basic .cuenta-mini-price small{color:var(--mist)}
+.cuenta-mini-basic .ui-btn{background:var(--snow);border-color:var(--snow);color:#0b0e13}
+.cuenta-mini-toast{left:18px;right:18px;top:196px;z-index:3;display:flex;gap:9px;align-items:flex-start;padding:10px 12px;border-radius:12px;font:500 12px/1.45 var(--sans)}
+.cuenta-mini-toast::before{content:"";flex:none;width:14px;height:14px;margin-top:1px;background:var(--ember-lo);-webkit-mask:var(--ic-info) center/contain no-repeat;mask:var(--ic-info) center/contain no-repeat}
+.cuenta-stage-art .stage-photo{object-position:50% 34%}
+.cuenta-stage-art::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#07111f0d,#07111f40)}
+.cuenta-mini-app{left:2px;top:12px;width:266px;rotate:-2deg;box-shadow:0 0 0 1px #0f22381a,0 30px 50px -24px #140c04b3}
+.cuenta-mini-app .url{font-size:11.5px}
+.cuenta-mini-app .mini-body{gap:9px;min-height:0;padding:13px 14px 15px}
+.cuenta-mini-app .ui-title{font:500 15px/1.2 var(--serif)}
+.cuenta-mini-app .ui-opt{padding:8px 10px}
+.cuenta-mini-auth{left:166px;top:114px;z-index:2;display:grid;gap:8px;justify-items:start;width:190px;padding:13px 14px 14px}
+.cuenta-mini-auth .ui-actions{margin-top:4px}
+.cuenta-mini-ember{background:var(--ember-fill);border-color:#c9772f66;color:#1d1105}
+.cuenta-comp .cursor{left:284px;top:226px}
+.cuenta-comp .ripple{left:272px;top:214px}
+.cuenta-mini-list{left:8px;right:8px;top:18px;padding:14px 16px 4px}
+.cuenta-mini-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:2px 12px;margin-top:10px;padding:12px 0;border-top:1px solid #efece6}
+.cuenta-mini-row .ui-tile{grid-row:span 2}
+.cuenta-mini-row strong{font-weight:600;font-size:13px}
+.cuenta-mini-row small{grid-column:2/-1;font-size:11.5px;color:#5a677a}
+.cuenta-mini-device{left:112px;top:142px;z-index:2;width:240px;padding:13px 14px 14px}
+.cuenta-mini-device .ui-title{font-size:15px}
+.cuenta-mini-device-text{margin-top:10px}
+
+/* Ayuda */
+.cuenta-help{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:18px 26px;margin-top:clamp(36px,4.6vw,64px);padding:clamp(20px,2.4vw,28px) clamp(20px,2.6vw,32px);border-radius:var(--r-l);background:var(--paper-2);border:1px solid var(--line-l)}
+.cuenta-help-ico{display:grid;place-items:center;width:54px;height:54px;border-radius:17px;background:#fff;color:var(--copper);box-shadow:var(--sh-card)}
+.cuenta-help-copy{display:grid;gap:4px}
+.cuenta-help h2{font:400 clamp(1.45rem,1.25rem + .6vw,1.75rem)/1.15 var(--serif);letter-spacing:-.02em}
+.cuenta-help p{color:var(--ink-2);font-size:15px}
+
+@media (max-width:1024px){
+.cuenta-activation,.cuenta-plan-grid{grid-template-columns:minmax(0,1fr)}
+.cuenta-plans>li:first-child{grid-column:auto}
+.cuenta-sk-grid{grid-template-columns:1fr 1fr}
+.cuenta-sk-grid :first-child{grid-column:1/-1;height:200px}
+.cuenta-help{grid-template-columns:auto minmax(0,1fr)}
+.cuenta-help .actions{grid-column:1/-1}}
+
+@media (min-width:1025px){
+.cuenta-activation:has(>[data-activation-idle][hidden]){grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}}
+
+@media (min-width:761px) and (max-width:1024px){
+.cuenta-tour .tile-row>.tile:first-child{grid-column:1/-1}}
+
+@media (max-width:900px){
+.cuenta-hero-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"copy" "access" "points";row-gap:30px}
+.cuenta-access{width:100%;max-width:520px}}
+
+@media (max-width:760px){
+.band.page-hero.cuenta-hero{padding-top:104px;padding-bottom:calc(56px + var(--r-sheet))}
+.cuenta-hero-copy{gap:16px}
+.cuenta-hero-copy .lead{font-size:1.02rem}
+.cuenta-hero .band-shade{background:radial-gradient(90% 40% at 30% 22%,#07090d99,transparent 80%),linear-gradient(180deg,#07090de0,#07090db8 34%,#07090d8c 52%,#07090d73 70%,#07090dd1 90%,#07090d)}
+.cuenta-notice{top:76px;left:12px;right:12px;width:auto;max-width:none;translate:none;animation-name:cuenta-in-m}
+.cuenta-access::after{inset:30px -10px -14px 16px}
+.cuenta-login{border-radius:26px;padding:6px}
+.cuenta-login-cover{border-radius:20px}
+.cuenta-session{grid-template-columns:auto minmax(0,1fr)}
+.cuenta-avatar{width:54px;height:54px;align-self:start}
+.cuenta-avatar .icon{width:24px;height:24px}
+.cuenta-signout{grid-column:1/-1;justify-self:start}
+.cuenta-plans,.cuenta-sk-grid{grid-template-columns:minmax(0,1fr)}
+.cuenta-sk-grid :first-child{grid-column:auto}
+.cuenta-state-app{display:none}
+.cuenta-state-pending{padding-right:22px}
+.cuenta-license-list .license-row{grid-template-columns:44px minmax(0,1fr);align-items:start}
+.cuenta-license-list .license-row>.license-row-status{grid-column:2;justify-self:start;margin-top:6px}
+.cuenta-help{grid-template-columns:minmax(0,1fr)}
+.cuenta-help .actions{flex-direction:column;align-items:flex-start;gap:16px}
+.cuenta-help .actions .button{max-width:100%;height:auto;min-height:var(--bh);padding-block:10px;white-space:normal;text-align:center}
+.cuenta-main:has(>.cuenta-notice:not([hidden])) .band.page-hero.cuenta-hero{padding-top:184px}
+.cuenta-stage{height:250px}
+.cuenta-tile-l{display:none}}
+
+@media (prefers-reduced-motion:reduce){
+.cuenta-sk{animation:none}
+:is(.cuenta-login-submit,[data-confirm-activation],[data-cancel-subscription],[data-checkout-plan]):disabled::after{animation:none}}

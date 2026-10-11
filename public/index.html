@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>pteron — Un espacio de trabajo para docentes</title>
-  <meta name="description" content="pteron ayuda a profesores a preparar y revisar materiales sin reemplazar su criterio.">
-  <meta name="theme-color" content="#f6f2ec">
-  <meta name="color-scheme" content="light">
+  <meta name="description" content="pteron ayuda a profesores a preparar y revisar materiales sin reemplazar su criterio. Local, alineado al currículum y gratis en su núcleo.">
+  <meta name="theme-color" content="#07090d">
+  <meta name="color-scheme" content="dark">
   <link rel="canonical" href="https://pteron.patagua.dev/">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_CL">
@@ -14,8 +14,8 @@
   <meta property="og:title" content="pteron — Un espacio de trabajo para docentes">
   <meta property="og:description" content="Construido por profes, para profes.">
   <meta property="og:url" content="https://pteron.patagua.dev/">
-  <meta property="og:image" content="https://pteron.patagua.dev/assets/og-pteron-v3.jpg">
-  <meta property="og:image:secure_url" content="https://pteron.patagua.dev/assets/og-pteron-v3.jpg">
+  <meta property="og:image" content="https://pteron.patagua.dev/assets/og-pteron-v4.jpg">
+  <meta property="og:image:secure_url" content="https://pteron.patagua.dev/assets/og-pteron-v4.jpg">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -23,211 +23,538 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="pteron — Un espacio de trabajo para docentes">
   <meta name="twitter:description" content="Construido por profes, para profes.">
-  <meta name="twitter:image" content="https://pteron.patagua.dev/assets/og-pteron-v3.jpg">
+  <meta name="twitter:image" content="https://pteron.patagua.dev/assets/og-pteron-v4.jpg">
   <meta name="twitter:image:alt" content="pteron: construido por profes, para profes">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-v2-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-v2-16.png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v2.png">
   <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="preload" as="image" href="/assets/pteron-scroll-poster.jpg">
-  <link rel="preload" as="image" href="/assets/product-home-window-0-6-0.webp">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@400;500&display=swap">
-  <script>document.documentElement.classList.add("js", "is-loading")</script>
-  <link rel="stylesheet" href="/styles.css?v=2026-10-04.1">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..600&amp;family=Geist+Mono:wght@400;500&amp;family=Newsreader:opsz,wght@6..72,300..500&amp;display=swap">
+  <link rel="preload" as="image" href="/assets/photos/araucarias-2400.webp?v=2026-10-12.1" imagesrcset="/assets/photos/araucarias-1440.webp?v=2026-10-12.1 1440w, /assets/photos/araucarias-2400.webp?v=2026-10-12.1 2400w" imagesizes="100vw" media="(min-width: 761px)">
+  <link rel="preload" as="image" href="/assets/photos/araucarias-movil.webp?v=2026-10-12.1" media="(max-width: 760px)">
+  <script>document.documentElement.classList.add("js")</script>
+  <link rel="stylesheet" href="/styles.css?v=2026-10-12.1">
+  <link rel="stylesheet" href="/inicio.css?v=2026-10-12.1">
+  <script src="/release-data.js?v=2026-10-12.1" defer></script>
+  <script src="/script.js?v=2026-10-12.1" defer></script>
 </head>
 <body>
-  <div class="page-loader" data-page-loader role="status" aria-label="Cargando pteron">
-    <canvas class="loader-medusa" data-loader-medusa width="400" height="400" aria-hidden="true"></canvas>
-  </div>
-
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
-  <header class="site-header" data-header>
-    <div class="container header-inner">
-      <a class="wordmark" href="#inicio" aria-label="pteron, inicio">pteron</a>
-      <button class="menu-button" type="button" aria-label="Abrir navegación" aria-expanded="false" aria-controls="site-nav" data-menu-button>
-        <span></span><span></span>
-      </button>
-      <nav class="site-nav" id="site-nav" aria-label="Navegación principal" data-nav>
-        <a href="/docs/">Documentación</a>
-        <a href="/planes/">Planes</a>
-        <a href="/cuenta/">Cuenta</a>
-        <a class="button button-small" href="/descargar/">Descargar gratis</a>
+  <header class="nav" data-nav>
+    <div class="nav-bar">
+      <a class="wordmark" href="/" aria-label="pteron, inicio" aria-current="page">pteron</a>
+      <nav class="nav-links" aria-label="Principal">
+        <a href="/docs">Documentación</a>
+        <a href="/planes">Planes</a>
+        <a href="/cuenta">Cuenta</a>
       </nav>
+      <div class="nav-end">
+        <a class="button button-light button-small nav-cta" href="/descargar"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Descargar</a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú" data-menu-button><span></span><span></span></button>
+      </div>
+    </div>
+    <div class="nav-menu" id="menu" hidden data-menu>
+      <nav aria-label="Principal">
+        <ul>
+          <li><a href="/docs">Documentación<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></li>
+          <li><a href="/planes">Planes<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></li>
+          <li><a href="/cuenta">Cuenta<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></li>
+        </ul>
+      </nav>
+      <a class="button button-ember button-large button-block" href="/descargar"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Descargar gratis</a>
+      <p class="nav-menu-note">Beta pública · macOS, Windows y Linux</p>
     </div>
   </header>
 
   <main id="contenido">
-    <section class="hero" id="inicio">
-      <div class="container hero-grid">
-        <div class="hero-copy reveal">
-          <h1>Construido por profes,<br>para profes</h1>
-          <div class="hero-lower">
-            <div>
-              <p class="hero-lead">pteron te ayuda a preparar guías, planificaciones, evaluaciones y rúbricas.</p>
-              <div class="hero-actions">
-                <a class="button" href="/descargar/">Descargar la beta</a>
+
+    <!-- Héroe: hora azul en Nahuelbuta; la ventana real sube entre la foto y la hoja -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="wrap hero-copy">
+        <p class="kicker" data-intro style="--d:0">Beta pública gratuita<span class="sep-lg" aria-hidden="true"> · </span><br class="br-sm"><span class="wm">macOS</span>, Windows y Linux</p>
+        <h1 class="display-xl" id="hero-title" data-intro style="--d:1">Construido por profes,<br class="br-lg"> para profes.</h1>
+        <p class="lead" data-intro style="--d:2">pteron te ayuda a preparar guías, planificaciones, evaluaciones y rúbricas con tus propios materiales, en tu computador.</p>
+        <div class="actions" data-intro style="--d:3">
+          <a class="button button-ember button-large" href="/descargar"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Descargar la beta</a>
+          <a class="button button-glass button-large" href="#como-trabaja">Cómo trabaja</a>
+        </div>
+      </div>
+
+      <div class="wrap hero-stage">
+        <div class="hero-media" aria-hidden="true">
+          <div data-parallax="0.12">
+            <picture>
+              <source media="(max-width: 760px)" srcset="/assets/photos/araucarias-movil.webp?v=2026-10-12.1" width="1080" height="1350">
+              <img src="/assets/photos/araucarias-2400.webp?v=2026-10-12.1" srcset="/assets/photos/araucarias-1440.webp?v=2026-10-12.1 1440w, /assets/photos/araucarias-2400.webp?v=2026-10-12.1 2400w" sizes="100vw" width="2400" height="1600" alt="" fetchpriority="high" decoding="async">
+            </picture>
+          </div>
+        </div>
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-ground" aria-hidden="true"></div>
+
+        <div class="hero-product">
+          <figure class="window hero-window" data-hero-window>
+            <span class="lights" aria-hidden="true"><span></span><span></span><span></span></span>
+            <img src="/assets/app/01-inicio.webp?v=2026-10-12.1" srcset="/assets/app/01-inicio.webp?v=2026-10-12.1 1440w, /assets/app/01-inicio-2x.webp?v=2026-10-12.1 2880w" sizes="(max-width: 760px) 140vw, 1120px" width="1440" height="880" fetchpriority="high" alt="Pantalla de inicio de pteron 0.7: las sesiones abiertas arriba, el nombre pteron al centro, los cuatro rumbos Planificar, Crear, Evaluar y Adaptar, el compositor con «Por ejemplo: presentación sobre el ciclo del agua para 3° básico» y los accesos Retomar y Reflexión por voz">
+          </figure>
+
+          <div class="ui float float-plan" aria-hidden="true">
+            <div class="ui-pad">
+              <div class="ui-row"><span class="ui-pick"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-cap"/></svg>Curso<svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-chevron"/></svg></span><span class="ui-pick"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-book"/></svg>Asignatura<svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-chevron"/></svg></span></div>
+              <p class="ui-compose">Quiero una guía sobre el ciclo del agua para 3° básico de ciencias naturales, unos 45 minutos</p>
+            </div>
+            <div class="ui-divider"></div>
+            <div class="ui-pad ui-suggest"><span class="ui-sub"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-bulb"/></svg>¿Agregar?</span><span class="ui-add"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-plus"/></svg>Guía</span><span class="ui-add"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-plus"/></svg>3° básico</span><span class="ui-add"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-plus"/></svg>Ciencias Naturales</span><span class="ui-add"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-plus"/></svg>Tema: el ciclo del agua</span><span class="ui-add"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-plus"/></svg>45 minutos</span><span class="ui-link">Agregar todo</span></div>
+          </div>
+
+          <div class="ui float float-result" aria-hidden="true">
+            <div class="ui-pad ui-row">
+              <span class="ui-doc-ico"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-file"/></svg><b>DOCX</b></span>
+              <div><p class="ui-title">El ciclo del agua en la naturaleza</p><p class="ui-sub">Guía · Listo · 10 oct 2026</p></div>
+            </div>
+            <div class="ui-divider"></div>
+            <div class="ui-pad ui-row ui-between"><span class="ui-link"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-layers"/></svg>Versiones</span><span class="ui-btn is-ink">Abrir en editor</span></div>
+          </div>
+        </div>
+
+        <div class="truth">
+          <p class="truth-label">Lo que puedes comprobar hoy</p>
+          <ul role="list">
+            <li><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-lock"/></svg>100&nbsp;% local</li>
+            <li><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-laptop"/></svg>macOS, Windows 11 y Linux</li>
+            <li><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-book"/></svg>Currículum Nacional y Begonia</li>
+            <li><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-file"/></svg>Exporta DOCX, PPTX y PDF</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- La misma hoja continúa bajo el héroe: el atlas de asignaturas y la pantalla de inicio -->
+    <div class="sheet sheet-flow">
+
+    <!-- Atlas de asignaturas: láminas y mapas de dominio público recortados en baldosas sobre un arco de horizonte -->
+    <section class="section atlas" id="asignaturas" aria-labelledby="asignaturas-title">
+      <div class="wrap">
+        <div class="atlas-scene" aria-hidden="true" data-reveal="fade">
+          <figure class="atlas-tile atlas-t1" data-parallax="0.05" data-reveal="scale" style="--d:0"><img src="/assets/atlas/matematica-byrne-600.webp?v=2026-10-12.1" srcset="/assets/atlas/matematica-byrne-600.webp?v=2026-10-12.1 600w, /assets/atlas/matematica-byrne-900.webp?v=2026-10-12.1 900w" sizes="(max-width: 760px) 32vw, 200px" width="600" height="600" alt="" loading="lazy" decoding="async"></figure>
+          <figure class="atlas-tile atlas-t2" data-parallax="0.08" data-reveal="scale" style="--d:1"><img src="/assets/atlas/mezcla-salpicadura-crayon-600.webp?v=2026-10-12.1" srcset="/assets/atlas/mezcla-salpicadura-crayon-600.webp?v=2026-10-12.1 600w, /assets/atlas/mezcla-salpicadura-crayon-900.webp?v=2026-10-12.1 900w" sizes="(max-width: 760px) 32vw, 200px" width="600" height="600" alt="" loading="lazy" decoding="async"></figure>
+          <figure class="atlas-tile atlas-t3" data-parallax="0.04" data-reveal="scale" style="--d:2"><img src="/assets/atlas/ciencias-loica-600.webp?v=2026-10-12.1" srcset="/assets/atlas/ciencias-loica-600.webp?v=2026-10-12.1 600w, /assets/atlas/ciencias-loica-900.webp?v=2026-10-12.1 900w" sizes="(max-width: 760px) 32vw, 200px" width="600" height="600" alt="" loading="lazy" decoding="async"></figure>
+          <figure class="atlas-tile atlas-t4" data-parallax="0.09" data-reveal="scale" style="--d:3"><img src="/assets/atlas/historia-gay-mapa-600.webp?v=2026-10-12.1" srcset="/assets/atlas/historia-gay-mapa-600.webp?v=2026-10-12.1 600w, /assets/atlas/historia-gay-mapa-900.webp?v=2026-10-12.1 900w" sizes="(max-width: 760px) 32vw, 200px" width="600" height="600" alt="" loading="lazy" decoding="async"></figure>
+          <figure class="atlas-tile atlas-t5" data-parallax="0.06" data-reveal="scale" style="--d:4"><img src="/assets/atlas/lenguaje-araucana-600.webp?v=2026-10-12.1" srcset="/assets/atlas/lenguaje-araucana-600.webp?v=2026-10-12.1 600w, /assets/atlas/lenguaje-araucana-900.webp?v=2026-10-12.1 900w" sizes="(max-width: 760px) 32vw, 200px" width="600" height="600" alt="" loading="lazy" decoding="async"></figure>
+          <svg class="atlas-arc" viewBox="0 0 1000 1000" preserveAspectRatio="none" focusable="false"><path d="M0 940Q500 60 1000 940" pathLength="1"/></svg>
+        </div>
+        <header class="head atlas-head" data-reveal>
+          <p class="kicker"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-book"/></svg>Para cada asignatura</p>
+          <h2 class="display" id="asignaturas-title">Lenguaje, matemática, ciencias, historia. <span class="soft">Tus asignaturas, tus fuentes.</span></h2>
+          <p class="lead">Los cuatro rumbos sirven para cualquier asignatura: fijas curso y asignatura, y pteron trabaja con tus materiales y, si quieres, con el Currículum Nacional y Begonia.</p>
+        </header>
+      </div>
+    </section>
+
+    <!-- Rumbos: la pantalla de inicio real con marcadores -->
+    <section class="section rumbos" id="rumbos" aria-labelledby="rumbos-title">
+      <div class="wrap">
+        <header class="head" data-reveal>
+          <p class="kicker"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-monitor"/></svg>La pantalla de inicio</p>
+          <h2 class="display" id="rumbos-title">Una sola pantalla de partida.</h2>
+          <p class="lead">Elige un rumbo, fija curso y asignatura, y escribe con tus palabras. El rumbo sólo orienta el pedido: no te encierra en un modo.</p>
+        </header>
+
+        <figure class="pedido" data-reveal="scale">
+          <div class="pedido-shot">
+            <div class="crop" style="--sw:2880;--cx:450;--cy:904;--cw:1980;--ch:544"><img src="/assets/app/02-inicio-pedido-2x.webp?v=2026-10-12.1" width="2880" height="1760" loading="lazy" decoding="async" alt="La pantalla de inicio de pteron 0.7 mientras escribes un pedido: los rumbos Planificar, Crear, Evaluar y Adaptar; los selectores Curso y Asignatura; el pedido «Quiero una guía de fracciones equivalentes para 6° básico de matemática, unos 45 minutos» y la fila ¿Agregar? con Guía, 6° básico, Matemática, Tema: fracciones equivalentes, 45 minutos y Agregar todo"></div>
+            <span class="marker" aria-hidden="true" style="left:12.6cqw;top:4.5cqw">1</span>
+            <span class="marker" aria-hidden="true" style="left:1.6cqw;top:13.8cqw">2</span>
+            <span class="marker" aria-hidden="true" style="left:84.5cqw;top:23.3cqw">3</span>
+          </div>
+          <div class="ui pedido-m" aria-hidden="true">
+            <div class="pedido-rumbos"><span class="marker">1</span><span><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-calendar"/></svg>Planificar</span><span><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-file-plus"/></svg>Crear</span><span><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-clipboard"/></svg>Evaluar</span><span><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-sliders"/></svg>Adaptar</span></div>
+            <div class="pedido-box">
+              <span class="marker">2</span>
+              <div class="ui-row"><span class="ui-pick"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-cap"/></svg>Curso<svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-chevron"/></svg></span><span class="ui-pick"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-book"/></svg>Asignatura<svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-chevron"/></svg></span></div>
+              <p class="ui-compose">Quiero una guía de fracciones equivalentes para 6° básico de matemática, unos 45 minutos</p>
+              <div class="ui-suggest"><span class="marker">3</span><span class="ui-sub"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-bulb"/></svg>¿Agregar?</span><span class="ui-add"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-plus"/></svg>Guía</span><span class="ui-add"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-plus"/></svg>6° básico</span><span class="ui-add"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-plus"/></svg>Matemática</span><span class="ui-add"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-plus"/></svg>Tema: fracciones equivalentes</span><span class="ui-add"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-plus"/></svg>45 minutos</span><span class="ui-link">Agregar todo</span></div>
+            </div>
+          </div>
+          <figcaption>
+            <ol class="legend pedido-legend" role="list">
+              <li><span class="marker" aria-hidden="true">1</span><div><strong>Cuatro rumbos</strong><p>Planificar, Crear, Evaluar o Adaptar: cada rumbo es un verbo con una salida propia.</p></div></li>
+              <li><span class="marker" aria-hidden="true">2</span><div><strong>Curso y asignatura</strong><p>Los fijas sobre el compositor y acompañan el pedido como contexto.</p></div></li>
+              <li><span class="marker" aria-hidden="true">3</span><div><strong>pteron reconoce lo que escribes</strong><p>Material, curso, asignatura, tema y duración: te ofrece agregarlos uno a uno o todos juntos.</p></div></li>
+            </ol>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+    </div>
+
+    <!-- Cómo trabaja: tres pasos con recortes legibles sobre materiales de trabajo -->
+    <section class="night section" id="como-trabaja" aria-labelledby="trabaja-title">
+      <div class="wrap">
+        <header class="head-split" data-reveal>
+          <div class="band-copy">
+            <p class="kicker"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-layers"/></svg>Cómo trabaja</p>
+            <h2 class="display" id="trabaja-title">De tus fuentes a un borrador editable.</h2>
+          </div>
+          <div class="band-copy">
+            <p class="lead">La conversación orienta; materiales, fuentes y resultados quedan a la vista.</p>
+            <p><a class="link-arrow" href="/docs">Leer la documentación<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></p>
+          </div>
+        </header>
+        <ol class="steps" role="list">
+          <li class="step" data-reveal style="--d:0">
+            <div class="stage stage-grid" aria-hidden="true">
+              <div class="shot crop hover-lift" style="--sw:2880;--cx:16;--cy:340;--cw:1104;--ch:700;width:458px;left:24px;top:24px"><img src="/assets/app/10-biblioteca-2x.webp?v=2026-10-12.1" width="2880" height="1760" alt="" loading="lazy" decoding="async"></div>
+              <div class="ui ui-pad step-ui">
+                <p class="ui-label">Compositor</p>
+                <p class="ui-compose">Prepara una guía de práctica con <span class="ui-mention"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-at"/></svg>Fracciones - representación gráfica y equivalencias.pdf</span></p>
               </div>
             </div>
-            <p class="hero-note">pteron propone.<br>Tú decides.</p>
-          </div>
-        </div>
-
-        <div class="scroll-film reveal" data-scroll-film>
-          <div class="scroll-film-sticky">
-            <video
-              data-scroll-video
-              muted
-              playsinline
-              preload="auto"
-              poster="/assets/pteron-scroll-poster.jpg"
-              aria-label="Paisaje abstracto de nubes reflejadas sobre el agua"
-            ></video>
-            <div class="stage-caption">
-              <span>pteron</span>
-              <span data-scroll-progress>00 — 100</span>
+            <div class="step-body">
+              <span class="step-num">01</span>
+              <h3>Añade contexto</h3>
+              <p>Eliges una carpeta de trabajo y, si quieres, el Currículum Nacional y Begonia como fuentes. Con @ traes un documento de tu carpeta.</p>
             </div>
-            <figure class="product-window hero-product">
-              <img
-                src="/assets/product-home-window-0-6-0.webp"
-                width="1760"
-                height="1076"
-                loading="eager"
-                fetchpriority="high"
-                alt="Ventana de pteron en macOS con la pantalla de inicio y los rumbos Planificar, Crear, Evaluar y Adaptar sobre el compositor"
-              >
-            </figure>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="principles section" id="principios">
-      <div class="container">
-        <div class="principles-intro reveal">
-          <p class="section-number">Principios</p>
-          <h2>Lo que sostiene pteron.</h2>
-          <p>Tres compromisos del oficio: seguridad en tu equipo, ancla en el currículum y herramientas para producir.</p>
-        </div>
-        <div class="principles-cards">
-          <article class="principle-card reveal">
-            <div class="principle-art" aria-hidden="true">
-              <svg viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
-                <rect class="art-fill" x="28" y="18" width="104" height="68" rx="3"/>
-                <rect class="art-sheet" x="36" y="26" width="88" height="52" rx="1"/>
-                <path class="art-stroke" d="M18 92h124"/>
-                <path class="art-stroke" d="M34 92h12v5H34zM114 92h12v5h-12z"/>
-                <rect class="art-gold-fill" x="64" y="40" width="32" height="26" rx="2"/>
-                <path class="art-gold" d="M72 40v-6a8 8 0 0 1 16 0v6"/>
-                <circle class="art-gold" cx="80" cy="52" r="2.5"/>
-                <path class="art-gold" d="M80 54v5"/>
-                <path class="art-stroke art-soft" d="M48 34h16M48 40h10"/>
-              </svg>
+          </li>
+          <li class="step" data-reveal style="--d:1">
+            <div class="stage" aria-hidden="true">
+              <img class="stage-photo" src="/assets/photos/escritorio-900.webp?v=2026-10-12.1" width="900" height="601" alt="" loading="lazy" decoding="async">
+              <div class="shot crop shot-card hover-lift" style="--sw:2880;--cx:660;--cy:444;--cw:1540;--ch:806;width:600px;left:30px;top:44px"><img src="/assets/app/03-conversacion-2x.webp?v=2026-10-12.1" width="2880" height="1760" alt="" loading="lazy" decoding="async"></div>
             </div>
-            <p class="principle-num">01</p>
-            <h3>100% local</h3>
-            <p>El trabajo vive siempre seguro en el computador del profe.</p>
-          </article>
-          <article class="principle-card reveal">
-            <div class="principle-art" aria-hidden="true">
-              <svg viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
-                <rect class="art-fill" x="30" y="14" width="72" height="90" rx="2"/>
-                <path class="art-stroke" d="M30 14h72v90H30z"/>
-                <path class="art-stroke art-soft" d="M42 32h48M42 42h48M42 52h36M42 62h42M42 72h28"/>
-                <circle class="art-gold-fill" cx="108" cy="78" r="22"/>
-                <circle class="art-gold" cx="108" cy="78" r="22"/>
-                <path class="art-gold" d="M124 94l12 12"/>
-                <path class="art-gold" d="M98 78l7 7 14-16"/>
-              </svg>
+            <div class="step-body">
+              <span class="step-num">02</span>
+              <h3>Revisa la propuesta</h3>
+              <p>pteron resume lo que hizo y entrega cada material como una tarjeta. Lo abres en el editor, revisas sus versiones y decides qué conservar.</p>
             </div>
-            <p class="principle-num">02</p>
-            <h3>Alineado con el Mineduc</h3>
-            <p>Busca en el Currículum Nacional y en Begonia, banco pedagógico alineado 100% con el currículum nacional.</p>
-          </article>
-          <article class="principle-card reveal">
-            <div class="principle-art" aria-hidden="true">
-              <svg viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
-                <rect class="art-fill" x="24" y="22" width="58" height="74" rx="2"/>
-                <path class="art-stroke" d="M24 22h58v74H24z"/>
-                <path class="art-stroke art-soft" d="M34 38h38M34 48h38M34 58h26"/>
-                <rect class="art-sheet" x="52" y="16" width="58" height="74" rx="2"/>
-                <path class="art-stroke" d="M52 16h58v74H52z"/>
-                <path class="art-stroke art-soft" d="M62 32h38M62 42h38M62 52h22"/>
-                <rect class="art-sheet" x="84" y="28" width="52" height="48" rx="2"/>
-                <path class="art-stroke" d="M84 28h52v48H84z"/>
-                <path class="art-stroke art-soft" d="M92 40h36M92 50h28"/>
-                <path class="art-gold" d="M112 84l16-32 5 2.5-16 32-7 3.5 2-6z"/>
-                <path class="art-gold" d="M112 84l5 2.5"/>
-              </svg>
+          </li>
+          <li class="step" data-reveal style="--d:2">
+            <div class="stage stage-grid" aria-hidden="true">
+              <div class="shot crop hover-lift" style="--sw:2880;--cx:466;--cy:330;--cw:1314;--ch:760;width:500px;left:24px;top:24px"><img src="/assets/app/04-write-guia-con-figuras-2x.webp?v=2026-10-12.1" width="2880" height="1760" alt="" loading="lazy" decoding="async"></div>
+              <div class="ui ui-menu step-menu">
+                <div class="ui-item is-hover"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Guardar en Word…</div>
+                <div class="ui-item"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-file"/></svg>Guardar en PDF…</div>
+              </div>
             </div>
-            <p class="principle-num">03</p>
-            <h3>Creación y edición</h3>
-            <p>Evaluaciones, tickets de salida, planificaciones, guías de trabajo, presentaciones y todo lo que un profe necesita.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="compact-story section" id="producto">
-      <div class="container compact-story-grid reveal">
-        <p class="section-number">Cómo trabaja</p>
-        <h2>De tus fuentes a un borrador editable.</h2>
-        <ol class="compact-steps">
-          <li><span>1</span>Añade contexto.</li>
-          <li><span>2</span>Revisa la propuesta.</li>
-          <li><span>3</span>Edita antes de usar.</li>
+            <div class="step-body">
+              <span class="step-num">03</span>
+              <h3>Edita antes de usar</h3>
+              <p>Ajustas en el editor y guardas un archivo nuevo en Word o PDF. El original queda intacto.</p>
+            </div>
+          </li>
         </ol>
       </div>
     </section>
 
-    <section class="pricing section" id="beta">
-      <div class="container pricing-grid">
-        <div class="pricing-copy reveal">
-          <p class="section-number">Beta pública</p>
-          <h2>El núcleo local es gratis para siempre.</h2>
-          <p>Los planes de pago añaden capacidad de IA, no tu trabajo local. Disponible para macOS con Apple Silicon, Windows 11 y Linux x86_64.</p>
-          <a class="text-link pricing-link" href="/planes/">Ver planes y licencias →</a>
+    <!-- pteron propone, tú decides: revisión real con lupa sobre el Paine -->
+    <section class="band section propone" aria-labelledby="propone-title">
+      <div class="band-photo" data-parallax="0.1" aria-hidden="true">
+        <picture>
+          <source media="(max-width: 760px)" srcset="/assets/photos/cuernos-movil.webp?v=2026-10-12.1" width="960" height="960">
+          <img src="/assets/photos/cuernos-2400.webp?v=2026-10-12.1" width="2400" height="981" alt="" loading="lazy" decoding="async">
+        </picture>
+      </div>
+      <div class="band-shade" aria-hidden="true"></div>
+      <div class="wrap propone-grid">
+        <div class="band-copy" data-reveal>
+          <p class="kicker">Tu criterio al mando</p>
+          <h2 class="display" id="propone-title">pteron propone. <span class="soft">Tú decides.</span></h2>
+          <p class="lead">Cuando pides un cambio, pteron no reescribe el documento: prepara una propuesta y te la muestra junto al original.</p>
+          <ol class="legend" role="list">
+            <li><span class="marker" aria-hidden="true">1</span><div><strong>Pides un ajuste sobre el material</strong><p>«Pedir un ajuste» deja el documento abierto como destino de tu mensaje.</p></div></li>
+            <li><span class="marker" aria-hidden="true">2</span><div><strong>Vigente y propuesta, lado a lado</strong><p>Comparas el bloque actual con el cambio antes de decidir.</p></div></li>
+            <li><span class="marker" aria-hidden="true">3</span><div><strong>Nada se aplica solo</strong><p>«Propongo estos cambios. Aún no se aplican.» Conservas o descartas.</p></div></li>
+          </ol>
         </div>
-        <div class="price-detail reveal">
-          <p>Acceso abierto para docentes</p>
-          <div class="price"><strong>Gratis</strong><span>para<br>siempre</span></div>
-          <a class="button" href="/descargar/">Elegir versión</a>
+        <div class="propone-visual" data-reveal="scale" style="--d:1">
+          <div class="lupa propone-lupa">
+            <figure class="window">
+              <span class="lights" aria-hidden="true"><span></span><span></span><span></span></span>
+              <img src="/assets/app/04-write-guia-con-figuras-2x.webp?v=2026-10-12.1" width="1440" height="880" alt="Write, el editor de pteron 0.7, con una guía de trabajo de fracciones: ejercicios con figuras, el panel Estructura con los puntajes y, bajo el documento, el compositor con «Pedir un ajuste»" loading="lazy" decoding="async">
+              <span class="marker" aria-hidden="true" style="left:29.4cqw;top:56cqw">1</span>
+            </figure>
+            <div class="ui propone-change" aria-hidden="true">
+              <span class="marker">2</span>
+              <p class="ui-label">Bloque modificado</p>
+              <div class="propone-cols">
+                <div><small>Vigente</small><p>Pinta en cada figura la fracción que se indica. Después explica en una línea cómo supiste cuántas partes pintar.</p></div>
+                <div class="is-new"><small>Propuesta</small><p>Observa el ejemplo: para pintar 3/4, la barra se divide en 4 partes iguales y se pintan 3. Luego pinta en cada figura la fracción que se indica.</p></div>
+              </div>
+            </div>
+            <div class="ui propone-dock" aria-hidden="true">
+              <span class="marker">3</span>
+              <p>Propongo estos cambios. Aún no se aplican.</p>
+              <div class="ui-row"><span class="ui-btn is-ink"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-check"/></svg>Conservar cambios</span><span class="ui-btn is-ghost"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-x"/></svg>Descartar propuesta</span></div>
+              <span class="cursor cursor-anim"><svg viewBox="0 0 26 26"><use href="/assets/icons.svg?v=2026-10-12.1#i-cursor"/></svg><span class="cursor-label">Tú</span></span>
+              <span class="ripple ripple-anim"></span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="final-cta" id="acceso">
-      <div class="container final-cta-inner reveal">
-        <p class="wordmark wordmark-light">pteron</p>
-        <h2>Pruébalo en tu trabajo real.</h2>
-        <p>El núcleo local es gratis y tu criterio sigue al mando.</p>
-        <div>
-          <a class="button button-light" href="/descargar/">Descargar gratis</a>
-          <button class="copy-email" type="button" data-copy-email><span>pteron@patagua.dev</span></button>
+    <!-- Documentos: bento con capturas y piezas reales -->
+    <section class="sheet section" id="documentos" aria-labelledby="docs-title">
+      <div class="wrap">
+        <header class="head" data-reveal>
+          <p class="kicker"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-file"/></svg>Documentos editables</p>
+          <h2 class="display" id="docs-title">Un documento, no un bloque de texto.</h2>
+          <p class="lead">Guías, evaluaciones, tickets de salida y presentaciones llegan como documentos: encabezado tipado, ítems con puntaje, espacios de respuesta y, si hay soluciones, la pauta aparte. Se editan como en Word y se exportan sin perder la composición.</p>
+        </header>
+        <div class="bento bento-odd section-body">
+          <article class="tile tile-7" data-reveal>
+            <div class="stage tile-stage-desk" aria-hidden="true">
+              <img class="stage-photo" src="/assets/atlas/textura-pintura-kraft-1600.webp?v=2026-10-12.1" srcset="/assets/atlas/textura-pintura-kraft-900.webp?v=2026-10-12.1 900w, /assets/atlas/textura-pintura-kraft-1600.webp?v=2026-10-12.1 1600w" sizes="(max-width: 1024px) 100vw, 60vw" width="1600" height="1600" alt="" loading="lazy" decoding="async">
+              <div class="shot crop doc-sheet hover-lift" style="--sw:2880;--cx:312;--cy:820;--cw:1622;--ch:660"><img src="/assets/app/06-imprimir-version-docente-2x.webp?v=2026-10-12.1" width="2880" height="1760" alt="" loading="lazy" decoding="async"></div>
+              <div class="ui ui-menu doc-menu">
+                <div class="ui-item is-hover"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Guardar en Word…</div>
+                <div class="ui-item"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-file"/></svg>Guardar en PDF…</div>
+              </div>
+            </div>
+            <div class="tile-copy">
+              <h3>Write, la hoja de clase</h3>
+              <p>El encabezado reserva campos reales —&#8288;asignatura, curso, estudiante, fecha y&nbsp;puntaje&#8288;— que no se pierden al exportar.</p>
+              <ul class="formats" role="list"><li><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-file"/></svg>DOCX</li><li><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-file"/></svg>PDF</li></ul>
+            </div>
+          </article>
+          <article class="tile tile-5" data-reveal style="--d:1">
+            <div class="stage stage-dots" aria-hidden="true">
+              <div class="shot crop hover-lift" style="--sw:2880;--cx:16;--cy:300;--cw:2204;--ch:1080;width:680px;left:28px;top:30px"><img src="/assets/app/08-present-2x.webp?v=2026-10-12.1" width="2880" height="1760" alt="" loading="lazy" decoding="async"></div>
+            </div>
+            <div class="tile-copy">
+              <h3>Present, diapositivas 16:9</h3>
+              <p>Presentaciones nativas que exportan un PPTX editable, con notas del orador.</p>
+              <ul class="formats" role="list"><li><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-present"/></svg>PPTX</li></ul>
+            </div>
+          </article>
+          <div class="tile-row" role="group" aria-label="Más sobre los documentos">
+          <article class="tile" data-reveal>
+            <div class="stage stage-grid tile-stage-ui" aria-hidden="true">
+              <div class="shot crop hover-lift" style="--sw:2880;--cx:2248;--cy:284;--cw:632;--ch:996;width:280px;left:calc(50% - 140px);top:26px"><img src="/assets/app/05-write-respuesta-2x.webp?v=2026-10-12.1" width="2880" height="1760" alt="" loading="lazy" decoding="async"></div>
+            </div>
+            <div class="tile-copy">
+              <h3>Comprueba antes de mostrarte nada</h3>
+              <p>Rechaza lo que puede verificar solo: puntajes que no cuadran, más de una alternativa correcta o rúbricas sin criterios.</p>
+            </div>
+          </article>
+          <article class="tile" data-reveal style="--d:1">
+            <div class="stage stage-dots tile-stage-ui" aria-hidden="true">
+              <div class="shot crop hover-lift" style="--sw:2880;--cx:370;--cy:330;--cw:830;--ch:306;width:min(330px,calc(100% - 32px));left:50%;top:50%;translate:-50% -50%"><img src="/assets/app/06-imprimir-version-docente-2x.webp?v=2026-10-12.1" width="2880" height="1760" alt="" loading="lazy" decoding="async"></div>
+            </div>
+            <div class="tile-copy">
+              <h3>La pauta docente va aparte</h3>
+              <p>Las respuestas viven en un documento propio, enlazado con la guía. La hoja que se imprime queda limpia.</p>
+            </div>
+          </article>
+          <article class="tile" data-reveal style="--d:2">
+            <div class="stage stage-grid tile-stage-ui" aria-hidden="true">
+              <ul class="item-types">
+                <li><span class="glyph">A B C</span>Selección múltiple</li>
+                <li><span class="glyph">☐ ☐</span>Varias respuestas</li>
+                <li><span class="glyph lines"><span></span><span></span></span>Desarrollo</li>
+                <li><span class="glyph">V / F</span>Verdadero o falso</li>
+                <li><span class="glyph">a ↔ 3</span>Términos pareados</li>
+                <li><span class="glyph">1 2 3</span>Ordenar pasos</li>
+              </ul>
+            </div>
+            <div class="tile-copy">
+              <h3>Seis tipos de ítem</h3>
+              <p>Cada ítem declara su tipo y su puntaje; las alternativas van en su campo y el desarrollo trae líneas de respuesta.</p>
+            </div>
+          </article>
+          </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Película: el anochecer en Atacama queda fijo y avanza fotograma a fotograma con el desplazamiento;
+         la planificación real cruza el cielo. Con movimiento reducido o ahorro de datos queda el primer fotograma. -->
+    <section class="film" id="planificar" data-scroll-film aria-labelledby="film-title">
+      <div class="film-backdrop" aria-hidden="true">
+        <picture>
+          <source media="(max-width: 760px)" srcset="/assets/video/atacama-cinturon-de-venus-scrub-poster-movil-1080x1350.webp?v=2026-10-12.1" width="1080" height="1350">
+          <img src="/assets/video/atacama-cinturon-de-venus-scrub-poster-1920x1080.webp?v=2026-10-12.1" width="1920" height="1080" alt="" loading="lazy" decoding="async">
+        </picture>
+        <video muted playsinline preload="none" tabindex="-1" data-film-wide="/assets/video/atacama-cinturon-de-venus-scrub-1920x1080" data-film-narrow="/assets/video/atacama-cinturon-de-venus-scrub-movil-1080x1350"></video>
+      </div>
+      <div class="wrap film-content">
+        <div class="band-copy film-copy" data-reveal>
+          <p class="kicker"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-calendar"/></svg>Planificar</p>
+          <h2 class="display" id="film-title">La unidad completa, clase a clase. <span class="soft">Tú ajustas los tiempos.</span></h2>
+          <p class="lead">Pides la unidad con curso, asignatura y objetivos. pteron la arma en una hoja apaisada con objetivo, actividad, tiempo, recursos y evaluación por clase, y la editas como cualquier documento.</p>
+          <p><a class="link-arrow" href="/docs?pagina=planificar">Cómo planificar con pteron<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></p>
+        </div>
+        <figure class="window film-window" data-film-window>
+          <span class="lights" aria-hidden="true"><span></span><span></span><span></span></span>
+          <img src="/assets/app/07-planificacion-apaisada.webp?v=2026-10-12.1" srcset="/assets/app/07-planificacion-apaisada.webp?v=2026-10-12.1 1440w, /assets/app/07-planificacion-apaisada-2x.webp?v=2026-10-12.1 2880w" sizes="(max-width: 760px) 1010px, 1060px" width="1440" height="880" loading="lazy" decoding="async" alt="Planificación de unidad en pteron 0.7, en hoja apaisada: Álgebra y sistemas de ecuaciones lineales para 1° medio, ocho clases de 90 minutos, con los objetivos OA 03 y OA 04 y una tabla clase a clase con objetivo, actividad, tiempo, recursos y evaluación">
+        </figure>
+        <p class="band-credit film-credit">Atacama al anochecer. <a href="https://www.eso.org/public/videos/armazones-venusbelt/">Vídeo: ESO/M. Zamani</a>, <a href="https://creativecommons.org/licenses/by/4.0/deed.es">CC BY 4.0</a>, recortado y recodificado.</p>
+      </div>
+    </section>
+
+    <!-- Local y privado: una sola vez, con capturas reales -->
+    <section class="lake section" id="local" aria-labelledby="local-title">
+      <!-- Aurora generativa (canvas 2D, sin WebGL): cortinas de luz que derivan despacio; quieta con movimiento reducido -->
+      <canvas class="lake-aurora" data-aurora width="320" height="180" aria-hidden="true"></canvas>
+      <div class="wrap local-grid">
+        <div class="band-copy" data-reveal>
+          <p class="kicker"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-lock"/></svg>100&nbsp;% local</p>
+          <h2 class="display" id="local-title">Tu trabajo vive en tu computador.</h2>
+          <p class="lead">pteron trabaja dentro de la carpeta que eliges y puede usar un modelo local, sin enviar tus documentos a un proveedor externo. Si activas uno, te avisa antes de enviar datos de estudiantes.</p>
+          <ul class="facts" role="list">
+            <li><span class="fact-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-folder"/></svg></span><div><strong>Una carpeta como límite</strong><p>Todo lo que lee, indexa o crea ocurre dentro de la carpeta que eliges, y no sobrescribe tus originales.</p></div></li>
+            <li><span class="fact-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-shield"/></svg></span><div><strong>Aviso antes de enviar datos</strong><p>Si detecta un RUT o un nombre en un campo de persona, se detiene y te deja excluir, anonimizar o cancelar.</p></div></li>
+            <li><span class="fact-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-key"/></svg></span><div><strong>Tus claves, cifradas</strong><p>Si usas un proveedor externo, la clave se guarda en el almacén seguro de tu sistema.</p></div></li>
+            <li><span class="fact-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-terminal"/></svg></span><div><strong>Sin terminal ni acceso general</strong><p>No incluye terminal ni herramientas generales de programación, y lo que llega de la web —&#8288;sólo por HTTPS&#8288;— se trata como dato no confiable.</p></div></li>
+          </ul>
+          <p><a class="link-arrow" href="/docs?pagina=trabajo-local">Cómo funciona el trabajo local<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></p>
+        </div>
+        <div class="local-visual" data-reveal="scale" style="--d:1" aria-hidden="true">
+          <div class="shot crop local-window"><img src="/assets/app/09-modelo-de-ia-2x.webp?v=2026-10-12.1" width="2880" height="1760" alt="" loading="lazy" decoding="async"></div>
+          <div class="ui ui-pad local-alert">
+            <p class="local-alert-title"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-lock"/></svg>Datos identificables de estudiantes</p>
+            <p class="ui-sub">Detecté RUT y nombres identificables en lo que vas a enviar. Antes de que salga a un proveedor en la nube, elige cómo protegerlo.</p>
+            <div class="ui-actions"><span class="ui-btn is-ink">Excluir fragmentos</span><span class="ui-btn">Anonimizar y continuar</span><span class="ui-btn is-ghost">Cancelar</span></div>
+          </div>
+          <div class="ui ui-pad local-plugins">
+            <div class="ui-row"><span class="ui-tile"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-puzzle"/></svg></span><div><p class="ui-title">Complementos</p><p class="ui-sub">Controla las fuentes que pteron puede consultar durante el trabajo.</p></div></div>
+            <div class="ui-list">
+              <div class="ui-opt"><span><strong>Begonia Next</strong><small>Recursos curriculares aprobados.</small></span><span class="ui-status is-muted">Inactivo</span></div>
+              <div class="ui-opt"><span><strong>Currículum Nacional</strong><small>Estándares y orientaciones oficiales.</small></span><span class="ui-status">Disponible</span></div>
+              <div class="ui-opt"><span><strong>Búsqueda web</strong><small>Información pública en internet.</small></span><span class="ui-status">Disponible</span></div>
+              <div class="ui-opt"><span><strong>Correo local (.eml)</strong><small>Requiere una carpeta autorizada.</small></span><span class="ui-status is-pending">Sin carpeta</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Planes -->
+    <section class="sheet section" id="planes" aria-labelledby="planes-title">
+      <div class="wrap">
+        <header class="head" data-reveal>
+          <p class="kicker"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-check"/></svg>Planes</p>
+          <h2 class="display" id="planes-title">El núcleo local es gratis para siempre.</h2>
+          <p class="lead">Sin cuenta para empezar. Los planes de pago añaden capacidad de IA incluida, no tu trabajo local.</p>
+        </header>
+        <ul class="plans section-body" role="list">
+          <li class="plan" data-reveal style="--d:0">
+            <div class="plan-head"><div class="plan-tags"><span class="tag tag-ok">Disponible ahora</span></div><h3 class="plan-name">Núcleo local</h3><p class="plan-desc">El corazón de pteron. Trabaja con tus fuentes, sesiones y archivos en tu equipo.</p></div>
+            <div class="plan-box"><p class="price">Gratis <small>para siempre</small></p><p class="price-note">Sin cuenta. macOS Apple Silicon, Windows 11 y Linux x86_64.</p><a class="button button-outline button-block" href="/descargar">Descargar pteron</a></div>
+          </li>
+          <li class="plan is-featured" data-reveal style="--d:1">
+            <div class="plan-head"><div class="plan-tags"><span class="tag">Desde tu cuenta</span><span class="tag tag-ember">7 días gratis</span></div><h3 class="plan-name">Basic</h3><p class="plan-desc">IA incluida para apoyar tu día a día, sin configuración técnica.</p></div>
+            <div class="plan-box"><p class="price">$2.999 <small>CLP / mes</small></p><p class="price-note">Tarjeta requerida vía Flow · sin cobro durante la prueba</p><a class="button button-light button-block" href="/cuenta?plan=basic">Elegir Basic</a></div>
+          </li>
+          <li class="plan" data-reveal style="--d:2">
+            <div class="plan-head"><div class="plan-tags"><span class="tag">Desde tu cuenta</span></div><h3 class="plan-name">Pro</h3><p class="plan-desc">Más capacidad de IA incluida para tareas avanzadas.</p></div>
+            <div class="plan-box"><p class="price">$9.990 <small>CLP / mes</small></p><p class="price-note">Cobro mensual · cancelación en cualquier momento</p><a class="button button-block" href="/cuenta?plan=pro">Elegir Pro</a></div>
+          </li>
+        </ul>
+        <p class="plans-foot" data-reveal><a class="link-arrow" href="/planes">Comparar planes y preguntas frecuentes<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></p>
+      </div>
+    </section>
+
+    <!-- Descarga: atardecer entre araucarias, plataformas con datos de la versión publicada -->
+    <section class="band section download" id="descarga" aria-labelledby="descarga-title">
+      <div class="band-photo" data-parallax="0.1" aria-hidden="true">
+        <picture>
+          <source media="(max-width: 760px)" srcset="/assets/photos/nahuelbuta-movil.webp?v=2026-10-12.1" width="960" height="1280">
+          <img src="/assets/photos/nahuelbuta-1920.webp?v=2026-10-12.1" width="1920" height="1280" alt="" loading="lazy" decoding="async">
+        </picture>
+      </div>
+      <div class="band-shade" aria-hidden="true"></div>
+      <div class="wrap">
+        <header class="head" data-reveal>
+          <p class="kicker">Beta pública<span class="release-version" data-release-version hidden></span></p>
+          <h2 class="display" id="descarga-title">Pruébalo en tu trabajo real.</h2>
+          <p class="lead">El núcleo local es gratis y tu criterio sigue al mando.</p>
+        </header>
+        <ul class="platforms" role="list">
+          <li class="platform" data-platform="macos" data-reveal style="--d:0">
+            <div class="platform-top"><span class="os-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-apple"/></svg></span><span class="tag tag-ember detected-tag">Tu equipo</span></div>
+            <h3 class="platform-name">macOS</h3>
+            <p class="platform-meta">Apple Silicon, procesadores serie M</p>
+            <p class="platform-file" data-release-file="macosDmg">Instalador .dmg</p>
+            <p class="platform-note">Archivo .dmg firmado y notarizado.</p>
+            <a class="button button-glass button-block" href="/descargar" data-release-asset="macosDmg"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Descargar para macOS</a>
+          </li>
+          <li class="platform" data-platform="windows" data-reveal style="--d:1">
+            <div class="platform-top"><span class="os-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-windows"/></svg></span><span class="tag tag-ember detected-tag">Tu equipo</span></div>
+            <h3 class="platform-name">Windows 11</h3>
+            <p class="platform-meta">Equipos de 64 bits</p>
+            <p class="platform-file" data-release-file="windowsExe">Instalador .exe</p>
+            <p class="platform-note">El instalador beta aún no tiene firma digital: SmartScreen puede pedir confirmación.</p>
+            <a class="button button-glass button-block" href="/descargar" data-release-asset="windowsExe"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Descargar para Windows</a>
+          </li>
+          <li class="platform" data-platform="linux" data-reveal style="--d:2">
+            <div class="platform-top"><span class="os-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-linux"/></svg></span><span class="tag tag-ember detected-tag">Tu equipo</span></div>
+            <h3 class="platform-name">Linux</h3>
+            <p class="platform-meta">x86_64 · AppImage</p>
+            <p class="platform-file" data-release-file="linuxAppImage">Archivo AppImage</p>
+            <p class="platform-note">También .deb, .rpm y .tar.gz, con firma GPG separada.</p>
+            <a class="button button-glass button-block" href="/descargar" data-release-asset="linuxAppImage"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Descargar para Linux</a>
+          </li>
+        </ul>
+        <p class="download-links" data-reveal>
+          <a href="/descargar">Todos los formatos</a>
+          <a href="/docs?pagina=versiones">Notas de versión</a>
+          <a href="/docs?pagina=requisitos">Requisitos</a>
+          <a href="/docs?pagina=instalar-linux#firma">Verificar la firma GPG</a>
+          <a href="https://github.com/marcorojasb/pteron-beta/releases">Versiones en GitHub</a>
+        </p>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <a class="wordmark" href="#inicio">pteron</a>
-      <div>
-        <a href="/docs/">Documentación</a>
-        <a href="/descargar/">Descargar</a>
-        <a href="/planes/">Planes</a>
-        <a href="/cuenta/">Cuenta</a>
-        <a href="#beta">Beta pública</a>
-        <a href="/privacidad.html">Privacidad</a>
-        <a href="/terminos.html">Términos</a>
+  <footer class="footer">
+    <div class="wrap">
+      <p class="signature">Tus fuentes. <span>Tu criterio.</span></p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="wordmark" href="/" aria-current="page">pteron</a>
+          <p>Construido por profes, para profes. Diseñado en Chile para el trabajo docente.</p>
+        </div>
+        <nav aria-labelledby="pie-producto">
+          <h2 id="pie-producto">Producto</h2>
+          <ul>
+            <li><a href="/descargar">Descargar</a></li>
+            <li><a href="/planes">Planes</a></li>
+            <li><a href="/cuenta">Cuenta</a></li>
+            <li><a href="/docs">Documentación</a></li>
+          </ul>
+        </nav>
+        <nav aria-labelledby="pie-ayuda">
+          <h2 id="pie-ayuda">Ayuda</h2>
+          <ul>
+            <li><a href="/docs?pagina=inicio">Primeros pasos</a></li>
+            <li><a href="/docs?pagina=preguntas">Preguntas frecuentes</a></li>
+            <li><a href="/docs?pagina=solucion-problemas">Solución de problemas</a></li>
+            <li><a href="/docs?pagina=versiones">Versiones</a></li>
+          </ul>
+        </nav>
+        <nav aria-labelledby="pie-patagua">
+          <h2 id="pie-patagua">Patagua</h2>
+          <ul>
+            <li><a href="/privacidad">Privacidad</a></li>
+            <li><a href="/terminos">Términos</a></li>
+            <li><a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></li>
+          </ul>
+        </nav>
       </div>
-      <p>© <span data-year></span> pteron · Patagua<br>Diseñado en Chile para el trabajo docente.</p>
+      <div class="footer-bottom">
+        <p>© <span data-year>2026</span> pteron · Patagua</p>
+        <p>Beta pública para macOS, Windows y Linux</p>
+      </div>
+      <details class="credits">
+        <summary>Créditos de imágenes y vídeo</summary>
+        <p>Fotografías de Wikimedia Commons: «<a href="https://commons.wikimedia.org/wiki/File:Atardecer_entre_Araucarias.jpg">Atardecer entre Araucarias</a>», Jclavero92 · «<a href="https://commons.wikimedia.org/wiki/File:Parque_Nacional_Nahuelbuta,_puesta_de_sol,_araucaria_2.jpg">Parque Nacional Nahuelbuta, puesta de sol</a>», Gonzalo Palacios · «<a href="https://commons.wikimedia.org/wiki/File:Parque_Nacional_Torres_del_Paine_-_XII_Region_de_Magallanes_y_la_Antartica_Chilena_-_Laguna_Cisnes_-_Almirante_Nieto.jpg">Laguna Cisnes, Almirante Nieto</a>», Ferna.mf · «<a href="https://commons.wikimedia.org/wiki/File:Macizo_Paine_al_Amanecer_Torres_del_Paine.jpg">Macizo Paine al Amanecer</a>», Natalia Reyes Escobar · «<a href="https://commons.wikimedia.org/wiki/File:Sunset_at_General_Carrera_Lake.jpg" lang="en">Sunset at General Carrera Lake</a>», Andreizaaa (<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">CC BY-SA 4.0</a>) · «<a href="https://commons.wikimedia.org/wiki/File:Working_on_a_planning_session_with_stationery_items,_notebook,_and_colorful_pencils_on_a_wooden_desk.jpg" lang="en">Planning session with stationery items</a>», Shixart1985 (<a href="https://creativecommons.org/licenses/by/2.0/deed.es">CC BY 2.0</a>). Vídeos: <a href="https://www.eso.org/public/videos/armazones-venusbelt/">ESO/M. Zamani</a> y <a href="https://www.eso.org/public/videos/pao-sunsetclouds/">ESO/B. Tafreshi</a> (<a href="https://creativecommons.org/licenses/by/4.0/deed.es">CC BY 4.0</a>), recortados y recodificados. Láminas y mapas de dominio público de The Metropolitan Museum of Art, la Library of Congress e Internet Archive. Adaptadas para este sitio; lista completa en <a href="/privacidad#creditos">Privacidad</a>.</p>
+      </details>
+      <p class="footer-mark" aria-hidden="true">pteron</p>
     </div>
   </footer>
-
-  <div class="toast" role="status" aria-live="polite" data-toast></div>
-  <script src="/script.js?v=2026-10-04.1" defer></script>
 </body>
 </html>

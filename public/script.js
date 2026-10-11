@@ -1,429 +1,465 @@
+/* pteron · comportamiento compartido del sitio (revisión 2026-10-12.1).
+   Sin dependencias. Todo lo que mueve algo respeta prefers-reduced-motion,
+   y el contenido es visible aunque este archivo no llegue a cargar. */
 (() => {
-  const authHash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-  const isAccountPage = window.location.pathname === '/cuenta' || window.location.pathname === '/cuenta/';
-  if (authHash.has('access_token') && authHash.has('refresh_token') && !isAccountPage) {
-    window.location.replace(`/cuenta/${window.location.search}${window.location.hash}`);
-    return;
+  "use strict";
+  const doc = document.documentElement;
+  const motion = window.matchMedia("(prefers-reduced-motion: no-preference)");
+  const canMove = () => motion.matches;
+  const narrowQuery = window.matchMedia("(max-width: 760px)");
+  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+  const clamp01 = (value) => Math.min(1, Math.max(0, value));
+  // Ahorro de datos o red lenta: sin vídeo, sólo la imagen fija.
+  const constrained = () => {
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    return Boolean(connection && (connection.saveData || /2g|3g/.test(connection.effectiveType || "")));
+  };
+  const VERSION = "?v=2026-10-12.1";
+
+  /* Año en el pie y donde se pida. */
+  $$("[data-year]").forEach((node) => { node.textContent = String(new Date().getFullYear()); });
+
+  /* Navegación: barra completa arriba, píldora de vidrio al desplazarse.
+     Con el menú móvil abierto, el resto de la página queda inerte: el foco no se escapa bajo el velo. */
+  const nav = document.querySelector("[data-nav]");
+  const menuButton = document.querySelector("[data-menu-button]");
+  const menu = menuButton ? document.getElementById(menuButton.getAttribute("aria-controls")) : null;
+
+  const setMenu = (open, { restoreFocus = false } = {}) => {
+    if (!menuButton || !menu) return;
+    menuButton.setAttribute("aria-expanded", String(open));
+    menuButton.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+    menu.hidden = !open;
+    for (const node of document.body.children) {
+      if (node !== nav && !node.contains(nav) && node.tagName !== "SCRIPT") node.inert = open;
+    }
+    nav?.classList.toggle("is-open", open);
+    if (!open && restoreFocus) menuButton.focus();
+  };
+
+  if (menuButton && menu) {
+    menuButton.addEventListener("click", () => setMenu(menuButton.getAttribute("aria-expanded") !== "true"));
+    menu.addEventListener("click", (event) => { if (event.target.closest("a")) setMenu(false); });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && menuButton.getAttribute("aria-expanded") === "true") setMenu(false, { restoreFocus: true });
+    });
+    // El velo que oscurece la página pertenece a la cabecera: un clic ahí cierra el menú.
+    nav?.addEventListener("click", (event) => { if (event.target === nav) setMenu(false, { restoreFocus: true }); });
+    window.matchMedia("(min-width: 761px)").addEventListener("change", (event) => { if (event.matches) setMenu(false); });
   }
 
-  const loader = document.querySelector('[data-page-loader]');
-  const loaderCanvas = document.querySelector('[data-loader-medusa]');
-  let loaderFrameId = 0;
-  let loaderTime = 0;
-  let loaderLastPaint = 0;
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // Fewer particles keeps the medusa silhouette while cutting main-thread work
-  // during the critical first paint of every page.
-  const MEDUSA_POINTS = 3600;
-  const MEDUSA_PAINT_MS = 32;
-
-  const drawMedusa = (now = 0) => {
-    if (!loaderCanvas || loader?.classList.contains('is-complete')) return;
-    if (!reducedMotion) loaderFrameId = window.requestAnimationFrame(drawMedusa);
-    if (!reducedMotion && now - loaderLastPaint < MEDUSA_PAINT_MS) return;
-    loaderLastPaint = now;
-
-    const context = loaderCanvas.getContext('2d');
-    const size = 400;
-    context.fillStyle = 'rgb(246, 242, 236)';
-    context.fillRect(0, 0, size, size);
-    loaderTime += Math.PI / 80;
-
-    for (let index = MEDUSA_POINTS; index > 0; index -= 1) {
-      // Map the sparser sample onto the original 10k-index parameter space so
-      // the medusa silhouette stays identical while drawing ~3× fewer pixels.
-      const t = index / MEDUSA_POINTS;
-      const y = t * 42.55;
-      const k = (4 + Math.cos(t * 1111 - loaderTime * 2)) * Math.cos(t * 285);
-      const e = y / 7 - 13;
-      const d = Math.hypot(k, e) + Math.sin(e / 9 + loaderTime / 2) - 4;
-      const q = 2 * Math.sin(k * 3) - y / 35 * k * (9 + k * Math.sin(Math.cos(e) * 9 - d * 2 + loaderTime));
-      const c = d - loaderTime;
-      const x = q + 40 * Math.cos(c) + 200;
-      const pointY = q * Math.sin(c) + d * 35;
-      context.fillStyle = index % 19 === 0
-        ? 'rgba(201, 162, 97, .48)'
-        : 'rgba(15, 34, 56, .40)';
-      context.fillRect(x, pointY, 1, 1);
-    }
-  };
-
-  const finishLoading = () => {
-    window.cancelAnimationFrame(loaderFrameId);
-    loader?.classList.add('is-complete');
-    loader?.setAttribute('aria-hidden', 'true');
-    document.documentElement.classList.remove('is-loading');
-  };
-
-  drawMedusa();
-
-  const header = document.querySelector('[data-header]');
-  const menuButton = document.querySelector('[data-menu-button]');
-  const nav = document.querySelector('[data-nav]');
-  const year = document.querySelector('[data-year]');
-  const toast = document.querySelector('[data-toast]');
-
-  if (year) year.textContent = new Date().getFullYear();
-
-  const updateHeader = () => header?.classList.toggle('is-scrolled', window.scrollY > 18);
-  updateHeader();
-  window.addEventListener('scroll', updateHeader, { passive: true });
-
-  const closeMenu = () => {
-    menuButton?.setAttribute('aria-expanded', 'false');
-    menuButton?.setAttribute('aria-label', 'Abrir navegación');
-    nav?.classList.remove('is-open');
-    document.body.classList.remove('nav-open');
-  };
-
-  menuButton?.addEventListener('click', () => {
-    const open = menuButton.getAttribute('aria-expanded') === 'true';
-    menuButton.setAttribute('aria-expanded', String(!open));
-    menuButton.setAttribute('aria-label', open ? 'Abrir navegación' : 'Cerrar navegación');
-    nav?.classList.toggle('is-open', !open);
-    document.body.classList.toggle('nav-open', !open);
-  });
-  nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
-  window.addEventListener('keydown', (event) => event.key === 'Escape' && closeMenu());
-
-  const showToast = (message) => {
-    if (!toast) return;
-    toast.textContent = message;
-    toast.classList.add('is-visible');
-    window.clearTimeout(showToast.timeoutId);
-    showToast.timeoutId = window.setTimeout(() => toast.classList.remove('is-visible'), 2400);
-  };
-
-  document.querySelector('[data-copy-email]')?.addEventListener('click', async (event) => {
-    const address = 'pteron@patagua.dev';
-    try {
-      await navigator.clipboard.writeText(address);
-      event.currentTarget.querySelector('span').textContent = 'Correo copiado';
-      showToast('Correo copiado.');
-      window.setTimeout(() => { event.currentTarget.querySelector('span').textContent = address; }, 1800);
-    } catch {
-      window.location.href = `mailto:${address}`;
-    }
-  });
-
-  const revealElements = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window && !reducedMotion) {
-    const observer = new IntersectionObserver((entries, obs) => {
+  /* Apariciones escalonadas. Sólo se ocultan los elementos que todavía no se ven,
+     así no hay parpadeo en el primer pantallazo ni contenido oculto sin JavaScript. */
+  const revealables = $$("[data-reveal]");
+  const showAll = () => revealables.forEach((node) => node.classList.add("is-in"));
+  let revealObserver = null;
+  if (!canMove() || !("IntersectionObserver" in window)) {
+    showAll();
+  } else if (revealables.length) {
+    const viewport = window.innerHeight;
+    revealables.forEach((node) => {
+      const box = node.getBoundingClientRect();
+      if (box.top < viewport * 0.92 && box.bottom > 0) node.classList.add("is-in");
+    });
+    doc.classList.add("reveal-on");
+    const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
-        entry.target.classList.add('is-visible');
-        obs.unobserve(entry.target);
+        entry.target.classList.add("is-in");
+        observer.unobserve(entry.target);
       });
-    }, { threshold: .08, rootMargin: '0px 0px -30px' });
-    revealElements.forEach((element) => observer.observe(element));
-  } else {
-    revealElements.forEach((element) => element.classList.add('is-visible'));
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
+    revealObserver = observer;
+    revealables.forEach((node) => { if (!node.classList.contains("is-in")) observer.observe(node); });
+    // Red de seguridad: ninguna sección queda invisible si el observador no dispara.
+    window.addEventListener("load", () => setTimeout(() => {
+      revealables.forEach((node) => {
+        const box = node.getBoundingClientRect();
+        if (box.bottom < 0) node.classList.add("is-in");
+      });
+    }, 1200), { once: true });
   }
 
-  const film = document.querySelector('[data-scroll-film]');
-  const video = document.querySelector('[data-scroll-video]');
-  const progressLabel = document.querySelector('[data-scroll-progress]');
-  const product = film?.querySelector('.hero-product');
-  if (!film || !video) {
-    // Pages without the scroll film still hold the medusa for the minimum beat
-    // so the loader does not flash and vanish.
-    const fontsReady = document.fonts?.ready ?? Promise.resolve();
-    Promise.all([
-      fontsReady,
-      new Promise((resolve) => window.setTimeout(resolve, reducedMotion ? 0 : 380)),
-    ]).finally(finishLoading);
-    return;
+  /* Película con desplazamiento (inicio): el cielo queda fijo mientras pasan el texto y la ventana,
+     y el vídeo avanza fotograma a fotograma con el scroll. Sin movimiento, con ahorro de datos
+     o sin un formato reproducible queda el primer fotograma (el póster). */
+  const film = document.querySelector("[data-scroll-film]");
+  const filmVideo = film?.querySelector("video") || null;
+  const filmBackdrop = film?.querySelector(".film-backdrop") || null;
+  const filmWindow = film?.querySelector("[data-film-window]") || null;
+  const filmState = { ready: false, seeking: false, target: 0, stuck: 0, blob: false, url: "", requested: false };
+  // La altura del escenario se fija en píxeles una sola vez (y al cambiar el ancho): sin saltos
+  // cuando la barra del navegador móvil aparece o desaparece.
+  let filmWidth = window.innerWidth;
+  const lockFilmHeight = () => film?.style.setProperty("--fh", `${Math.round(window.innerHeight)}px`);
+  if (film) {
+    lockFilmHeight();
+    window.addEventListener("resize", () => {
+      if (window.innerWidth === filmWidth) return;
+      filmWidth = window.innerWidth;
+      lockFilmHeight();
+    });
   }
-  const filmStage = film.querySelector('.scroll-film-sticky');
-  let frameId = 0;
-  let targetTime = 0;
-  let pendingSeekTime = null;
-  let isSeeking = false;
-  let filmTop = 0;
-  let filmTravel = 1;
 
-  const measureFilm = () => {
-    const rect = film.getBoundingClientRect();
-    filmTop = rect.top + window.scrollY;
-    filmTravel = Math.max(1, film.offsetHeight - window.innerHeight);
+  const pickFilmSource = () => {
+    const base = narrowQuery.matches ? filmVideo?.dataset.filmNarrow : filmVideo?.dataset.filmWide;
+    if (!base) return "";
+    if (filmVideo.canPlayType('video/mp4; codecs="avc1.640028"')) return `${base}.mp4${VERSION}`;
+    if (filmVideo.canPlayType('video/webm; codecs="vp9"')) return `${base}.webm${VERSION}`;
+    return "";
   };
-
-  video.pause();
-  video.muted = true;
-  video.playsInline = true;
-  video.defaultMuted = true;
-
-  const waitForVideo = (eventName, readyState, timeout = 30000) => new Promise((resolve, reject) => {
-    if (video.readyState >= readyState) {
-      resolve();
-      return;
-    }
-    const cleanup = () => {
-      window.clearTimeout(timeoutId);
-      video.removeEventListener(eventName, onReady);
-      video.removeEventListener('error', onError);
-    };
-    const timeoutId = window.setTimeout(() => {
-      cleanup();
-      reject(new Error(`Video ${eventName} timeout`));
-    }, timeout);
-    const onReady = () => {
-      cleanup();
-      resolve();
-    };
-    const onError = () => {
-      cleanup();
-      reject(new Error('Video failed to load'));
-    };
-    video.addEventListener(eventName, onReady, { once: true });
-    video.addEventListener('error', onError, { once: true });
-  });
-
-  const seekOnce = (time) => new Promise((resolve, reject) => {
-    const target = Math.max(0, Math.min(time, Math.max(0, (video.duration || 0) - .05)));
-    if (video.readyState >= 2 && !video.seeking && Math.abs(video.currentTime - target) < .02) {
-      resolve();
-      return;
-    }
-    const cleanup = () => {
-      window.clearTimeout(timeoutId);
-      video.removeEventListener('seeked', onSeeked);
-      video.removeEventListener('error', onError);
-      video.removeEventListener('loadeddata', onLoaded);
-    };
-    const begin = () => {
-      pendingSeekTime = null;
-      isSeeking = true;
-      video.currentTime = target;
-    };
-    const timeoutId = window.setTimeout(() => {
-      cleanup();
-      isSeeking = false;
-      if (video.readyState >= 2) resolve();
-      else reject(new Error('Seek timeout'));
-    }, 3500);
-    const onSeeked = () => {
-      cleanup();
-      isSeeking = false;
-      resolve();
-    };
-    const onError = () => {
-      cleanup();
-      isSeeking = false;
-      reject(new Error('Seek failed'));
-    };
-    const onLoaded = () => {
-      if (video.readyState >= 2) begin();
-    };
-    video.addEventListener('seeked', onSeeked, { once: true });
-    video.addEventListener('error', onError, { once: true });
-    // Seeking before a current frame exists stalls the media pipeline.
-    if (video.readyState >= 2) begin();
-    else video.addEventListener('loadeddata', onLoaded, { once: true });
-  });
-
-  // iOS Safari needs a local Blob before it will scrub reliably. Other engines
-  // stream the MP4 with range requests, which avoids a 13–22 MB download before
-  // the page can appear.
-  const needsBlobSource = () => {
+  // Safari (macOS e iOS) sólo avanza fotograma a fotograma con el archivo completo en memoria.
+  const needsBlob = () => {
     const ua = navigator.userAgent;
-    const iOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    const webkit = /AppleWebKit/.test(ua) && !/Chrome|Chromium|Edg\//.test(ua);
-    return iOS || webkit;
+    const iOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    return iOS || (/AppleWebKit/.test(ua) && !/Chrome|Chromium|Edg\//.test(ua));
+  };
+  const waitFor = (target, type, timeout) => new Promise((resolve, reject) => {
+    const finish = (ok) => {
+      clearTimeout(timer);
+      target.removeEventListener(type, onReady);
+      target.removeEventListener("error", onError);
+      if (ok) resolve(); else reject(new Error(`${type} sin respuesta`));
+    };
+    const onReady = () => finish(true);
+    const onError = () => finish(false);
+    const timer = setTimeout(onError, timeout);
+    target.addEventListener(type, onReady);
+    target.addEventListener("error", onError);
+  });
+
+  const attachFilm = async (src) => {
+    filmVideo.muted = true;
+    filmVideo.playsInline = true;
+    filmVideo.src = src;
+    filmVideo.load();
+    const loaded = waitFor(filmVideo, "loadeddata", 20000);
+    // Un play() breve despierta el decodificador (iOS); se pausa en cuanto hay un fotograma.
+    filmVideo.play()?.catch(() => {});
+    await loaded;
+    filmVideo.pause();
+    filmState.ready = true;
+    filmBackdrop?.classList.add("is-ready");
+    requestUpdate();
   };
 
-  const chooseVideoUrl = () => {
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    const constrainedConnection = connection?.saveData
-      || ['slow-2g', '2g', '3g'].includes(connection?.effectiveType);
-    const useMobileVideo = window.matchMedia('(max-width: 767px)').matches
-      || constrainedConnection;
-    const useHighQualityVideo = window.matchMedia('(min-width: 1200px)').matches
-      && window.devicePixelRatio > 1
-      && !constrainedConnection;
-    return useMobileVideo
-      ? '/assets/pteron-scroll-mobile.mp4'
-      : useHighQualityVideo
-        ? '/assets/pteron-scroll-hq.mp4'
-        : '/assets/pteron-scroll.mp4';
-  };
-
-  // Probing with a timeline seek stalls Chrome when the MP4 is still thin on
-  // data. Ask the host for byte ranges instead: 206 means we can stream.
-  const supportsByteRange = async (url) => {
-    try {
-      const response = await fetch(url, {
-        headers: { Range: 'bytes=0-1' },
-        priority: 'high',
-      });
-      return response.status === 206;
-    } catch {
-      return false;
-    }
-  };
-
-  let stuckSeeks = 0;
-  let usingBlobSource = false;
-  let activeVideoUrl = '';
-
-  const loadBlobSource = async (videoUrl) => {
-    usingBlobSource = true;
-    const response = await fetch(videoUrl, { priority: 'high' });
-    if (!response.ok) throw new Error(`Video fetch failed: ${response.status}`);
-    const blob = await response.blob();
-    video.src = URL.createObjectURL(blob);
-    video.load();
-    await waitForVideo('loadedmetadata', 1, 12000);
-    const playback = video.play();
-    playback?.catch(() => {});
-    await waitForVideo('loadeddata', 2, 12000);
-    video.pause();
-    await seekOnce(0);
-    isSeeking = false;
-  };
-
-  const loadStreamSource = async (videoUrl) => {
-    usingBlobSource = false;
-    video.src = videoUrl;
-    video.load();
-    await waitForVideo('loadedmetadata', 1, 12000);
-    const playback = video.play();
-    playback?.catch(() => {});
-    await waitForVideo('loadeddata', 2, 12000);
-    video.pause();
-    // Land on frame 0 only after there is a current frame to decode.
-    if (Math.abs(video.currentTime) > 0.02) {
-      await seekOnce(0);
-      isSeeking = false;
-    }
-  };
-
-  const prepareVideo = async () => {
-    const videoUrl = chooseVideoUrl();
-    activeVideoUrl = videoUrl;
-    const streamable = !needsBlobSource() && await supportsByteRange(videoUrl);
-    if (streamable) {
-      await loadStreamSource(videoUrl);
+  const loadFilm = async () => {
+    const url = pickFilmSource();
+    if (!url) return;
+    filmState.url = url;
+    let src = url;
+    if (needsBlob()) {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`vídeo ${response.status}`);
+      src = URL.createObjectURL(await response.blob());
+      filmState.blob = true;
     } else {
-      await loadBlobSource(videoUrl);
+      // 206 = el servidor entrega rangos y el vídeo puede transmitirse; si no, se usa la misma descarga.
+      const probe = await fetch(url, { headers: { Range: "bytes=0-1" } });
+      if (probe.status === 206) {
+        probe.body?.cancel?.().catch?.(() => {});
+      } else if (probe.ok) {
+        src = URL.createObjectURL(await probe.blob());
+        filmState.blob = true;
+      } else {
+        throw new Error(`vídeo ${probe.status}`);
+      }
     }
-    filmStage?.classList.add('is-video-ready');
-    measureFilm();
-    updateFilm();
+    await attachFilm(src);
   };
 
-  const promoteToBlob = async () => {
-    if (usingBlobSource || !activeVideoUrl) return;
-    usingBlobSource = true;
-    filmStage?.classList.remove('is-video-ready');
+  // Un salto atascado tres veces seguidas pasa el vídeo a memoria completa.
+  const promoteFilm = async () => {
+    if (filmState.blob || !filmState.url) return;
+    filmState.blob = true;
+    filmState.ready = false;
     try {
-      await loadBlobSource(activeVideoUrl);
-      filmStage?.classList.add('is-video-ready');
-      stuckSeeks = 0;
-      measureFilm();
-      updateFilm();
+      const response = await fetch(filmState.url);
+      if (!response.ok) throw new Error(`vídeo ${response.status}`);
+      await attachFilm(URL.createObjectURL(await response.blob()));
     } catch {
-      filmStage?.classList.remove('is-video-ready');
+      filmBackdrop?.classList.remove("is-ready");
     }
   };
 
-  const commitSeek = () => {
-    if (pendingSeekTime === null || isSeeking) return;
-    const next = pendingSeekTime;
-    if (Math.abs(video.currentTime - next) < .025 && !video.seeking) {
-      pendingSeekTime = null;
+  // Un solo salto en vuelo; el siguiente toma el destino más reciente.
+  const seekFilm = () => {
+    if (!filmState.ready || filmState.seeking || !filmVideo || filmVideo.readyState < 1) return;
+    const target = filmState.target;
+    if (Math.abs(filmVideo.currentTime - target) < 0.03) return;
+    filmState.seeking = true;
+    let watch = 0;
+    const finish = (stuck) => {
+      clearTimeout(watch);
+      filmVideo.removeEventListener("seeked", onSeeked);
+      filmState.seeking = false;
+      if (stuck) {
+        filmState.stuck += 1;
+        if (filmState.stuck >= 3) promoteFilm();
+      } else {
+        filmState.stuck = 0;
+      }
+      if (Math.abs(filmState.target - filmVideo.currentTime) >= 0.03) requestAnimationFrame(seekFilm);
+    };
+    const onSeeked = () => finish(false);
+    watch = setTimeout(() => finish(true), 2500);
+    filmVideo.addEventListener("seeked", onSeeked);
+    filmVideo.currentTime = target;
+  };
+
+  const updateFilm = (vh) => {
+    const box = film.getBoundingClientRect();
+    if (box.bottom < -vh * 0.5 || box.top > vh * 1.5) {
+      filmWindow?.style.setProperty("--tilt", "0");
+      filmWindow?.style.setProperty("--lift", "0");
       return;
     }
-    // No current frame yet: keep the target and retry once data arrives.
-    if (video.readyState < 2) return;
-    pendingSeekTime = null;
-    isSeeking = true;
-    const done = () => {
-      window.clearTimeout(seekWatchdog);
-      video.removeEventListener('seeked', done);
-      isSeeking = false;
-      stuckSeeks = 0;
-      commitSeek();
+    const travel = box.height - vh;
+    const progress = travel > 0 ? clamp01(-box.top / travel) : 0;
+    if (filmState.ready && Number.isFinite(filmVideo.duration)) {
+      filmState.target = progress * Math.max(0, filmVideo.duration - 0.05) * 0.88;
+      seekFilm();
+    }
+    if (filmWindow) {
+      // Se endereza al entrar por abajo; fuera de la vista queda recta (nadie la ve y las capturas no la tuercen).
+      const top = filmWindow.getBoundingClientRect().top;
+      const enter = top >= vh ? 1 : clamp01((vh - top) / (vh * 0.75));
+      filmWindow.style.setProperty("--tilt", (7 * (1 - enter)).toFixed(2));
+      filmWindow.style.setProperty("--lift", (44 * (1 - enter)).toFixed(1));
+    }
+  };
+
+  const requestFilm = () => {
+    if (filmState.requested || !filmVideo || !canMove() || constrained()) return;
+    filmState.requested = true;
+    loadFilm().catch(() => {
+      filmState.ready = false;
+      filmBackdrop?.classList.remove("is-ready");
+    });
+  };
+  if (film && filmVideo && "IntersectionObserver" in window) {
+    // Se prepara cuando la película está a menos de una pantalla de distancia.
+    const filmObserver = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        filmObserver.disconnect();
+        requestFilm();
+      }
+    }, { rootMargin: "100% 0px 100% 0px" });
+    filmObserver.observe(film);
+  }
+
+  /* Profundidad: parallax suave de fotos y baldosas, la ventana del héroe que se endereza y la película. */
+  const collectScenes = () => $$("[data-parallax]").map((node) => ({ node, speed: parseFloat(node.dataset.parallax) || 0.1, hero: Boolean(node.closest(".hero")) }));
+  let scenes = collectScenes();
+  const heroWindow = document.querySelector("[data-hero-window]");
+  const wide = window.matchMedia("(min-width: 761px)");
+  let ticking = false;
+
+  function update() {
+    ticking = false;
+    const y = window.scrollY;
+    const vh = window.innerHeight;
+    if (nav && !nav.classList.contains("nav--solid")) nav.classList.toggle("is-scrolled", y > 24);
+    if (!canMove()) return;
+    scenes.forEach(({ node, speed, hero }) => {
+      if (hero) {
+        if (y < vh * 1.6) node.style.setProperty("--py", `${(y * speed).toFixed(1)}px`);
+        return;
+      }
+      const box = node.parentElement.getBoundingClientRect();
+      if (box.bottom < -100 || box.top > vh + 100) return;
+      const offset = box.top + box.height / 2 - vh / 2;
+      node.style.setProperty("--py", `${(-offset * speed).toFixed(1)}px`);
+    });
+    if (heroWindow) {
+      const progress = wide.matches ? Math.min(1, y / 520) : 1;
+      heroWindow.style.setProperty("--tilt", (6 * (1 - progress)).toFixed(2));
+      heroWindow.style.setProperty("--lift", (-22 * progress).toFixed(1));
+    }
+    if (film) updateFilm(vh);
+  }
+  function requestUpdate() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+  window.addEventListener("scroll", requestUpdate, { passive: true });
+  window.addEventListener("resize", requestUpdate);
+  motion.addEventListener("change", () => {
+    if (!canMove()) {
+      scenes.forEach(({ node }) => node.style.removeProperty("--py"));
+      [heroWindow, filmWindow].forEach((node) => { node?.style.removeProperty("--tilt"); node?.style.removeProperty("--lift"); });
+      filmBackdrop?.classList.remove("is-ready");
+      filmVideo?.pause();
+      showAll();
+    }
+    requestUpdate();
+  });
+  update();
+
+  /* Una página que pinta contenido después de cargar (docs/app.js) avisa con «pteron:content»:
+     se vuelven a medir las capas con parallax y aparece lo nuevo marcado con data-reveal. */
+  document.addEventListener("pteron:content", () => {
+    scenes = collectScenes();
+    $$("[data-reveal]:not(.is-in)").forEach((node) => {
+      if (revealObserver) revealObserver.observe(node);
+      else node.classList.add("is-in");
+    });
+    requestUpdate();
+  });
+
+  /* Vídeo de fondo en bucle (<video data-bg-video data-src-wide data-src-narrow>, sin extensión):
+     sólo con movimiento y sin ahorro de datos; se pausa fuera de pantalla. La imagen fija queda debajo. */
+  $$("video[data-bg-video]").forEach((video) => {
+    if (!canMove() || constrained() || !("IntersectionObserver" in window)) return;
+    const base = narrowQuery.matches ? video.dataset.srcNarrow : video.dataset.srcWide;
+    const type = video.canPlayType('video/webm; codecs="vp9"') ? "webm" : video.canPlayType('video/mp4; codecs="avc1.640028"') ? "mp4" : "";
+    if (!base || !type) return;
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.addEventListener("playing", () => video.classList.add("is-ready"), { once: true });
+    video.addEventListener("error", () => video.classList.remove("is-ready"));
+    video.src = `${base}.${type}${VERSION}`;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && canMove()) video.play()?.catch(() => {});
+        else video.pause();
+      });
+    });
+    observer.observe(video);
+    motion.addEventListener("change", () => {
+      if (canMove()) return;
+      video.pause();
+      video.classList.remove("is-ready");
+    });
+  });
+
+  /* Aurora generativa (<canvas data-aurora>): cortinas de luz que derivan despacio, a 30 cuadros
+     por segundo como máximo y en pausa fuera de pantalla. Con movimiento reducido, un solo cuadro. */
+  $$("canvas[data-aurora]").forEach((canvas) => {
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const W = canvas.width;
+    const H = canvas.height;
+    const TAU = Math.PI * 2;
+    const curtains = [
+      { base: 0.32, amp: 0.07, k: 1.3, speed: 0.021, phase: 0.4, height: 0.5, alpha: 0.55, rgb: [88, 196, 214] },
+      { base: 0.25, amp: 0.06, k: 2.1, speed: -0.017, phase: 2.1, height: 0.42, alpha: 0.42, rgb: [104, 140, 238] },
+      { base: 0.4, amp: 0.05, k: 0.9, speed: 0.013, phase: 4.2, height: 0.3, alpha: 0.24, rgb: [150, 112, 226] },
+      { base: 0.44, amp: 0.035, k: 3.2, speed: 0.026, phase: 1.3, height: 0.1, alpha: 0.26, rgb: [240, 168, 96] },
+    ].map((curtain) => {
+      // Cada cortina es una tira vertical: borde inferior brillante que se desvanece hacia arriba.
+      const strip = document.createElement("canvas");
+      strip.width = 1;
+      strip.height = 64;
+      const g = strip.getContext("2d");
+      const [r, gr, b] = curtain.rgb;
+      const gradient = g.createLinearGradient(0, 0, 0, 64);
+      gradient.addColorStop(0, `rgba(${r},${gr},${b},0)`);
+      gradient.addColorStop(0.62, `rgba(${r},${gr},${b},0.38)`);
+      gradient.addColorStop(0.9, `rgba(${r},${gr},${b},1)`);
+      gradient.addColorStop(1, `rgba(${r},${gr},${b},0)`);
+      g.fillStyle = gradient;
+      g.fillRect(0, 0, 1, 64);
+      return { ...curtain, strip };
+    });
+    const draw = (t) => {
+      ctx.globalCompositeOperation = "source-over";
+      ctx.clearRect(0, 0, W, H);
+      ctx.globalCompositeOperation = "lighter";
+      curtains.forEach((c) => {
+        for (let x = 0; x < W; x += 1) {
+          const u = x / W;
+          const y = H * (c.base
+            + c.amp * Math.sin(TAU * (c.k * u + c.speed * t) + c.phase)
+            + c.amp * 0.45 * Math.sin(TAU * (c.k * 2.3 * u - c.speed * 1.6 * t) + c.phase * 1.7));
+          const glow = 0.5 + 0.5 * Math.sin(TAU * (1.7 * u + c.speed * 0.8 * t) + c.phase * 2.3);
+          // Rayos: modulación fina a lo largo de la cortina, que también recorta su borde superior.
+          const rays = 0.62 + 0.38 * Math.sin(TAU * (c.k * 11 * u + c.speed * 2.4 * t) + c.phase * 3) * Math.sin(TAU * (c.k * 4.3 * u - c.speed * 1.1 * t));
+          const height = H * c.height * (0.7 + 0.3 * Math.sin(TAU * (2.4 * u + c.speed * 0.5 * t) + c.phase)) * (0.82 + 0.3 * rays);
+          ctx.globalAlpha = Math.min(1, c.alpha * (0.2 + 0.8 * glow * glow) * (0.55 + 0.6 * rays));
+          ctx.drawImage(c.strip, x, y - height, 1, height);
+        }
+      });
+      ctx.globalAlpha = 1;
     };
-    // A stuck seek must not freeze the film for the rest of the session.
-    const seekWatchdog = window.setTimeout(() => {
-      video.removeEventListener('seeked', done);
-      isSeeking = false;
-      // Re-queue the target so the next chance (or scroll tick) can retry.
-      if (Math.abs(video.currentTime - next) > 0.35) {
-        pendingSeekTime = next;
-        stuckSeeks += 1;
-        if (stuckSeeks >= 3) promoteToBlob();
+    const start = 37;
+    draw(start);
+    canvas.classList.add("is-drawn");
+    if (!("IntersectionObserver" in window)) return;
+    let visible = false;
+    let frame = 0;
+    let last = 0;
+    let clock = start;
+    const loop = (now) => {
+      frame = 0;
+      if (!visible || !canMove() || document.hidden) return;
+      if (now - last >= 33) {
+        clock += last ? Math.min(0.1, (now - last) / 1000) : 0;
+        last = now;
+        draw(clock);
       }
-      commitSeek();
-    }, 2800);
-    video.addEventListener('seeked', done);
-    video.currentTime = next;
-  };
+      frame = requestAnimationFrame(loop);
+    };
+    const play = () => { if (!frame && visible && canMove() && !document.hidden) { last = 0; frame = requestAnimationFrame(loop); } };
+    new IntersectionObserver((entries) => {
+      visible = entries.some((entry) => entry.isIntersecting);
+      play();
+    }).observe(canvas);
+    document.addEventListener("visibilitychange", play);
+    motion.addEventListener("change", play);
+  });
 
-  const updateFilm = () => {
-    frameId = 0;
-    const progress = Math.min(1, Math.max(0, (window.scrollY - filmTop) / filmTravel));
-    const duration = Number.isFinite(video.duration) ? Math.max(0, video.duration - .05) : 0;
-    targetTime = reducedMotion ? 0 : progress * duration * .88;
-    if (duration && filmStage?.classList.contains('is-video-ready')) {
-      if (Math.abs(video.currentTime - targetTime) > .025) {
-        pendingSeekTime = targetTime;
-        commitSeek();
+  /* Plataforma del visitante. Sin una detección clara no se marca ninguna
+     (ni iOS, Android, ChromeOS, Linux ARM ni iPad): la misma regla que descargar/download.js. */
+  const detectPlatform = () => {
+    const ua = navigator.userAgent || "";
+    const hint = navigator.userAgentData?.platform || "";
+    if (/Android|iPhone|iPad|iPod|CrOS/i.test(ua)) return "";
+    if (/Win/i.test(hint) || /Windows NT/i.test(ua)) return "windows";
+    if (/mac/i.test(hint) || /Macintosh|Mac OS X/i.test(ua)) return navigator.maxTouchPoints > 1 ? "" : "macos";
+    if ((/Linux|X11/i.test(hint) || /Linux|X11/i.test(ua)) && !/aarch64|arm64|armv\d/i.test(ua)) return "linux";
+    return "";
+  };
+  const platform = detectPlatform();
+  if (platform) $$(`[data-platform="${platform}"]`).forEach((node) => node.classList.add("is-detected"));
+
+  /* Datos de la versión publicada (release-data.js): versión, archivo y peso reales.
+     Si el catálogo no responde, la página conserva su texto sin versión. */
+  const releaseHooks = $$("[data-release-version], [data-release-file], [data-release-asset], [data-release-date], [data-release-link]");
+  const releaseData = window.PTERON_RELEASES;
+  if (releaseHooks.length && releaseData?.loadReleaseCatalog) {
+    const megabytes = new Intl.NumberFormat("es-CL", { maximumFractionDigits: 0 });
+    const size = (bytes) => (Number.isFinite(bytes) && bytes > 0 ? `${megabytes.format(bytes / 1e6)} MB` : "");
+    releaseData.loadReleaseCatalog().then(({ latest }) => {
+      if (!latest) return;
+      $$("[data-release-version]").forEach((node) => { node.textContent = latest.version; node.hidden = false; });
+      $$("[data-release-date]").forEach((node) => { node.textContent = latest.publishedLabel; node.hidden = false; });
+      $$("[data-release-link]").forEach((node) => { node.href = latest.url; });
+      $$("[data-release-file]").forEach((node) => {
+        const asset = releaseData.findAsset(latest, node.dataset.releaseFile);
+        if (asset) node.textContent = [asset.name, size(asset.bytes)].filter(Boolean).join(" · ");
+      });
+      $$("[data-release-asset]").forEach((node) => {
+        const asset = releaseData.findAsset(latest, node.dataset.releaseAsset);
+        if (asset) node.href = asset.url;
+      });
+    }).catch(() => {});
+  }
+
+  /* Copiar al portapapeles: <button data-copy="texto"> o data-copy-target="#id". */
+  $$("[data-copy], [data-copy-target]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const target = button.dataset.copyTarget ? document.querySelector(button.dataset.copyTarget) : null;
+      const text = button.dataset.copy || target?.textContent?.trim() || "";
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        button.dataset.copied = "true";
+        const label = button.querySelector("[data-copy-label]");
+        const previous = label?.textContent;
+        if (label) label.textContent = "Copiado";
+        setTimeout(() => { delete button.dataset.copied; if (label) label.textContent = previous; }, 2000);
+      } catch {
+        button.dataset.copied = "false";
       }
-    }
-    if (progressLabel) progressLabel.textContent = `${String(Math.round(progress * 100)).padStart(2, '0')} — 100`;
-    if (product) {
-      const isMobile = window.innerWidth <= 560;
-      const enterDuration = isMobile ? .28 : .18;
-      const enter = reducedMotion ? 1 : Math.min(1, Math.max(0, progress / enterDuration));
-      // Start higher so the pteron window is already readable as the film arrives.
-      const startOffset = isMobile ? 22 : 12;
-      const offset = startOffset * (1 - enter);
-      product.style.transform = `translate3d(-50%, ${offset}vh, 0)`;
-    }
-  };
-
-  const requestFilmUpdate = () => {
-    if (!frameId) frameId = window.requestAnimationFrame(updateFilm);
-  };
-
-  measureFilm();
-  video.addEventListener('loadedmetadata', () => {
-    measureFilm();
-    updateFilm();
-  });
-  // A seek parked while readyState dipped resumes as soon as a frame exists.
-  video.addEventListener('loadeddata', () => {
-    if (pendingSeekTime !== null) commitSeek();
-  });
-  video.addEventListener('canplay', () => {
-    if (pendingSeekTime !== null) commitSeek();
-  });
-  window.addEventListener('scroll', requestFilmUpdate, { passive: true });
-  window.addEventListener('resize', () => {
-    measureFilm();
-    requestFilmUpdate();
-  }, { passive: true });
-
-  // Reveal as soon as fonts and the short medusa beat allow. The film paints
-  // from its poster until the video is decoded and seekable; preparation keeps
-  // running and arms scrubbing when ready. A slow network can no longer hold
-  // the whole page hostage behind a 13–22 MB download.
-  const preparation = reducedMotion ? Promise.resolve() : prepareVideo().catch(() => {
-    filmStage?.classList.remove('is-video-ready');
-  });
-  const fontsReady = document.fonts?.ready ?? Promise.resolve();
-  const minimumLoaderTime = new Promise((resolve) => window.setTimeout(resolve, reducedMotion ? 0 : 380));
-
-  Promise.all([fontsReady, minimumLoaderTime]).finally(() => {
-    measureFilm();
-    updateFilm();
-    finishLoading();
-    preparation.finally(() => {
-      measureFilm();
-      updateFilm();
     });
   });
 })();

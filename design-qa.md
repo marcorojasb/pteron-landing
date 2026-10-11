@@ -328,3 +328,24 @@ Target: `/docs/?pagina=versiones` y `/descargar/`.
 - Comprobaciones: fallback sin API (JSON empaquetado) renderiza igual;
   axe 0 violaciones (contraste sobre video queda como revisión manual);
   `node --test tests/*.test.js` 36/36.
+
+
+## 2026-10-12 · Rediseño «La hora azul» y panel de administración
+
+- Dirección elegida por jurado (tres jueces, referencias Opero y Shotbase) y
+  construida por un sistema compartido más hojas por página. Fotografía CC de
+  Wikimedia Commons, timelapses de ESO (CC BY 4.0), capturas reales de pteron
+  0.7 con el marco de ventana real, atlas de asignaturas con láminas de dominio
+  público y texturas propias, película con scroll en el inicio y vídeo en bucle
+  en /descargar, aurora generativa con póster estático.
+- Prohibiciones del dueño aplicadas: sin cursivas (salvo wordmark), sin
+  píldoras de estado con punto, sin avisos con borde izquierdo, dos familias
+  tipográficas más una mono para datos.
+- Verificación: 10 páginas × 2 anchos × 2 esquemas sin desborde ni errores de
+  consola; hooks de cuenta.js, download.js, docs/app.js, admin.js y script.js
+  completos; 118 URL internas en 200; metadatos y canonical sin barra; menú
+  móvil, buscador de la documentación, descargas 0.7.0 y cuenta con sesión
+  simulada probados con Playwright; sin JS y con movimiento reducido todo el
+  contenido queda visible; inicio 1,2 MB iniciales a 1440.
+- Pendiente: probar la película con scroll en Safari e iOS (ruta Blob), que no
+  se puede ejecutar en el entorno de pruebas.
