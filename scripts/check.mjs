@@ -3,7 +3,7 @@
  * empaquetado en seco del Worker (lo mismo que haría el deploy, sin subirlo).
  */
 import { execFileSync } from "node:child_process";
-import { readdirSync, statSync } from "node:fs";
+import { existsSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
@@ -24,5 +24,11 @@ for (const file of files) {
 }
 console.log(`${files.length} archivos JavaScript con sintaxis válida.`);
 
-execFileSync("npx", ["wrangler", "deploy", "--dry-run", "--outdir", ".wrangler/dry-run"], { cwd: root, stdio: "inherit" });
+// El binario local, nunca uno que npx descargue por su cuenta.
+const wrangler = path.join(root, "node_modules", ".bin", "wrangler");
+if (!existsSync(wrangler)) {
+  console.error("Falta wrangler en node_modules: ejecuta `npm ci` antes de `npm run check`.");
+  process.exit(1);
+}
+execFileSync(wrangler, ["deploy", "--dry-run", "--outdir", ".wrangler/dry-run"], { cwd: root, stdio: "inherit" });
 console.log("Worker empaquetado en seco sin errores.");

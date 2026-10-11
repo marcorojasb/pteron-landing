@@ -14,16 +14,23 @@
     "directory": "./public",
     "binding": "ASSETS",
     "html_handling": "drop-trailing-slash",
-    "not_found_handling": "404-page"
+    "not_found_handling": "404-page",
+    // Sin esto, una navegación del navegador (Sec-Fetch-Mode: navigate) a una
+    // ruta sin asset la responde el servidor de assets con la 404 y el Worker
+    // nunca corre: el retorno de Flow a /api/billing/card-callback y los
+    // enlaces directos a /docs/:slug se perderían. Estas rutas van al Worker
+    // siempre; los archivos reales de /docs/* los sirve igual vía ASSETS.
+    "run_worker_first": ["/api", "/api/*", "/docs/*"]
   },
   // Variables públicas. Los secretos (SUPABASE_PUBLISHABLE_KEY,
   // SUPABASE_SERVICE_ROLE_KEY, FLOW_API_KEY, FLOW_SECRET_KEY,
-  // LICENSE_PRIVATE_KEY_PEM, GATEWAY_UPSTREAM_API_KEY) se cargan con
+  // LICENSE_PRIVATE_KEY_PEM, ANTHROPIC_API_KEY) se cargan con
   // `wrangler secret put` o desde el panel; nunca en este archivo.
   "vars": {
     "PUBLIC_SITE_URL": "https://pteron.patagua.dev",
     "SUPABASE_URL": "https://swzqblyllbudwbmbcthr.supabase.co",
-    "LICENSE_KID": "k1"
+    "LICENSE_KID": "k1",
+    "GATEWAY_MODEL_ID": "claude-haiku-5-5"
   }
   // El dominio se asigna desde el panel al momento del corte (Custom Domains),
   // para no pisar el CNAME vigente con un deploy. Equivale a:

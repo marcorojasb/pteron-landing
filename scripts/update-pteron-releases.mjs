@@ -1,8 +1,8 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { createRequire } from "node:module";
+// El módulo es UMD: cargado como ESM expone su API en globalThis.PTERON_RELEASES.
+import "../public/release-data.js";
 
-const require = createRequire(import.meta.url);
-const { compareSemver, isCompleteRelease, normalizeRelease } = require("../release-data.js");
+const { compareSemver, isCompleteRelease, normalizeRelease } = globalThis.PTERON_RELEASES;
 
 const repository = process.env.PTERON_RELEASE_REPOSITORY || "marcorojasb/pteron-beta";
 // Durante la beta, pteron publica versiones X.Y.Z. Por eso el flag

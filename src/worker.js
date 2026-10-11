@@ -1,4 +1,4 @@
-import { handleError, json } from "./lib/http.js";
+import { SECURITY_HEADERS, handleError, json } from "./lib/http.js";
 import { createSupabase } from "./lib/supabase.js";
 import { createFlow } from "./lib/flow.js";
 import { PUBLIC_KEYS, createLicenseService } from "./lib/license.js";
@@ -8,7 +8,7 @@ import { ACTIONS as billing } from "./routes/billing.js";
 import { ACTIONS as activation } from "./routes/activation.js";
 import { ACTIONS as license } from "./routes/license.js";
 import { account } from "./routes/account.js";
-import { chatCompletions, models } from "./routes/ai.js";
+import { chatCompletions, messages, models } from "./routes/ai.js";
 
 /**
  * Worker de pteron-landing. La web estática la sirve Cloudflare como assets
@@ -20,6 +20,7 @@ const ACTION_ROUTES = { auth, billing, activation, license };
 const EXACT_ROUTES = {
   "/api/account": account,
   "/api/ai/v1/models": models,
+  "/api/ai/v1/messages": messages,
   "/api/ai/v1/chat/completions": chatCompletions,
 };
 
@@ -63,14 +64,20 @@ const DOCS_PAGE = /^\/docs\/[^/]+$/;
  */
 async function handleAssets(request, env) {
   const url = new URL(request.url);
-  if (/^\/docs\/[^/]+\/$/.test(url.pathname) && (request.method === "GET" || request.method === "HEAD")) {
+  const navigation = request.method === "GET" || request.method === "HEAD";
+  if (/^\/docs\/[^/]+\/$/.test(url.pathname) && navigation) {
     url.pathname = url.pathname.replace(/\/+$/, "");
-    return Response.redirect(url.toString(), 308);
+    return new Response(null, { status: 308, headers: { Location: url.toString(), ...SECURITY_HEADERS } });
   }
-  const response = await env.ASSETS.fetch(request);
-  if (response.status !== 404 || !DOCS_PAGE.test(url.pathname)) return response;
-  if (request.method !== "GET" && request.method !== "HEAD") return response;
-  // Se reenvían las cabeceras condicionales: un 304 por ETag es tan válido como el 200.
+  if (!DOCS_PAGE.test(url.pathname) || !navigation) return env.ASSETS.fetch(request);
+  // La sonda va sin cabeceras condicionales: si el navegador guardó la 404 de
+  // este slug, un 304 la haría pasar por página válida. El 404 real decide.
+  const probeHeaders = new Headers(request.headers);
+  probeHeaders.delete("if-none-match");
+  probeHeaders.delete("if-modified-since");
+  const response = await env.ASSETS.fetch(new Request(request.url, { method: request.method, headers: probeHeaders }));
+  if (response.status !== 404) return response;
+  // Aquí sí se reenvían las condicionales: un 304 de la página de docs es tan válido como el 200.
   const page = await env.ASSETS.fetch(new Request(new URL("/docs", url), { method: request.method, headers: request.headers }));
   return page.ok || page.status === 304 ? page : response;
 }

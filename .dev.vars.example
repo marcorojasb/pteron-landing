@@ -5,7 +5,9 @@ SUPABASE_SERVICE_ROLE_KEY=
 FLOW_BASE_URL=https://sandbox.flow.cl/api
 FLOW_API_KEY=
 FLOW_SECRET_KEY=
+# Opcionales si los planes ya existen en Flow con otro id (por defecto pteron-<plan>-monthly):
+# FLOW_BASIC_PLAN_ID=
+# FLOW_PRO_PLAN_ID=
 LICENSE_PRIVATE_KEY_PEM=
-GATEWAY_UPSTREAM_BASE_URL=https://opencode.ai/zen/go/v1
-GATEWAY_UPSTREAM_MODEL_ID=deepseek-v4-flash
-GATEWAY_UPSTREAM_API_KEY=
+ANTHROPIC_API_KEY=
+# Opcionales: GATEWAY_MODEL_ID (por defecto claude-haiku-5-5) y ANTHROPIC_BASE_URL.

@@ -5,6 +5,8 @@ import { flowSuccess, flowValue } from "../lib/flow.js";
 // Acciones detrás de /api/billing/{checkout,cancel,card-callback,flow-callback}.
 // Flow y la cuenta web siguen llamando exactamente a esas URLs.
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 const PLAN_DEFAULTS = {
   basic: { name: "pteron Basic", amount: 2999, trialPeriodDays: 7 },
   pro: { name: "pteron Pro", amount: 9990, trialPeriodDays: 0 },
@@ -133,6 +135,8 @@ async function cardCallback({ request, env, url, services }) {
   const intentId = String(url.searchParams.get("intent") || "").trim();
   const token = String(url.searchParams.get("token") || input.token || "").trim();
   if (!intentId || !token) throw new HttpError(400, "invalid_callback", "El retorno de Flow no está completo.");
+  // El id es un uuid generado por la base; otra forma no identifica ningún checkout.
+  if (!UUID.test(intentId)) throw new HttpError(410, "checkout_expired", "Este checkout ya venció.");
   const intents = await supabase.select(
     "billing_checkout_intents",
     `id=eq.${encodeURIComponent(intentId)}&select=id,user_id,plan_id,provider_customer_id,provider_plan_id,status,expires_at&limit=1`,

@@ -14,9 +14,17 @@ export class HttpError extends Error {
   }
 }
 
+/** Las mismas cabeceras que public/_headers aplica a los assets; aquí para lo que genera el Worker. */
+export const SECURITY_HEADERS = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+};
+
 const BASE_HEADERS = {
   "Cache-Control": "no-store",
-  "X-Content-Type-Options": "nosniff",
+  ...SECURITY_HEADERS,
 };
 
 export function json(status, payload, headers = {}) {
@@ -96,11 +104,21 @@ export function parseBody(raw, contentType = "") {
   if (String(contentType).toLowerCase().includes("application/x-www-form-urlencoded")) {
     return Object.fromEntries(new URLSearchParams(raw));
   }
+  return parseJsonObject(raw);
+}
+
+/** Sólo un objeto JSON es un cuerpo válido: `null`, un número o una lista no lo son. */
+export function parseJsonObject(raw) {
+  let parsed;
   try {
-    return JSON.parse(raw);
+    parsed = JSON.parse(raw);
   } catch {
     throw new HttpError(400, "invalid_json", "La solicitud no tiene un formato válido.");
   }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new HttpError(400, "invalid_json", "La solicitud no tiene un formato válido.");
+  }
+  return parsed;
 }
 
 export function requireString(value, field, maxLength = 500) {

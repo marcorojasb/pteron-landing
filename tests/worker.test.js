@@ -2,8 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import worker, { createServices, matchApi } from "../src/worker.js";
 import { createLicenseService } from "../src/lib/license.js";
-import { chatCompletions, models } from "../src/routes/ai.js";
-import { fakeAssets, fakeExecution, fakeSupabase, jsonRequest, testEnv, testKeyPair, testServices, withFetch } from "./helpers/fakes.js";
+import { chatCompletions, messages, models } from "../src/routes/ai.js";
+import { fakeAssets, fakeAssetsWithEtags, fakeExecution, fakeSupabase, jsonRequest, testEnv, testKeyPair, testServices, withFetch } from "./helpers/fakes.js";
 
 const env = testEnv();
 
@@ -86,7 +86,7 @@ test("los assets se sirven tal cual y /docs/:slug cae a la página de documentac
 
 function gatewayFixture() {
   const keys = testKeyPair();
-  const gatewayEnv = testEnv({ LICENSE_PRIVATE_KEY_PEM: keys.privatePem, GATEWAY_UPSTREAM_API_KEY: "upstream-key", GATEWAY_UPSTREAM_BASE_URL: "https://upstream.test/v1", GATEWAY_UPSTREAM_MODEL_ID: "modelo-real" });
+  const gatewayEnv = testEnv({ LICENSE_PRIVATE_KEY_PEM: keys.privatePem, ANTHROPIC_API_KEY: "upstream-key", ANTHROPIC_BASE_URL: "https://upstream.test", GATEWAY_MODEL_ID: "modelo-real" });
   const services = testServices(gatewayEnv, { k1: keys.publicPem });
   const sign = (overrides = {}) => createLicenseService(gatewayEnv, null).signLicense({ subject: "profe-1", plan: "pro", expiresAt: new Date(Date.now() + 60_000).toISOString(), ...overrides });
   return { keys, gatewayEnv, services, sign };
@@ -113,7 +113,7 @@ test("chat/completions retransmite el stream byte a byte y contabiliza los token
   const calls = [];
   const fetchImpl = async (url, init = {}) => {
     const target = String(url);
-    calls.push({ url: target, body: init.body ? JSON.parse(init.body) : null });
+    calls.push({ url: target, body: init.body ? JSON.parse(init.body) : null, headers: init.headers || {} });
     if (target.includes("/rest/v1/plan_catalog")) return Response.json([{ ai_units_limit: null }]);
     if (target.includes("/rest/v1/rpc/reserve_ai_usage")) return Response.json([{ allowed: true, units_used: 0 }]);
     if (target === "https://upstream.test/v1/chat/completions") {
@@ -130,15 +130,18 @@ test("chat/completions retransmite el stream byte a byte y contabiliza los token
   };
   await withFetch(fetchImpl, async () => {
     const execution = fakeExecution();
-    const request = jsonRequest("https://pteron.test/api/ai/v1/chat/completions", { model: "pteron-managed", stream: true, messages: [{ role: "user", content: "hola" }] }, { headers: { authorization: `Bearer ${token}` } });
+    const request = jsonRequest("https://pteron.test/api/ai/v1/chat/completions", { model: "pteron-managed", stream: true, temperature: 0.2, messages: [{ role: "user", content: "hola" }] }, { headers: { authorization: `Bearer ${token}` } });
     const res = await chatCompletions({ request, env: gatewayEnv, execution, services });
     assert.equal(res.status, 200);
     assert.equal(res.headers.get("content-type"), "text/event-stream");
+    assert.equal(res.headers.get("x-frame-options"), "DENY");
     assert.equal(await res.text(), sse.join(""));
     await execution.settle();
 
     const upstream = calls.find((call) => call.url.endsWith("/chat/completions"));
     assert.equal(upstream.body.model, "modelo-real", "el cliente nunca elige el modelo real");
+    assert.equal("temperature" in upstream.body, false, "Haiku 5.5 rechaza temperature; el puente la omite");
+    assert.equal(upstream.headers.authorization, "Bearer upstream-key");
     assert.deepEqual(upstream.body.stream_options, { include_usage: true });
     const reservations = calls.filter((call) => call.url.includes("reserve_ai_usage")).map((call) => call.body);
     assert.equal(reservations.length, 2, "chequeo previo con 0 y registro final con el gasto real");
@@ -222,4 +225,174 @@ test("createServices expone las claves públicas reales para verificar licencias
   const services = createServices(env);
   assert.equal(typeof services.publicKeys.k1, "string");
   assert.match(services.publicKeys.k1, /BEGIN PUBLIC KEY/);
+});
+
+function messagesFixture() {
+  const { gatewayEnv, services, sign } = gatewayFixture();
+  const sse = [
+    'event: message_start\ndata: {"type":"message_start","message":{"id":"msg_1","model":"modelo-real","usage":{"input_tokens":100,"cache_creation_input_tokens":20,"cache_read_input_tokens":30,"output_tokens":1}}}\n\n',
+    'event: content_block_delta\ndata: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"ho',
+    'la"}}\n\nevent: message_delta\ndata: {"type":"message_delta","delta":{"stop_reason":"end_turn"},"usage":{"output_tokens":50}}\n\n',
+    "event: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+  ];
+  return { gatewayEnv, services, sign, sse };
+}
+
+test("messages retransmite la API Messages de Anthropic con la licencia en x-api-key y suma todos los tokens", async () => {
+  const { gatewayEnv, services, sign, sse } = messagesFixture();
+  const token = await sign();
+  const calls = [];
+  const fetchImpl = async (url, init = {}) => {
+    const target = String(url);
+    calls.push({ url: target, body: init.body ? JSON.parse(init.body) : null, headers: init.headers || {} });
+    if (target.includes("/rest/v1/plan_catalog")) return Response.json([{ ai_units_limit: null }]);
+    if (target.includes("/rest/v1/rpc/reserve_ai_usage")) return Response.json([{ allowed: true, units_used: 0 }]);
+    if (target === "https://upstream.test/v1/messages") {
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        start(controller) {
+          for (const chunk of sse) controller.enqueue(encoder.encode(chunk));
+          controller.close();
+        },
+      });
+      return new Response(stream, { status: 200, headers: { "content-type": "text/event-stream; charset=utf-8" } });
+    }
+    throw new Error(`Sin mock para ${target}`);
+  };
+  await withFetch(fetchImpl, async () => {
+    const execution = fakeExecution();
+    const request = jsonRequest("https://pteron.test/api/ai/v1/messages", { model: "pteron-managed", stream: true, max_tokens: 1000, messages: [{ role: "user", content: "hola" }] }, {
+      headers: { "x-api-key": token, "anthropic-version": "2023-06-01", "anthropic-beta": "fine-grained-tool-streaming-2025-05-14" },
+    });
+    const res = await messages({ request, env: gatewayEnv, execution, services });
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get("content-type"), "text/event-stream; charset=utf-8");
+    assert.equal(await res.text(), sse.join(""));
+    await execution.settle();
+
+    const upstream = calls.find((call) => call.url === "https://upstream.test/v1/messages");
+    assert.equal(upstream.body.model, "modelo-real");
+    assert.equal(upstream.body.max_tokens, 1000);
+    assert.equal(upstream.headers["x-api-key"], "upstream-key", "la clave real sólo la pone el Worker");
+    assert.equal(upstream.headers["anthropic-version"], "2023-06-01");
+    assert.equal(upstream.headers["anthropic-beta"], "fine-grained-tool-streaming-2025-05-14", "las betas del cliente se reenvían");
+    assert.equal("authorization" in upstream.headers, false);
+
+    const reservations = calls.filter((call) => call.url.includes("reserve_ai_usage")).map((call) => call.body);
+    assert.equal(reservations.length, 2);
+    assert.equal(reservations[1].p_units, 200, "entrada 100 + caché 20 + 30 + salida 50");
+    assert.deepEqual(reservations[1].p_metadata, { route_model: "modelo-real" });
+  });
+});
+
+test("messages sin stream contabiliza desde el JSON de la respuesta", async () => {
+  const { gatewayEnv, services, sign } = messagesFixture();
+  const token = await sign();
+  const calls = [];
+  const fetchImpl = async (url, init = {}) => {
+    const target = String(url);
+    calls.push({ url: target, body: init.body ? JSON.parse(init.body) : null });
+    if (target.includes("/rest/v1/plan_catalog")) return Response.json([{ ai_units_limit: null }]);
+    if (target.includes("/rest/v1/rpc/reserve_ai_usage")) return Response.json([{ allowed: true, units_used: 0 }]);
+    if (target.endsWith("/v1/messages")) return Response.json({ id: "msg", model: "modelo-real", content: [], usage: { input_tokens: 10, output_tokens: 5 } });
+    throw new Error(`Sin mock para ${target}`);
+  };
+  await withFetch(fetchImpl, async () => {
+    const execution = fakeExecution();
+    const request = jsonRequest("https://pteron.test/api/ai/v1/messages", { messages: [], max_tokens: 10 }, { headers: { authorization: `Bearer ${token}` } });
+    const res = await messages({ request, env: gatewayEnv, execution, services });
+    assert.equal(res.status, 200);
+    assert.equal((await res.json()).model, "modelo-real");
+    await execution.settle();
+    assert.equal(calls.filter((call) => call.url.includes("reserve_ai_usage")).at(-1).body.p_units, 15);
+  });
+});
+
+test("messages pasa al cliente un 429 del proveedor con su cuerpo y traduce un 401 de la clave propia a 502", async () => {
+  const { gatewayEnv, services, sign } = messagesFixture();
+  const token = await sign();
+  let upstreamStatus = 429;
+  const fetchImpl = async (url) => {
+    const target = String(url);
+    if (target.includes("/rest/v1/plan_catalog")) return Response.json([{ ai_units_limit: null }]);
+    if (target.includes("/rest/v1/rpc/reserve_ai_usage")) return Response.json([{ allowed: true, units_used: 0 }]);
+    if (target.endsWith("/v1/messages")) return Response.json({ type: "error", error: { type: "rate_limit_error", message: "slow down" } }, { status: upstreamStatus });
+    throw new Error(`Sin mock para ${target}`);
+  };
+  await withFetch(fetchImpl, async () => {
+    const rateLimited = await messages({ request: jsonRequest("https://pteron.test/api/ai/v1/messages", { messages: [] }, { headers: { authorization: `Bearer ${token}` } }), env: gatewayEnv, execution: fakeExecution(), services });
+    assert.equal(rateLimited.status, 429);
+    assert.equal((await rateLimited.json()).error.type, "rate_limit_error");
+    upstreamStatus = 401;
+    const badKey = await messages({ request: jsonRequest("https://pteron.test/api/ai/v1/messages", { messages: [] }, { headers: { authorization: `Bearer ${token}` } }), env: gatewayEnv, execution: fakeExecution(), services });
+    assert.equal(badKey.status, 502);
+    assert.equal((await badKey.json()).error, "gateway_upstream_error");
+  });
+});
+
+test("la cuota se aplica en el chequeo previo cuando el período ya está lleno y el cruce registra lo que cabe", async () => {
+  const { gatewayEnv, services, sign } = messagesFixture();
+  const token = await sign();
+  const reservations = [];
+  let unitsUsed = 1000;
+  const fetchImpl = async (url, init = {}) => {
+    const target = String(url);
+    if (target.includes("/rest/v1/plan_catalog")) return Response.json([{ ai_units_limit: 1000 }]);
+    if (target.includes("/rest/v1/rpc/reserve_ai_usage")) {
+      const body = JSON.parse(init.body);
+      reservations.push(body.p_units);
+      const allowed = unitsUsed + body.p_units <= 1000;
+      if (allowed) unitsUsed += body.p_units;
+      return Response.json([{ allowed, units_used: unitsUsed }]);
+    }
+    if (target.endsWith("/v1/messages")) return Response.json({ id: "msg", model: "modelo-real", content: [], usage: { input_tokens: 400, output_tokens: 100 } });
+    throw new Error(`Sin mock para ${target}`);
+  };
+  await withFetch(fetchImpl, async () => {
+    const full = await messages({ request: jsonRequest("https://pteron.test/api/ai/v1/messages", { messages: [] }, { headers: { authorization: `Bearer ${token}` } }), env: gatewayEnv, execution: fakeExecution(), services });
+    assert.equal(full.status, 429, "con lo usado igual al tope no se llama al proveedor");
+
+    unitsUsed = 700;
+    reservations.length = 0;
+    const execution = fakeExecution();
+    const originalError = console.error;
+    console.error = () => {};
+    try {
+      const crossing = await messages({ request: jsonRequest("https://pteron.test/api/ai/v1/messages", { messages: [] }, { headers: { authorization: `Bearer ${token}` } }), env: gatewayEnv, execution, services });
+      assert.equal(crossing.status, 200);
+      await crossing.text();
+      await execution.settle();
+    } finally {
+      console.error = originalError;
+    }
+    assert.deepEqual(reservations, [0, 500, 300], "500 no cabe; se anotan los 300 restantes y el período queda lleno");
+    assert.equal(unitsUsed, 1000);
+  });
+});
+
+test("la sonda de /docs/:slug ignora una 404 cacheada y la página de docs sí acepta 304 y HEAD", async () => {
+  const assets = fakeAssetsWithEtags({ "/docs": { body: "<html>docs</html>", etag: '"docs-etag"' } });
+  const bound = { ...env, ASSETS: assets };
+  const cached404 = await worker.fetch(new Request("https://pteron.test/docs/instalacion", { headers: { "if-none-match": '"etag-404"' } }), bound, fakeExecution());
+  assert.equal(cached404.status, 200, "una 404 cacheada no debe convertirse en 304");
+  assert.equal(await cached404.text(), "<html>docs</html>");
+  assert.equal(assets.calls[0].ifNoneMatch, null, "la sonda va sin condicionales");
+
+  const fresh = await worker.fetch(new Request("https://pteron.test/docs/instalacion", { headers: { "if-none-match": '"docs-etag"' } }), bound, fakeExecution());
+  assert.equal(fresh.status, 304, "el ETag de la página de docs sí vale");
+
+  const head = await worker.fetch(new Request("https://pteron.test/docs/instalacion", { method: "HEAD" }), bound, fakeExecution());
+  assert.equal(head.status, 200);
+  assert.equal(await head.text(), "");
+  assert.equal(assets.calls.at(-1).method, "HEAD");
+});
+
+test("las respuestas del Worker llevan las mismas cabeceras de seguridad que los assets", async () => {
+  const res = await worker.fetch(new Request("https://pteron.test/api/nada"), env, fakeExecution());
+  assert.equal(res.headers.get("x-frame-options"), "DENY");
+  assert.equal(res.headers.get("referrer-policy"), "strict-origin-when-cross-origin");
+  assert.equal(res.headers.get("permissions-policy"), "camera=(), microphone=(), geolocation=()");
+  const redirect = await worker.fetch(new Request("https://pteron.test/docs/x/"), { ...env, ASSETS: fakeAssets({}) }, fakeExecution());
+  assert.equal(redirect.status, 308);
+  assert.equal(redirect.headers.get("x-frame-options"), "DENY");
 });

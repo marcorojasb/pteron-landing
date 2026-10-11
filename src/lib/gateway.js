@@ -8,7 +8,8 @@ import { verifyLicense } from "./license.js";
  * licencia vencida no debe poder seguir gastando cuota.
  */
 export async function authenticateGateway(request, keys) {
-  const token = bearerToken(request);
+  // El SDK de Anthropic manda la credencial en x-api-key; el cliente OpenAI, como Bearer.
+  const token = bearerToken(request) || String(request.headers.get("x-api-key") || "").trim();
   if (!token) throw new HttpError(401, "not_authenticated", "Falta la licencia.");
   const verified = await verifyLicense(token, keys);
   if (!verified) throw new HttpError(401, "invalid_license", "La licencia no pudo verificarse.");
@@ -123,6 +124,67 @@ export function createSseTracker() {
       return { usage, model };
     },
   };
+}
+
+/**
+ * Acumula los eventos SSE de la API Messages de Anthropic. `message_start` trae
+ * el modelo real y los tokens de entrada (directos, de escritura y de lectura
+ * de caché); `message_delta` trae los de salida y, en la API actual, repite los
+ * de entrada. Cada campo conserva el último valor visto.
+ */
+export function createMessagesTracker() {
+  let pending = "";
+  let usage = null;
+  let model = null;
+  function absorb(text) {
+    for (const line of text.split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("data:")) continue;
+      const value = trimmed.slice(5).trim();
+      if (!value) continue;
+      let event;
+      try {
+        event = JSON.parse(value);
+      } catch {
+        continue;
+      }
+      if (event?.type === "message_start" && event.message && typeof event.message === "object") {
+        if (typeof event.message.model === "string" && event.message.model) model = event.message.model;
+        if (event.message.usage && typeof event.message.usage === "object") usage = { ...(usage || {}), ...event.message.usage };
+      } else if (event?.type === "message_delta" && event.usage && typeof event.usage === "object") {
+        usage = { ...(usage || {}), ...event.usage };
+      }
+    }
+  }
+  return {
+    push(text) {
+      const combined = pending + text;
+      const cut = combined.lastIndexOf("\n");
+      if (cut === -1) {
+        pending = combined;
+        return;
+      }
+      absorb(combined.slice(0, cut + 1));
+      pending = combined.slice(cut + 1);
+    },
+    flush() {
+      if (pending) absorb(pending);
+      pending = "";
+      return { usage, model };
+    },
+    current() {
+      return { usage, model };
+    },
+  };
+}
+
+/** Tokens procesados por Anthropic: entrada directa, caché escrita y leída, y salida. */
+export function totalTokensFromAnthropicUsage(usage) {
+  if (!usage || typeof usage !== "object") return 0;
+  const sum = ["input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens", "output_tokens"]
+    .map((field) => Number(usage[field]) || 0)
+    .reduce((total, value) => total + value, 0);
+  return Number.isFinite(sum) && sum > 0 ? Math.round(sum) : 0;
 }
 
 export function totalTokensFromUsage(usage) {
