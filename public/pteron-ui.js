@@ -240,6 +240,52 @@
     svg.classList.toggle("is-working", working);
   }
 
+  /* ---------- La hoja: «Qué hoja» da vuelta la guía (hoja del estudiante ↔ versión docente) ---------- */
+  const hoja = document.querySelector("[data-hoja-section]");
+  if (hoja) {
+    const sheet = hoja.querySelector("[data-hoja]");
+    const radios = [...hoja.querySelectorAll('input[name="que-hoja"]')];
+    hoja.classList.add("js-hoja");
+    hoja.dataset.face = radios.find((r) => r.checked)?.value || "estudiante";
+    let turning = false;
+    let pending = null;
+    const settle = (face) => {
+      hoja.dataset.face = face;
+    };
+    const turn = (face) => {
+      if (reduce() || !sheet || !sheet.animate) return settle(face);
+      if (turning) {
+        pending = face;
+        return;
+      }
+      turning = true;
+      sheet.classList.add("is-out");
+      sheet.addEventListener(
+        "animationend",
+        () => {
+          sheet.classList.remove("is-out");
+          settle(face);
+          sheet.classList.add("is-in");
+          sheet.addEventListener(
+            "animationend",
+            () => {
+              sheet.classList.remove("is-in");
+              turning = false;
+              if (pending && pending !== hoja.dataset.face) {
+                const next = pending;
+                pending = null;
+                turn(next);
+              } else pending = null;
+            },
+            { once: true }
+          );
+        },
+        { once: true }
+      );
+    };
+    radios.forEach((r) => r.addEventListener("change", () => r.checked && turn(r.value)));
+  }
+
   /* ---------- 3. Demostración del héroe ---------- */
   const DEMO = {
     request: "Necesito una guía de fracciones equivalentes para 6° básico de matemática, unos 45 minutos, con figuras para pintar.",

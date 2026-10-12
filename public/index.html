@@ -167,56 +167,56 @@
     </section>
 
 
-    <!-- La misma hoja continúa bajo el héroe: el atlas de asignaturas y la pantalla de inicio -->
+    <!-- La misma hoja clara continúa bajo el héroe: la guía de la demostración, ahora como hoja impresa -->
     <div class="sheet sheet-flow">
 
-    <!-- Atlas de asignaturas: láminas y mapas de dominio público recortados en baldosas sobre un arco de horizonte -->
-    <section class="section atlas wash ac-rosa" id="asignaturas" aria-labelledby="asignaturas-title">
-      <div class="wrap">
-        <div class="atlas-scene" aria-hidden="true" data-reveal="fade">
-          <figure class="atlas-tile atlas-t1" data-parallax="0.05" data-reveal="scale" style="--d:0;--i:0"><img src="/assets/atlas/matematica-byrne-600.webp?v=2026-10-12.6" srcset="/assets/atlas/matematica-byrne-600.webp?v=2026-10-12.6 600w, /assets/atlas/matematica-byrne-900.webp?v=2026-10-12.6 900w" sizes="(max-width: 760px) 32vw, 200px" width="600" height="600" alt="" loading="lazy" decoding="async"></figure>
-          <figure class="atlas-tile atlas-t2" data-parallax="0.08" data-reveal="scale" style="--d:1;--i:1"><img src="/assets/atlas/mezcla-salpicadura-crayon-600.webp?v=2026-10-12.6" srcset="/assets/atlas/mezcla-salpicadura-crayon-600.webp?v=2026-10-12.6 600w, /assets/atlas/mezcla-salpicadura-crayon-900.webp?v=2026-10-12.6 900w" sizes="(max-width: 760px) 32vw, 200px" width="600" height="600" alt="" loading="lazy" decoding="async"></figure>
-          <figure class="atlas-tile atlas-t3" data-parallax="0.04" data-reveal="scale" style="--d:2;--i:2"><img src="/assets/atlas/ciencias-loica-600.webp?v=2026-10-12.6" srcset="/assets/atlas/ciencias-loica-600.webp?v=2026-10-12.6 600w, /assets/atlas/ciencias-loica-900.webp?v=2026-10-12.6 900w" sizes="(max-width: 760px) 32vw, 200px" width="600" height="600" alt="" loading="lazy" decoding="async"></figure>
-          <figure class="atlas-tile atlas-t4" data-parallax="0.09" data-reveal="scale" style="--d:3;--i:3"><img src="/assets/atlas/historia-gay-mapa-600.webp?v=2026-10-12.6" srcset="/assets/atlas/historia-gay-mapa-600.webp?v=2026-10-12.6 600w, /assets/atlas/historia-gay-mapa-900.webp?v=2026-10-12.6 900w" sizes="(max-width: 760px) 32vw, 200px" width="600" height="600" alt="" loading="lazy" decoding="async"></figure>
-          <figure class="atlas-tile atlas-t5" data-parallax="0.06" data-reveal="scale" style="--d:4;--i:4"><img src="/assets/atlas/lenguaje-araucana-600.webp?v=2026-10-12.6" srcset="/assets/atlas/lenguaje-araucana-600.webp?v=2026-10-12.6 600w, /assets/atlas/lenguaje-araucana-900.webp?v=2026-10-12.6 900w" sizes="(max-width: 760px) 32vw, 200px" width="600" height="600" alt="" loading="lazy" decoding="async"></figure>
-                    <figure class="atlas-tile atlas-t6" data-parallax="0.07" data-reveal="scale" style="--d:5;--i:5"><img src="/assets/atlas/ciencias-orion-600.webp?v=2026-10-12.6" sizes="(max-width: 760px) 26vw, 120px" width="600" height="600" alt="" loading="lazy" decoding="async"></figure>
-          <figure class="atlas-tile atlas-t7" data-parallax="0.03" data-reveal="scale" style="--d:6;--i:6"><img src="/assets/atlas/matematica-numeros-600.webp?v=2026-10-12.6" sizes="(max-width: 760px) 26vw, 120px" width="600" height="600" alt="" loading="lazy" decoding="async"></figure>
-          <figure class="atlas-tile atlas-t8" data-parallax="0.1" data-reveal="scale" style="--d:7;--i:7"><img src="/assets/atlas/ciencias-hojas-600.webp?v=2026-10-12.6" sizes="(max-width: 760px) 26vw, 120px" width="600" height="600" alt="" loading="lazy" decoding="async"></figure>
-          <figure class="atlas-tile atlas-t9" data-parallax="0.05" data-reveal="scale" style="--d:8;--i:8"><img src="/assets/atlas/lenguaje-muestrario-600.webp?v=2026-10-12.6" sizes="(max-width: 760px) 26vw, 120px" width="600" height="600" alt="" loading="lazy" decoding="async"></figure>
-<svg class="atlas-arc" viewBox="0 0 1000 1000" preserveAspectRatio="none" focusable="false"><path d="M0 940Q500 60 1000 940" pathLength="1"/></svg>
+    <!-- La hoja: la misma guía de la demostración, hecha con las reglas de la hoja de pteron (Write/PDF).
+         «Qué hoja» es el panel de Archivo › Imprimir: elige entre la hoja del estudiante y la versión docente, y la hoja se da vuelta. -->
+    <section class="section hoja" id="como-trabaja" aria-labelledby="hoja-title" data-hoja-section>
+      <div class="wrap hoja-grid">
+        <div class="hoja-copy" data-reveal>
+          <h2 class="display" id="hoja-title">La hoja del estudiante no lleva respuestas.</h2>
+          <p class="lead">Cada pregunta guarda su respuesta y su criterio. La versión docente sale aparte, sólo cuando la pides.</p>
+          <div class="pt pt-print">
+            <p class="pt-print-note">Se abre en Vista Previa para imprimir, con las mismas hojas de Guardar en PDF.</p>
+            <fieldset class="pt-print-set">
+              <legend class="pt-print-title">Qué hoja</legend>
+              <label class="pt-radio"><input type="radio" name="que-hoja" value="estudiante" checked aria-controls="hoja-guia"><b>Hoja del estudiante</b><small>Sin respuestas.</small></label>
+              <label class="pt-radio"><input type="radio" name="que-hoja" value="docente" aria-controls="hoja-guia"><b>Versión docente (con respuestas)</b><small>Cada ejercicio con su respuesta y su criterio.</small></label>
+            </fieldset>
+          </div>
         </div>
-        <header class="head atlas-head" data-reveal>
-          <p class="kicker"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.6#i-book"/></svg>Para cada asignatura</p>
-          <h2 class="display" id="asignaturas-title"><span class="c-rosa">Lenguaje</span>, <span class="c-azul">matemática</span>, <span class="c-verde">ciencias</span>, <span class="c-sol">historia</span>. <span class="soft">Tus asignaturas, tus fuentes.</span></h2>
-        </header>
-        <div class="marquee" data-reveal="fade" aria-label="Asignaturas con las que pteron trabaja">
-          <div class="marquee-track"><span>Lenguaje</span><span>Matemática</span><span>Ciencias Naturales</span><span>Historia</span><span>Inglés</span><span>Artes Visuales</span><span>Música</span><span>Educación Física</span><span>Tecnología</span><span>Filosofía</span><span>Biología</span><span>Geografía</span><span class="is-dup" aria-hidden="true">Lenguaje</span><span class="is-dup" aria-hidden="true">Matemática</span><span class="is-dup" aria-hidden="true">Ciencias Naturales</span><span class="is-dup" aria-hidden="true">Historia</span><span class="is-dup" aria-hidden="true">Inglés</span><span class="is-dup" aria-hidden="true">Artes Visuales</span><span class="is-dup" aria-hidden="true">Música</span><span class="is-dup" aria-hidden="true">Educación Física</span><span class="is-dup" aria-hidden="true">Tecnología</span><span class="is-dup" aria-hidden="true">Filosofía</span><span class="is-dup" aria-hidden="true">Biología</span><span class="is-dup" aria-hidden="true">Geografía</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Demo con scroll: la ventana queda fija a la derecha y cambia de pantalla con cada rumbo; en pantallas estrechas cada rumbo lleva su captura -->
-    <section class="section demo ac-azul" id="como-trabaja" aria-labelledby="demo-title">
-      <div class="wrap demo-grid">
-        <div class="demo-copy">
-          <header class="head-left" data-reveal>
-            <p class="kicker"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.6#i-layers"/></svg>Cuatro rumbos</p>
-            <h2 class="display" id="demo-title">De la idea al material. <span class="soft">Sin salir de tu carpeta.</span></h2>
-          </header>
-          <ol class="demo-steps" role="list" data-demo>
-            <li class="demo-step is-active" data-demo-step style="--ac:var(--azul);--ac-hi:var(--azul-hi)"><span class="demo-num">01</span><h3>Planificar</h3><p>Pides la unidad con curso y objetivos. Llega clase a clase, en una hoja apaisada que editas.</p><figure class="window demo-step-shot" aria-hidden="true"><span class="lights" aria-hidden="true"><span></span><span></span><span></span></span><img src="/assets/app/07-planificacion-apaisada.webp?v=2026-10-12.6" srcset="/assets/app/07-planificacion-apaisada.webp?v=2026-10-12.6 1440w, /assets/app/07-planificacion-apaisada-2x.webp?v=2026-10-12.6 2880w" sizes="(max-width: 1024px) 100vw, 60vw" width="1440" height="880" alt="" loading="lazy" decoding="async"></figure></li>
-            <li class="demo-step" data-demo-step style="--ac:var(--rosa);--ac-hi:var(--rosa-hi)"><span class="demo-num">02</span><h3>Crear</h3><p>Guías con figuras, ítems con puntaje y espacios de respuesta. Se editan como en Word.</p><figure class="window demo-step-shot" aria-hidden="true"><span class="lights" aria-hidden="true"><span></span><span></span><span></span></span><img src="/assets/app/04-write-guia-con-figuras.webp?v=2026-10-12.6" srcset="/assets/app/04-write-guia-con-figuras.webp?v=2026-10-12.6 1440w, /assets/app/04-write-guia-con-figuras-2x.webp?v=2026-10-12.6 2880w" sizes="(max-width: 1024px) 100vw, 60vw" width="1440" height="880" alt="" loading="lazy" decoding="async"></figure></li>
-            <li class="demo-step" data-demo-step style="--ac:var(--verde);--ac-hi:var(--verde-hi)"><span class="demo-num">03</span><h3>Evaluar</h3><p>La pauta con respuestas y criterios va aparte. La hoja que imprimes queda limpia.</p><figure class="window demo-step-shot" aria-hidden="true"><span class="lights" aria-hidden="true"><span></span><span></span><span></span></span><img src="/assets/app/05-write-respuesta.webp?v=2026-10-12.6" srcset="/assets/app/05-write-respuesta.webp?v=2026-10-12.6 1440w, /assets/app/05-write-respuesta-2x.webp?v=2026-10-12.6 2880w" sizes="(max-width: 1024px) 100vw, 60vw" width="1440" height="880" alt="" loading="lazy" decoding="async"></figure></li>
-            <li class="demo-step" data-demo-step style="--ac:var(--sol);--ac-hi:var(--sol-hi)"><span class="demo-num">04</span><h3>Adaptar</h3><p>Trae un material con @ y pide el ajuste. pteron propone; tú conservas o descartas.</p><figure class="window demo-step-shot" aria-hidden="true"><span class="lights" aria-hidden="true"><span></span><span></span><span></span></span><img src="/assets/app/03-conversacion.webp?v=2026-10-12.6" srcset="/assets/app/03-conversacion.webp?v=2026-10-12.6 1440w, /assets/app/03-conversacion-2x.webp?v=2026-10-12.6 2880w" sizes="(max-width: 1024px) 100vw, 60vw" width="1440" height="880" alt="" loading="lazy" decoding="async"></figure></li>
-          </ol>
-        </div>
-        <div class="demo-stage" aria-hidden="true">
-          <div class="demo-sticky">
-            <figure class="window demo-window">
-              <span class="lights" aria-hidden="true"><span></span><span></span><span></span></span>
-              <div class="demo-shots"><img class="is-active" src="/assets/app/07-planificacion-apaisada.webp?v=2026-10-12.6" srcset="/assets/app/07-planificacion-apaisada.webp?v=2026-10-12.6 1440w, /assets/app/07-planificacion-apaisada-2x.webp?v=2026-10-12.6 2880w" sizes="(max-width: 1024px) 100vw, 60vw" width="1440" height="880" alt="" loading="lazy" decoding="async"><img src="/assets/app/04-write-guia-con-figuras.webp?v=2026-10-12.6" srcset="/assets/app/04-write-guia-con-figuras.webp?v=2026-10-12.6 1440w, /assets/app/04-write-guia-con-figuras-2x.webp?v=2026-10-12.6 2880w" sizes="(max-width: 1024px) 100vw, 60vw" width="1440" height="880" alt="" loading="lazy" decoding="async"><img src="/assets/app/05-write-respuesta.webp?v=2026-10-12.6" srcset="/assets/app/05-write-respuesta.webp?v=2026-10-12.6 1440w, /assets/app/05-write-respuesta-2x.webp?v=2026-10-12.6 2880w" sizes="(max-width: 1024px) 100vw, 60vw" width="1440" height="880" alt="" loading="lazy" decoding="async"><img src="/assets/app/03-conversacion.webp?v=2026-10-12.6" srcset="/assets/app/03-conversacion.webp?v=2026-10-12.6 1440w, /assets/app/03-conversacion-2x.webp?v=2026-10-12.6 2880w" sizes="(max-width: 1024px) 100vw, 60vw" width="1440" height="880" alt="" loading="lazy" decoding="async"></div>
-            </figure>
-            <div class="demo-progress"><i></i></div>
+        <div class="hoja-stage" data-reveal="scale" style="--d:1">
+          <div class="hoja-sheet pt pt-paper" data-hoja>
+            <article class="pt-doc" id="hoja-guia" aria-label="Guía de trabajo de fracciones, 6° básico" aria-live="polite">
+              <header class="pt-masthead">
+                <p class="pt-masthead-kicker">Matemática</p>
+                <h3 class="pt-masthead-title">Guía de trabajo</h3>
+                <p class="pt-masthead-sub">Fracciones: representación gráfica y fracciones equivalentes</p>
+              </header>
+              <div class="pt-fields">
+                <p class="pt-field"><strong>Curso</strong>6° básico</p>
+                <p class="pt-field is-blank"><strong>Fecha</strong></p>
+                <p class="pt-field is-blank"><strong>Estudiante</strong></p>
+                <p class="pt-field is-score"><strong>Puntaje</strong><span>/</span><b>30 pts</b></p>
+              </div>
+              <div class="pt-sheet-chips"><span><strong>Tiempo:</strong>45 min</span></div>
+              <h4 class="pt-heading">Sección 1. Representación gráfica de fracciones (15 minutos)</h4>
+              <div class="pt-item">
+                <p class="pt-q" data-badge="3 pts · Aplicar"><span class="pt-q-num">2.</span>Pinta en cada figura la fracción que se indica. Después explica en una línea cómo supiste cuántas partes pintar.</p>
+                <figure class="pt-fig"><svg viewBox="0 0 330 124" role="img" aria-label="Tres figuras sin pintar: una barra dividida en 4 partes con la fracción tres cuartos, un círculo dividido en 6 partes con cinco sextos y una cuadrícula de 8 partes con tres octavos"><text x="50" y="12" text-anchor="middle" font-size="15">3</text><line x1="42" y1="17" x2="58" y2="17" stroke="#262B44" stroke-width="1.2"/><text x="50" y="33" text-anchor="middle" font-size="15">4</text><rect class="s" x="0.00" y="70" width="25.00" height="32"/><rect class="s" x="25.00" y="70" width="25.00" height="32"/><rect class="s" x="50.00" y="70" width="25.00" height="32"/><rect class="s" x="75.00" y="70" width="25.00" height="32"/><text x="165" y="12" text-anchor="middle" font-size="15">5</text><line x1="157" y1="17" x2="173" y2="17" stroke="#262B44" stroke-width="1.2"/><text x="165" y="33" text-anchor="middle" font-size="15">6</text><circle class="s" cx="165" cy="80" r="42"/><line class="s" x1="165.00" y1="38.00" x2="165.00" y2="122.00"/><line class="s" x1="201.37" y1="59.00" x2="128.63" y2="101.00"/><line class="s" x1="201.37" y1="101.00" x2="128.63" y2="59.00"/><text x="280" y="12" text-anchor="middle" font-size="15">3</text><line x1="272" y1="17" x2="288" y2="17" stroke="#262B44" stroke-width="1.2"/><text x="280" y="33" text-anchor="middle" font-size="15">8</text><rect class="s" x="230" y="40" width="100" height="82"/><line class="s" x1="255.00" y1="40" x2="255.00" y2="122"/><line class="s" x1="280.00" y1="40" x2="280.00" y2="122"/><line class="s" x1="305.00" y1="40" x2="305.00" y2="122"/><line class="s" x1="230" y1="81.00" x2="330" y2="81.00"/></svg></figure>
+                <div class="pt-work" aria-hidden="true"><i></i><i></i></div>
+                <p class="pt-key"><strong>Respuesta esperada:</strong>pinta 3 de las 4 partes de la barra, 5 de los 6 sectores del círculo y 3 de los 8 cuadrados: el denominador dice en cuántas partes iguales está dividido el entero y el numerador, cuántas se pintan.<br><strong>Criterio de corrección:</strong>2 pts si las tres figuras están bien pintadas (1 pt si son dos); 1 pt si la explicación usa el numerador y el denominador.</p>
+              </div>
+              <div class="pt-item">
+                <p class="pt-q" data-badge="1 pt · Comprender"><span class="pt-q-num">3.</span>¿Cuál de las figuras muestra pintada la fracción <span class="pt-frac" aria-label="2 3"><i>2</i><i>3</i></span>?</p>
+                <figure class="pt-fig"><svg viewBox="0 0 330 112" role="img" aria-label="Tres figuras pintadas: a) una barra de 3 partes con 2 pintadas, b) una barra de 5 partes con 2 pintadas y c) un círculo de 6 partes con 2 pintadas"><text x="50" y="14" text-anchor="middle" font-size="15">a)</text><rect class="f" x="0.00" y="52" width="33.33" height="32"/><rect class="f" x="33.33" y="52" width="33.33" height="32"/><rect class="s" x="66.67" y="52" width="33.33" height="32"/><text x="165" y="14" text-anchor="middle" font-size="15">b)</text><rect class="f" x="115.00" y="52" width="20.00" height="32"/><rect class="f" x="135.00" y="52" width="20.00" height="32"/><rect class="s" x="155.00" y="52" width="20.00" height="32"/><rect class="s" x="175.00" y="52" width="20.00" height="32"/><rect class="s" x="195.00" y="52" width="20.00" height="32"/><text x="280" y="14" text-anchor="middle" font-size="15">c)</text><path class="f" d="M280 68 L280.00 26.00 A42 42 0 0 1 316.37 47.00 Z"/><path class="f" d="M280 68 L316.37 47.00 A42 42 0 0 1 316.37 89.00 Z"/><circle class="s" cx="280" cy="68" r="42"/><line class="s" x1="280.00" y1="26.00" x2="280.00" y2="110.00"/><line class="s" x1="316.37" y1="47.00" x2="243.63" y2="89.00"/><line class="s" x1="316.37" y1="89.00" x2="243.63" y2="47.00"/></svg></figure>
+                <ol class="pt-choices"><li>Figura a)</li><li>Figura b)</li><li>Figura c)</li></ol>
+                <p class="pt-key"><strong>Respuesta esperada:</strong>A) Figura a).<br><strong>Criterio de corrección:</strong>1 pt si marca A.</p>
+              </div>
+              <h4 class="pt-heading">Sección 2. Fracciones equivalentes: amplificar y simplificar (30 minutos) <small>Total: 14 pts</small></h4>
+              <div class="pt-note"><b>Idea clave</b>Dos fracciones son equivalentes cuando representan la misma parte de un entero. Se obtienen multiplicando (amplificar) o dividiendo (simplificar) el numerador y el denominador por el mismo número distinto de cero. Ejemplo: <span class="pt-frac" aria-label="1 2"><i>1</i><i>2</i></span> = <span class="pt-frac" aria-label="1 × 4 2 × 4"><i>1 × 4</i><i>2 × 4</i></span> = <span class="pt-frac" aria-label="4 8"><i>4</i><i>8</i></span>.</div>
+            </article>
           </div>
         </div>
       </div>

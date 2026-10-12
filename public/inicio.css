@@ -303,3 +303,39 @@
   .pt-demo .pt-window{aspect-ratio:auto;height:min(660px,172vw)}
 }
 .hero-live .actions{justify-content:flex-start}
+
+/* La hoja (2026-10-12.7): el panel «Qué hoja» de Imprimir y la guía hecha con las reglas de la hoja de pteron.
+   Al elegir la versión docente la hoja gira de canto y vuelve con las respuestas (pteron-ui.js); sin JS, :has() las muestra. */
+.hoja-grid{display:grid;grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);gap:clamp(40px,6vw,96px);align-items:center}
+.hoja-copy{display:grid;justify-items:start;gap:22px;color:var(--ink)}
+.hoja-copy h2{max-width:13ch;color:var(--ink)}
+.hoja-copy .lead{max-width:30ch;color:var(--ink-2)}
+.hoja-copy .pt-print{width:min(100%,420px);margin-top:8px}
+.hoja-stage{position:relative;perspective:1800px}
+.hoja-stage::before{content:"";position:absolute;inset:18px -14px -10px 22px;border-radius:6px;background:#fff;box-shadow:0 0 0 1px #0f22380f,0 24px 50px -30px #0f223873;transform:rotate(1.6deg);pointer-events:none}
+.hoja-sheet{position:relative;height:clamp(540px,46vw,690px);overflow:hidden;border-radius:5px;background:#fff;box-shadow:0 0 0 1px #0f22380d,0 2px 4px #0f22380a,0 34px 70px -34px #0f22388c;-webkit-mask-image:linear-gradient(180deg,#000 82%,transparent);mask-image:linear-gradient(180deg,#000 82%,transparent);transform-origin:50% 50%;will-change:transform}
+.hoja-sheet.is-out{animation:hoja-out .36s cubic-bezier(.55,0,.8,.25) forwards}
+.hoja-sheet.is-in{animation:hoja-in .52s cubic-bezier(.16,.9,.3,1)}
+@keyframes hoja-out{to{transform:rotateY(88deg) scale(.97)}}
+@keyframes hoja-in{from{transform:rotateY(-88deg) scale(.97)}to{transform:none}}
+.pt-doc .pt-key{display:none}
+.hoja[data-face=docente] .pt-doc .pt-key,.hoja:not(.js-hoja):has(input[value=docente]:checked) .pt-doc .pt-key{display:block;animation:pt-chat-in .4s var(--ease) both}
+@media (max-width:999px){
+  .hoja-grid{grid-template-columns:1fr}
+  .hoja-copy h2{max-width:16ch}
+}
+@media (max-width:760px){
+  .hoja-sheet{height:min(700px,180vw)}
+  .hoja-stage::before{inset:14px -6px -8px 12px}
+}
+@media (prefers-reduced-motion:reduce){.hoja-sheet.is-out,.hoja-sheet.is-in{animation:none}}
+@media (max-width:760px){
+  .hoja-copy{gap:16px}
+  .hoja-copy .pt-print{padding:12px 12px 10px}
+  .hoja-copy .pt-print-note{display:none}
+  .hoja-copy .pt-print-set{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+  .hoja-copy .pt-print-set legend{grid-column:1/-1}
+  .hoja-copy .pt-radio{padding:6px 4px}
+  .hoja-copy .pt-radio b{font-size:13.5px}
+  .hoja-copy .pt-radio small{font-size:12px}
+}

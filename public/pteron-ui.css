@@ -313,3 +313,79 @@
 @media (prefers-reduced-motion:reduce){
   .pt *,.pt *::before,.pt *::after{animation:none!important;transition:none!important}
 }
+
+/* ===== La hoja (Write / PDF). Reglas de writerStyles (pteron/src/shared/office/io-docx-pptx.js),
+   pasadas de pt a em: 11 pt = 1em. Paleta «classroom» y Outfit, igual que la hoja que se imprime. ===== */
+.pt-paper{container-type:inline-size}
+.pt-doc{
+  --ink:#1F2A3D;--navy:#1E3F94;--muted:#5B6B82;--soft:#7A889C;--rule:#DCE3EE;--line:#C9D3E1;--wash:#F3F6FB;--chip:#EEF2F9;--fill:#859AD0;
+  font:400 max(11.5px,1.9cqw)/1.42 var(--font-doc);color:var(--ink);background:#fff;padding:3.6em 4.4em 3em;overflow-wrap:break-word;text-align:left
+}
+.pt-doc p{margin:0 0 .545em}
+.pt-masthead{display:flex;flex-direction:column;margin:0 0 1.09em;padding:0 0 .91em;border-bottom:2px solid var(--navy)}
+.pt-masthead-kicker{margin:0 0 .588em;font-size:.773em;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.pt-doc .pt-masthead-title{margin:0;font-size:2.27em;font-weight:800;line-height:1.1;letter-spacing:-.01em;color:var(--navy)}
+.pt-doc .pt-masthead-sub{margin:.19em 0 0;font-size:1.455em;font-weight:400;line-height:1.25;color:var(--soft)}
+.pt-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;margin:0 0 .91em;background:var(--rule);border:1px solid var(--rule);border-radius:.64em;overflow:hidden}
+.pt-doc .pt-field{display:flex;align-items:baseline;margin:0;gap:.76em;min-width:0;padding:.667em 1.05em;background:#fff;font-size:.955em;line-height:1.35}
+.pt-field strong{flex:none;width:7.6em;font-size:.762em;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4A5A72}
+.pt-field.is-blank::after{content:"";flex:1;min-width:4em;height:.9em;border-bottom:1px dotted #8793A6}
+.pt-field.is-score span{padding-left:3.6em;background:linear-gradient(#8793A6,#8793A6) left bottom/3em 1px no-repeat;color:var(--muted)}
+.pt-field.is-score b{margin-left:.35em;font-weight:400;color:var(--ink)}
+.pt-sheet-chips{display:flex;flex-wrap:wrap;gap:.545em;margin:0 0 .91em}
+.pt-sheet-chips span{padding:.29em 1.05em;border:1px solid #D3DCEA;border-radius:2em;background:var(--chip);font-size:.864em;line-height:1.3}
+.pt-sheet-chips strong{margin-right:.27em;font-weight:700;color:var(--navy)}
+.pt-heading{display:flex;flex-wrap:wrap;align-items:baseline;gap:.15em .77em;margin:1.09em 0 .545em;padding:0 0 .36em;border-bottom:1.3px solid var(--ink);color:var(--ink);font-size:1.18em;font-weight:700;line-height:1.2;letter-spacing:.01em;text-transform:uppercase}
+.pt-heading small{font-size:.69em;font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted)}
+.pt-item{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:1.09em;align-items:start;margin:.545em 0 .73em;padding:.73em 1.09em;border:1px solid var(--rule);border-radius:.73em;background:#fff}
+.pt-item>*{grid-column:1;min-width:0}
+.pt-item>.pt-fig{grid-column:2;grid-row:1/span 3;margin:0}
+.pt-item>.pt-key{grid-column:1/-1}
+.pt-q{position:relative;margin:0 0 .545em;line-height:1.4}
+.pt-q-num{display:block;margin:0 0 .23em;padding-right:7.4em;font-size:1.18em;font-weight:700;line-height:1.2;color:var(--navy)}
+.pt-q[data-badge]::after{content:attr(data-badge);position:absolute;top:0;right:0;padding:.18em .73em;border-radius:2em;background:var(--chip);font-size:.773em;font-weight:600;line-height:1.3;color:#4A5A72;white-space:nowrap}
+.pt-frac{display:inline-flex;flex-direction:column;align-items:center;margin:0 .12em;vertical-align:-.62em;font-size:.86em;line-height:1.05}
+.pt-frac i{font-style:normal}
+.pt-frac i:first-child{padding:0 .15em;border-bottom:1px solid currentColor}
+.pt-work{margin:.545em 0 .18em}
+.pt-work i{display:block;height:1.6em;border-bottom:1px solid var(--rule)}
+.pt-choices{display:flex;flex-wrap:wrap;gap:.545em 2.4em;margin:.545em 0 .18em;padding:0;list-style:none;counter-reset:pt-choice;line-height:1.35}
+.pt-choices li{position:relative;min-height:1.55em;padding-left:2.27em;counter-increment:pt-choice}
+.pt-choices li::before{content:counter(pt-choice,upper-alpha);position:absolute;left:0;top:-.08em;display:inline-flex;align-items:center;justify-content:center;width:1.55em;height:1.55em;border:1px solid #C3CDDB;border-radius:50%;background:#fff;font-size:.818em;font-weight:700;color:var(--ink)}
+.pt-fig{display:grid;justify-items:center;font-size:.864em;line-height:1.3;color:var(--ink)}
+.pt-fig svg{display:block;width:var(--fw,21em);max-width:100%;height:auto;overflow:visible}
+.pt-fig text{font-family:var(--font-doc);fill:var(--ink)}
+.pt-fig .s{fill:none;stroke:#262B44;stroke-width:1.4;vector-effect:non-scaling-stroke}
+.pt-fig .f{fill:var(--fill);stroke:#262B44;stroke-width:1.4;vector-effect:non-scaling-stroke}
+.pt-note{margin:.36em 0 1.27em;padding:.91em 1.09em .91em 4em;border:1px solid var(--rule);border-radius:.73em;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231E3F94' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 7v14'/%3E%3Cpath d='M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z'/%3E%3C/svg%3E") 1.09em 1em/2em 2em no-repeat;font-size:.955em;line-height:1.45}
+.pt-note b{display:block;margin:0 0 .19em;font-size:1.05em;font-weight:700;color:var(--navy)}
+/* Versión docente: al final de cada tarjeta, un recuadro con la respuesta guardada (ADR-168) */
+.pt-key{margin:.73em 0 0;padding:.545em .91em;border:1px solid var(--rule);border-radius:.545em;background:var(--wash);line-height:1.45}
+.pt-key strong{margin-right:.36em;color:var(--navy);font-weight:700}
+
+/* La hoja en un ancho de teléfono: la figura baja bajo el enunciado y los campos van en una columna */
+@container (max-width:520px){
+  .pt-doc{padding:2.2em 1.7em 2em}
+  .pt-item{grid-template-columns:minmax(0,1fr)}
+  .pt-item>.pt-fig{grid-column:1;grid-row:auto;justify-self:center;margin:.3em 0 .6em}
+  .pt-fig svg{width:min(var(--fw,21em),100%)}
+  .pt-fields,.pt-sheet-chips{display:none}
+  .pt-q-num{padding-right:0;margin-bottom:.4em}
+  .pt-q[data-badge]{display:flex;flex-direction:column-reverse;align-items:flex-start}
+  .pt-q[data-badge]::after{position:static;display:inline-block;margin:0 0 .5em}
+}
+
+/* Imprimir › Qué hoja: el mismo panel de Archivo en Write */
+.pt-print-set{margin:0;padding:0;border:0;min-width:0}
+.pt-print-set legend{float:left;width:100%;margin:0 0 4px;padding:0}
+.pt-print-set legend+*{clear:both}
+.pt-print{display:grid;gap:10px;padding:18px 20px 20px;border:1px solid var(--pteron-line);border-radius:14px;background:var(--pteron-paper);box-shadow:0 1px 2px rgb(15 34 56/.04),0 18px 40px -24px rgb(15 34 56/.28)}
+.pt-print-note{margin:0;color:var(--pteron-sky);font-size:13px;line-height:1.55}
+.pt-print-title{margin:4px 0 0;font:600 13.5px/1.3 var(--font-ui);color:var(--pteron-text)}
+.pt-radio{position:relative;display:grid;grid-template-columns:20px minmax(0,1fr);gap:2px 10px;align-items:start;min-height:44px;padding:6px 8px;border-radius:10px;cursor:pointer;transition:background var(--mo-xs) var(--ease-inout)}
+.pt-radio:hover{background:color-mix(in srgb,var(--pteron-sky) 7%,transparent)}
+.pt-radio input{appearance:none;-webkit-appearance:none;width:17px;height:17px;margin:2px 0 0;border:1.5px solid #8a9bb0;border-radius:50%;background:#fff;cursor:pointer;transition:border-color var(--mo-xs) var(--ease-inout),box-shadow var(--mo-xs) var(--ease-inout)}
+.pt-radio input:checked{border-color:#2b6fd6;box-shadow:inset 0 0 0 3.5px #fff;background:#2b6fd6}
+.pt-radio input:focus-visible{outline:2px solid #9a7633;outline-offset:2px}
+.pt-radio b{font:400 14.5px/1.35 var(--font-ui);color:var(--pteron-text)}
+.pt-radio small{grid-column:2;color:var(--pteron-muted);font-size:12.5px;line-height:1.35}
