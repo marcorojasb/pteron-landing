@@ -1,4 +1,4 @@
-/* pteron · Cuenta (2026-10-12.4). Sólo lo propio de /cuenta; el resto es styles.css.
+/* pteron · Cuenta (2026-10-12.5). Sólo lo propio de /cuenta; el resto es styles.css.
    Tres estados: sin sesión (acceso + recorrido), esperando /api/account (html.has-session, esqueleto) y con sesión (panel). */
 
 /* Avisos de cuenta.js: flotan bajo la píldora para verse desde cualquier punto de la página */

@@ -1,4 +1,4 @@
-/* pteron · sistema «La hora azul» · 2026-10-12.4. Sin cursivas salvo el wordmark. */
+/* pteron · sistema «La hora azul» · 2026-10-12.5. Sin cursivas salvo el wordmark. */
 
 /* 1. Tokens */
 :root{
@@ -662,7 +662,7 @@ html{scroll-behavior:smooth}
 .footer-grid{grid-template-columns:1fr}}
 
 
-/* 29. Color por sección y movimiento ampliado (2026-10-12.4) */
+/* 29. Color por sección y movimiento ampliado (2026-10-12.5) */
 /* Acento de sección: --ac (sólido), --ac-hi (sobre oscuro), --ac-bg (lavado claro). El rótulo, los marcadores,
    los numerales y los iconos de hechos lo toman; en superficies oscuras usan la variante clara. */
 .ac-rosa{--ac:var(--rosa);--ac-hi:var(--rosa-hi);--ac-bg:var(--rosa-bg)}
@@ -744,7 +744,7 @@ html{scroll-behavior:smooth}
 .glow-follow::after{display:none}}
 
 
-/* 30. Recortes vivos del atlas (2026-10-12.4): piezas que flotan, siguen al puntero y al desplazamiento, y se voltean */
+/* 30. Recortes vivos del atlas (2026-10-12.5): piezas que flotan, siguen al puntero y al desplazamiento, y se voltean */
 .cutouts{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:visible}
 .hero .cutouts{z-index:2}
 .footer{isolation:isolate}
@@ -785,3 +785,8 @@ html{scroll-behavior:smooth}
 .tile-strip{gap:12px}.tile-strip-track{gap:14px}}
 @media (prefers-reduced-motion:reduce){
 .cutout:hover .cutout-inner{transform:none}}
+
+/* Caída de recortes también en páginas de banda (404): misma animación que el tetris del inicio */
+@keyframes drop-page{0%{transform:translateY(-120vh) rotate(-16deg);opacity:0}8%{opacity:1}68%{transform:translateY(0) rotate(0)}80%{transform:translateY(2.5%) scaleY(.94)}100%{transform:none}}
+@media (prefers-reduced-motion:no-preference){
+.js .band .cutouts.drop-in .cutout{animation:drop-page 1.25s cubic-bezier(.22,.85,.3,1) calc(var(--i,0)*.14s + .3s) both;animation-timeline:auto}}

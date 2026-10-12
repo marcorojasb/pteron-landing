@@ -1,4 +1,4 @@
-/* pteron · Documentación (2026-10-12.4). Sólo lo propio de /docs; el resto es styles.css.
+/* pteron · Documentación (2026-10-12.5). Sólo lo propio de /docs; el resto es styles.css.
    app.js genera .article-header, .article-pagination, .is-active, .is-cursor, .is-open y .release-*;
    content.js usa .product-shot(-gif, -gif-wrap, -hero), .notice(-prominent), .install-steps,
    .release-table, .path-list y .table-wrap. La portada se reconoce por su primer índice (#por-donde-empezar). */

@@ -1,4 +1,4 @@
-/* pteron · comportamiento compartido del sitio (revisión 2026-10-12.4).
+/* pteron · comportamiento compartido del sitio (revisión 2026-10-12.5).
    Sin dependencias. Todo lo que mueve algo respeta prefers-reduced-motion,
    y el contenido es visible aunque este archivo no llegue a cargar. */
 (() => {
@@ -14,7 +14,7 @@
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     return Boolean(connection && (connection.saveData || /2g|3g/.test(connection.effectiveType || "")));
   };
-  const VERSION = "?v=2026-10-12.4";
+  const VERSION = "?v=2026-10-12.5";
 
   /* Año en el pie y donde se pida. */
   $$("[data-year]").forEach((node) => { node.textContent = String(new Date().getFullYear()); });

@@ -1,4 +1,4 @@
-/* pteron · Inicio (2026-10-12.4). Lo que sólo usa la página de inicio: héroe con la ventana, el pedido de rumbos, banda local, bento, película, marquesina y descarga. El resto es styles.css. */
+/* pteron · Inicio (2026-10-12.5). Lo que sólo usa la página de inicio: héroe con la ventana, el pedido de rumbos, banda local, bento, película, marquesina y descarga. El resto es styles.css. */
 .hero{position:relative;overflow-x:clip;padding-top:clamp(118px,11vw,148px);background:linear-gradient(180deg,#0f1925,#16253a)}
 .hero-copy{position:relative;z-index:3;display:grid;justify-items:center;text-align:center;gap:22px}
 .hero-copy::before{content:"";position:absolute;z-index:-1;inset:-40px -8% -30px;background:radial-gradient(50% 55% at 50% 50%,#060a1094,#060a103d 62%,transparent 80%);pointer-events:none}
@@ -71,7 +71,7 @@
 .film-window{justify-self:end;width:min(1140px,100%);margin-top:calc(var(--fh)*.1);transform-origin:50% 100%;transform:perspective(2400px) rotateX(calc(var(--tilt,0)*1deg)) translate3d(0,calc(var(--lift,0)*1px),0);will-change:transform}
 .film-credit{justify-self:end;margin-top:clamp(24px,3vw,40px);text-align:right}
 /* Aurora del lago: canvas de 320×180 escalado; el póster sólo se ve sin JavaScript */
-.lake-aurora{position:absolute;z-index:-1;left:0;top:0;width:100%;height:78%;pointer-events:none;background:url("/assets/arte/aurora-lago.webp?v=2026-10-12.4") center/100% 100% no-repeat;-webkit-mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent);mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent)}
+.lake-aurora{position:absolute;z-index:-1;left:0;top:0;width:100%;height:78%;pointer-events:none;background:url("/assets/arte/aurora-lago.webp?v=2026-10-12.5") center/100% 100% no-repeat;-webkit-mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent);mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent)}
 .lake-aurora.is-drawn{background:none}
 .js .hero-media>div{animation:settle 2.6s var(--ease) both}
 .js .hero-product{animation:rise 1.6s var(--ease) .35s both}
@@ -118,11 +118,11 @@
 .local-visual>*{position:relative;left:auto;top:auto;right:auto;width:auto;max-width:100%}
 .local-window{--cx:750;--cy:220;--cw:780;--ch:620}
 
-/* Color por paso y marquesina de asignaturas (2026-10-12.4) */
+/* Color por paso y marquesina de asignaturas (2026-10-12.5) */
 .atlas .marquee{margin-top:clamp(30px,3.6vw,52px)}
 }
 
-/* Demo con scroll (2026-10-12.4): la ventana fija cambia de captura con el rumbo activo */
+/* Demo con scroll (2026-10-12.5): la ventana fija cambia de captura con el rumbo activo */
 .demo{padding-block:clamp(56px,7vw,104px) clamp(40px,5vw,72px)}
 .demo-grid{display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:clamp(32px,5vw,88px);align-items:start}
 .head-left{display:grid;gap:18px;justify-items:start;margin-bottom:clamp(20px,3vw,40px)}
@@ -168,3 +168,24 @@
 .download .plans-compact::-webkit-scrollbar,.download .platforms::-webkit-scrollbar{display:none}
 .download .plans-compact>li,.download .platforms>li{flex:0 0 min(82vw,320px);scroll-snap-align:center}
 .download .plans-foot{margin-top:4px}}
+
+/* Héroe partido (2026-10-12.5): copia a la izquierda y tetris de recortes a la derecha */
+.hero-split .hero-top{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(28px,4vw,64px);align-items:center}
+.hero-split .hero-copy{justify-items:start;text-align:left;width:auto}
+.hero-split .hero-copy .lead{max-width:30em}
+.hero-split .hero-copy .actions{justify-content:flex-start}
+.hero-split .hero-copy h1{text-wrap:balance}
+.tetris{--n:4;--off:0;--fall:-120vh;position:relative;inset:auto;z-index:auto;width:min(100%,560px);aspect-ratio:1;margin-left:auto;pointer-events:none}
+.tetris .cutout{width:var(--s);opacity:1;--s:calc(100%/var(--n));--l:calc(var(--c)*100%/var(--n));--t:calc((var(--r) - var(--off))*100%/var(--n));--r:var(--rot,0deg);--amp:6px;filter:drop-shadow(0 2px 2px #0509101f) drop-shadow(0 22px 26px #05091066)}
+.tetris .cutout:hover{z-index:4}
+/* Caída tipo tetris: cada pieza baja desde fuera de pantalla, aterriza con un rebote corto y se asienta; orden por --i */
+@keyframes drop{0%{transform:translateY(var(--fall,-120vh)) rotate(-16deg);opacity:0}8%{opacity:1}68%{transform:translateY(0) rotate(0);animation-timing-function:ease-out}80%{transform:translateY(2.5%) scaleY(.94)}100%{transform:none}}
+@media (prefers-reduced-motion:no-preference){
+.js .drop-in .cutout{animation:drop 1.25s cubic-bezier(.22,.85,.3,1) calc(var(--i,0)*.11s + .25s) both;animation-timeline:auto}}
+@media (max-width:1024px){
+.hero-split .hero-top{grid-template-columns:minmax(0,1fr)}
+.hero-split .hero-copy{justify-items:center;text-align:center}
+.hero-split .hero-copy .actions{justify-content:center}
+.tetris{width:min(100%,420px);margin:12px auto 0;--n:3;--off:1;--fall:-70vh}}
+@media (max-width:760px){
+.tetris{width:min(100%,330px)}}
