@@ -1,0 +1,28 @@
+/* ——— Aislamiento de la ventana (escrito a mano; lo agrega scripts/pteron-app-css.mjs) ——— */
+/* Dentro de la ventana vuelven los valores del navegador que el sitio reinicia; con :where() la especificidad
+   queda baja y las reglas de la app siempre ganan. */
+:where(.pt-app) :is(h1,h2,h3,h4,h5,h6,p,figure,blockquote,dl,dd,ul,ol){margin:revert;padding:revert}
+:where(.pt-app) :is(h1,h2,h3,h4){font-weight:revert;font-size:revert}
+:where(.pt-app) :is(img,svg,video,picture){display:revert;max-width:revert}
+:where(.pt-app) :is(em,i,strong,b){font-weight:revert;font-style:revert}
+:where(.pt-app) a{color:revert;text-decoration-thickness:revert;text-underline-offset:revert}
+:where(.pt-app) .icon{width:revert;height:revert;flex:revert;fill:revert;stroke:revert;stroke-width:revert;stroke-linecap:revert;stroke-linejoin:revert}
+:where(.pt-app),:where(.pt-app) *,:where(.pt-app) *::before,:where(.pt-app) *::after{box-sizing:border-box}
+/* La ventana mide 1440 × 880, como las capturas de pteron; .pt-app hace de body de la app */
+.pt-app{position:relative;display:block;width:1440px;height:880px;overflow:hidden;margin:0;text-align:left;
+  letter-spacing:normal;word-spacing:normal;text-transform:none;text-rendering:auto;font-style:normal;font-variant:normal;
+  font-feature-settings:normal;text-shadow:none;white-space:normal;-webkit-font-smoothing:antialiased}
+.pt-app .app-shell{min-height:880px;height:880px}
+/* El wordmark. «Iowan Old Style» es una letra de macOS que la web no puede cargar; su contorno exacto se tomó de
+   una captura sin pérdida de pteron en Mac (docs/evidencia/capturas, a 2×, separando la tinta del degradado conocido)
+   y va como un SVG dentro del h1 (pteron-ui.js), pintado con el mismo degradado de la app sobre la caja del h1.
+   El h1 conserva su máscara de desvanecido; su fondo, que la app recorta a las letras, queda fuera. Medidas en em
+   del h1 (244,8 px en la ventana): centro de tinta 0,0388 em a la derecha del centro de la caja, línea base a
+   0,8575 em del borde superior; la caja toma el ancho de la corrida en Iowan para que nada se recorte. */
+.pt-app .home-hero h1{position:relative;width:2.95em;background:none}
+.pt-app .pt-wordmark{position:absolute;left:calc(50% + .0388em - 1.353em);top:.2035em;width:2.706em;height:.858em;overflow:visible;pointer-events:none}
+/* Semáforos de macOS donde los dibuja el marco de las capturas de pteron (centros en 20, 40 y 60 · 19) */
+.pt-traffic{position:absolute;left:14px;top:13px;z-index:40;display:flex;gap:8px;pointer-events:none}
+.pt-traffic i{width:12px;height:12px;border-radius:50%;background:#ff5f57;box-shadow:inset 0 0 0 .5px rgb(0 0 0/.12)}
+.pt-traffic i:nth-child(2){background:#febc2e}
+.pt-traffic i:nth-child(3){background:#28c840}

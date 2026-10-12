@@ -71,7 +71,7 @@
 .film-window{justify-self:end;width:min(1140px,100%);margin-top:calc(var(--fh)*.1);transform-origin:50% 100%;transform:perspective(2400px) rotateX(calc(var(--tilt,0)*1deg)) translate3d(0,calc(var(--lift,0)*1px),0);will-change:transform}
 .film-credit{justify-self:end;margin-top:clamp(24px,3vw,40px);text-align:right}
 /* Aurora del lago: canvas de 320×180 escalado; el póster sólo se ve sin JavaScript */
-.lake-aurora{position:absolute;z-index:-1;left:0;top:0;width:100%;height:78%;pointer-events:none;background:url("/assets/arte/aurora-lago.webp?v=2026-10-12.7") center/100% 100% no-repeat;-webkit-mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent);mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent)}
+.lake-aurora{position:absolute;z-index:-1;left:0;top:0;width:100%;height:78%;pointer-events:none;background:url("/assets/arte/aurora-lago.webp?v=2026-10-12.8") center/100% 100% no-repeat;-webkit-mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent);mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent)}
 .lake-aurora.is-drawn{background:none}
 .js .hero-media>div{animation:settle 2.6s var(--ease) both}
 .js .hero-product{animation:rise 1.6s var(--ease) .35s both}
@@ -169,7 +169,7 @@
 .download .plans-compact>li,.download .platforms>li{flex:0 0 min(82vw,320px);scroll-snap-align:center}
 .download .plans-foot{margin-top:4px}}
 
-/* Héroe partido (2026-10-12.7): copia a la izquierda y, a la derecha, un pozo de tetris armado con recortes del atlas */
+/* Héroe partido (2026-10-12.8): copia a la izquierda y, a la derecha, un pozo de tetris armado con recortes del atlas */
 .hero-split .hero-top{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,.93fr) minmax(0,1.07fr);gap:clamp(28px,4vw,64px);align-items:center}
 /* La fila de aparición del pozo sobresale una celda hacia arriba: el héroe baja lo justo para que nazca bajo la barra */
 .hero.hero-split{padding-top:calc(78px + min(7.3vw,113px))}
@@ -255,56 +255,67 @@
 .tetris .cutout{--col:var(--mc);--row:var(--mr);--w:var(--mw,1);--land:var(--mt)}
 .tetris .cutout.t-dk,.js .tetris.is-ready .cutout.t-dk{display:none}}
 
-/* Héroe vivo (2026-10-12.7): a la izquierda, el titular, la acción y los cuatro pasos de la demostración; a la derecha,
-   la interfaz de pteron reconstruida en HTML (pteron-ui.css), entera en la primera pantalla. Reemplaza al pozo de recortes. */
-.hero.hero-live{padding:clamp(112px,9.5vw,136px) 0 0;background:#0b1320}
+/* Héroe vivo (2026-10-12.8): arriba el titular y la acción; debajo, la ventana de pteron a casi todo el ancho,
+   dibujada con las reglas de la app (pteron-app.css). Los cuatro pasos son los capítulos de su secuencia. La hoja
+   clara empieza a media ventana: pteron sale de la noche hacia el papel. */
+.hero.hero-live{padding:clamp(108px,9vw,132px) 0 0;background:#0b1320}
 .hero-live .hero-media{top:0;bottom:auto;height:min(1100px,100%);aspect-ratio:auto}
 .hero-live .hero-media img{-webkit-mask-image:linear-gradient(180deg,#000 55%,transparent);mask-image:linear-gradient(180deg,#000 55%,transparent)}
 .hero-live .hero-media::after{display:none}
 .hero-live .hero-glow{top:auto;bottom:calc(var(--r-sheet) + 60px);transform:translate(-50%,0)}
-.hero-grid{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,25rem) minmax(0,1fr);align-items:start;gap:clamp(36px,4.5vw,72px)}
-.hero-live .hero-copy{position:relative;display:grid;justify-items:start;gap:20px;padding-top:6px;text-align:left}
-.hero-live .hero-copy::before{content:"";position:absolute;z-index:-1;inset:-50px -30% -40px -20%;background:radial-gradient(50% 50% at 45% 40%,#060a10a6,#060a1047 60%,transparent 80%);pointer-events:none}
-.hero-live h1{font-size:clamp(2.75rem,1.4rem + 3vw,4.1rem);line-height:1;color:var(--snow);text-shadow:0 2px 30px #05090f73}
-.hero-live .lead{max-width:30ch;color:#dcdee2;text-shadow:0 1px 18px #05090f99}
-.hero-live .actions{margin-top:6px}
+.hero-head{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);align-items:end;gap:24px clamp(40px,5vw,88px)}
+.hero-head::before{content:"";position:absolute;z-index:-1;inset:-60px -10% -50px -12%;background:radial-gradient(48% 60% at 30% 50%,#060a10a6,#060a1040 62%,transparent 82%);pointer-events:none}
+.hero-head h1{font-size:clamp(2.6rem,1.1rem + 3.2vw,4rem);line-height:1.02;color:var(--snow);text-shadow:0 2px 30px #05090f73}
+.hero-head h1>span{display:block}
+.hero-side{display:grid;justify-items:start;gap:16px;padding-bottom:6px}
+.hero-live .lead{max-width:40ch;color:#dcdee2;text-shadow:0 1px 18px #05090f99}
+.hero-live .actions{justify-content:flex-start}
 .hero-note{color:#c3c7cd;font-size:14px;line-height:1.4;text-shadow:0 1px 12px #05090fcc}
-.pt-demo{position:relative;margin:0;min-width:0}
-.pt-demo .pt-window{width:100%;aspect-ratio:1.36}
-/* Pasos: una secuencia real (por eso van numerados); el actual se marca con la línea completa */
-.pt-steps{display:grid;gap:4px;width:100%;margin-top:18px;padding-top:22px;border-top:1px solid #ffffff1f}
-.pt-steps-title{margin-bottom:6px;color:#aeb4bd;font:500 13px/1.4 var(--sans)}
-.pt-steps ol{display:grid;gap:2px;margin:0;padding:0;list-style:none}
-.pt-steps button{position:relative;display:block;width:100%;min-height:44px;padding:11px 8px 11px 40px;border:0;border-radius:12px;background:none;color:#aeb4bd;font:400 15px/1.4 var(--sans);text-align:left;cursor:pointer;transition:background .35s var(--ease),color .35s var(--ease)}
-.pt-steps button>span{position:absolute;left:10px;top:11px;display:grid;place-items:center;width:21px;height:21px;border-radius:50%;box-shadow:inset 0 0 0 1px #ffffff40;color:#c3c7cd;font:500 11.5px/1 var(--mono);font-variant-numeric:tabular-nums;transition:background .35s var(--ease),color .35s var(--ease),box-shadow .35s var(--ease)}
-.pt-steps b{color:var(--snow);font-weight:600}
-.pt-steps button:hover{color:var(--snow)}
-.pt-steps button.is-done>span{background:#ffffff24;box-shadow:none;color:var(--snow)}
-.pt-steps button.is-current{background:#ffffff12;color:var(--snow)}
-.pt-steps button.is-current>span{background:var(--ember);box-shadow:none;color:#1b1206}
-.pt-replay{justify-self:start;display:inline-flex;align-items:center;gap:8px;min-height:44px;margin-top:10px;padding:0 16px;border:1px solid #ffffff2e;border-radius:999px;background:#ffffff0d;color:var(--snow);font:500 14px/1 var(--sans);visibility:hidden;opacity:0;transition:opacity .4s var(--ease),visibility 0s .4s}
+.hero-stage{--pt-frame-h:calc(min(100vw - 2 * var(--gutter), var(--wrap)) * .6111);position:relative;z-index:3;display:grid;gap:clamp(16px,1.6vw,22px);margin-top:clamp(36px,3.6vw,52px);padding-bottom:clamp(36px,4vw,56px)}
+/* La hoja clara a todo el ancho, desde la mitad de la ventana hasta el final de la escena (sigue en .hero-paper) */
+.hero-stage::before{content:"";position:absolute;z-index:-1;top:calc(var(--pt-frame-h) * .46);bottom:0;left:calc(50% - 50vw);width:100vw;background:var(--paper);border-radius:var(--r-sheet) var(--r-sheet) 0 0;box-shadow:0 -30px 60px -30px #00000080;pointer-events:none}
+/* Pasos: una secuencia real (por eso van numerados), bajo la ventana como los capítulos de un video: cada uno es
+   un tramo de la barra y el actual se enciende. Van sobre la hoja clara. */
+.pt-steps{display:flex;align-items:flex-start;gap:24px}
+.pt-steps ol{flex:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:0;padding:0;list-style:none}
+.pt-steps li>button{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:10px;width:100%;min-height:44px;padding:14px 4px 4px 0;border:0;background:none;color:var(--ink-3);font:400 14.5px/1.4 var(--sans);text-align:left;cursor:pointer;transition:color .35s var(--ease)}
+.pt-steps li>button::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;border-radius:2px;background:#0f22381f;transition:background .45s var(--ease)}
+.pt-steps .pt-step-n{display:grid;place-items:center;width:20px;height:20px;margin-top:1px;border-radius:50%;box-shadow:inset 0 0 0 1px #0f22383d;color:var(--ink-3);font:500 11px/1 var(--mono);font-variant-numeric:tabular-nums;transition:background .35s var(--ease),color .35s var(--ease),box-shadow .35s var(--ease)}
+.pt-steps b{color:var(--ink);font-weight:600}
+.pt-steps li>button:hover{color:var(--ink)}
+.pt-steps li>button.is-done::before{background:#0f22385c}
+.pt-steps li>button.is-done .pt-step-n{background:#0f223814;box-shadow:none;color:var(--ink)}
+.pt-steps li>button.is-current{color:var(--ink)}
+.pt-steps li>button.is-current::before{background:var(--ember)}
+.pt-steps li>button.is-current .pt-step-n{background:var(--ember);box-shadow:none;color:#1b1206}
+.pt-replay{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:44px;margin-top:2px;padding:0 16px;border:1px solid #0f22382e;border-radius:999px;background:#fff;color:var(--ink);font:500 14px/1 var(--sans);visibility:hidden;opacity:0;transition:opacity .4s var(--ease),visibility 0s .4s}
 .pt-replay .icon{width:16px;height:16px}
-.hero-live:has(.pt-demo.is-done) .pt-replay,.hero-live:has(.pt-demo:not(.is-live)) .pt-replay{visibility:visible;opacity:1;transition-delay:0s}
-/* La hoja clara empieza bajo la ventana: lo que se comprueba hoy */
-.hero-paper{position:relative;z-index:2;margin-top:clamp(56px,6vw,88px);background:var(--paper);border-radius:var(--r-sheet) var(--r-sheet) 0 0;box-shadow:0 -30px 60px -30px #00000080}
-.hero-paper .truth{padding-top:clamp(36px,4vw,56px)}
-@media (max-width:1100px){
-  .hero-grid{grid-template-columns:1fr}
-  .hero-live .hero-copy{max-width:640px}
-  .pt-steps ol{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px}
-  .pt-demo .pt-window{aspect-ratio:1.5}
+.hero-live:has(.pt-stage.is-done) .pt-replay,.hero-live:has(.pt-stage:not(.is-live)) .pt-replay{visibility:visible;opacity:1;transition-delay:0s}
+html:not(.js) .pt-replay{display:none}
+/* La escena: el marco escala la ventana de 1440 × 880 a su ancho (pteron-ui.js y el guion en línea fijan --pt-s);
+   en móvil recorta su centro. */
+.pt-stage{position:relative;margin:0}
+.pt-frame{--pt-crop:1440;--pt-s:.8333;position:relative;width:100%;aspect-ratio:1440/880;overflow:hidden;border-radius:calc(10px * var(--pt-s));background:#f7f4ee;box-shadow:0 0 0 1px #0f223829,0 2px 6px #0f22381f,0 50px 110px -40px #000000b3;isolation:isolate}
+.pt-frame>.pt-app{position:absolute;top:0;left:50%;margin-left:-720px;transform:scale(var(--pt-s));transform-origin:50% 0}
+/* La hoja clara sigue bajo la escena con lo que se comprueba hoy */
+.hero-paper{position:relative;z-index:2;background:var(--paper)}
+.hero-live .hero-paper .truth{padding-top:clamp(28px,3vw,44px)}
+@media (max-width:1000px){
+  .hero-head{grid-template-columns:1fr;align-items:start}
+  .pt-steps ol{gap:12px}
+  .pt-steps li>button{font-size:13.5px}
 }
 @media (max-width:760px){
-  .hero-live .hero-copy{display:contents}
-  .hero-grid{gap:20px}
-  .hero-live .pt-steps{order:10;margin-top:4px}
+  .hero-head{gap:20px}
   .hero-live .actions{width:100%}
-  .pt-steps ol{grid-template-columns:1fr}
-  .pt-demo .pt-window{aspect-ratio:auto;height:min(660px,172vw)}
+  .pt-steps{flex-direction:column;gap:6px}
+  .pt-steps ol{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px;width:100%}
+  .pt-steps li>button{padding-top:12px;font-size:13.5px}
+  .pt-replay{align-self:flex-start}
+  .pt-frame{--pt-crop:1000;--pt-s:.358;aspect-ratio:1000/880;border-radius:8px}
+  .hero-stage{--pt-frame-h:calc((100vw - 2 * var(--gutter)) * .88)}
 }
-.hero-live .actions{justify-content:flex-start}
-
-/* La hoja (2026-10-12.7): el panel «Qué hoja» de Imprimir y la guía hecha con las reglas de la hoja de pteron.
+/* La hoja (2026-10-12.8): el panel «Qué hoja» de Imprimir y la guía hecha con las reglas de la hoja de pteron.
    Al elegir la versión docente la hoja gira de canto y vuelve con las respuestas (pteron-ui.js); sin JS, :has() las muestra. */
 .hoja-grid{display:grid;grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);gap:clamp(40px,6vw,96px);align-items:center}
 .hoja-copy{display:grid;justify-items:start;gap:22px;color:var(--ink)}
@@ -339,7 +350,7 @@
   .hoja-copy .pt-radio b{font-size:13.5px}
   .hoja-copy .pt-radio small{font-size:12px}
 }
-/* Local (2026-10-12.7): el muelle de pteron con el aviso de privacidad, editable, en lugar del recorte de captura */
+/* Local (2026-10-12.8): el muelle de pteron con el aviso de privacidad, editable, en lugar del recorte de captura */
 .local-visual:has(.pt-gate){min-height:0;display:grid;justify-items:end}
 .local-visual>.pt-gate{position:relative}
 @media (max-width:999px){.local-visual:has(.pt-gate){justify-items:start}}

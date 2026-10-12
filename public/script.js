@@ -14,7 +14,7 @@
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     return Boolean(connection && (connection.saveData || /2g|3g/.test(connection.effectiveType || "")));
   };
-  const VERSION = "?v=2026-10-12.7";
+  const VERSION = "?v=2026-10-12.8";
 
   /* Año en el pie y donde se pida. */
   $$("[data-year]").forEach((node) => { node.textContent = String(new Date().getFullYear()); });
