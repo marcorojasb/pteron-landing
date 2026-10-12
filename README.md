@@ -47,8 +47,8 @@ Worker, desde este repositorio en GitHub.
     sus créditos están en `/privacidad#creditos`. `assets/app/` y
     `assets/docs/`: capturas reales de pteron para la documentación.
   - `assets/fonts/`: Archivo, Outfit, Playwrite CL e IBM Plex, con sus
-    licencias; `assets/marca.svg`: el contorno de la marca «pteron» (el mismo
-    trazado que dibuja la app); `assets/marca/`: la marca en azul, blanco y
+    licencias; `assets/marca.svg`: el contorno de la marca «pteron» (Iowan Old
+    Style tal como la muestra la app en macOS); `assets/marca/`: la marca en azul, blanco y
     tinta y el icono, para descargar; `assets/pt-icons.svg`: los iconos Lucide
     de la app; los iconos `*-v3` (la «p» de la marca sobre el azul) y
     `assets/og/`: una imagen para compartir por página.

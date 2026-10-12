@@ -1,7 +1,7 @@
 /**
- * Los archivos de la marca, derivados del único dibujo que existe: el contorno de public/assets/marca.svg (el mismo
- * trazado con que la app dibuja «pteron»). De ahí salen la marca para descargar en tres colores y el icono, que es la
- * «p» de esa marca sobre el azul.
+ * Los archivos de la marca, derivados del único dibujo que existe: el contorno de public/assets/marca.svg («pteron» en
+ * Iowan Old Style tal como lo muestra la app en macOS, tomado de una captura sin pérdida). De ahí salen la marca para
+ * descargar en tres colores y el icono, que es la «p» de esa marca sobre el azul.
  *
  *   node scripts/marca.mjs              escribe los SVG (sin dependencias)
  *   node scripts/marca.mjs --png        además los PNG; necesita Playwright con Chromium:
