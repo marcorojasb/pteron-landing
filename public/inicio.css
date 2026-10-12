@@ -1,358 +1,182 @@
-/* pteron · Inicio (2026-10-12.5). Lo que sólo usa la página de inicio: héroe con la ventana, el pedido de rumbos, banda local, bento, película, marquesina y descarga. El resto es styles.css. */
-.hero{position:relative;overflow-x:clip;padding-top:clamp(118px,11vw,148px);background:linear-gradient(180deg,#0f1925,#16253a)}
-.hero-copy{position:relative;z-index:3;display:grid;justify-items:center;text-align:center;gap:22px}
-.hero-copy::before{content:"";position:absolute;z-index:-1;inset:-40px -8% -30px;background:radial-gradient(50% 55% at 50% 50%,#060a1094,#060a103d 62%,transparent 80%);pointer-events:none}
-.hero-copy>.kicker{display:block}
-.hero-copy h1{color:var(--snow);text-shadow:0 2px 30px #05090f73}
-.hero-copy .lead{max-width:640px;color:#dcdee2;text-shadow:0 1px 18px #05090f99}
-.hero-copy .actions{justify-content:center;margin-top:10px}
-.hero-stage{position:relative;margin-top:clamp(44px,5vw,64px);container-type:inline-size}
-.hero-media{position:absolute;z-index:0;left:50%;width:100vw;aspect-ratio:3/2;transform:translateX(-50%);top:calc(14px - 100vw * 2/3 * .86);pointer-events:none}
-.hero-media::after{content:"";position:absolute;left:0;right:0;top:calc(100% - 220px);height:1620px;background:linear-gradient(180deg,#03030400,#030304 220px,#07090d 600px)}
-.hero-media>div{position:absolute;inset:0}
-.hero-media img{width:100%;height:100%;object-fit:cover;-webkit-mask-image:linear-gradient(180deg,transparent,#000 16%,#000 70%,transparent);mask-image:linear-gradient(180deg,transparent,#000 16%,#000 70%,transparent)}
-.hero-glow{position:absolute;z-index:1;left:50%;top:0;width:min(1500px,125cqw);height:260px;transform:translate(-50%,-62%);background:radial-gradient(50% 50% at 50% 50%,#f6b06842,#e98c4614 48%,transparent 72%);mix-blend-mode:screen;pointer-events:none}
-.hero-product{position:relative;z-index:3;width:min(100%,1120px);margin-inline:auto}
-.hero-window{transform-origin:50% 100%;transform:perspective(2400px) rotateX(calc(var(--tilt,0)*1deg)) translate3d(0,calc(var(--lift,0)*1px),0);will-change:transform}
-.hero-ground{position:absolute;z-index:2;left:50%;width:100vw;transform:translateX(-50%);top:calc(min(100cqw,1120px)/1.6364*.6);bottom:0;background:var(--paper);border-radius:var(--r-sheet) var(--r-sheet) 0 0;box-shadow:0 -30px 60px -30px #00000080}
-.hero .float{position:absolute;z-index:4}
-.hero .float-plan{left:-62px;top:38%;width:340px}
-.hero .float-result{right:-52px;top:9%;width:300px}
-.truth{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,1fr);align-items:center;padding:clamp(40px,5vw,64px) 0 clamp(8px,2vw,24px);color:var(--ink)}
-.truth ul{display:flex;flex-wrap:wrap;justify-content:space-between;gap:14px 34px}
-.truth li{display:flex;align-items:center;gap:10px;font-size:15.5px;line-height:1.3;font-weight:500;white-space:nowrap}
-.truth .icon{color:var(--copper);width:19px;height:19px}
-.hero .float-plan .ui-compose{margin-top:10px;line-height:1.5}
-.local-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(40px,6vw,96px);align-items:center}
-@media (max-width:999px){.local-grid{grid-template-columns:minmax(0,1fr);gap:36px}}
-.facts{display:grid;gap:18px;margin:0;padding:0;list-style:none}
-.facts li{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:center}
-.fact-ico{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#9ccbee1a;border:1px solid #9ccbee38;color:var(--glacier)}
-.facts strong{display:block;margin-bottom:2px;font-weight:560;color:var(--snow)}
-.facts p{color:#d3d7dd;font-size:15.5px;line-height:1.5}
-.local-visual{position:relative;min-height:520px}
-.local-visual>*{position:absolute}
-.local-window{--sw:2880;--cx:720;--cy:200;--cw:1440;--ch:1360;left:0;top:0;width:min(100%,560px);border-radius:13px}
-.local-alert{left:-28px;top:430px;z-index:2;width:min(432px,86%)}
-.local-alert-title{display:flex;align-items:center;gap:8px;margin-bottom:6px;font:600 14px/1.3 var(--sans)}
-.local-alert-title .icon{width:15px;height:15px;color:#7d4c12}
-.download .band-shade{background:radial-gradient(60% 34% at 50% 26%,#07090d99,transparent 75%),linear-gradient(180deg,#07090de6,#07090d80 32%,#07090d61 58%,#07090df0)}
-.download .head .lead{color:#dcdad5;text-shadow:0 1px 14px #07090de6}
-.band.download{padding-bottom:clamp(64px,7vw,104px)}
-/* Atlas de asignaturas: cinco baldosas escalonadas que el arco cruza a ~70 % de su alto (posiciones en cqw de la escena) */
-.atlas{padding-block:clamp(56px,6vw,88px) clamp(28px,3vw,44px)}
-.atlas-scene{position:relative;aspect-ratio:100/26;container-type:inline-size}
-.atlas-tile{position:absolute;left:var(--l);top:var(--t);width:var(--s);aspect-ratio:1;filter:drop-shadow(0 2px 2px #0f22381f) drop-shadow(0 18px 22px #0f223829)}
-.atlas-tile img{width:100%;height:100%}
-.atlas-t1{--l:3cqw;--t:12.3cqw;--s:12cqw}
-.atlas-t2{--l:22.25cqw;--t:5.6cqw;--s:13.5cqw}
-.atlas-t3{--l:42.5cqw;--t:2.5cqw;--s:15cqw}
-.atlas-t4{--l:64.25cqw;--t:5.6cqw;--s:13.5cqw}
-.atlas-t5{--l:85cqw;--t:12.3cqw;--s:12cqw}
-.atlas-t6{--l:14cqw;--t:17.5cqw;--s:7.5cqw}.atlas-t7{--l:34cqw;--t:10cqw;--s:7.5cqw}.atlas-t8{--l:56.5cqw;--t:10cqw;--s:7.5cqw}.atlas-t9{--l:76.5cqw;--t:17.5cqw;--s:7.5cqw}
-.atlas-arc{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
-.atlas-arc path{fill:none;stroke:var(--ink);stroke-opacity:.62;stroke-width:1.35;vector-effect:non-scaling-stroke;stroke-dasharray:1;stroke-dashoffset:0;transition:stroke-dashoffset 2.4s var(--ease) .2s}
-.reveal-on .atlas-scene:not(.is-in) .atlas-arc path{stroke-dashoffset:1}
-.atlas-head{position:relative;margin-top:-5.5%}
-.rumbos{padding-top:clamp(64px,7vw,104px)}
-/* Película: el cielo de Atacama queda fijo (sticky) mientras pasan el texto y la ventana; script.js fija --fh en px y liga el vídeo al scroll */
-.film{--fh:clamp(560px,56.25vw,900px);--focus:var(--ember-hi);--lead:#d6d8dc;--soft:#f4f1eba6;--muted:var(--mist);--kc:var(--ember-hi);position:relative;overflow-x:clip;isolation:isolate;color:var(--snow);color-scheme:dark;background:linear-gradient(180deg,#2c2230,#171522 34%,#0c1523 66%,#06111c)}
-.sheet+.film{margin-top:calc(-1*var(--r-sheet))}
-.film-backdrop{position:absolute;inset:0;z-index:-1;overflow:hidden}
-.js .film-backdrop{position:sticky;top:0;bottom:auto;height:var(--fh);margin-bottom:calc(-1*var(--fh))}
-.film-backdrop :is(picture,img,video){position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.film-backdrop video{opacity:0;transition:opacity .45s ease}
-.film-backdrop.is-ready video{opacity:1}
-.film-backdrop::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#07090dc2,#07090d7a 34%,#07090d00 62%),linear-gradient(180deg,#07090d99,#07090d1f 16%,#07090d00 40%,#07090d26 70%,#06111cd9)}
-.film-content{position:relative;display:grid;grid-template-columns:minmax(0,1fr);justify-items:start;padding-block:calc(var(--fh)*.42) calc(var(--fh)*.26)}
-.film-copy{max-width:760px}
-.film-copy h2{text-shadow:0 2px 30px #05090f80}
-.film-copy .lead{max-width:34em;color:#e2e3e6;text-shadow:0 1px 16px #05090fcc}
-.film-window{justify-self:end;width:min(1140px,100%);margin-top:calc(var(--fh)*.1);transform-origin:50% 100%;transform:perspective(2400px) rotateX(calc(var(--tilt,0)*1deg)) translate3d(0,calc(var(--lift,0)*1px),0);will-change:transform}
-.film-credit{justify-self:end;margin-top:clamp(24px,3vw,40px);text-align:right}
-/* Aurora del lago: canvas de 320×180 escalado; el póster sólo se ve sin JavaScript */
-.lake-aurora{position:absolute;z-index:-1;left:0;top:0;width:100%;height:78%;pointer-events:none;background:url("/assets/arte/aurora-lago.webp?v=2026-10-12.8") center/100% 100% no-repeat;-webkit-mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent);mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent)}
-.lake-aurora.is-drawn{background:none}
-.js .hero-media>div{animation:settle 2.6s var(--ease) both}
-.js .hero-product{animation:rise 1.6s var(--ease) .35s both}
-@keyframes settle{from{opacity:.4;scale:1.06}to{opacity:1;scale:1}}
-@keyframes rise{from{opacity:0;translate:0 60px}to{opacity:1;translate:0 0}}
-@media (prefers-reduced-motion:reduce){
-.hero-window,.film-window{transform:none!important}
-.js .film-backdrop{position:absolute;inset:0;height:auto;margin:0}
-.film-content{padding-block:clamp(110px,12vw,170px)}}
-@media (max-width:1180px){
-.hero .float-plan{display:none}
-.hero .float-result{right:-12px;width:272px}}
-@media (max-width:1024px){
-.truth{grid-template-columns:1fr}
-.truth ul{justify-content:flex-start}}
-@media (max-width:760px){
-.atlas-scene{aspect-ratio:100/46}
-.atlas-t2,.atlas-t4,.atlas-t6,.atlas-t7,.atlas-t8,.atlas-t9{display:none}
-.atlas-t1{--l:1.5cqw;--t:16cqw;--s:25cqw}
-.atlas-t3{--l:35cqw;--t:2cqw;--s:30cqw}
-.atlas-t5{--l:73.5cqw;--t:16cqw;--s:25cqw}
-.atlas-head{margin-top:14px}
-.film-content{padding-block:calc(var(--fh)*.42) calc(var(--fh)*.3)}
-.film-copy::before{content:"";position:absolute;z-index:-1;inset:-12% -10%;background:radial-gradient(closest-side,#07090db3,#07090d66 60%,transparent);pointer-events:none}
-.film-window{justify-self:start;width:1010px;max-width:none;margin:56px 0 0}
-.film-credit{justify-self:start;text-align:left}
-.lake-aurora{height:46%}
-.hero{padding-top:104px}
-.hero-copy{gap:18px}
-.hero-copy .actions{width:100%;flex-direction:column;align-items:stretch}
-.hero-stage{margin-top:64px}
-.hero-media{width:132vw;aspect-ratio:4/5;top:calc(30px - 132vw * 1.25 * .87)}
-.hero-product{width:calc(100% + var(--gutter))}
-/* La ventana completa, más ancha que la pantalla: anclada a la izquierda con su esquina, sus luces y la fila de
-   pestañas reales, y sangrando a la derecha (sin recortar la captura por dentro) */
-.hero-window{width:140%;max-width:none;margin-left:0}
-.hero .float-result{right:calc(var(--gutter) + 6px);top:auto;bottom:-62px;width:276px}
-.hero-ground{top:calc((100cqw + var(--gutter))*1.4/1.6364*.62)}
-.truth{padding-top:72px}
-.truth ul{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px}
-.truth li{align-items:flex-start;font-size:14.5px;white-space:normal}
-.truth-label{color:var(--ink-2)}
-.local-visual{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;min-height:0}
-.local-visual>*{position:relative;left:auto;top:auto;right:auto;width:auto;max-width:100%}
-.local-window{--cx:750;--cy:220;--cw:780;--ch:620}
+/* pteron · inicio (2026-10-12.9)
+   Las láminas flotan sobre la mesa; al bajar, pteron las toma y caen en cuatro hojas que se arman solas.
+   Sin JavaScript o con movimiento reducido todo queda quieto y en orden: láminas en su lugar y las hojas completas. */
 
-/* Color por paso y marquesina de asignaturas (2026-10-12.5) */
-.atlas .marquee{margin-top:clamp(30px,3.6vw,52px)}
-}
+/* ——— Escena ——— */
+.escena{position:relative;isolation:isolate}
+.escena-fija{position:relative}
+.laminas{position:absolute;inset:0 0 auto;height:100svh;overflow:hidden}
 
-/* Demo con scroll (2026-10-12.5): la ventana fija cambia de captura con el rumbo activo */
-.demo{padding-block:clamp(56px,7vw,104px) clamp(40px,5vw,72px)}
-.demo-grid{display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:clamp(32px,5vw,88px);align-items:start}
-.head-left{display:grid;gap:18px;justify-items:start;margin-bottom:clamp(20px,3vw,40px)}
-.demo-steps{display:grid;margin:0;padding:0;list-style:none}
-.demo-step{position:relative;min-height:520px;padding:22px 0 22px 26px;border-left:2px solid var(--line-l2);opacity:.34;transition:opacity .55s var(--ease),border-color .55s var(--ease)}
-.demo-step.is-active{opacity:1;border-left-color:var(--ac)}
-.demo-step.is-active h3{color:var(--ac)}
-.demo-step:last-child{min-height:300px}
-.demo-num{display:block;font:500 12px/1 var(--mono);letter-spacing:.1em;color:var(--ac)}
-.demo-step h3{margin-top:10px;font:340 clamp(1.8rem,1.2rem+1.8vw,2.7rem)/1.04 var(--serif);letter-spacing:-.022em;color:var(--ink)}
-.demo-step p{margin-top:10px;max-width:30em;color:var(--lead);font-size:16px;line-height:1.55}
-.demo-step-shot{display:none}
-.demo-stage{position:relative;min-height:100%}
-.demo-sticky{position:sticky;top:clamp(84px,11vh,112px)}
-.demo-window{width:100%}
-.demo-shots{position:relative;aspect-ratio:1440/880;overflow:hidden;background:#f8f6f2}
-.demo-shots img{position:absolute;inset:0;width:100%;height:100%;opacity:0;scale:1.025;transition:opacity .75s var(--ease),scale 1s var(--ease)}
-.demo-shots img.is-active{opacity:1;scale:1}
-.demo-progress{position:relative;height:3px;margin:16px auto 0;width:min(100%,420px);border-radius:3px;background:var(--line-l);overflow:hidden}
-.demo-progress i{position:absolute;left:0;top:0;width:25%;height:100%;border-radius:3px;background:var(--ac);transition:translate .6s var(--ease),background-color .6s}
-/* Planes dentro de la banda de descarga: compactos y sobre la noche */
-.download .plans-compact{margin-top:clamp(32px,4vw,56px)}
-.download .plans-compact .plan{gap:10px}
-.download .plans-compact .plan-head{padding:16px 16px 0}
-.download .plans-compact .plan-desc{display:none}
-.download .plans-compact .plan-name{font-size:28px}
-.download .plans-compact .plan-box{padding:16px}
-.download .plans-compact .price{font-size:clamp(36px,3vw,44px)}
-.download .plans-foot{margin:18px 0 clamp(36px,5vw,64px)}
-.download .tile-strip{margin-top:clamp(36px,5vw,64px)}
-.section-tight{padding-block:clamp(64px,7vw,104px)}
-@media (max-width:1024px){
-.demo-grid{grid-template-columns:minmax(0,1fr)}
-.demo-stage{display:none}
-.demo-step{min-height:0;padding:22px 0 26px 18px;opacity:1}
-.demo-step:last-child{min-height:0}
-.demo-step-shot{display:block;margin-top:16px;width:100%}
-.demo-step-shot>img{width:100%;height:auto}}
+/* Una lámina: el recorte (cara) y su reverso con la figura de pteron. Posición al flotar: --x, --y en % del
+   escenario; --w, ancho; --r, giro. En móvil, --xm, --ym, --wm y --rm. */
+.lamina{position:absolute;left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);width:calc(var(--w) * .82vmax);aspect-ratio:1;
+  transform:translate(-50%,-50%) rotate(calc(var(--r) * 1deg));perspective:1600px;will-change:transform;
+  --sx:10px;--sy:16px;--so:.3;--sb:12px}
+.lamina[data-capa="0"]{--sx:6px;--sy:9px;--so:.2;--sb:8px}
+.lamina[data-capa="2"]{--sx:16px;--sy:26px;--so:.34;--sb:18px}
+.lamina{z-index:1}
+.lamina.is-volteada,.lamina[data-arriba]{z-index:4}
+.lamina-sombra{position:absolute;inset:0;transform:translate(var(--sx),var(--sy));opacity:calc(var(--so) * var(--papel,1));filter:brightness(0) blur(var(--sb));pointer-events:none}
+.lamina-sombra img,.lamina-cara img{width:100%;height:100%;-webkit-user-drag:none;user-select:none}
+.lamina-cuerpo{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .95s var(--curva)}
+.lamina.is-volteada .lamina-cuerpo{transform:rotateY(180deg)}
+.lamina-cara,.lamina-reverso{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.lamina-cara img{filter:drop-shadow(0 0 .6px rgb(var(--sombra)/.45))}
+.lamina[data-capa="0"] .lamina-cara{filter:saturate(.82) contrast(.94) brightness(1.03)}
+.lamina-reverso{transform:rotateY(180deg);display:grid;gap:3.5%;padding:5.5%;color:#1F2A3D;container-type:inline-size}
+/* El papel del reverso: al llegar a su hoja se desvanece y sólo queda la figura */
+.lamina-reverso::before{content:"";position:absolute;inset:0;background:linear-gradient(160deg,#fff 0%,#F7F9FC 100%);opacity:var(--papel,1)}
+.reverso-figura,.reverso-pie{position:relative}
+.reverso-figura{display:grid;place-items:center;min-width:0;min-height:0;padding:2%}
+.reverso-figura svg{width:100%;height:100%;max-height:100%}
+.reverso-pie{align-self:end;margin:0;font:600 clamp(9px,5.2cqi,15px)/1.2 "Outfit",sans-serif;color:#1E3F94;padding:0 2% 1%;opacity:var(--pie,1)}
+.reverso-pie span{display:block;margin-top:.25em;font-weight:400;font-size:.82em;color:#5B6B82}
+.laminas .lamina{cursor:pointer}
 
-/* Banda de descarga en móvil: planes y plataformas como filas deslizables con ajuste */
-@media (max-width:760px){
-.download .plans-compact,.download .platforms{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px var(--gutter) 18px;margin-inline:calc(-1*var(--gutter));scrollbar-width:none}
-.download .plans-compact::-webkit-scrollbar,.download .platforms::-webkit-scrollbar{display:none}
-.download .plans-compact>li,.download .platforms>li{flex:0 0 min(82vw,320px);scroll-snap-align:center}
-.download .plans-foot{margin-top:4px}}
+/* ——— Portada ——— */
+.portada{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);grid-template-rows:1fr auto auto;
+  column-gap:clamp(24px,4vw,72px);min-height:100svh;padding:clamp(20px,3vw,40px) var(--margen) clamp(36px,7vh,80px);pointer-events:none}
+.portada>*{pointer-events:auto}
+.portada-marca{grid-column:1 / -1;grid-row:1;align-self:start;justify-self:start;font-size:clamp(34px,2.9vw,48px)}
+.portada h1{grid-column:1;grid-row:2 / span 2;align-self:end;max-width:9.6em;font-size:clamp(3rem,1.1rem + 5.4vw,7.2rem);
+  text-shadow:0 0 28px var(--mesa),0 0 2px var(--mesa)}
+.portada-texto{grid-column:2;grid-row:2;align-self:end;max-width:30ch;font-size:clamp(1.0625rem,.95rem + .45vw,1.3rem);line-height:1.45;color:var(--tinta)}
+.portada-acciones{grid-column:2;grid-row:3;display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;margin-top:22px}
+.portada-enlace{font-weight:600;min-height:44px;display:inline-flex;align-items:center}
+.portada-nota{grid-column:2;grid-row:4;margin-top:12px;font-size:var(--t-chico);color:var(--grafito)}
+.portada-texto,.portada-acciones,.portada-nota{position:relative}
+.portada-texto::before{content:"";position:absolute;inset:-18px -22px -140px -22px;z-index:-1;border-radius:18px;
+  background:radial-gradient(closest-side,rgb(233 237 241/.92),rgb(233 237 241/.75) 60%,rgb(233 237 241/0));pointer-events:none}
 
-/* Héroe partido (2026-10-12.8): copia a la izquierda y, a la derecha, un pozo de tetris armado con recortes del atlas */
-.hero-split .hero-top{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,.93fr) minmax(0,1.07fr);gap:clamp(28px,4vw,64px);align-items:center}
-/* La fila de aparición del pozo sobresale una celda hacia arriba: el héroe baja lo justo para que nazca bajo la barra */
-.hero.hero-split{padding-top:calc(78px + min(7.3vw,113px))}
-.hero-split .hero-copy{justify-items:start;text-align:left;width:auto}
-.hero-split .hero-copy .lead{max-width:30em}
-.hero-split .hero-copy .actions{justify-content:flex-start}
-.hero-split .hero-copy h1{text-wrap:balance}
+/* ——— La mesa: cuatro hojas ——— */
+.mesa{position:relative;z-index:2;padding:clamp(40px,6vw,80px) var(--margen) clamp(56px,8vw,96px)}
+.mesa-hojas{display:grid;grid-template-columns:repeat(4,max-content);justify-content:center;gap:clamp(16px,2.4vw,36px);--s:.31}
+.mesa-hoja{position:relative;width:calc(816px * var(--s));height:calc(1248px * var(--s));border-radius:2px;
+  box-shadow:0 1px 1px rgb(var(--sombra)/.08),0 14px 32px -16px rgb(var(--sombra)/.4)}
+.mesa-hoja>.pteron-document{position:absolute;left:0;top:0;transform:scale(var(--s));transform-origin:0 0}
+.mesa-rotulos{display:grid;grid-template-columns:repeat(4,calc(816px * var(--s)));justify-content:center;column-gap:clamp(16px,2.4vw,36px);margin-top:16px;
+  font-size:var(--t-chico);font-weight:600;font-stretch:96%;color:var(--grafito);text-align:left}
+.mesa-pie{margin:26px auto 0;max-width:62ch;text-align:center;font-size:var(--t-chico);color:var(--grafito)}
 
-/* Pozo de tetris. Rejilla de --cols × --rows celdas; la fila 0 es la de aparición y en escritorio sobresale hacia
-   arriba (margen negativo de una celda) para que el héroe no crezca. El pozo sangra hasta el borde derecho.
-   Cada pieza trae en línea su celda final en escritorio (--dc, --dr, --dw) y en móvil (--mc, --mr, --mw) y el instante
-   en que aterriza (--dt, --mt). Esos tiempos salen de scripts/tetris-pozo.mjs; --T-clear y --T-end deben coincidir con él.
-   Papeles: .t-clear es la fila de abajo que se completa y se limpia (.t-gap es la pieza que la completa), .t-stack es
-   la pila que espera una fila más arriba dentro de .tetris-stack y baja cuando la fila desaparece, .t-post cae
-   después y .t-crown es el remate. Sin movimiento o sin JavaScript sólo se ve la estructura final, quieta. */
-.hero .tetris{--cols:7;--rows:6;--bleed:min(160px,max(var(--gutter),(100vw - var(--wrap))/2));--cell:calc(100cqw/var(--cols));--T-clear:1.98s;--T-end:4.36s;--T-zap:calc(var(--T-clear) + .9s);--T-drop:calc(var(--T-clear) + 1.12s);position:relative;inset:auto;z-index:1;container-type:inline-size;width:calc(100% + var(--bleed));aspect-ratio:var(--cols)/var(--rows);margin:calc((100% + var(--bleed))/var(--cols)*-1) calc(-1*var(--bleed)) 0 0;pointer-events:none}
-.tetris-stack{position:absolute;inset:0}
-.tetris .cutout{--col:var(--dc);--row:var(--dr);--w:var(--dw,1);--land:var(--dt);--s:calc(var(--w)*var(--cell));--fall:calc(var(--row) - var(--lift,0));--dur:calc(.4s + var(--fall)*.055s);left:calc(var(--col)*var(--cell));top:calc(var(--row)*var(--cell));width:var(--s);z-index:calc(20 - var(--row));opacity:calc(1 - var(--sp,0)*.85);rotate:calc(var(--rot,0deg) + var(--sp,0)*var(--er,0deg));translate:calc(var(--sp,0)*(var(--col) + var(--w)/2 - var(--cols)/2)*16px) calc(var(--sp,0)*((var(--row) + var(--w)/2 - var(--rows)/2)*14px - 90px));transform-origin:50% 100%;filter:drop-shadow(0 1px 1px #0509102e) drop-shadow(0 12px 16px #05091061);transition:scale .55s var(--ease),filter .55s var(--ease)}
-.tetris .t-stack{--lift:1}
-.tetris .cutout:hover,.tetris .cutout.is-flipped{z-index:40;scale:1.06;rotate:0deg;filter:drop-shadow(0 3px 4px #05091033) drop-shadow(0 26px 30px #0509107a)}
-/* La fila que se limpia no responde al cursor: se voltea sola, en ola, y se cierra */
-.tetris .t-clear{pointer-events:none}
-.tetris .t-clear,.tetris-flash{display:none}
-/* Rejilla fantasma del pozo: líneas finas que aparecen al empezar y se apagan cuando cae el remate */
-.tetris::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;background:linear-gradient(90deg,#f4f1eb1f 1px,transparent 1px) 0 0/var(--cell) var(--cell),linear-gradient(180deg,#f4f1eb1f 1px,transparent 1px) 0 0/var(--cell) var(--cell);box-shadow:inset 0 -1px 0 #f4f1eb5c;-webkit-mask-image:linear-gradient(180deg,transparent,#000 calc(var(--cell)*1.3));mask-image:linear-gradient(180deg,transparent,#000 calc(var(--cell)*1.3))}
-/* Destello de la fila completa: barre de izquierda a derecha y se cierra con la fila */
-.tetris-flash{position:absolute;left:0;right:0;bottom:0;height:var(--cell);z-index:30;pointer-events:none;opacity:0;transform-origin:0 50%;background:linear-gradient(90deg,#fff3e000,#ffe9c7e6 16%,#fffaf2 50%,#ffe9c7e6 84%,#fff3e000);mix-blend-mode:screen}
+/* Escena viva: la mesa queda fija mientras se baja; inicio.js ubica láminas y hojas cuadro a cuadro */
+.escena[data-viva]{height:calc(100svh + var(--recorrido,260svh))}
+.escena[data-viva] .escena-fija{position:sticky;top:0;height:100svh;overflow:hidden}
+.escena[data-viva] .laminas{height:100%}
+.escena[data-viva] .mesa{position:absolute;inset:0;padding:0;pointer-events:none}
+.escena[data-viva] .mesa-hojas{display:block;position:absolute;inset:0}
+.escena[data-viva] .mesa-hoja{position:absolute;left:0;top:0;width:816px;height:1248px;transform-origin:0 0;opacity:0;will-change:transform,opacity;background:#fff;
+  box-shadow:0 2px 2px rgb(var(--sombra)/.06),0 30px 60px -28px rgb(var(--sombra)/.45)}
+.escena[data-viva] .mesa-hoja>.pteron-document{transform:none}
+.escena[data-viva] .mesa-rotulos{display:block;position:absolute;inset:0;margin:0}
+.escena[data-viva] .mesa-rotulos li{position:absolute;left:0;top:0;opacity:0;white-space:nowrap}
+.escena[data-viva] .mesa-pie{position:absolute;left:50%;bottom:clamp(18px,3.5vh,34px);margin:0;transform:translateX(-50%);opacity:0;width:min(62ch,90vw)}
+.escena[data-viva] .portada{will-change:transform,opacity}
+.escena[data-viva] .lamina-cuerpo{transition:none}
 
-@keyframes t-hold{from,to{opacity:0}}
-/* Caída: aparece en la fila 0, cae con gravedad estirándose, aplasta al tocar y rebota corto (contacto en el 62 %) */
-@keyframes t-fall{0%{transform:translateY(calc(var(--fall)*-100%/var(--w))) scale(.86);opacity:0;animation-timing-function:cubic-bezier(.3,0,.3,1)}12%{transform:translateY(calc(var(--fall)*-100%/var(--w))) scale(1);opacity:1;animation-timing-function:cubic-bezier(.55,0,.9,.4)}62%{transform:translateY(0) scale(.96,1.07);opacity:1;animation-timing-function:cubic-bezier(.2,.7,.3,1)}72%{transform:translateY(0) scale(1.06,.9);opacity:1}85%{transform:translateY(0) scale(.98,1.03);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
-/* Giro de tetris: un cuarto de vuelta seco en el aire */
-@keyframes t-spin{0%,22%{transform:rotate(var(--spin,0deg))}30%,100%{transform:rotate(0deg)}}
-/* La pieza que completa la fila: aparece una columna a la izquierda, gira, se corre y baja de golpe por el hueco (contacto en el 72 %) */
-@keyframes t-gap{0%{transform:translate(-100%,calc(var(--fall)*-100%)) scale(.86);opacity:0;animation-timing-function:cubic-bezier(.3,0,.3,1)}9%,30%{transform:translate(-100%,calc(var(--fall)*-100%)) scale(1);opacity:1;animation-timing-function:cubic-bezier(.3,0,.2,1)}35%,44%{transform:translate(0,calc(var(--fall)*-100%)) scale(1);opacity:1;animation-timing-function:cubic-bezier(.6,0,.95,.45)}72%{transform:translate(0,0) scale(.95,1.1);opacity:1;animation-timing-function:cubic-bezier(.2,.7,.3,1)}80%{transform:translate(0,0) scale(1.08,.88);opacity:1}90%{transform:translate(0,0) scale(.98,1.03);opacity:1}100%{transform:translate(0,0) scale(1);opacity:1}}
-@keyframes t-gap-spin{0%,17%{transform:rotate(var(--spin,90deg))}22%,100%{transform:rotate(0deg)}}
-/* Remate: la pieza grande aparece tres columnas a la izquierda, gira dos veces, se corre en tres pasos, duda y cae (contacto en el 74 %) */
-@keyframes t-crown{0%{transform:translate(-150%,-50%) scale(.86);opacity:0;animation-timing-function:cubic-bezier(.3,0,.3,1)}8%,20%{transform:translate(-150%,-50%) scale(1);opacity:1;animation-timing-function:cubic-bezier(.3,0,.2,1)}24%,34%{transform:translate(-100%,-50%) scale(1);opacity:1;animation-timing-function:cubic-bezier(.3,0,.2,1)}38%,48%{transform:translate(-50%,-50%) scale(1);opacity:1;animation-timing-function:cubic-bezier(.3,0,.2,1)}52%{transform:translate(0,-50%) scale(1);opacity:1;animation-timing-function:ease-in-out}60%{transform:translate(0,-54%) scale(1.02);opacity:1;animation-timing-function:cubic-bezier(.6,0,.95,.45)}74%{transform:translate(0,0) scale(.97,1.06);opacity:1;animation-timing-function:cubic-bezier(.2,.7,.3,1)}82%{transform:translate(0,0) scale(1.07,.9);opacity:1}91%{transform:translate(0,0) scale(.99,1.02);opacity:1}100%{transform:translate(0,0) scale(1);opacity:1}}
-@keyframes t-crown-spin{0%,12%{transform:rotate(180deg)}15%,28%{transform:rotate(90deg)}31%,100%{transform:rotate(0deg)}}
-/* Limpieza: cada pieza de la fila se da vuelta y muestra su reverso; luego la fila se cierra hacia su centro */
-@keyframes t-flip{from{transform:rotateY(0deg)}to{transform:rotateY(180deg)}}
-@keyframes t-zap{0%{transform:translateY(0) scale(1);opacity:1}55%{opacity:1}100%{transform:translateY(-50%) scale(1.06,.02);opacity:0;visibility:hidden}}
-@keyframes t-flash{0%{opacity:0;transform:scaleX(0)}28%{opacity:.9;transform:scaleX(1)}100%{opacity:0;transform:scaleX(1)}}
-@keyframes t-flash-zap{0%{opacity:0;transform:scaleY(1)}30%{opacity:.85;transform:scaleY(.3)}100%{opacity:0;transform:scaleY(.02)}}
-/* La pila baja la fila que quedó libre */
-@keyframes t-stack{0%{transform:translateY(calc(-100%/var(--rows)));animation-timing-function:cubic-bezier(.55,0,.9,.4)}70%{transform:translateY(0)}82%{transform:translateY(.4%)}100%{transform:translateY(0)}}
-@keyframes t-ghost-in{from{opacity:0}to{opacity:1}}
-@keyframes t-ghost-out{from{opacity:1}to{opacity:0}}
-@keyframes t-jolt{0%,100%{translate:0 0}22%{translate:0 7px}55%{translate:0 -2px}}
-@keyframes t-jolt-s{0%,100%{translate:0 0}25%{translate:0 4px}60%{translate:0 -1px}}
-/* Luz de atardecer que recorre la estructura desde abajo a la derecha, donde está el sol de la foto */
-@keyframes t-rake{0%,100%{filter:none}35%{filter:brightness(1.24) saturate(1.15) sepia(.12)}}
-
-@media (prefers-reduced-motion:no-preference){
-.tetris .cutout-float{animation:none}
-.js .tetris:not(.is-ready) .cutout{animation:t-hold 2.5s linear;animation-timeline:auto}
-.js .tetris.is-ready .t-clear,.js .tetris.is-ready .tetris-flash{display:block}
-.js .tetris.is-ready .cutout{animation:t-fall var(--dur) linear calc(var(--land) - .62*var(--dur)) backwards;animation-timeline:auto}
-.js .tetris.is-ready .cutout-float{animation:t-spin var(--dur) linear calc(var(--land) - .62*var(--dur)) backwards}
-.js .tetris.is-ready .t-clear{animation:t-fall var(--dur) linear calc(var(--land) - .62*var(--dur)) backwards,t-zap .2s cubic-bezier(.5,0,.8,.3) calc(var(--T-zap) + var(--col)*.012s) forwards;animation-timeline:auto,auto}
-.js .tetris.is-ready .t-gap{animation:t-gap .85s linear calc(var(--land) - .612s) backwards,t-zap .2s cubic-bezier(.5,0,.8,.3) calc(var(--T-zap) + var(--col)*.012s) forwards;animation-timeline:auto,auto}
-.js .tetris.is-ready .t-gap .cutout-float{animation:t-gap-spin .85s linear calc(var(--land) - .612s) backwards}
-.js .tetris.is-ready .t-clear .cutout-inner{animation:t-flip .34s cubic-bezier(.3,0,.2,1) calc(var(--T-clear) + .05s + var(--col)*.04s) forwards}
-.js .tetris.is-ready .t-crown{animation:t-crown 1.1s linear calc(var(--land) - .814s) backwards;animation-timeline:auto}
-.js .tetris.is-ready .t-crown .cutout-float{animation:t-crown-spin 1.1s linear calc(var(--land) - .814s) backwards}
-.js .tetris.is-ready .tetris-stack{animation:t-stack .32s linear var(--T-drop) backwards}
-.js .tetris.is-ready .tetris-flash{animation:t-flash .55s cubic-bezier(.2,.7,.3,1) var(--T-clear) backwards,t-flash-zap .32s ease-out var(--T-zap)}
-.js .tetris.is-ready::before{animation:t-ghost-in .4s ease-out both,t-ghost-out .8s ease-in calc(var(--T-end) + .15s) forwards}
-.js .hero .tetris.is-ready{animation:t-jolt-s .34s cubic-bezier(.3,.6,.3,1) calc(var(--T-drop) + .2s),t-jolt .42s cubic-bezier(.3,.6,.3,1) var(--T-end)}
-.js .tetris.is-ready .cutout-face{animation:t-rake .7s ease-in-out calc(var(--T-end) + .06s + ((var(--cols) - 1 - var(--col)) + (var(--rows) - 1 - var(--row)))*.035s)}}
-/* Con puntero fino, el pozo entero se inclina apenas hacia el cursor */
-@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
-.hero .tetris{transform:perspective(1700px) rotateY(calc(var(--mx1,0)*-4deg)) rotateX(calc(var(--my1,0)*3deg));transition:transform 1s cubic-bezier(.2,.7,.2,1)}}
-/* Hasta 1000 px el pozo cabe junto al titular (también en iPad horizontal); bajo eso va debajo de la copia */
-@media (max-width:999px){
-.hero.hero-split{padding-top:clamp(118px,11vw,148px)}
-.hero-split .hero-top{grid-template-columns:minmax(0,1fr)}
-.hero-split .hero-copy{justify-items:center;text-align:center}
-.hero-split .hero-copy .actions{justify-content:center}
-.hero .tetris{width:min(100%,680px);margin:8px auto 0}}
-@media (max-width:760px){
-.hero .tetris{--cols:5;--rows:4;--T-clear:1.46s;--T-end:3.71s;width:calc(100% + 2*var(--gutter));margin:18px calc(-1*var(--gutter)) 0}
-.tetris .cutout{--col:var(--mc);--row:var(--mr);--w:var(--mw,1);--land:var(--mt)}
-.tetris .cutout.t-dk,.js .tetris.is-ready .cutout.t-dk{display:none}}
-
-/* Rótulo de sección: nombra lo que muestra la interfaz con el vocabulario de la app. No es un titular: lo que hay que
-   entender lo dice la interfaz misma. */
-.section-name{display:flex;flex-wrap:wrap;align-items:center;gap:4px 0;font:600 15.5px/1.35 var(--sans);letter-spacing:0;text-transform:none;color:var(--lc,var(--ink-2))}
-.section-name .release-version{margin-left:12px}
-:is(.film,.lake,.download) .section-name{--lc:#dcdfe4;text-shadow:0 1px 14px #05090fcc}
-/* Héroe vivo (2026-10-12.8): arriba el titular y la acción; debajo, la ventana de pteron a casi todo el ancho,
-   dibujada con las reglas de la app (pteron-app.css). Los cuatro pasos son los capítulos de su secuencia. La hoja
-   clara empieza a media ventana: pteron sale de la noche hacia el papel. */
-.hero.hero-live{padding:clamp(108px,9vw,132px) 0 0;background:#0b1320}
-.hero-live .hero-media{top:0;bottom:auto;height:min(1100px,100%);aspect-ratio:auto}
-.hero-live .hero-media img{-webkit-mask-image:linear-gradient(180deg,#000 55%,transparent);mask-image:linear-gradient(180deg,#000 55%,transparent)}
-.hero-live .hero-media::after{display:none}
-.hero-live .hero-glow{top:auto;bottom:calc(var(--r-sheet) + 60px);transform:translate(-50%,0)}
-.hero-head{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);align-items:end;gap:24px clamp(40px,5vw,88px)}
-.hero-head::before{content:"";position:absolute;z-index:-1;inset:-60px -10% -50px -12%;background:radial-gradient(48% 60% at 30% 50%,#060a10a6,#060a1040 62%,transparent 82%);pointer-events:none}
-.hero-head h1{font-size:clamp(2.6rem,1.1rem + 3.2vw,4rem);line-height:1.02;color:var(--snow);text-shadow:0 2px 30px #05090f73}
-.hero-head h1>span{display:block}
-.hero-side{display:grid;justify-items:start;gap:16px;padding-bottom:6px}
-.hero-live .lead{max-width:40ch;color:#dcdee2;text-shadow:0 1px 18px #05090f99}
-.hero-live .actions{justify-content:flex-start}
-.hero-note{color:#c3c7cd;font-size:14px;line-height:1.4;text-shadow:0 1px 12px #05090fcc}
-.hero-stage{--pt-frame-h:calc(min(100vw - 2 * var(--gutter), var(--wrap)) * .6111);position:relative;z-index:3;display:grid;gap:clamp(16px,1.6vw,22px);margin-top:clamp(36px,3.6vw,52px);padding-bottom:clamp(36px,4vw,56px)}
-/* La hoja clara a todo el ancho, desde la mitad de la ventana hasta el final de la escena (sigue en .hero-paper) */
-.hero-stage::before{content:"";position:absolute;z-index:-1;top:calc(var(--pt-frame-h) * .46);bottom:0;left:calc(50% - 50vw);width:100vw;background:var(--paper);border-radius:var(--r-sheet) var(--r-sheet) 0 0;box-shadow:0 -30px 60px -30px #00000080;pointer-events:none}
-/* Pasos: una secuencia real (por eso van numerados), bajo la ventana como los capítulos de un video: cada uno es
-   un tramo de la barra y el actual se enciende. Van sobre la hoja clara. */
-.pt-steps{display:flex;align-items:flex-start;gap:24px}
-.pt-steps ol{flex:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:0;padding:0;list-style:none}
-.pt-steps li>button{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:10px;width:100%;min-height:44px;padding:14px 4px 4px 0;border:0;background:none;color:var(--ink-3);font:400 14.5px/1.4 var(--sans);text-align:left;cursor:pointer;transition:color .35s var(--ease)}
-.pt-steps li>button::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;border-radius:2px;background:#0f22381f;transition:background .45s var(--ease)}
-.pt-steps .pt-step-n{display:grid;place-items:center;width:20px;height:20px;margin-top:1px;border-radius:50%;box-shadow:inset 0 0 0 1px #0f22383d;color:var(--ink-3);font:500 11px/1 var(--mono);font-variant-numeric:tabular-nums;transition:background .35s var(--ease),color .35s var(--ease),box-shadow .35s var(--ease)}
-.pt-steps b{color:var(--ink);font-weight:600}
-.pt-steps li>button:hover{color:var(--ink)}
-.pt-steps li>button.is-done::before{background:#0f22385c}
-.pt-steps li>button.is-done .pt-step-n{background:#0f223814;box-shadow:none;color:var(--ink)}
-.pt-steps li>button.is-current{color:var(--ink)}
-.pt-steps li>button.is-current::before{background:var(--ember)}
-.pt-steps li>button.is-current .pt-step-n{background:var(--ember);box-shadow:none;color:#1b1206}
-.pt-replay{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:44px;margin-top:2px;padding:0 16px;border:1px solid #0f22382e;border-radius:999px;background:#fff;color:var(--ink);font:500 14px/1 var(--sans);visibility:hidden;opacity:0;transition:opacity .4s var(--ease),visibility 0s .4s}
-.pt-replay .icon{width:16px;height:16px}
-.hero-live:has(.pt-stage.is-done) .pt-replay,.hero-live:has(.pt-stage:not(.is-live)) .pt-replay{visibility:visible;opacity:1;transition-delay:0s}
-html:not(.js) .pt-replay{display:none}
-/* La escena: el marco escala la ventana de 1440 × 880 a su ancho (pteron-ui.js y el guion en línea fijan --pt-s);
-   en móvil recorta su centro. */
-.pt-stage{position:relative;margin:0}
-.pt-frame{--pt-crop:1440;--pt-s:.8333;position:relative;width:100%;aspect-ratio:1440/880;overflow:hidden;border-radius:calc(10px * var(--pt-s));background:#f7f4ee;box-shadow:0 0 0 1px #0f223829,0 2px 6px #0f22381f,0 50px 110px -40px #000000b3;isolation:isolate}
+/* ——— Cómo se pide: la ventana de pteron ——— */
+.pedir{position:relative;padding-block:clamp(72px,10vw,140px);background:var(--hoja);border-block:var(--borde) solid var(--regla)}
+.pedir-rejilla{display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,1.38fr);gap:clamp(28px,4vw,64px);align-items:center}
+.pasos{list-style:none;margin:28px 0 0;padding:0;display:grid;gap:4px;counter-reset:paso}
+.pasos button{display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px;align-items:start;width:100%;padding:12px 12px 12px 8px;border:0;border-radius:12px;
+  background:none;text-align:left;color:var(--grafito);font-size:1rem;line-height:1.45;transition:background-color .2s,color .2s}
+.pasos button:hover{background:var(--mesa)}
+.paso-n{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;border:var(--borde) solid var(--linea);font-size:.8125rem;font-weight:700;
+  color:var(--grafito);font-variant-numeric:tabular-nums;transition:background-color .25s,border-color .25s,color .25s}
+.pasos button.is-current{color:var(--tinta);background:var(--mesa)}
+.pasos button.is-current .paso-n{background:var(--azul);border-color:var(--azul);color:#fff}
+.pasos button.is-done .paso-n{background:var(--hoja);border-color:var(--azul);color:var(--azul)}
+.pasos button.is-done{color:var(--tinta)}
+.ver-de-nuevo{margin-top:18px;min-height:44px;padding:0 16px;border:var(--borde) solid var(--linea);border-radius:999px;background:var(--hoja);color:var(--azul);font-weight:600;font-size:.9375rem;
+  opacity:0;transition:opacity .3s}
+.ventana.is-done~* .ver-de-nuevo,.pedir:has(.ventana.is-done) .ver-de-nuevo,.no-js .ver-de-nuevo{opacity:1}
+.ventana{position:relative;margin:0}
+.pt-frame{--pt-crop:1440;--pt-s:.6;position:relative;width:100%;aspect-ratio:1440/880;overflow:hidden;border-radius:12px;background:#f6f5f2;
+  box-shadow:0 0 0 1px rgb(var(--sombra)/.12),0 2px 4px rgb(var(--sombra)/.08),0 40px 80px -40px rgb(var(--sombra)/.55)}
 .pt-frame>.pt-app{position:absolute;top:0;left:50%;margin-left:-720px;transform:scale(var(--pt-s));transform-origin:50% 0}
-/* La hoja clara sigue bajo la escena con lo que se comprueba hoy */
-.hero-paper{position:relative;z-index:2;background:var(--paper)}
-.hero-live .hero-paper .truth{padding-top:clamp(28px,3vw,44px)}
-@media (max-width:1000px){
-  .hero-head{grid-template-columns:1fr;align-items:start}
-  .pt-steps ol{gap:12px}
-  .pt-steps li>button{font-size:13.5px}
+
+/* ——— La hoja ——— */
+.hoja-seccion{padding-block:clamp(72px,10vw,140px)}
+.hoja-rejilla{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(28px,5vw,80px);align-items:start}
+.hoja-texto{position:sticky;top:clamp(24px,8vh,80px)}
+.controles{display:grid;gap:18px;margin-top:28px}
+.segmento{margin:0;padding:0;border:0;display:flex;flex-wrap:wrap;gap:6px}
+.segmento legend{width:100%;margin-bottom:8px;padding:0}
+.segmento label{position:relative;display:inline-flex}
+.segmento input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.segmento span{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border:var(--borde) solid var(--linea);border-radius:999px;background:var(--hoja);
+  font-weight:600;font-size:.9375rem;color:var(--grafito);transition:background-color .2s,border-color .2s,color .2s}
+.segmento input:checked+span{background:var(--azul);border-color:var(--azul);color:#fff}
+.segmento input:focus-visible+span{outline:3px solid var(--azul);outline-offset:3px}
+.segmento label:hover input:not(:checked)+span{border-color:var(--azul);color:var(--azul)}
+.datos{display:grid;gap:14px;margin-top:34px;max-width:46ch}
+.datos div{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:12px;padding-top:12px;border-top:var(--borde) solid var(--regla)}
+.datos dt{font-size:var(--t-rotulo);font-weight:650;font-stretch:94%;color:var(--azul);padding-top:.15em}
+.datos dd{margin:0;color:var(--grafito);font-size:var(--t-chico)}
+.hoja-marco{--s:.62;position:relative;width:calc(816px * var(--s));max-width:100%;justify-self:center}
+.hoja-papel{position:relative;width:calc(816px * var(--s));height:calc(1248px * var(--s));box-shadow:0 2px 3px rgb(var(--sombra)/.08),0 40px 80px -36px rgb(var(--sombra)/.5);
+  transition:filter .5s var(--curva)}
+.hoja-papel>.pteron-document{position:absolute;left:0;top:0;transform:scale(var(--s));transform-origin:0 0;transition:opacity .35s var(--curva)}
+.hoja-marco[data-audiencia="estudiante"] .pteron-document[data-audiencia="docente"],
+.hoja-marco[data-audiencia="docente"] .pteron-document[data-audiencia="estudiante"]{opacity:0;visibility:hidden}
+.hoja-marco[data-impresion="fotocopia"] .hoja-papel{filter:grayscale(1) contrast(1.08)}
+
+/* ——— En tu computador ——— */
+.local{padding-block:clamp(72px,10vw,140px);background:var(--hoja);border-block:var(--borde) solid var(--regla)}
+.local-rejilla{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,80px);align-items:start}
+.hechos{list-style:none;margin:30px 0 0;padding:0;display:grid;gap:0;max-width:44ch}
+.hechos li{padding:16px 0;border-top:var(--borde) solid var(--regla);font-size:1.0625rem;color:var(--tinta)}
+.hechos li:last-child{border-bottom:var(--borde) solid var(--regla)}
+.aviso{display:grid;gap:12px;padding:clamp(20px,2.6vw,32px);border-radius:16px;background:var(--mesa)}
+/* Sin JavaScript el aviso no puede reaccionar: no se muestra una demostración que no responde */
+html.no-js .aviso{display:none}
+.aviso-pieza:empty{display:none}
+.aviso label{font-weight:600;color:var(--tinta);font-size:var(--t-chico);font-stretch:100%}
+.aviso textarea{min-height:7.5em;resize:vertical;line-height:1.5;font-size:1rem}
+
+/* ——— Descargar ——— */
+.descarga{padding-block:clamp(72px,10vw,140px)}
+.descarga-rejilla{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(24px,5vw,80px);align-items:start}
+.descarga .texto-grande{margin-top:16px}
+.plataformas{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.plataformas a{display:grid;grid-template-columns:minmax(0,10rem) minmax(0,1fr);gap:4px 18px;align-items:baseline;padding:20px 22px;border-radius:14px;
+  background:var(--hoja);border:var(--borde) solid var(--regla);color:var(--tinta);text-decoration:none;transition:border-color .2s,box-shadow .2s,transform .2s var(--curva)}
+.plataformas a:hover{border-color:var(--azul);box-shadow:0 14px 30px -18px rgb(var(--sombra)/.45);transform:translateY(-1px)}
+.plataformas b{font-size:1.375rem;font-weight:720;font-stretch:110%;color:var(--azul);letter-spacing:-.01em}
+.plataformas span{color:var(--grafito);font-size:var(--t-chico)}
+.plataformas li.is-detected a{border-color:var(--lapiz-hondo);background:linear-gradient(0deg,color-mix(in srgb,var(--lapiz) 12%,white),#fff)}
+.plataformas li.is-detected b::after{content:"Tu equipo";margin-left:12px;padding:2px 9px;border-radius:999px;background:var(--lapiz);color:var(--azul-hondo);
+  font-size:.75rem;font-weight:700;font-stretch:96%;vertical-align:.3em;letter-spacing:0}
+.descarga-planes{grid-column:2;color:var(--grafito)}
+
+/* ——— Anchos ——— */
+@media (max-width:1180px){
+  .mesa-hojas{grid-template-columns:repeat(2,max-content);--s:.36}
+  .mesa-rotulos{display:none}
+}
+@media (max-width:980px){
+  .portada{grid-template-columns:minmax(0,1fr);grid-template-rows:1fr auto auto auto auto}
+  .portada h1{grid-row:2;max-width:8.6em}
+  .portada-texto{grid-column:1;grid-row:3;margin-top:22px}
+  .portada-acciones{grid-column:1;grid-row:4}
+  .portada-nota{grid-column:1;grid-row:5}
+  .pedir-rejilla,.hoja-rejilla,.local-rejilla,.descarga-rejilla{grid-template-columns:minmax(0,1fr)}
+  .hoja-texto{position:static}
+  .descarga-planes{grid-column:1}
+  .pedir-texto{order:2}
 }
 @media (max-width:760px){
-  .hero-head{gap:20px}
-  .hero-live .actions{width:100%}
-  .pt-steps{flex-direction:column;gap:6px}
-  .pt-steps ol{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px;width:100%}
-  .pt-steps li>button{padding-top:12px;font-size:13.5px}
-  .pt-replay{align-self:flex-start}
-  .pt-frame{--pt-crop:1000;--pt-s:.358;aspect-ratio:1000/880;border-radius:8px}
-  .hero-stage{--pt-frame-h:calc((100vw - 2 * var(--gutter)) * .88)}
+  .lamina{left:calc(var(--xm, var(--x)) * 1%);top:calc(var(--ym, var(--y)) * 1%);width:calc(var(--wm, var(--w)) * 1vw);transform:translate(-50%,-50%) rotate(calc(var(--rm, var(--r)) * 1deg))}
+  .lamina[data-solo-escritorio]{display:none}
+  .portada{padding-bottom:max(36px,env(safe-area-inset-bottom))}
+  .portada-nota{padding-right:64px}
+  .escena[data-viva] .mesa-rotulos{display:none}
+  .portada h1{font-size:clamp(2.6rem,1.4rem + 7vw,4rem)}
+  .mesa-hojas{--s:.2;gap:12px}
+  .hoja-marco{--s:.42}
+  .pt-frame{--pt-crop:1000;aspect-ratio:1000/880}
+  .plataformas a{grid-template-columns:minmax(0,1fr)}
 }
-/* La hoja (2026-10-12.8): el panel «Qué hoja» de Imprimir y la guía hecha con las reglas de la hoja de pteron.
-   Al elegir la versión docente la hoja gira de canto y vuelve con las respuestas (pteron-ui.js); sin JS, :has() las muestra. */
-.hoja-grid{display:grid;grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);gap:clamp(40px,6vw,96px);align-items:center}
-.hoja-copy{display:grid;justify-items:start;gap:22px;color:var(--ink)}
-.hoja-copy .pt-print{width:min(100%,420px);margin-top:8px}
-.hoja-stage{position:relative;perspective:1800px}
-.hoja-stage::before{content:"";position:absolute;inset:18px -14px -10px 22px;border-radius:6px;background:#fff;box-shadow:0 0 0 1px #0f22380f,0 24px 50px -30px #0f223873;transform:rotate(1.6deg);pointer-events:none}
-.hoja-sheet{position:relative;height:clamp(540px,46vw,690px);overflow:hidden;border-radius:5px;background:#fff;box-shadow:0 0 0 1px #0f22380d,0 2px 4px #0f22380a,0 34px 70px -34px #0f22388c;-webkit-mask-image:linear-gradient(180deg,#000 82%,transparent);mask-image:linear-gradient(180deg,#000 82%,transparent);transform-origin:50% 50%;will-change:transform}
-.hoja-sheet.is-out{animation:hoja-out .36s cubic-bezier(.55,0,.8,.25) forwards}
-.hoja-sheet.is-in{animation:hoja-in .52s cubic-bezier(.16,.9,.3,1)}
-@keyframes hoja-out{to{transform:rotateY(88deg) scale(.97)}}
-@keyframes hoja-in{from{transform:rotateY(-88deg) scale(.97)}to{transform:none}}
-.pt-doc .pt-key{display:none}
-.hoja[data-face=docente] .pt-doc .pt-key,.hoja:not(.js-hoja):has(input[value=docente]:checked) .pt-doc .pt-key{display:block;animation:pt-chat-in .4s var(--ease) both}
-@media (max-width:999px){
-  .hoja-grid{grid-template-columns:1fr}
+@media (max-width:400px){
+  .hoja-marco{--s:.4}
+  .mesa-hojas{--s:.19}
 }
-@media (max-width:760px){
-  .hoja-sheet{height:min(700px,180vw)}
-  .hoja-stage::before{inset:14px -6px -8px 12px}
-}
-@media (prefers-reduced-motion:reduce){.hoja-sheet.is-out,.hoja-sheet.is-in{animation:none}}
-@media (max-width:760px){
-  .hoja-copy{gap:16px}
-  .hoja-copy .pt-print{padding:12px 12px 10px}
-  .hoja-copy .pt-print-note{display:none}
-  .hoja-copy .pt-print-set{display:grid;grid-template-columns:1fr 1fr;gap:4px}
-  .hoja-copy .pt-print-set legend{grid-column:1/-1}
-  .hoja-copy .pt-radio{padding:6px 4px}
-  .hoja-copy .pt-radio b{font-size:13.5px}
-  .hoja-copy .pt-radio small{font-size:12px}
-}
-/* Local (2026-10-12.8): el muelle de pteron con el aviso de privacidad, editable, en lugar del recorte de captura */
-.local-visual:has(.pt-gate){min-height:0;display:grid;justify-items:end}
-.local-visual>.pt-gate{position:relative}
-@media (max-width:999px){.local-visual:has(.pt-gate){justify-items:start}}

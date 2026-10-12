@@ -40,7 +40,7 @@ const KEEP = new RegExp(
       "shell-corner-controls", "footer-right", "footer-circle-btn", "home-", "type-tile", "filter-bar", "filter-field",
       "composer", "context-select", "chat-", "message", "material-card", "quiet-action", "btn\\b", "btn-",
       "activity-mark", "run-details-toggle", "run-step", "pteron-icon", "workspace-surface", "workspace-main", "md-body",
-      "md-chat", "live-", "contextual-suggestion", "icon-action",
+      "md-chat", "live-", "contextual-suggestion", "icon-action", "privacy-consent",
     ].join("|") +
     ")",
 );
@@ -154,7 +154,7 @@ try {
 } catch {
   origin = "sin git";
 }
-const header = `/* pteron · la interfaz de la app (${origin}), regla por regla, para dibujar su ventana en la web.
+const header = `/* pteron · la interfaz de la app (${origin}), regla por regla, para dibujar su ventana y sus piezas en la web.
    Generado por scripts/pteron-app-css.mjs desde src/renderer/src (styles.css, meridian-office.css, pteron.css,
    ui/controls.css, composer.css, chat.css) acotado a .pt-app; vw y vh fijados a una ventana de 1440 × 880.
    No editar a mano: se regenera con cada versión de pteron. Letras: IBM Plex (OFL 1.1, /assets/fonts). */

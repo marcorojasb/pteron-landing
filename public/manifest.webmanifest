@@ -1,10 +1,12 @@
 {
-  "name": "pteron — Un espacio de trabajo para docentes",
+  "name": "pteron",
   "short_name": "pteron",
+  "description": "Construido por profes, para profes.",
+  "lang": "es-CL",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f7f3ec",
-  "theme_color": "#10243b",
+  "background_color": "#E9EDF1",
+  "theme_color": "#E9EDF1",
   "icons": [
     {"src": "/assets/app-icon-v2.png", "sizes": "512x512", "type": "image/png"},
     {"src": "/assets/apple-touch-icon-v2.png", "sizes": "180x180", "type": "image/png"}

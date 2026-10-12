@@ -13,9 +13,11 @@
   letter-spacing:normal;word-spacing:normal;text-transform:none;text-rendering:auto;font-style:normal;font-variant:normal;
   font-feature-settings:normal;text-shadow:none;white-space:normal;-webkit-font-smoothing:antialiased}
 .pt-app .app-shell{min-height:880px;height:880px}
+/* Una pieza suelta de la app (el aviso de datos de estudiantes): la misma raíz, sin el tamaño de la ventana */
+.pt-app.pt-pieza{width:auto;height:auto;overflow:visible;padding:16px;border-radius:14px}
 /* El wordmark. «Iowan Old Style» es una letra de macOS que la web no puede cargar; su contorno exacto se tomó de
    una captura sin pérdida de pteron en Mac (docs/evidencia/capturas, a 2×, separando la tinta del degradado conocido)
-   y va como un SVG dentro del h1 (pteron-ui.js), pintado con el mismo degradado de la app sobre la caja del h1.
+   y va como un SVG dentro del h1 (pteron-ventana.js), pintado con el mismo degradado de la app sobre la caja del h1.
    El h1 conserva su máscara de desvanecido; su fondo, que la app recorta a las letras, queda fuera. Medidas en em
    del h1 (244,8 px en la ventana): centro de tinta 0,0388 em a la derecha del centro de la caja, línea base a
    0,8575 em del borde superior; la caja toma el ancho de la corrida en Iowan para que nada se recorte. */

@@ -9,33 +9,44 @@ Worker, desde este repositorio en GitHub.
 
 - `public/`: la web tal como se publica. Cloudflare la sirve directamente, con
   URLs limpias y sin barra final.
-  - `index.html`: landing principal.
+  - `index.html`: el inicio. Láminas antiguas que flotan; al bajar, cada una se
+    da vuelta y aterriza sobre su figura en hojas armadas con el código de pteron.
+    Siguen «Cómo se pide» (la ventana de pteron), la hoja en sus dos versiones,
+    el aviso de datos de estudiantes y la descarga.
   - `planes/index.html`: planes, precios y funcionamiento de las licencias.
   - `cuenta/`: cuenta web, acceso por enlace mágico, checkout y activación.
-  - `descargar/`: descargas por plataforma y clave pública de firmas.
+  - `descargar/`: descargas por plataforma, firmas y clave pública.
   - `docs/`: documentación en una sola página; `docs/data/releases.json` es el
     catálogo de versiones que mantiene el workflow.
   - `admin/`: panel interno de cuentas, cortesías, consumo de IA y planes;
     reutiliza la sesión de `/cuenta` y sólo entra quien figura en `ADMIN_EMAILS`.
-  - `styles.css`: el sistema visual compartido; `inicio.css`, `legal.css`,
-    `planes/planes.css`, `descargar/descargar.css`, `cuenta/cuenta.css`,
-    `admin/admin.css` y `docs/styles.css` son las hojas propias de cada página.
-  - `script.js`: menú móvil, cabecera que se vuelve píldora, apariciones,
-    parallax, película con scroll, vídeo de fondo y aurora generativa, todo con
-    `prefers-reduced-motion`; `cuenta/cuenta.js`, `admin/admin.js` y
-    `descargar/download.js` son los scripts de página.
+  - `privacidad.html` (con los créditos), `terminos.html` y `404.html`.
+  - `styles.css`: el sistema compartido (letras, colores, botones, la esquina,
+    el índice y el colofón); `inicio.css`, `legal.css`, `planes/planes.css`,
+    `descargar/descargar.css`, `cuenta/cuenta.css`, `admin/admin.css` y
+    `docs/styles.css` son las hojas propias de cada página.
+  - `script.js`: el índice que sale de la esquina, Descargar con la plataforma
+    del visitante, la versión publicada, el año y los botones de copiar;
+    `inicio.js` mueve las láminas y las hojas, y `cuenta/cuenta.js`,
+    `admin/admin.js`, `descargar/download.js` y `docs/app.js` son los scripts
+    de página.
+  - `pteron-ventana.js`: las plantillas y la secuencia de la ventana de pteron,
+    con el reconocimiento del pedido y el aviso de datos de estudiantes de la
+    app. `pteron-app.css` son las reglas de la app acotadas a `.pt-app` y
+    `pteron-hoja.css` las de las hojas de Write acotadas a `.pteron-document`;
+    las dos se generan (ver Scripts) y no se editan a mano.
   - `release-data.js`: selección semver de la última versión completa a partir
     del JSON incluido y la API pública de GitHub. No contiene ninguna versión
     escrita a mano: si no hay datos, la web no anuncia versión y enlaza a las
     versiones publicadas.
   - `_headers`: cabeceras de seguridad y caché de `assets/`.
-  - `assets/app/`: capturas reales de pteron 0.7 (1x, `-2x` y `-marco` con el
-    marco de ventana real) y `LEEME.md` con su uso; `assets/docs/`: capturas de
-    la documentación; `assets/photos/`, `assets/video/`, `assets/atlas/` y
-    `assets/arte/`: fotografías, vídeos, baldosas del atlas de asignaturas y
-    piezas generativas, con sus licencias en `assets/photos/CREDITOS.md`
-    (los créditos visibles van en el pie de cada página y en `/privacidad`).
-  - `assets/icons.svg`: sprite de iconos; favicons y `og-pteron-v4.jpg`.
+  - `assets/atlas/`: recortes de láminas de dominio público y piezas propias;
+    sus créditos están en `/privacidad#creditos`. `assets/app/` y
+    `assets/docs/`: capturas reales de pteron para la documentación.
+  - `assets/fonts/`: Archivo, Outfit, Playwrite CL e IBM Plex, con sus
+    licencias; `assets/marca.svg`: el contorno de la marca «pteron»;
+    `assets/pt-icons.svg`: los iconos Lucide de la app; favicons y
+    `og-pteron-v5.jpg`.
 - `src/worker.js`: el Worker. Atiende `/api/*` y reescribe `/docs/:slug` a la
   página de documentación; todo lo demás lo sirven los assets.
   - `src/lib/`: ayudantes HTTP, cliente de Supabase, cliente de Flow, firma y
@@ -52,27 +63,49 @@ Worker, desde este repositorio en GitHub.
 - `scripts/`: sincronización de versiones, capturas, comprobaciones y la prueba
   de humo contra `wrangler dev` (`scripts/smoke.mjs`), que cubre lo que las
   pruebas unitarias no ven: URLs limpias, 404, cabeceras y navegaciones reales.
+  Además, los generadores del sitio:
+  - `sitio.mjs` escribe la esquina, el colofón y el índice en cada página
+    (`--revisar` sólo comprueba que estén al día; lo usa una prueba).
+  - `pteron-hojas.mjs <ruta de pteron>` arma las hojas del inicio con el código
+    de Write de pteron y las figuras de su motor, y escribe las láminas, las
+    hojas y `pteron-hoja.css`. Necesita el repositorio de pteron y sus paquetes
+    (jsdom, @xmldom/xmldom, temml y mathml2omml) en su `node_modules` o en la
+    carpeta que indique `PTERON_DEPS`. Los materiales y las láminas viven en
+    `scripts/pteron-hojas/materiales.mjs`.
+  - `pteron-ventana.mjs` escribe la ventana en reposo con las plantillas de
+    `pteron-ventana.js`, y `pteron-app-css.mjs` extrae y acota las reglas de la
+    app a `pteron-app.css`.
 - `wrangler.jsonc`: configuración del Worker, los assets y las variables públicas.
 - `design-qa.md`: registro de verificación visual y decisiones de interfaz.
 
 ## Sistema visual
 
-Sistema «La hora azul»: fotografía del sur de Chile y timelapses de Atacama al
-anochecer, la ventana real de pteron 0.7 como protagonista, baldosas del atlas de
-asignaturas (láminas y mapas de dominio público, texturas propias) y movimiento
-ligado al scroll. Tokens en `styles.css`: noche (`--night`, `--vault`), papel
-(`--paper`, `--snow`), tinta (`--ink`) y ámbar (`--ember`).
+Sistema «La lámina y la figura». La página es una hoja sobre la mesa de pteron:
+el gris `--mesa` (#E9EDF1) es el que pone la app detrás de sus hojas, y la tinta
+(`--tinta`) y el azul (`--azul`) son los de sus materiales. El amarillo lápiz
+(`--lapiz`) es sólo para la acción principal.
 
-Tipografía: **Newsreader** para titulares, **Geist** para interfaz y cuerpo,
-**Geist Mono** sólo para datos técnicos. Sin cursivas salvo el wordmark. Sin
-píldoras de estado con punto ni avisos con borde izquierdo. Todo asset propio
-lleva `?v=<fecha>` para invalidar la caché; al cambiar hojas, scripts o
-imágenes se sube la versión en todas las páginas.
+Una sola familia para el sitio, **Archivo** (variable en ancho y peso), con la
+jerarquía hecha por ancho y peso. La marca «pteron» no se escribe con una letra:
+se dibuja con su contorno (`assets/marca.svg`). Las hojas usan las letras de los
+materiales de pteron (Outfit y Playwrite CL) y la ventana las de la app (IBM
+Plex). Sin cursivas.
 
-Verificación visual: capturas de las nueve páginas a 1440 y 390 px, en claro y
-oscuro, con y sin JavaScript y con movimiento reducido; sin desborde
-horizontal, sin errores de consola, hooks de los scripts intactos y peso del
-inicio por debajo de 2,5 MB. El registro vive en `design-qa.md`.
+Sin barra superior: abajo a la derecha, Descargar y la esquina doblada de la
+hoja, que abre el índice del sitio; el colofón lleva lo mismo al final de cada
+página. Si se muestra la interfaz de pteron, es la de la app: la ventana se
+dibuja con sus reglas (`pteron-app.css`) y las hojas con el código de Write.
+
+Movimiento: las láminas flotan y se dan vuelta al pasar el puntero (o al
+tocarlas); con el desplazamiento vuelan a sus figuras mientras las hojas se
+imprimen. Con `prefers-reduced-motion` todo queda quieto y legible, y sin
+JavaScript la página muestra las hojas y la ventana terminadas.
+
+Todo asset propio lleva `?v=<revisión>` para invalidar la caché (`assets/` se
+sirve como inmutable); al cambiar hojas, scripts o imágenes se sube la revisión
+en todas las páginas. Verificación visual: capturas de las páginas a 1440 y
+390 px, con y sin JavaScript y con movimiento reducido; sin desborde horizontal
+ni errores de consola. El registro vive en `design-qa.md`.
 
 ## Arquitectura
 

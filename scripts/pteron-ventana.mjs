@@ -1,8 +1,8 @@
 /**
  * Escribe en public/index.html la ventana de pteron en reposo (la Home), con las mismas plantillas que usa
- * public/pteron-ui.js para la secuencia del héroe: una sola fuente para el marcado de la ventana.
+ * public/pteron-ventana.js para la secuencia de «Cómo se pide»: una sola fuente para el marcado de la ventana.
  *
- *   node scripts/pteron-window.mjs
+ *   node scripts/pteron-ventana.mjs
  *
  * El HTML queda entre <!-- ventana:inicio --> y <!-- ventana:fin -->. Sin JavaScript o con movimiento reducido,
  * la página ya muestra la ventana; la secuencia la toma desde ahí.
@@ -15,12 +15,12 @@ const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..")
 const indexPath = path.join(root, "public/index.html");
 const html = readFileSync(indexPath, "utf8");
 const icons = /data-pt-icons="([^"]+)"/.exec(html)?.[1];
-if (!icons) throw new Error("index.html no declara data-pt-icons en la escena del héroe");
+if (!icons) throw new Error("index.html no declara data-pt-icons en la ventana");
 
 // Un navegador mínimo: sin elementos en el documento, cada sección del script termina sin hacer nada
 const window = { matchMedia: () => ({ matches: false, addEventListener() {} }) };
 const document = { querySelector: () => null, querySelectorAll: () => [], addEventListener() {} };
-vm.runInNewContext(readFileSync(path.join(root, "public/pteron-ui.js"), "utf8"), { window, document, console });
+vm.runInNewContext(readFileSync(path.join(root, "public/pteron-ventana.js"), "utf8"), { window, document, console });
 window.pteronUI.window.setIcons(icons);
 const markup = window.pteronUI.window.html({ final: false });
 

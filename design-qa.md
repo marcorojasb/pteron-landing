@@ -349,3 +349,34 @@ Target: `/docs/?pagina=versiones` y `/descargar/`.
   contenido queda visible; inicio 1,2 MB iniciales a 1440.
 - Pendiente: probar la película con scroll en Safari e iOS (ruta Blob), que no
   se puede ejecutar en el entorno de pruebas.
+
+## 2026-10-12 · «La lámina y la figura»: la web rehecha desde cero
+
+- Concepto: las láminas del atlas (recortes de dominio público y tres piezas
+  propias) flotan al cargar; al pasar el puntero o tocarlas se dan vuelta y
+  muestran una figura de pteron. Con el desplazamiento vuelan y calzan sobre esa
+  figura en cuatro hojas oficio que se imprimen; las demás se retiran. Las hojas
+  las arma el código de Write de pteron y las figuras su motor
+  (`scripts/pteron-hojas.mjs`), así que el material que se ve es el que produce
+  la app.
+- Sistema nuevo: la mesa de pteron (#E9EDF1) como fondo, Archivo variable para
+  todo el sitio y la marca dibujada con su contorno (sin la letra de la marca en
+  el resto del sitio). Sin barra superior: Descargar y una esquina doblada que
+  abre el índice; colofón común en todas las páginas (`scripts/sitio.mjs`).
+- Páginas rehechas: inicio, planes, descargar, cuenta, documentación,
+  privacidad (con créditos lámina por lámina), términos, 404 y administración.
+  Los hooks de `cuenta.js`, `download.js`, `docs/app.js` y `admin.js` se
+  conservan; `docs/app.js` cambia sólo su marcado y ahora respeta un ancla al
+  llegar.
+- Verificación: `npm run verify` completo (sintaxis, empaquetado en seco, 114
+  pruebas y humo contra `wrangler dev`). Capturas a 1440 × 900 y 390 × 844 de
+  todas las páginas, sin desborde horizontal ni errores de consola; la escena
+  del inicio revisada en siete puntos del desplazamiento en escritorio y seis
+  en móvil, más la secuencia de la ventana, las dos versiones de la hoja, el
+  aviso de datos, el índice (abre, Escape cierra y devuelve el foco), sin
+  JavaScript y con movimiento reducido. Cuenta (plan en prueba, activación
+  pendiente) y administración (resumen, detalle, consumo) probadas con la API
+  simulada. Contraste: texto informativo en `--grafito` (4,6:1 sobre la mesa) y
+  `--suave` subido a #68778C (4,6:1 sobre blanco).
+- Pendiente: revisar en Safari e iOS reales el vuelo de las láminas (el
+  entorno de pruebas sólo tiene Chromium).

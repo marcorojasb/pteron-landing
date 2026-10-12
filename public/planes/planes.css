@@ -1,43 +1,39 @@
-/* pteron · Planes (2026-10-12.5). Sólo lo propio de /planes; el resto es styles.css. */
+/* pteron · planes (2026-10-12.9): una sola hoja con tres columnas, no tres tarjetas */
+.tarifa{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--hoja);border-radius:6px;
+  box-shadow:0 1px 2px rgb(var(--sombra)/.08),0 30px 60px -36px rgb(var(--sombra)/.45)}
+.plan{display:flex;flex-direction:column;gap:14px;padding:clamp(24px,3vw,40px)}
+.plan+.plan{border-left:var(--borde) solid var(--regla)}
+.plan h2{font-size:clamp(1.5rem,1.2rem + 1vw,2rem);font-stretch:110%}
+.plan-precio{font-size:clamp(2.2rem,1.6rem + 2vw,3.2rem);font-weight:780;font-stretch:112%;letter-spacing:-.025em;line-height:1;color:var(--tinta);
+  font-variant-numeric:tabular-nums}
+.plan-precio small{font-size:.9375rem;font-weight:550;font-stretch:100%;letter-spacing:0;color:var(--grafito)}
+.plan-condicion{min-height:3em;color:var(--grafito);font-size:var(--t-chico)}
+.plan-marca{display:inline-block;margin-right:6px;padding:1px 9px;border-radius:999px;background:var(--lapiz);color:var(--azul-hondo);font-weight:700;
+  font-size:.8125rem}
+.plan-accion{align-self:flex-start}
+.plan-incluye{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:0}
+.plan-incluye li{position:relative;padding:10px 0 10px 22px;border-top:var(--borde) solid var(--regla);font-size:var(--t-chico);color:var(--tinta)}
+.plan-incluye li::before{content:"";position:absolute;left:2px;top:1.05em;width:9px;height:5px;border-left:2px solid var(--azul);border-bottom:2px solid var(--azul);
+  transform:rotate(-45deg)}
+.plan-nota{margin-top:auto;padding-top:10px;font-size:.875rem;color:var(--suave)}
+.tarifa-pie{max-width:76ch;margin-top:18px;font-size:.875rem;color:var(--grafito)}
+sup{font-size:.7em;line-height:0}
 
-/* Héroe compacto: los precios entran en el primer pantallazo (.band gana a la vecindad con .sheet) */
-.band.planes-hero{padding-top:clamp(104px,8vw,114px);padding-bottom:calc(clamp(56px,6vw,88px) + var(--r-sheet))}
-.planes-hero .page-hero-copy{gap:18px}
-.planes-hero h1{max-width:none}
-.planes-hero .lead{max-width:32em}
-.planes-hero .band-shade{background:radial-gradient(74% 40% at 50% 23%,#07090db8,#07090d4d 74%,transparent),linear-gradient(180deg,#07090dc7,#07090d40 20%,#07090d2e 36%,#07090d8c 54%,#07090deb 72%,#07090d)}
-.planes-hero .statusbar{margin-top:2px;text-shadow:0 1px 14px #05090fd9}
-.planes-offer{margin-top:clamp(36px,3.2vw,44px)}
-.planes-hero .plan{box-shadow:0 0 0 1px #ffffff26,0 2px 6px #0000002e,0 44px 90px -40px #000000c7}
-.planes-hero .plan.is-featured{box-shadow:inset 0 1px 0 #ffffff1f,0 0 0 1px #f6c48a61,0 0 0 7px #e9a25b12,0 44px 100px -36px #e9a25b61}
-.planes-fine{margin:34px auto 0;text-align:center;color:#b9bdc4}
+.preguntas{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr);gap:clamp(24px,5vw,72px);padding-block:clamp(72px,10vw,128px) clamp(56px,8vw,96px)}
+.preguntas-cabeza{display:grid;gap:16px;align-content:start}
+.preguntas-lista details{border-top:var(--borde) solid var(--linea)}
+.preguntas-lista details:last-child{border-bottom:var(--borde) solid var(--linea)}
+.preguntas-lista summary{display:flex;justify-content:space-between;gap:16px;align-items:center;min-height:56px;padding:14px 2px;cursor:pointer;list-style:none;
+  font-weight:650;font-size:1.0625rem;color:var(--tinta)}
+.preguntas-lista summary::-webkit-details-marker{display:none}
+.preguntas-lista summary::after{content:"";flex:none;width:10px;height:10px;border-right:2px solid var(--azul);border-bottom:2px solid var(--azul);
+  transform:rotate(45deg) translate(-2px,-2px);transition:transform .25s var(--curva)}
+.preguntas-lista details[open] summary::after{transform:rotate(-135deg) translate(-2px,-2px)}
+.preguntas-lista details p{max-width:62ch;padding:0 2px 18px;color:var(--grafito)}
 
-/* Comparación: Basic es una columna continua */
-
-/* Licencia: aurora que deriva despacio (quieta con movimiento reducido) y tres ventanas bajo el cielo austral (textura propia) */
-@keyframes planes-drift{to{transform:translate3d(8%,6%,0) scale(1.16)}}
-
-/* Cierre: la ventana real de Write sube desde el borde de la banda */
-.planes-close .band-shade{background:radial-gradient(70% 52% at 50% 30%,#07090dd1,#07090d73 70%,transparent),linear-gradient(180deg,#07090df2,#07090d8c 26%,#07090d33 52%,#07090d66 78%,#07090de6)}
-.planes-close .head .lead{color:#dcdad5;text-shadow:0 1px 14px #07090de6}
-.planes-close-actions{justify-content:center;gap:16px 28px;margin-top:8px}
-.planes-os{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 26px;margin-top:6px;color:var(--snow-2);font-size:14px}
-.planes-os li{display:inline-flex;align-items:center;gap:8px}
-.planes-os .icon{width:17px;height:17px}
-
-/* Encabezado fijo (sistema): la columna destacada conserva su filete ámbar al quedar fija */
-@media (min-width:761px){
-}
-
-/* Tres columnas: Basic sobresale arriba y abajo; flechas entre pasos */
-@media (min-width:1025px){
-.planes-hero .plan.is-featured{margin-block:-18px;padding-block:26px}
-}
-
-/* Tableta: los pasos de licencia en filas (ventana y texto) sobre el cielo austral */
-@media (min-width:761px) and (max-width:1024px){
-}
-
-@media (max-width:760px){
-.band.planes-hero{padding-top:100px}
+@media (max-width:900px){
+  .tarifa{grid-template-columns:minmax(0,1fr)}
+  .plan+.plan{border-left:0;border-top:var(--borde) solid var(--regla)}
+  .plan-condicion{min-height:0}
+  .preguntas{grid-template-columns:minmax(0,1fr)}
 }

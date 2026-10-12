@@ -1,4 +1,4 @@
-/* pteron · la interfaz de la app (2ee95c7, 2026-10-10), regla por regla, para dibujar su ventana en la web.
+/* pteron · la interfaz de la app (2ee95c7, 2026-10-10), regla por regla, para dibujar su ventana y sus piezas en la web.
    Generado por scripts/pteron-app-css.mjs desde src/renderer/src (styles.css, meridian-office.css, pteron.css,
    ui/controls.css, composer.css, chat.css) acotado a .pt-app; vw y vh fijados a una ventana de 1440 × 880.
    No editar a mano: se regenera con cada versión de pteron. Letras: IBM Plex (OFL 1.1, /assets/fonts). */
@@ -211,6 +211,13 @@ background var(--mo-xs) var(--ease-inout);}
 .pt-app .workspace-surface .canvas-layout{flex: 1;min-height: 0;height: auto;}
 .pt-app .canvas-pane,.pt-app .workspace-main{position: relative;}
 .pt-app .workspace-surface .source-panel{position: absolute;top: 0;right: 0;bottom: 0;width: min(340px, 1267.2px);z-index: 30;border-left: 1px solid var(--pteron-line);background: var(--pteron-paper);box-shadow: -18px 0 52px rgb(15 34 56 / 0.12);}
+.pt-app .privacy-consent{margin: 0 0 12px;padding: 14px 16px;border-radius: 12px;background: color-mix(in srgb, #8a5a12 12%, var(--pteron-surface));border: 1px solid color-mix(in srgb, #8a5a12 28%, transparent);}
+.pt-app .privacy-consent h2{margin: 0 0 6px;font-size: 16px;}
+.pt-app .privacy-consent p{margin: 0 0 8px;color: var(--pteron-text);}
+.pt-app .privacy-consent-hints{font-size: 13px;color: var(--pteron-muted);}
+.pt-app .privacy-consent-preview{margin: 8px 0 12px;font-size: 12px;}
+.pt-app .privacy-consent-preview pre{white-space: pre-wrap;margin: 8px 0 0;max-height: 140px;overflow: auto;padding: 8px;border-radius: 8px;background: var(--pteron-surface);}
+.pt-app .privacy-consent-actions{display: flex;flex-wrap: wrap;gap: 8px;align-items: center;}
 .pt-app .assistant-suggestion .btn-aplicar{justify-self: end;}
 @media (prefers-reduced-motion:reduce){.pt-app .session-tab-close{animation: none;transition: none;}
 .pt-app .home-surface,.pt-app .home-hero,.pt-app .startup-brand,.pt-app .startup-transition-layer,.pt-app .workspace-surface,.pt-app .type-tiles,.pt-app .type-tile::before,.pt-app .type-tile-hint,.pt-app .filter-field,.pt-app .home-composer,.pt-app .home-quiet-row,.pt-app .home-reserve,.pt-app .contextual-suggestion{animation: none !important;transition: none !important;}
@@ -761,9 +768,11 @@ color var(--mo-xs) var(--ease-inout);}
   letter-spacing:normal;word-spacing:normal;text-transform:none;text-rendering:auto;font-style:normal;font-variant:normal;
   font-feature-settings:normal;text-shadow:none;white-space:normal;-webkit-font-smoothing:antialiased}
 .pt-app .app-shell{min-height:880px;height:880px}
+/* Una pieza suelta de la app (el aviso de datos de estudiantes): la misma raíz, sin el tamaño de la ventana */
+.pt-app.pt-pieza{width:auto;height:auto;overflow:visible;padding:16px;border-radius:14px}
 /* El wordmark. «Iowan Old Style» es una letra de macOS que la web no puede cargar; su contorno exacto se tomó de
    una captura sin pérdida de pteron en Mac (docs/evidencia/capturas, a 2×, separando la tinta del degradado conocido)
-   y va como un SVG dentro del h1 (pteron-ui.js), pintado con el mismo degradado de la app sobre la caja del h1.
+   y va como un SVG dentro del h1 (pteron-ventana.js), pintado con el mismo degradado de la app sobre la caja del h1.
    El h1 conserva su máscara de desvanecido; su fondo, que la app recorta a las letras, queda fuera. Medidas en em
    del h1 (244,8 px en la ventana): centro de tinta 0,0388 em a la derecha del centro de la caja, línea base a
    0,8575 em del borde superior; la caja toma el ancho de la corrida en Iowan para que nada se recorte. */

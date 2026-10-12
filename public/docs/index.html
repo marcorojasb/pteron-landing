@@ -1,159 +1,139 @@
 <!doctype html>
-<html lang="es-CL">
+<html lang="es-CL" class="no-js">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Documentación — pteron</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Documentación · pteron</title>
   <meta name="description" content="Instalación, primera apertura, planificar, crear, evaluar y adaptar con pteron. Requisitos, privacidad y versiones.">
-  <meta name="theme-color" content="#07090d">
-  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#E9EDF1">
+  <meta name="color-scheme" content="light">
   <link rel="canonical" href="https://pteron.patagua.dev/docs">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_CL">
   <meta property="og:site_name" content="pteron">
-  <meta property="og:title" content="Documentación — pteron">
-  <meta property="og:description" content="Instalación, primera apertura, planificar, crear, evaluar y adaptar con pteron. Requisitos, privacidad y versiones.">
+  <meta property="og:title" content="Documentación · pteron">
+  <meta property="og:description" content="Instalación, primera apertura, planificar, crear, evaluar y adaptar con pteron.">
   <meta property="og:url" content="https://pteron.patagua.dev/docs">
-  <meta property="og:image" content="https://pteron.patagua.dev/assets/og-pteron-v4.jpg">
-  <meta property="og:image:secure_url" content="https://pteron.patagua.dev/assets/og-pteron-v4.jpg">
+  <meta property="og:image" content="https://pteron.patagua.dev/assets/og-pteron-v5.jpg">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="pteron: construido por profes, para profes">
+  <meta property="og:image:alt" content="Láminas antiguas recortadas junto a la marca pteron: construido por profes, para profes">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Documentación — pteron">
-  <meta name="twitter:description" content="Instalación, primera apertura, planificar, crear, evaluar y adaptar con pteron. Requisitos, privacidad y versiones.">
-  <meta name="twitter:image" content="https://pteron.patagua.dev/assets/og-pteron-v4.jpg">
-  <meta name="twitter:image:alt" content="pteron: construido por profes, para profes">
+  <meta name="twitter:image" content="https://pteron.patagua.dev/assets/og-pteron-v5.jpg">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-v2-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-v2-16.png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v2.png">
   <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..600&amp;family=Geist+Mono:wght@400;500&amp;family=Newsreader:opsz,wght@6..72,300..500&amp;display=swap">
-  <script>document.documentElement.classList.add("js")</script>
-  <link rel="stylesheet" href="/styles.css?v=2026-10-12.8">
-  <link rel="stylesheet" href="/docs/styles.css?v=2026-10-12.8">
-  <script src="/release-data.js?v=2026-10-12.8" defer></script>
-  <script src="/script.js?v=2026-10-12.8" defer></script>
-  <script src="/docs/content.js?v=2026-10-12.8" defer></script>
-  <script src="/docs/app.js?v=2026-10-12.8" defer></script>
+  <script>document.documentElement.classList.replace("no-js", "js");</script>
+  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-12.9" crossorigin>
+  <link rel="stylesheet" href="/styles.css?v=2026-10-12.9">
+  <link rel="stylesheet" href="/docs/styles.css?v=2026-10-12.9">
+  <script src="/release-data.js?v=2026-10-12.9" defer></script>
+  <script src="/script.js?v=2026-10-12.9" defer></script>
+  <script src="/docs/content.js?v=2026-10-12.9" defer></script>
+  <script src="/docs/app.js?v=2026-10-12.9" defer></script>
 </head>
-<body>
-  <a class="skip-link" href="#contenido">Saltar al contenido</a>
-  <a class="skip-link" href="#articulo">Saltar al artículo</a>
-
-  <header class="nav nav--solid" data-nav>
-    <div class="nav-bar">
-      <a class="wordmark" href="/" aria-label="pteron, inicio">pteron</a>
-      <nav class="nav-links" aria-label="Principal">
-        <a href="/docs" aria-current="page">Documentación</a>
-        <a href="/planes">Planes</a>
-        <a href="/cuenta">Cuenta</a>
-      </nav>
-      <div class="nav-end">
-        <a class="button button-light button-small nav-cta" href="/descargar"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-download"/></svg>Descargar</a>
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú" data-menu-button><span></span><span></span></button>
-      </div>
-    </div>
-    <div class="nav-menu" id="menu" hidden data-menu>
-      <nav aria-label="Principal">
-        <ul>
-          <li><a href="/docs" aria-current="page">Documentación<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-arrow"/></svg></a></li>
-          <li><a href="/planes">Planes<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-arrow"/></svg></a></li>
-          <li><a href="/cuenta">Cuenta<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-arrow"/></svg></a></li>
-        </ul>
-      </nav>
-      <a class="button button-ember button-large button-block" href="/descargar"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-download"/></svg>Descargar gratis</a>
-      <p class="nav-menu-note">Beta pública · macOS, Windows y Linux</p>
-    </div>
-  </header>
-
+<body class="docs-pagina">
+  <a class="saltar" href="#articulo">Saltar al artículo</a>
+  <!-- esquina:inicio -->
+  <nav class="esquina" aria-label="Sitio">
+    <a class="boton boton-principal esquina-descargar" href="/descargar" data-descargar>Descargar</a>
+    <a class="oreja" href="#colofon" data-indice aria-label="Índice del sitio"><span class="oreja-hoja" aria-hidden="true"></span><span class="oreja-pliegue" aria-hidden="true"></span><span class="oreja-texto" aria-hidden="true">Índice</span></a>
+  </nav>
+  <!-- esquina:fin -->
 
   <!-- Buscador: paleta sobre la página (⌘K o Ctrl K); app.js la abre, filtra y cierra -->
-  <div class="docs-search" id="docs-search-panel" role="dialog" aria-modal="true" aria-label="Buscar en la documentación" data-search-panel hidden>
-    <div class="docs-search-field" role="search">
-      <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-search"/></svg>
+  <div class="docs-buscador" id="docs-buscador" role="dialog" aria-modal="true" aria-label="Buscar en la documentación" data-search-panel hidden>
+    <div class="docs-buscador-campo" role="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <label class="sr-only" for="docs-search">Buscar en la documentación</label>
       <input id="docs-search" data-search type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="docs-search-results" autocomplete="off" spellcheck="false" placeholder="Instalación, guías, privacidad…">
       <kbd aria-hidden="true">Esc</kbd>
     </div>
-    <div class="docs-search-results" id="docs-search-results" role="listbox" aria-label="Resultados" data-search-results hidden></div>
+    <div class="docs-buscador-resultados" id="docs-search-results" role="listbox" aria-label="Resultados" data-search-results hidden></div>
     <p class="sr-only" role="status" data-search-status></p>
-    <p class="docs-search-foot" aria-hidden="true"><span><kbd>↑</kbd><kbd>↓</kbd>para moverte</span><span><kbd>↵</kbd>para abrir</span><span><kbd>Esc</kbd>para cerrar</span></p>
+    <p class="docs-buscador-pie" aria-hidden="true"><span><kbd>↑</kbd><kbd>↓</kbd>para moverte</span><span><kbd>↵</kbd>para abrir</span><span><kbd>Esc</kbd>para cerrar</span></p>
   </div>
 
-  <main id="contenido" class="sheet sheet-page docs">
-    <div class="wrap docs-layout">
-      <div class="docs-side" data-sidebar>
-        <div class="docs-bar">
+  <main id="contenido" class="docs">
+    <div class="docs-rejilla">
+      <div class="docs-lado" data-sidebar>
+        <div class="docs-marca">
+          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.9#pteron"/></svg></a>
+          <a class="docs-titulo" href="/docs">Documentación</a>
+        </div>
+        <div class="docs-barra">
           <button class="docs-menu" type="button" data-nav-toggle aria-expanded="false" aria-controls="docs-indice" aria-label="Menú de la documentación">Menú</button>
-          <button class="docs-find" type="button" data-search-toggle aria-expanded="false" aria-controls="docs-search-panel" aria-label="Buscar en la documentación" aria-keyshortcuts="Meta+K Control+K">
-            <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-search"/></svg>
+          <button class="docs-buscar" type="button" data-search-toggle aria-expanded="false" aria-controls="docs-buscador" aria-label="Buscar en la documentación" aria-keyshortcuts="Meta+K Control+K">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
             <span>Buscar</span>
             <kbd aria-hidden="true" data-platform="macos">⌘K</kbd><kbd aria-hidden="true" data-platform="windows">Ctrl K</kbd><kbd aria-hidden="true" data-platform="linux">Ctrl K</kbd>
           </button>
         </div>
-        <div class="docs-index" id="docs-indice">
+        <div class="docs-indice" id="docs-indice">
           <nav aria-label="Documentación" data-docs-nav></nav>
-          <p class="docs-beta"><span class="tag tag-ok">Beta pública</span><small>macOS serie M · Windows 11 · Linux x86_64</small></p>
+          <p class="docs-beta">Beta pública para macOS con Apple Silicon, Windows 11 y Linux x86_64.</p>
         </div>
       </div>
 
-      <article class="prose docs-article" id="articulo" tabindex="-1" data-article><noscript><div class="docs-noscript"><h1>Documentación</h1><p>Para leer la documentación, activa JavaScript en tu navegador. Si no puedes hacerlo, escríbenos a <a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a>.</p></div></noscript></article>
+      <article class="docs-hoja" id="articulo" tabindex="-1" data-article><noscript><div class="docs-sin-script"><h1>Documentación</h1><p>Para leer la documentación, activa JavaScript en tu navegador. Si no puedes hacerlo, escríbenos a <a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a>.</p></div></noscript></article>
 
       <div class="docs-toc">
-        <p class="docs-toc-title" id="docs-toc-title">En esta página</p>
-        <nav aria-labelledby="docs-toc-title" data-toc></nav>
+        <p class="rotulo" id="docs-toc-titulo">En esta página</p>
+        <nav aria-labelledby="docs-toc-titulo" data-toc></nav>
       </div>
     </div>
   </main>
 
-  <footer class="footer">
-    <div class="wrap">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <a class="wordmark" href="/">pteron</a>
-          <p>Construido por profes, para profes. Diseñado en Chile para el trabajo docente.</p>
+  <!-- colofon:inicio -->
+  <footer class="colofon" id="colofon">
+    <div class="contenedor">
+      <div class="colofon-rejilla">
+        <div>
+          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.9#pteron"/></svg></a>
+          <p class="colofon-lema">Construido por profes, para profes.</p>
+          <p class="colofon-lugar">Hecho en Chile.</p>
         </div>
-        <nav aria-labelledby="pie-producto">
-          <h2 id="pie-producto">Producto</h2>
+        <nav aria-label="Páginas">
           <ul>
-            <li><a href="/descargar">Descargar</a></li>
+            <li><a href="/">Inicio</a></li>
             <li><a href="/planes">Planes</a></li>
-            <li><a href="/cuenta">Cuenta</a></li>
+            <li><a href="/descargar">Descargar</a></li>
             <li><a href="/docs" aria-current="page">Documentación</a></li>
+            <li><a href="/cuenta">Cuenta</a></li>
           </ul>
         </nav>
-        <nav aria-labelledby="pie-ayuda">
-          <h2 id="pie-ayuda">Ayuda</h2>
-          <ul>
-            <li><a href="/docs?pagina=inicio">Primeros pasos</a></li>
-            <li><a href="/docs?pagina=preguntas">Preguntas frecuentes</a></li>
-            <li><a href="/docs?pagina=solucion-problemas">Solución de problemas</a></li>
-            <li><a href="/docs?pagina=versiones">Versiones</a></li>
-          </ul>
-        </nav>
-        <nav aria-labelledby="pie-patagua">
-          <h2 id="pie-patagua">Patagua</h2>
-          <ul>
-            <li><a href="/privacidad">Privacidad</a></li>
-            <li><a href="/terminos">Términos</a></li>
-            <li><a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></li>
-          </ul>
-        </nav>
+        <div class="colofon-creditos">
+          <p>Láminas de dominio público: Yciar (1564), Ercilla (1574), Hirschvogel (1543), Ovalle (1646), Westtown (1801), Byrne (1847), Gay (1854), Trouvelot (1875 y 1878), Haeckel (1904), una carta portulana de hacia 1500 y una fotografía de la NASA (2019). Las conservan The Metropolitan Museum of Art, la Library of Congress e Internet Archive.</p>
+          <p>Figuras y hojas: pteron. Créditos completos en <a href="/privacidad#creditos">Privacidad</a>.</p>
+        </div>
       </div>
-      <div class="footer-bottom">
-        <p>© <span data-year>2026</span> pteron · Patagua</p>
-        <p>Beta pública para macOS, Windows y Linux</p>
+      <div class="colofon-legal">
+        <span>© <span data-year>2026</span> pteron · Patagua</span>
+        <span><a href="/privacidad">Privacidad</a> · <a href="/terminos">Términos</a> · <a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></span>
       </div>
-      <details class="credits">
-        <summary>Créditos de imágenes y vídeo</summary>
-        <p>Fotografías de Wikimedia Commons: «<a href="https://commons.wikimedia.org/wiki/File:Atardecer_entre_Araucarias.jpg">Atardecer entre Araucarias</a>», Jclavero92 · «<a href="https://commons.wikimedia.org/wiki/File:Parque_Nacional_Nahuelbuta,_puesta_de_sol,_araucaria_2.jpg">Parque Nacional Nahuelbuta, puesta de sol</a>», Gonzalo Palacios · «<a href="https://commons.wikimedia.org/wiki/File:Parque_Nacional_Torres_del_Paine_-_XII_Region_de_Magallanes_y_la_Antartica_Chilena_-_Laguna_Cisnes_-_Almirante_Nieto.jpg">Laguna Cisnes, Almirante Nieto</a>», Ferna.mf · «<a href="https://commons.wikimedia.org/wiki/File:Macizo_Paine_al_Amanecer_Torres_del_Paine.jpg">Macizo Paine al Amanecer</a>», Natalia Reyes Escobar · «<a href="https://commons.wikimedia.org/wiki/File:Sunset_at_General_Carrera_Lake.jpg" lang="en">Sunset at General Carrera Lake</a>», Andreizaaa (<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">CC BY-SA 4.0</a>) · «<a href="https://commons.wikimedia.org/wiki/File:Working_on_a_planning_session_with_stationery_items,_notebook,_and_colorful_pencils_on_a_wooden_desk.jpg" lang="en">Planning session with stationery items</a>», Shixart1985 (<a href="https://creativecommons.org/licenses/by/2.0/deed.es">CC BY 2.0</a>). Vídeos: <a href="https://www.eso.org/public/videos/armazones-venusbelt/">ESO/M. Zamani</a> y <a href="https://www.eso.org/public/videos/pao-sunsetclouds/">ESO/B. Tafreshi</a> (<a href="https://creativecommons.org/licenses/by/4.0/deed.es">CC BY 4.0</a>), recortados y recodificados. Lista completa en <a href="/privacidad#creditos">Privacidad</a>.</p>
-      </details>
-      <p class="footer-mark" aria-hidden="true">pteron</p>
     </div>
   </footer>
+  <!-- colofon:fin -->
+  <!-- indice:inicio -->
+  <dialog class="indice" id="indice" aria-labelledby="indice-titulo">
+    <div class="indice-hoja">
+      <div class="indice-cabeza">
+        <h2 class="sr-only" id="indice-titulo">Índice</h2>
+        <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.9#pteron"/></svg></a>
+        <button class="indice-cerrar" type="button" data-indice-cerrar>Cerrar</button>
+      </div>
+      <ol class="indice-lista" role="list">
+        <li><a href="/">Inicio<span></span></a></li>
+        <li><a href="/planes">Planes<span></span></a></li>
+        <li><a href="/descargar">Descargar<span></span></a></li>
+        <li><a href="/docs" aria-current="page">Documentación<span></span></a></li>
+        <li><a href="/cuenta">Cuenta<span></span></a></li>
+      </ol>
+      <p class="indice-pie"><a href="/privacidad">Privacidad</a><a href="/terminos">Términos</a><a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></p>
+    </div>
+  </dialog>
+  <!-- indice:fin -->
 </body>
 </html>

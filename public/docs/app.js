@@ -11,7 +11,6 @@
   const searchPanel = document.querySelector("[data-search-panel]");
   const navToggle = document.querySelector("[data-nav-toggle]");
   const sidebar = document.querySelector("[data-sidebar]");
-  const year = document.querySelector("[data-year]");
   const allPages = docs.groups.flatMap(group =>
     group.pages.map(([slug, title]) => ({ slug, title, group: group.label }))
   );
@@ -28,20 +27,18 @@
   };
 
   const pageUrl = slug => slug === "inicio" ? "/docs" : `/docs?pagina=${encodeURIComponent(slug)}`;
-  // La marca va siempre en minúscula, también dentro de un rótulo en mayúsculas.
-  const brand = text => String(text).replace(/\bpteron\b/g, '<span class="wm">pteron</span>');
 
   const renderNav = active => {
     nav.innerHTML = docs.groups.map(group => `
       <section>
-        <h2>${brand(group.label)}</h2>
+        <h2>${group.label}</h2>
         ${group.pages.map(([slug, title]) =>
           `<a href="${pageUrl(slug)}"${slug === active ? ' class="is-active" aria-current="page"' : ""}>${title}</a>`
         ).join("")}
       </section>
     `).join("");
     // Si el índice tiene su propio desplazamiento, el enlace activo queda a la vista.
-    const scroller = nav.closest(".docs-index");
+    const scroller = nav.closest(".docs-indice");
     const current = nav.querySelector(".is-active");
     if (scroller && current && scroller.scrollHeight > scroller.clientHeight) {
       scroller.scrollTop += current.getBoundingClientRect().top - scroller.getBoundingClientRect().top - scroller.clientHeight / 2;
@@ -50,13 +47,14 @@
 
   let renderedSlug = "";
 
-  // Las guías de instalación abren con la misma franja de color por sistema que /descargar (.os-strip del sistema).
-  const platformStrip = ([variant, icon, caption]) => `
-        <figure class="os-strip os-${variant} docs-os" aria-hidden="true">
-          <span class="os-aurora"><span></span><span></span><span></span></span>
-          <span class="die-mark die-mark--strip"><span class="die-mark-plate"><span class="die-mark-core"><svg viewBox="0 0 24 24"><use href="/assets/icons.svg?v=2026-10-12.8#i-${icon}"/></svg></span></span></span>
-          <span class="os-strip-cap">${caption}</span>
-        </figure>`;
+  // Las guías de instalación abren con la ficha de su sistema, la misma fila que en /descargar.
+  const PLATAFORMAS = { mac: ["macos", "macOS con Apple Silicon"], win: ["windows", "Windows 11"], linux: ["linux", "Linux x86_64"] };
+  const platformCard = ([variant, , caption]) => {
+    const [id, name] = PLATAFORMAS[variant] || [];
+    if (!id) return "";
+    return `
+        <a class="docs-plataforma" href="/descargar#${id}"><strong>${name}</strong><span>${caption}</span><span class="docs-plataforma-accion">Ir a la descarga</span></a>`;
+  };
 
   let tocObserver = null;
 
@@ -244,22 +242,23 @@
     const page = docs.pages[resolvedSlug];
     if (push) history.pushState({ slug: resolvedSlug }, "", pageUrl(resolvedSlug));
     else if (resolvedSlug !== slug) history.replaceState({ slug: resolvedSlug }, "", pageUrl(resolvedSlug));
-    document.title = `${page.title} — pteron`;
+    document.title = `${page.title} · pteron`;
     article.innerHTML = `
-      <header class="article-header">
-        <p>${brand(page.eyebrow)}</p>
+      <header class="docs-cabeza">
+        <p>${page.eyebrow}</p>
         <h1>${page.title}</h1>
-        <div>${page.lead}</div>${page.platform ? platformStrip(page.platform) : ""}
+        <div>${page.lead}</div>${page.platform ? platformCard(page.platform) : ""}
       </header>
       ${page.html}
-      <nav class="article-pagination" aria-label="Siguiente página">${nextPageLink(resolvedSlug)}</nav>`;
+      <nav class="docs-siguiente" aria-label="Siguiente página">${nextPageLink(resolvedSlug)}</nav>`;
     renderNav(resolvedSlug);
     renderToc();
     renderReleaseData();
-    window.scrollTo({ top: 0, behavior: "auto" });
+    // Al llegar con un ancla (/docs?pagina=trabajo-local#licencia) se va a esa sección; si no, al comienzo
+    const anchor = !push && location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+    if (anchor && article.contains(anchor)) anchor.scrollIntoView();
+    else window.scrollTo({ top: 0, behavior: "auto" });
     setIndexOpen(false);
-    // script.js vuelve a medir el parallax y las apariciones del contenido nuevo.
-    document.dispatchEvent(new CustomEvent("pteron:content"));
   };
 
   // El nombre accesible contiene el texto visible («Menú» / «Cerrar»), como pide WCAG 2.5.3.
@@ -311,7 +310,7 @@
       ...allPages.filter(page => !inSummary(page) && bodyText.get(page.slug)?.includes(query)),
     ].slice(0, 7);
     results.innerHTML = matches.length
-      ? matches.map((page, index) => `<a id="docs-resultado-${index}" role="option" aria-selected="false" href="${pageUrl(page.slug)}"><span>${page.title}</span><small>${brand(page.group)}</small></a>`).join("")
+      ? matches.map((page, index) => `<a id="docs-resultado-${index}" role="option" aria-selected="false" href="${pageUrl(page.slug)}"><span>${page.title}</span><small>${page.group}</small></a>`).join("")
       : '<p role="presentation">No encontramos una página con esas palabras.</p>';
     results.hidden = false;
     search.setAttribute("aria-expanded", String(matches.length > 0));
@@ -332,7 +331,6 @@
 
   const setSearchOpen = (open, returnFocus = false) => {
     const wasOpen = !searchPanel.hidden;
-    if (open) document.querySelector('[data-menu-button][aria-expanded="true"]')?.click();
     searchPanel.hidden = !open;
     searchToggle.setAttribute("aria-expanded", String(open));
     if (open || wasOpen) setPageInert(open);
@@ -429,6 +427,5 @@
     if (sidebar.classList.contains("is-open") && !event.target.closest("[data-sidebar]")) setIndexOpen(false);
   });
 
-  if (year) year.textContent = new Date().getFullYear();
   renderPage(slugFromLocation());
 })();
