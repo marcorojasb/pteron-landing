@@ -23,14 +23,14 @@
 .lamina-cara,.lamina-reverso{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .lamina-cara img{filter:drop-shadow(0 0 .6px rgb(var(--sombra)/.45))}
 .lamina[data-capa="0"] .lamina-cara{filter:saturate(.82) contrast(.94) brightness(1.03)}
-.lamina-reverso{transform:rotateY(180deg);display:grid;gap:3.5%;padding:5.5%;color:#1F2A3D;container-type:inline-size}
+.lamina-reverso{transform:rotateY(180deg);display:grid;gap:3.5%;padding:5.5%;color:var(--tinta);container-type:inline-size}
 /* El papel del reverso: al llegar a su hoja se desvanece y sólo queda la figura */
-.lamina-reverso::before{content:"";position:absolute;inset:0;background:linear-gradient(160deg,#fff 0%,#F7F9FC 100%);opacity:var(--papel,1)}
+.lamina-reverso::before{content:"";position:absolute;inset:0;background:linear-gradient(160deg,var(--hoja) 0%,var(--reverso) 100%);opacity:var(--papel,1)}
 .reverso-figura,.reverso-pie{position:relative}
 .reverso-figura{display:grid;place-items:center;min-width:0;min-height:0;padding:2%}
 .reverso-figura svg{width:100%;height:100%;max-height:100%}
-.reverso-pie{align-self:end;margin:0;font:600 clamp(9px,5.2cqi,15px)/1.2 "Outfit",sans-serif;color:#1E3F94;padding:0 2% 1%;opacity:var(--pie,1)}
-.reverso-pie span{display:block;margin-top:.25em;font-weight:400;font-size:.82em;color:#5B6B82}
+.reverso-pie{align-self:end;margin:0;font:600 clamp(9px,5.2cqi,15px)/1.2 "Outfit",sans-serif;color:var(--azul);padding:0 2% 1%;opacity:var(--pie,1)}
+.reverso-pie span{display:block;margin-top:.25em;font-weight:400;font-size:.82em;color:var(--grafito)}
 .laminas .lamina{cursor:pointer}
 
 /* ——— Portada ——— */
@@ -46,7 +46,7 @@
 .portada-nota{grid-column:2;grid-row:4;margin-top:12px;font-size:var(--t-chico);color:var(--grafito)}
 .portada-texto,.portada-acciones,.portada-nota{position:relative}
 .portada-texto::before{content:"";position:absolute;inset:-18px -22px -140px -22px;z-index:-1;border-radius:18px;
-  background:radial-gradient(closest-side,rgb(233 237 241/.92),rgb(233 237 241/.75) 60%,rgb(233 237 241/0));pointer-events:none}
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--mesa) 92%,transparent),color-mix(in srgb,var(--mesa) 75%,transparent) 60%,transparent);pointer-events:none}
 
 /* ——— La mesa: cuatro hojas ——— */
 .mesa{position:relative;z-index:2;padding:clamp(40px,6vw,80px) var(--margen) clamp(56px,8vw,96px)}

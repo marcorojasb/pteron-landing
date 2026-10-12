@@ -29,6 +29,10 @@
   --ok:#1D5C3C;--ok-papel:#EAF5EF;--ok-borde:#CBE5D6;
   --error:#9A2F23;--error-papel:#FBEDEB;--error-borde:#F0C9C4;
   --nota-papel:#F2F6FC;--nota-borde:#D6E0EF;
+  /* Sobre el azul (la hoja del índice): texto secundario 6,4 : 1 y enlaces del pie 7,4 : 1 */
+  --sobre-azul:#C9D3EA;--sobre-azul-claro:#DCE3F2;
+  /* El reverso de una hoja doblada o de una lámina: blanco que se apaga hacia el borde */
+  --reverso:color-mix(in srgb,var(--mesa) 30%,var(--hoja));
   --aviso-papel:#FDF5E2;--aviso-borde:#EDD49B;
   --sombra:31 42 61;
   --letra:"Archivo",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
@@ -124,7 +128,7 @@ small{font-size:var(--t-chico)}
   font-size:.75rem;font-weight:720;font-stretch:108%;letter-spacing:.02em;line-height:1;white-space:nowrap}
 /* La solapa: el reverso de la esquina doblada, con su sombra sobre la página */
 .oreja-sombra{position:absolute;inset:0;filter:drop-shadow(-2px 3px 3px rgb(var(--sombra)/.22)) drop-shadow(-5px 8px 10px rgb(var(--sombra)/.14))}
-.oreja-solapa{position:absolute;inset:0;clip-path:polygon(0 0,100% 100%,0 100%);background:linear-gradient(225deg,#fff 50%,#F3F6FA 72%,#DCE3EC 100%)}
+.oreja-solapa{position:absolute;inset:0;clip-path:polygon(0 0,100% 100%,0 100%);background:linear-gradient(225deg,var(--hoja) 50%,var(--reverso) 72%,color-mix(in srgb,var(--linea) 70%,var(--hoja)) 100%)}
 .oreja:hover{transform:scale(1.13)}
 .oreja:focus-visible{outline:3px solid var(--lapiz-hondo);outline-offset:-6px;border-radius:2px;transform:scale(1.13)}
 .oreja[aria-expanded="true"]{opacity:0;transition:opacity .2s}
@@ -163,17 +167,17 @@ html.con-indice body{padding-right:var(--barra,0px)}
   transition:background-color .15s,border-color .15s}
 .indice-cerrar:hover{background:rgb(255 255 255/.1);border-color:#fff}
 .indice-bloque{margin-top:20px}
-.indice-rotulo{margin-bottom:4px;color:#C9D3EA;font-size:var(--t-rotulo);font-weight:620;font-stretch:92%;letter-spacing:.01em;line-height:1.4}
+.indice-rotulo{margin-bottom:4px;color:var(--sobre-azul);font-size:var(--t-rotulo);font-weight:620;font-stretch:92%;letter-spacing:.01em;line-height:1.4}
 .indice-capitulos{counter-reset:capitulo}
 .indice-capitulos li{counter-increment:capitulo}
 .indice-capitulos a{display:grid;grid-template-columns:1.6em minmax(0,1fr) auto;align-items:baseline;gap:10px;min-height:46px;padding:10px 8px 9px 4px;
   border-top:var(--borde) solid rgb(255 255 255/.16);border-radius:2px;font-size:1.25rem;font-weight:680;font-stretch:108%;letter-spacing:-.01em;line-height:1.2;
   transition:background-color .15s}
 .indice-capitulos li:last-child a{border-bottom:var(--borde) solid rgb(255 255 255/.16)}
-.indice-capitulos a::before{content:counter(capitulo);color:#C9D3EA;font-size:.875rem;font-weight:650;font-stretch:96%;font-variant-numeric:tabular-nums;text-align:right}
+.indice-capitulos a::before{content:counter(capitulo);color:var(--sobre-azul);font-size:.875rem;font-weight:650;font-stretch:96%;font-variant-numeric:tabular-nums;text-align:right}
 .indice-capitulos a:hover{background:rgb(255 255 255/.07)}
 .indice-capitulos a[aria-current],.indice-capitulos a[aria-current]::before{color:var(--lapiz)}
-.indice-capitulos a[aria-current]::after{content:"Estás aquí";color:#C9D3EA;font-size:.8125rem;font-weight:560;font-stretch:96%;letter-spacing:0;white-space:nowrap}
+.indice-capitulos a[aria-current]::after{content:"Estás aquí";color:var(--sobre-azul);font-size:.8125rem;font-weight:560;font-stretch:96%;letter-spacing:0;white-space:nowrap}
 .indice-paginas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px}
 .indice-paginas a{display:flex;align-items:center;gap:9px;min-height:44px;font-size:1.0625rem;font-weight:620;font-stretch:104%}
 .indice-paginas a::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;border:var(--borde) solid rgb(255 255 255/.5)}
@@ -181,7 +185,7 @@ html.con-indice body{padding-right:var(--barra,0px)}
 .indice-paginas a[aria-current="page"]{color:var(--lapiz)}
 .indice-paginas a[aria-current="page"]::before{border-color:var(--lapiz);background:var(--lapiz)}
 .indice-pie{display:flex;flex-wrap:wrap;gap:0 20px;margin-top:16px;padding-top:6px;border-top:var(--borde) solid rgb(255 255 255/.16);font-size:var(--t-chico)}
-.indice-pie a{display:inline-flex;align-items:center;min-height:40px;color:#DCE3F2;text-decoration:underline;text-decoration-color:rgb(255 255 255/.35);
+.indice-pie a{display:inline-flex;align-items:center;min-height:40px;color:var(--sobre-azul-claro);text-decoration:underline;text-decoration-color:rgb(255 255 255/.35);
   text-decoration-thickness:var(--borde);text-underline-offset:.22em}
 .indice-pie a:hover{color:#fff;text-decoration-color:#fff}
 .indice-pie a[aria-current="page"]{color:var(--lapiz)}
@@ -233,7 +237,7 @@ html.con-indice body{padding-right:var(--barra,0px)}
 .pieza-cara,.pieza-reverso{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .pieza-cara img{width:100%;height:100%;-webkit-user-drag:none;user-select:none}
 .pieza-reverso{transform:rotateY(180deg);display:grid;gap:3.5%;padding:5.5%;color:var(--tinta);container-type:inline-size}
-.pieza-reverso::before{content:"";position:absolute;inset:0;background:linear-gradient(160deg,var(--hoja) 0%,color-mix(in srgb,var(--mesa) 30%,var(--hoja)) 100%)}
+.pieza-reverso::before{content:"";position:absolute;inset:0;background:linear-gradient(160deg,var(--hoja) 0%,var(--reverso) 100%)}
 .pieza .reverso-figura,.pieza .reverso-pie{position:relative}
 .pieza .reverso-figura{display:grid;place-items:center;min-width:0;min-height:0;padding:2%}
 .pieza .reverso-figura svg{width:100%;height:100%;max-height:100%}
