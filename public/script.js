@@ -1,4 +1,4 @@
-/* pteron · comportamiento compartido del sitio (revisión 2026-10-12.3).
+/* pteron · comportamiento compartido del sitio (revisión 2026-10-12.4).
    Sin dependencias. Todo lo que mueve algo respeta prefers-reduced-motion,
    y el contenido es visible aunque este archivo no llegue a cargar. */
 (() => {
@@ -14,7 +14,7 @@
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     return Boolean(connection && (connection.saveData || /2g|3g/.test(connection.effectiveType || "")));
   };
-  const VERSION = "?v=2026-10-12.3";
+  const VERSION = "?v=2026-10-12.4";
 
   /* Año en el pie y donde se pida. */
   $$("[data-year]").forEach((node) => { node.textContent = String(new Date().getFullYear()); });
@@ -488,6 +488,36 @@
         });
       }, { passive: true });
       host.addEventListener("pointerleave", () => { box.style.setProperty("--mx1", "0"); box.style.setProperty("--my1", "0"); });
+    });
+  }
+  /* Demo con scroll: el rumbo que cruza el centro de la pantalla activa su captura en la ventana fija. */
+  const demo = document.querySelector("[data-demo]");
+  if (demo && "IntersectionObserver" in window) {
+    const steps = $$("[data-demo-step]", demo);
+    const shots = $$(".demo-shots img");
+    const bar = document.querySelector(".demo-progress i");
+    const activate = (index) => {
+      steps.forEach((step, k) => step.classList.toggle("is-active", k === index));
+      shots.forEach((shot, k) => shot.classList.toggle("is-active", k === index));
+      if (bar) { bar.style.translate = `${index * 100}% 0`; bar.style.backgroundColor = getComputedStyle(steps[index]).getPropertyValue("--ac"); }
+    };
+    const watcher = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => { if (entry.isIntersecting) activate(steps.indexOf(entry.target)); });
+    }, { rootMargin: "-42% 0px -46% 0px", threshold: 0 });
+    steps.forEach((step) => watcher.observe(step));
+  }
+
+  /* Botones magnéticos: la acción principal se inclina hacia el puntero (puntero fino y movimiento). */
+  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    $$(".button-ember, .nav-cta").forEach((button) => {
+      button.addEventListener("pointermove", (event) => {
+        if (!canMove()) return;
+        const rect = button.getBoundingClientRect();
+        const dx = (event.clientX - (rect.left + rect.width / 2)) / rect.width;
+        const dy = (event.clientY - (rect.top + rect.height / 2)) / rect.height;
+        button.style.translate = `${(dx * 10).toFixed(1)}px ${(dy * 8).toFixed(1)}px`;
+      }, { passive: true });
+      button.addEventListener("pointerleave", () => { button.style.translate = ""; });
     });
   }
 })();
