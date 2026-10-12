@@ -88,7 +88,18 @@
 .par-pie b{font-weight:650}
 .par-pie span{color:var(--grafito)}
 
-/* ——— 6. Voz ——— */
+/* ——— 6. La hoja: oficio, con su esquina doblada ——— */
+.oficio{justify-self:center;width:min(100%,330px);margin:0}
+.oficio svg{display:block;width:100%;height:auto;overflow:visible}
+.oficio-papel{fill:var(--hoja);stroke:var(--regla);stroke-width:1}
+.oficio-azul{fill:var(--azul)}
+.oficio-texto rect{fill:var(--regla)}
+.oficio-texto .oficio-titulo{fill:color-mix(in srgb,var(--azul) 30%,var(--regla))}
+.oficio-texto .oficio-figura{fill:var(--mesa)}
+.oficio-cota path{fill:none;stroke:var(--grafito);stroke-width:1}
+.oficio-medida{fill:var(--grafito);font:600 11px/1 var(--letra);font-stretch:96%;font-variant-numeric:tabular-nums}
+
+/* ——— 7. Voz ——— */
 .voz{display:grid;gap:0}
 .voz li{display:grid;gap:8px;padding:18px 0;border-top:var(--borde) solid var(--regla)}
 .voz li:last-child{border-bottom:var(--borde) solid var(--regla)}
@@ -99,7 +110,7 @@
 .voz-no s{color:var(--grafito);text-decoration-color:var(--grafito);text-decoration-thickness:var(--borde)}
 
 /* ——— 7. Archivos ——— */
-.tabla-archivos{width:100%;border-collapse:collapse;overflow:hidden;border-radius:6px;background:var(--hoja);
+.tabla-archivos{width:100%;border-collapse:collapse;overflow:hidden;border-radius:6px;background:var(--hoja);outline:var(--borde) solid var(--regla);
   box-shadow:0 1px 2px rgb(var(--sombra)/.08),0 24px 48px -34px rgb(var(--sombra)/.45)}
 .tabla-archivos th,.tabla-archivos td{padding:12px 16px;text-align:left;vertical-align:middle}
 .tabla-archivos thead th{background:var(--mesa);color:var(--grafito);font-size:var(--t-rotulo);font-weight:650}

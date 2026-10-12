@@ -237,11 +237,43 @@
       </div>
     </section>
 
-    <!-- 6. Voz -->
-    <section class="bloque bloque-papel" id="voz" data-capitulo="Voz" aria-labelledby="voz-titulo">
+    <!-- 6. La hoja -->
+    <section class="bloque bloque-papel" id="hoja" data-capitulo="La hoja" aria-labelledby="hoja-titulo">
       <div class="contenedor bloque-rejilla">
         <div class="bloque-texto">
-          <h2 id="voz-titulo"><span class="bloque-n">6</span>Voz</h2>
+          <h2 id="hoja-titulo"><span class="bloque-n">6</span>La hoja</h2>
+          <p class="texto">Los materiales de pteron salen en hoja oficio, el papel de las escuelas chilenas. En este sitio cada página es una hoja: su esquina de arriba a la derecha está doblada y debajo asoma el azul del índice.</p>
+          <dl class="reglas">
+            <div><dt>Papel</dt><dd>Oficio por omisión, 215,9 × 330,2 mm. También carta, A4 y legal.</dd></div>
+            <div><dt>Esquina</dt><dd>Abre el índice. No hay barra arriba.</dd></div>
+            <div><dt>Membrete</dt><dd>La marca, arriba a la izquierda, en el mismo lugar en cada página.</dd></div>
+          </dl>
+        </div>
+        <div class="bloque-muestra">
+          <figure class="oficio">
+            <svg viewBox="-34 -14 300 384" role="img" aria-labelledby="oficio-titulo">
+              <title id="oficio-titulo">Una hoja oficio de 215,9 por 330,2 milímetros con la esquina de arriba a la derecha doblada</title>
+              <defs><linearGradient id="oficio-solapa" x1="1" y1="0" x2="0" y2="1"><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#DCE3EC"/></linearGradient>
+                <filter id="oficio-sombra" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="-2" dy="3" stdDeviation="2.5" flood-color="#1F2A3D" flood-opacity=".22"/></filter>
+                <filter id="oficio-papel" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#1F2A3D" flood-opacity=".14"/></filter></defs>
+              <path class="oficio-papel" d="M0 0H176L216 40V330H0Z" filter="url(#oficio-papel)"/>
+              <path class="oficio-azul" d="M176 0H216V40Z"/>
+              <path d="M176 0L216 40H176Z" fill="url(#oficio-solapa)" filter="url(#oficio-sombra)"/>
+              <g class="oficio-texto"><rect x="20" y="22" width="40" height="5" rx="2.5"/><rect x="20" y="34" width="120" height="10" rx="2" class="oficio-titulo"/><rect x="20" y="56" width="176" height="3" rx="1.5"/><rect x="20" y="64" width="150" height="3" rx="1.5"/><rect x="20" y="88" width="176" height="96" rx="3" class="oficio-figura"/><rect x="20" y="200" width="176" height="3" rx="1.5"/><rect x="20" y="208" width="132" height="3" rx="1.5"/><rect x="20" y="232" width="176" height="3" rx="1.5"/><rect x="20" y="240" width="160" height="3" rx="1.5"/><rect x="20" y="248" width="96" height="3" rx="1.5"/></g>
+              <g class="oficio-cota"><path d="M0 346H216M0 341V351M216 341V351"/><path d="M232 0V330M227 0H237M227 330H237"/></g>
+              <text class="oficio-medida" x="108" y="364" text-anchor="middle">215,9 mm</text>
+              <text class="oficio-medida" x="250" y="165" text-anchor="middle" transform="rotate(90 250 165)">330,2 mm</text>
+            </svg>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Voz -->
+    <section class="bloque" id="voz" data-capitulo="Voz" aria-labelledby="voz-titulo">
+      <div class="contenedor bloque-rejilla">
+        <div class="bloque-texto">
+          <h2 id="voz-titulo"><span class="bloque-n">7</span>Voz</h2>
           <p class="texto">Hablamos como un colega que conoce el oficio: corto, concreto y en el español de la sala de profesores.</p>
         </div>
         <div class="bloque-muestra">
@@ -269,11 +301,11 @@
       </div>
     </section>
 
-    <!-- 7. Archivos -->
-    <section class="bloque" id="archivos" data-capitulo="Archivos" aria-labelledby="archivos-titulo">
+    <!-- 8. Archivos -->
+    <section class="bloque bloque-papel" id="archivos" data-capitulo="Archivos" aria-labelledby="archivos-titulo">
       <div class="contenedor bloque-rejilla">
         <div class="bloque-texto">
-          <h2 id="archivos-titulo"><span class="bloque-n">7</span>Archivos</h2>
+          <h2 id="archivos-titulo"><span class="bloque-n">8</span>Archivos</h2>
           <p class="texto">Para una presentación en el consejo de profesores, un documento del colegio o una nota sobre pteron. Si necesitas otro formato, escríbenos a <a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a>.</p>
         </div>
         <div class="bloque-muestra">

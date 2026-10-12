@@ -407,6 +407,8 @@
   document.addEventListener("keydown", event => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
       event.preventDefault();
+      // Con el índice del sitio abierto, el buscador quedaría detrás de él
+      if (document.querySelector("dialog[open]")) return;
       setSearchOpen(true);
     } else if (event.key === "Escape" && !searchPanel.hidden) {
       search.value = "";
@@ -428,4 +430,9 @@
   });
 
   renderPage(slugFromLocation());
+  // /docs#buscar (desde la 404, por ejemplo) abre el buscador
+  if (location.hash === "#buscar") {
+    history.replaceState(history.state, "", location.pathname + location.search);
+    setSearchOpen(true);
+  }
 })();

@@ -150,11 +150,16 @@
     indice.addEventListener("click", (event) => {
       if (event.target === indice) cerrar();
     });
-    // La página en que uno ya está: se cierra y se vuelve al comienzo, sin recargar
+    // La página en que uno ya está: se cierra y se vuelve al comienzo, sin recargar. Otra página: el índice se cierra
+    // antes de seguir (la documentación navega sin recargar y el diálogo quedaría abierto sobre la página nueva).
     $$(".indice-paginas a, .indice-pie a", indice).forEach((link) => {
       link.addEventListener("click", (event) => {
         if (link.protocol === "mailto:" || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-        if (link.pathname !== location.pathname || link.search !== location.search) return;
+        if (link.pathname !== location.pathname || link.search !== location.search) {
+          alCerrar = () => {};
+          indice.close();
+          return;
+        }
         event.preventDefault();
         cerrar(() => {
           window.scrollTo({ top: 0, behavior: suave() });
