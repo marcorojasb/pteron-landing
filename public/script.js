@@ -14,7 +14,7 @@
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     return Boolean(connection && (connection.saveData || /2g|3g/.test(connection.effectiveType || "")));
   };
-  const VERSION = "?v=2026-10-12.5";
+  const VERSION = "?v=2026-10-12.6";
 
   /* Año en el pie y donde se pida. */
   $$("[data-year]").forEach((node) => { node.textContent = String(new Date().getFullYear()); });
@@ -252,6 +252,8 @@
   const collectScenes = () => $$("[data-parallax]").map((node) => ({ node, speed: parseFloat(node.dataset.parallax) || 0.1, hero: Boolean(node.closest(".hero")) }));
   let scenes = collectScenes();
   const heroWindow = document.querySelector("[data-hero-window]");
+  const tetrisWell = document.querySelector("[data-tetris]");
+  let lastSp = "";
   const wide = window.matchMedia("(min-width: 761px)");
   let ticking = false;
 
@@ -271,6 +273,12 @@
       const offset = box.top + box.height / 2 - vh / 2;
       node.style.setProperty("--py", `${(-offset * speed).toFixed(1)}px`);
     });
+    if (tetrisWell) {
+      // Vista explosionada del pozo: al bajar, las piezas se separan, suben y se apagan (--sp de 0 a 1).
+      const narrow = narrowQuery.matches;
+      const sp = clamp01((y - (narrow ? 120 : 30)) / (narrow ? 460 : 560)).toFixed(3);
+      if (sp !== lastSp) { lastSp = sp; tetrisWell.style.setProperty("--sp", sp); }
+    }
     if (heroWindow) {
       const progress = wide.matches ? Math.min(1, y / 520) : 1;
       heroWindow.style.setProperty("--tilt", (6 * (1 - progress)).toFixed(2));
@@ -284,6 +292,8 @@
   motion.addEventListener("change", () => {
     if (!canMove()) {
       scenes.forEach(({ node }) => node.style.removeProperty("--py"));
+      tetrisWell?.style.removeProperty("--sp");
+      lastSp = "";
       [heroWindow, filmWindow].forEach((node) => { node?.style.removeProperty("--tilt"); node?.style.removeProperty("--lift"); });
       filmBackdrop?.classList.remove("is-ready");
       filmVideo?.pause();
@@ -489,6 +499,38 @@
       }, { passive: true });
       host.addEventListener("pointerleave", () => { box.style.setProperty("--mx1", "0"); box.style.setProperty("--my1", "0"); });
     });
+  }
+  /* Pozo de tetris del inicio: la partida arranca cuando las láminas están decodificadas (como mucho 1,5 s)
+     y la pestaña está a la vista. Sin movimiento no se anima nada y el CSS muestra la estructura final.
+     Con el dedo, un toque voltea una pieza y muestra su asignatura; otro toque, o tocar fuera, la devuelve. */
+  if (tetrisWell) {
+    const start = () => tetrisWell.classList.add("is-ready");
+    const whenVisible = () => {
+      if (!document.hidden) { start(); return; }
+      const wake = () => {
+        if (document.hidden) return;
+        document.removeEventListener("visibilitychange", wake);
+        start();
+      };
+      document.addEventListener("visibilitychange", wake);
+    };
+    if (canMove()) {
+      const decoded = $$("img", tetrisWell).map((img) => (img.decode ? img.decode().catch(() => {}) : Promise.resolve()));
+      Promise.race([Promise.all(decoded), new Promise((resolve) => { setTimeout(resolve, 1500); })]).then(whenVisible);
+    } else {
+      start();
+    }
+    const closeAll = (except) => $$(".cutout.is-flipped", tetrisWell).forEach((node) => { if (node !== except) node.classList.remove("is-flipped"); });
+    tetrisWell.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "mouse") return;
+      const piece = event.target.closest(".cutout");
+      if (!piece) return;
+      closeAll(piece);
+      piece.classList.toggle("is-flipped");
+    }, { passive: true });
+    document.addEventListener("pointerdown", (event) => {
+      if (event.pointerType !== "mouse" && !tetrisWell.contains(event.target)) closeAll();
+    }, { passive: true });
   }
   /* Demo con scroll: el rumbo que cruza el centro de la pantalla activa su captura en la ventana fija. */
   const demo = document.querySelector("[data-demo]");

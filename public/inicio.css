@@ -71,7 +71,7 @@
 .film-window{justify-self:end;width:min(1140px,100%);margin-top:calc(var(--fh)*.1);transform-origin:50% 100%;transform:perspective(2400px) rotateX(calc(var(--tilt,0)*1deg)) translate3d(0,calc(var(--lift,0)*1px),0);will-change:transform}
 .film-credit{justify-self:end;margin-top:clamp(24px,3vw,40px);text-align:right}
 /* Aurora del lago: canvas de 320×180 escalado; el póster sólo se ve sin JavaScript */
-.lake-aurora{position:absolute;z-index:-1;left:0;top:0;width:100%;height:78%;pointer-events:none;background:url("/assets/arte/aurora-lago.webp?v=2026-10-12.5") center/100% 100% no-repeat;-webkit-mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent);mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent)}
+.lake-aurora{position:absolute;z-index:-1;left:0;top:0;width:100%;height:78%;pointer-events:none;background:url("/assets/arte/aurora-lago.webp?v=2026-10-12.6") center/100% 100% no-repeat;-webkit-mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent);mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent)}
 .lake-aurora.is-drawn{background:none}
 .js .hero-media>div{animation:settle 2.6s var(--ease) both}
 .js .hero-product{animation:rise 1.6s var(--ease) .35s both}
@@ -169,23 +169,88 @@
 .download .plans-compact>li,.download .platforms>li{flex:0 0 min(82vw,320px);scroll-snap-align:center}
 .download .plans-foot{margin-top:4px}}
 
-/* Héroe partido (2026-10-12.5): copia a la izquierda y tetris de recortes a la derecha */
-.hero-split .hero-top{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(28px,4vw,64px);align-items:center}
+/* Héroe partido (2026-10-12.6): copia a la izquierda y, a la derecha, un pozo de tetris armado con recortes del atlas */
+.hero-split .hero-top{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,.93fr) minmax(0,1.07fr);gap:clamp(28px,4vw,64px);align-items:center}
+/* La fila de aparición del pozo sobresale una celda hacia arriba: el héroe baja lo justo para que nazca bajo la barra */
+.hero.hero-split{padding-top:calc(78px + min(7.3vw,113px))}
 .hero-split .hero-copy{justify-items:start;text-align:left;width:auto}
 .hero-split .hero-copy .lead{max-width:30em}
 .hero-split .hero-copy .actions{justify-content:flex-start}
 .hero-split .hero-copy h1{text-wrap:balance}
-.tetris{--n:4;--off:0;--fall:-120vh;position:relative;inset:auto;z-index:auto;width:min(100%,560px);aspect-ratio:1;margin-left:auto;pointer-events:none}
-.tetris .cutout{width:var(--s);opacity:1;--s:calc(100%/var(--n));--l:calc(var(--c)*100%/var(--n));--t:calc((var(--r) - var(--off))*100%/var(--n));--r:var(--rot,0deg);--amp:6px;filter:drop-shadow(0 2px 2px #0509101f) drop-shadow(0 22px 26px #05091066)}
-.tetris .cutout:hover{z-index:4}
-/* Caída tipo tetris: cada pieza baja desde fuera de pantalla, aterriza con un rebote corto y se asienta; orden por --i */
-@keyframes drop{0%{transform:translateY(var(--fall,-120vh)) rotate(-16deg);opacity:0}8%{opacity:1}68%{transform:translateY(0) rotate(0);animation-timing-function:ease-out}80%{transform:translateY(2.5%) scaleY(.94)}100%{transform:none}}
+
+/* Pozo de tetris. Rejilla de --cols × --rows celdas; la fila 0 es la de aparición y en escritorio sobresale hacia
+   arriba (margen negativo de una celda) para que el héroe no crezca. El pozo sangra hasta el borde derecho.
+   Cada pieza trae en línea su celda final en escritorio (--dc, --dr, --dw) y en móvil (--mc, --mr, --mw) y el instante
+   en que aterriza (--dt, --mt). Esos tiempos salen de scripts/tetris-pozo.mjs; --T-clear y --T-end deben coincidir con él.
+   Papeles: .t-clear es la fila de abajo que se completa y se limpia (.t-gap es la pieza que la completa), .t-stack es
+   la pila que espera una fila más arriba dentro de .tetris-stack y baja cuando la fila desaparece, .t-post cae
+   después y .t-crown es el remate. Sin movimiento o sin JavaScript sólo se ve la estructura final, quieta. */
+.hero .tetris{--cols:7;--rows:6;--bleed:min(160px,max(var(--gutter),(100vw - var(--wrap))/2));--cell:calc(100cqw/var(--cols));--T-clear:1.98s;--T-end:4.36s;--T-zap:calc(var(--T-clear) + .9s);--T-drop:calc(var(--T-clear) + 1.12s);position:relative;inset:auto;z-index:1;container-type:inline-size;width:calc(100% + var(--bleed));aspect-ratio:var(--cols)/var(--rows);margin:calc((100% + var(--bleed))/var(--cols)*-1) calc(-1*var(--bleed)) 0 0;pointer-events:none}
+.tetris-stack{position:absolute;inset:0}
+.tetris .cutout{--col:var(--dc);--row:var(--dr);--w:var(--dw,1);--land:var(--dt);--s:calc(var(--w)*var(--cell));--fall:calc(var(--row) - var(--lift,0));--dur:calc(.4s + var(--fall)*.055s);left:calc(var(--col)*var(--cell));top:calc(var(--row)*var(--cell));width:var(--s);z-index:calc(20 - var(--row));opacity:calc(1 - var(--sp,0)*.85);rotate:calc(var(--rot,0deg) + var(--sp,0)*var(--er,0deg));translate:calc(var(--sp,0)*(var(--col) + var(--w)/2 - var(--cols)/2)*16px) calc(var(--sp,0)*((var(--row) + var(--w)/2 - var(--rows)/2)*14px - 90px));transform-origin:50% 100%;filter:drop-shadow(0 1px 1px #0509102e) drop-shadow(0 12px 16px #05091061);transition:scale .55s var(--ease),filter .55s var(--ease)}
+.tetris .t-stack{--lift:1}
+.tetris .cutout:hover,.tetris .cutout.is-flipped{z-index:40;scale:1.06;rotate:0deg;filter:drop-shadow(0 3px 4px #05091033) drop-shadow(0 26px 30px #0509107a)}
+/* La fila que se limpia no responde al cursor: se voltea sola, en ola, y se cierra */
+.tetris .t-clear{pointer-events:none}
+.tetris .t-clear,.tetris-flash{display:none}
+/* Rejilla fantasma del pozo: líneas finas que aparecen al empezar y se apagan cuando cae el remate */
+.tetris::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;background:linear-gradient(90deg,#f4f1eb1f 1px,transparent 1px) 0 0/var(--cell) var(--cell),linear-gradient(180deg,#f4f1eb1f 1px,transparent 1px) 0 0/var(--cell) var(--cell);box-shadow:inset 0 -1px 0 #f4f1eb5c;-webkit-mask-image:linear-gradient(180deg,transparent,#000 calc(var(--cell)*1.3));mask-image:linear-gradient(180deg,transparent,#000 calc(var(--cell)*1.3))}
+/* Destello de la fila completa: barre de izquierda a derecha y se cierra con la fila */
+.tetris-flash{position:absolute;left:0;right:0;bottom:0;height:var(--cell);z-index:30;pointer-events:none;opacity:0;transform-origin:0 50%;background:linear-gradient(90deg,#fff3e000,#ffe9c7e6 16%,#fffaf2 50%,#ffe9c7e6 84%,#fff3e000);mix-blend-mode:screen}
+
+@keyframes t-hold{from,to{opacity:0}}
+/* Caída: aparece en la fila 0, cae con gravedad estirándose, aplasta al tocar y rebota corto (contacto en el 62 %) */
+@keyframes t-fall{0%{transform:translateY(calc(var(--fall)*-100%/var(--w))) scale(.86);opacity:0;animation-timing-function:cubic-bezier(.3,0,.3,1)}12%{transform:translateY(calc(var(--fall)*-100%/var(--w))) scale(1);opacity:1;animation-timing-function:cubic-bezier(.55,0,.9,.4)}62%{transform:translateY(0) scale(.96,1.07);opacity:1;animation-timing-function:cubic-bezier(.2,.7,.3,1)}72%{transform:translateY(0) scale(1.06,.9);opacity:1}85%{transform:translateY(0) scale(.98,1.03);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
+/* Giro de tetris: un cuarto de vuelta seco en el aire */
+@keyframes t-spin{0%,22%{transform:rotate(var(--spin,0deg))}30%,100%{transform:rotate(0deg)}}
+/* La pieza que completa la fila: aparece una columna a la izquierda, gira, se corre y baja de golpe por el hueco (contacto en el 72 %) */
+@keyframes t-gap{0%{transform:translate(-100%,calc(var(--fall)*-100%)) scale(.86);opacity:0;animation-timing-function:cubic-bezier(.3,0,.3,1)}9%,30%{transform:translate(-100%,calc(var(--fall)*-100%)) scale(1);opacity:1;animation-timing-function:cubic-bezier(.3,0,.2,1)}35%,44%{transform:translate(0,calc(var(--fall)*-100%)) scale(1);opacity:1;animation-timing-function:cubic-bezier(.6,0,.95,.45)}72%{transform:translate(0,0) scale(.95,1.1);opacity:1;animation-timing-function:cubic-bezier(.2,.7,.3,1)}80%{transform:translate(0,0) scale(1.08,.88);opacity:1}90%{transform:translate(0,0) scale(.98,1.03);opacity:1}100%{transform:translate(0,0) scale(1);opacity:1}}
+@keyframes t-gap-spin{0%,17%{transform:rotate(var(--spin,90deg))}22%,100%{transform:rotate(0deg)}}
+/* Remate: la pieza grande aparece tres columnas a la izquierda, gira dos veces, se corre en tres pasos, duda y cae (contacto en el 74 %) */
+@keyframes t-crown{0%{transform:translate(-150%,-50%) scale(.86);opacity:0;animation-timing-function:cubic-bezier(.3,0,.3,1)}8%,20%{transform:translate(-150%,-50%) scale(1);opacity:1;animation-timing-function:cubic-bezier(.3,0,.2,1)}24%,34%{transform:translate(-100%,-50%) scale(1);opacity:1;animation-timing-function:cubic-bezier(.3,0,.2,1)}38%,48%{transform:translate(-50%,-50%) scale(1);opacity:1;animation-timing-function:cubic-bezier(.3,0,.2,1)}52%{transform:translate(0,-50%) scale(1);opacity:1;animation-timing-function:ease-in-out}60%{transform:translate(0,-54%) scale(1.02);opacity:1;animation-timing-function:cubic-bezier(.6,0,.95,.45)}74%{transform:translate(0,0) scale(.97,1.06);opacity:1;animation-timing-function:cubic-bezier(.2,.7,.3,1)}82%{transform:translate(0,0) scale(1.07,.9);opacity:1}91%{transform:translate(0,0) scale(.99,1.02);opacity:1}100%{transform:translate(0,0) scale(1);opacity:1}}
+@keyframes t-crown-spin{0%,12%{transform:rotate(180deg)}15%,28%{transform:rotate(90deg)}31%,100%{transform:rotate(0deg)}}
+/* Limpieza: cada pieza de la fila se da vuelta y muestra su reverso; luego la fila se cierra hacia su centro */
+@keyframes t-flip{from{transform:rotateY(0deg)}to{transform:rotateY(180deg)}}
+@keyframes t-zap{0%{transform:translateY(0) scale(1);opacity:1}55%{opacity:1}100%{transform:translateY(-50%) scale(1.06,.02);opacity:0;visibility:hidden}}
+@keyframes t-flash{0%{opacity:0;transform:scaleX(0)}28%{opacity:.9;transform:scaleX(1)}100%{opacity:0;transform:scaleX(1)}}
+@keyframes t-flash-zap{0%{opacity:0;transform:scaleY(1)}30%{opacity:.85;transform:scaleY(.3)}100%{opacity:0;transform:scaleY(.02)}}
+/* La pila baja la fila que quedó libre */
+@keyframes t-stack{0%{transform:translateY(calc(-100%/var(--rows)));animation-timing-function:cubic-bezier(.55,0,.9,.4)}70%{transform:translateY(0)}82%{transform:translateY(.4%)}100%{transform:translateY(0)}}
+@keyframes t-ghost-in{from{opacity:0}to{opacity:1}}
+@keyframes t-ghost-out{from{opacity:1}to{opacity:0}}
+@keyframes t-jolt{0%,100%{translate:0 0}22%{translate:0 7px}55%{translate:0 -2px}}
+@keyframes t-jolt-s{0%,100%{translate:0 0}25%{translate:0 4px}60%{translate:0 -1px}}
+/* Luz de atardecer que recorre la estructura desde abajo a la derecha, donde está el sol de la foto */
+@keyframes t-rake{0%,100%{filter:none}35%{filter:brightness(1.24) saturate(1.15) sepia(.12)}}
+
 @media (prefers-reduced-motion:no-preference){
-.js .drop-in .cutout{animation:drop 1.25s cubic-bezier(.22,.85,.3,1) calc(var(--i,0)*.11s + .25s) both;animation-timeline:auto}}
-@media (max-width:1024px){
+.tetris .cutout-float{animation:none}
+.js .tetris:not(.is-ready) .cutout{animation:t-hold 2.5s linear;animation-timeline:auto}
+.js .tetris.is-ready .t-clear,.js .tetris.is-ready .tetris-flash{display:block}
+.js .tetris.is-ready .cutout{animation:t-fall var(--dur) linear calc(var(--land) - .62*var(--dur)) backwards;animation-timeline:auto}
+.js .tetris.is-ready .cutout-float{animation:t-spin var(--dur) linear calc(var(--land) - .62*var(--dur)) backwards}
+.js .tetris.is-ready .t-clear{animation:t-fall var(--dur) linear calc(var(--land) - .62*var(--dur)) backwards,t-zap .2s cubic-bezier(.5,0,.8,.3) calc(var(--T-zap) + var(--col)*.012s) forwards;animation-timeline:auto,auto}
+.js .tetris.is-ready .t-gap{animation:t-gap .85s linear calc(var(--land) - .612s) backwards,t-zap .2s cubic-bezier(.5,0,.8,.3) calc(var(--T-zap) + var(--col)*.012s) forwards;animation-timeline:auto,auto}
+.js .tetris.is-ready .t-gap .cutout-float{animation:t-gap-spin .85s linear calc(var(--land) - .612s) backwards}
+.js .tetris.is-ready .t-clear .cutout-inner{animation:t-flip .34s cubic-bezier(.3,0,.2,1) calc(var(--T-clear) + .05s + var(--col)*.04s) forwards}
+.js .tetris.is-ready .t-crown{animation:t-crown 1.1s linear calc(var(--land) - .814s) backwards;animation-timeline:auto}
+.js .tetris.is-ready .t-crown .cutout-float{animation:t-crown-spin 1.1s linear calc(var(--land) - .814s) backwards}
+.js .tetris.is-ready .tetris-stack{animation:t-stack .32s linear var(--T-drop) backwards}
+.js .tetris.is-ready .tetris-flash{animation:t-flash .55s cubic-bezier(.2,.7,.3,1) var(--T-clear) backwards,t-flash-zap .32s ease-out var(--T-zap)}
+.js .tetris.is-ready::before{animation:t-ghost-in .4s ease-out both,t-ghost-out .8s ease-in calc(var(--T-end) + .15s) forwards}
+.js .hero .tetris.is-ready{animation:t-jolt-s .34s cubic-bezier(.3,.6,.3,1) calc(var(--T-drop) + .2s),t-jolt .42s cubic-bezier(.3,.6,.3,1) var(--T-end)}
+.js .tetris.is-ready .cutout-face{animation:t-rake .7s ease-in-out calc(var(--T-end) + .06s + ((var(--cols) - 1 - var(--col)) + (var(--rows) - 1 - var(--row)))*.035s)}}
+/* Con puntero fino, el pozo entero se inclina apenas hacia el cursor */
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+.hero .tetris{transform:perspective(1700px) rotateY(calc(var(--mx1,0)*-4deg)) rotateX(calc(var(--my1,0)*3deg));transition:transform 1s cubic-bezier(.2,.7,.2,1)}}
+/* Hasta 1000 px el pozo cabe junto al titular (también en iPad horizontal); bajo eso va debajo de la copia */
+@media (max-width:999px){
+.hero.hero-split{padding-top:clamp(118px,11vw,148px)}
 .hero-split .hero-top{grid-template-columns:minmax(0,1fr)}
 .hero-split .hero-copy{justify-items:center;text-align:center}
 .hero-split .hero-copy .actions{justify-content:center}
-.tetris{width:min(100%,420px);margin:12px auto 0;--n:3;--off:1;--fall:-70vh}}
+.hero .tetris{width:min(100%,680px);margin:8px auto 0}}
 @media (max-width:760px){
-.tetris{width:min(100%,330px)}}
+.hero .tetris{--cols:5;--rows:4;--T-clear:1.46s;--T-end:3.71s;width:calc(100% + 2*var(--gutter));margin:18px calc(-1*var(--gutter)) 0}
+.tetris .cutout{--col:var(--mc);--row:var(--mr);--w:var(--mw,1);--land:var(--mt)}
+.tetris .cutout.t-dk,.js .tetris.is-ready .cutout.t-dk{display:none}}

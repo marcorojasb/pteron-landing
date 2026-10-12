@@ -749,17 +749,28 @@ html{scroll-behavior:smooth}
 .hero .cutouts{z-index:2}
 .footer{isolation:isolate}
 .footer .cutouts{z-index:-1}
-.cutout{--amp:10px;position:absolute;left:var(--l);top:var(--t);width:var(--s);aspect-ratio:1;margin:0;pointer-events:auto;rotate:var(--r,0deg);filter:drop-shadow(0 2px 2px #0f22381f) drop-shadow(0 16px 20px #0f223833);transition:scale .6s var(--ease)}
+.cutout{--amp:10px;position:absolute;left:var(--l);top:var(--t);width:var(--s);aspect-ratio:1;margin:0;pointer-events:auto;rotate:var(--r,0deg);filter:drop-shadow(0 2px 2px #0f22381f) drop-shadow(0 16px 20px #0f223833);transition:scale .55s var(--ease),rotate .6s var(--ease),filter .55s var(--ease)}
 .cutouts .cutout[data-parallax]{translate:calc(var(--mx1,0)*var(--z,.5)*28px) calc(var(--py,0px) + var(--my1,0)*var(--z,.5)*28px)}
-.cutout:hover{scale:1.06;z-index:3}
+/* Al pasar el cursor, o con un toque (.is-flipped), la pieza se levanta, se endereza y se da vuelta */
+.cutout:hover,.cutout.is-flipped{scale:1.06;rotate:0deg;z-index:3;filter:drop-shadow(0 3px 4px #0f22382b) drop-shadow(0 26px 30px #0f22384d)}
 .cutout-float,.cutout-inner{position:relative;width:100%;aspect-ratio:1}
 .cutout-inner{transform-style:preserve-3d;transition:transform .8s var(--ease)}
-.cutout:hover .cutout-inner{transform:rotateY(180deg)}
-.cutout-face,.cutout-back{position:absolute;inset:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.cutout:hover .cutout-inner,.cutout.is-flipped .cutout-inner{transform:rotateY(180deg)}
+.cutout-face,.cutout-back{position:absolute;inset:0;width:100%;height:100%;-webkit-backface-visibility:hidden;backface-visibility:hidden}
 .cutout-face{object-fit:contain}
-.cutout-back{display:grid;place-content:center;gap:.25em;text-align:center;transform:rotateY(180deg);border-radius:16%;background:var(--ac,var(--ember));color:#fff;padding:8%;font:500 clamp(10px,calc(var(--s)*.09),15px)/1.2 var(--sans);letter-spacing:.01em;box-shadow:inset 0 0 0 1px #ffffff33}
-.cutout-back b{display:block;font:400 clamp(14px,calc(var(--s)*.16),26px)/1.05 var(--serif);letter-spacing:-.02em}
-.cutout.is-lenguaje{--ac:var(--rosa)}.cutout.is-matematica{--ac:var(--azul)}.cutout.is-ciencias{--ac:var(--verde)}.cutout.is-historia{--ac:#d9a21c}.cutout.is-mezcla{--ac:var(--violeta)}
+/* Reverso: el dorso del mismo papel. Conserva la silueta, en espejo (máscara con la propia lámina, --img); es una ficha
+   del tono pálido de la asignatura con grano de papel, deja ver la imagen apenas, como al trasluz, y lleva un timbre con
+   la asignatura y la fuente escrita abajo a la izquierda, la única zona con papel en todas las siluetas. */
+.cutout{--card:color-mix(in oklab,var(--ac-bg,var(--paper)) 93%,transparent);--stamp:color-mix(in oklab,var(--ac,var(--ember)) 74%,var(--ink))}
+.cutout-back{display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:.55em;padding:11% 12%;transform:rotateY(180deg);color:var(--ink);font:400 clamp(10px,calc(var(--s)*.088),17px)/1.18 var(--serif);letter-spacing:-.005em;text-align:left;text-wrap:balance}
+.cutout-back::before{content:"";position:absolute;inset:0;z-index:-1;transform:scaleX(-1);background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .27 0 0 0 0 .2 0 0 0 .12 0'/%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23g)'/%3E%3C/svg%3E") 0 0/150px 150px,linear-gradient(var(--card),var(--card)),var(--img,none) center/100% 100% no-repeat;-webkit-mask:var(--img,none) center/100% 100% no-repeat;mask:var(--img,none) center/100% 100% no-repeat}
+.cutout-back b{padding:.36em .55em .3em;border:1.5px solid currentColor;border-radius:3px;color:var(--stamp);font:600 clamp(8px,calc(var(--s)*.056),12px)/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;rotate:-5deg;transform-origin:0 100%;mix-blend-mode:multiply}
+/* Siluetas con escalera hacia la derecha: en el dorso la escalera queda a la izquierda, el texto va a la derecha.
+   Hueco abajo a la izquierda: en el dorso queda abajo a la derecha, el texto sube. */
+.cutout.shape-step-r .cutout-back{align-items:flex-end;text-align:right}
+.cutout.shape-step-r .cutout-back b{rotate:4deg;transform-origin:100% 100%}
+.cutout.shape-bl .cutout-back{justify-content:flex-start}
+.cutout.is-lenguaje{--ac:var(--rosa);--ac-bg:var(--rosa-bg)}.cutout.is-matematica{--ac:var(--azul);--ac-bg:var(--azul-bg)}.cutout.is-ciencias{--ac:var(--verde);--ac-bg:var(--verde-bg)}.cutout.is-historia{--ac:#d9a21c;--ac-bg:var(--sol-bg)}.cutout.is-mezcla{--ac:var(--violeta);--ac-bg:var(--violeta-bg)}
 /* Cinta de baldosas: dos filas que se desplazan en sentidos opuestos */
 .tile-strip{display:grid;gap:18px;margin-top:clamp(44px,5vw,72px);-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
 .tile-strip-row{overflow:hidden}
@@ -783,8 +794,6 @@ html{scroll-behavior:smooth}
 .cutout.hide-sm{display:none}
 .cutout{--amp:6px;width:calc(var(--s)*.72);opacity:.92}
 .tile-strip{gap:12px}.tile-strip-track{gap:14px}}
-@media (prefers-reduced-motion:reduce){
-.cutout:hover .cutout-inner{transform:none}}
 
 /* Caída de recortes también en páginas de banda (404): misma animación que el tetris del inicio */
 @keyframes drop-page{0%{transform:translateY(-120vh) rotate(-16deg);opacity:0}8%{opacity:1}68%{transform:translateY(0) rotate(0)}80%{transform:translateY(2.5%) scaleY(.94)}100%{transform:none}}
