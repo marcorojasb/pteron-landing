@@ -436,7 +436,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         </section>
         <section>
           <h2 id="cinta">La cinta del editor</h2>
-          <p>Los materiales nuevos se abren en los editores nativos <strong>Write</strong> (documento) y <strong>Present</strong> (presentación). Ambos usan una cinta de una sola fila, con <strong>Archivo</strong> y un botón «Más» para lo que no cabe. Write organiza Inicio, Insertar, Página, Revisar y Vista; Present usa Inicio, Insertar, Diseño, Presentación y Vista. Ctrl/⌘ K busca cualquier orden de la cinta.</p>
+          <p>Los materiales nuevos se abren en los editores nativos <strong>Write</strong> (documento) y <strong>Present</strong> (presentación). Ambos usan una cinta de una sola fila, con <strong>Archivo</strong> y un botón «Más» para lo que no cabe. Write organiza Inicio, Insertar, Página, Revisar y Vista; Present usa Inicio, Insertar, Diseño, Presentación y Vista. La lupa de la cinta, «Buscar comandos», encuentra cualquier orden por su nombre.</p>
         </section>
         <section>
           <h2 id="paginas">Hojas y configuración de página</h2>

@@ -9,7 +9,6 @@
 .cuenta-aviso[data-tone="success"]{box-shadow:0 0 0 1px var(--ok-borde),0 18px 40px -18px rgb(var(--sombra)/.5);color:var(--ok)}
 .cuenta-aviso[data-tone="error"]{box-shadow:0 0 0 1px var(--error-borde),0 18px 40px -18px rgb(var(--sombra)/.5);color:var(--error)}
 @keyframes aviso-entra{from{opacity:0;translate:-50% -8px}}
-.cuenta-aviso[hidden]{display:none}
 .cuenta-aviso p{padding-block:6px}
 .cuenta-aviso-cerrar{flex:none;min-height:44px;padding:0 12px;border:0;border-radius:999px;background:none;color:var(--grafito);font-weight:600;font-size:var(--t-chico)}
 .cuenta-aviso-cerrar:hover{background:var(--mesa);color:var(--tinta)}
