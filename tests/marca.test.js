@@ -106,7 +106,7 @@ test("las cabeceras de planes, descargar y cuenta llevan una lámina con su figu
 });
 
 test("el colofón da los créditos completos de las láminas sólo donde se ven", () => {
-  const completo = /Láminas de dominio público: Yciar/;
+  const completo = /Láminas de dominio público: una carta portulana/;
   assert.match(read("index.html"), completo);
   assert.match(read("marca/index.html"), completo);
   for (const page of ["planes/index.html", "cuenta/index.html", "privacidad.html", "404.html"]) {

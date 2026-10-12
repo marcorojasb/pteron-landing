@@ -158,7 +158,7 @@
 
   function renderIdentity(data) {
     const email = data?.user?.email || "";
-    const displayName = String(data?.profile?.display_name || email.split("@")[0] || "profesor").trim();
+    const displayName = String(data?.profile?.display_name || "").trim() || "profe";
     document.querySelector("[data-account-email]").textContent = email;
     document.querySelector("[data-display-name]").textContent = displayName;
   }

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Descargar · pteron</title>
-  <meta name="description" content="Descarga la beta pública gratuita de pteron para macOS Apple Silicon, Windows 11 y Linux x86_64, con la firma GPG para verificar los archivos de Linux.">
+  <meta name="description" content="Descarga la beta pública gratuita de pteron para Mac con chip M1 o posterior, Windows 11 y Linux x86_64, con la firma GPG para verificar los archivos de Linux.">
   <meta name="theme-color" content="#E9EDF1">
   <meta name="color-scheme" content="light">
   <link rel="canonical" href="https://pteron.patagua.dev/descargar">
@@ -47,7 +47,7 @@
     <header class="pagina-cabeza pagina-cabeza--pieza contenedor">
       <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.11#pteron"/></svg></a>
       <h1>Descargar</h1>
-      <p class="texto-grande">Beta pública gratuita<span data-release-version-texto hidden>, <a href="https://github.com/marcorojasb/pteron-beta/releases" data-download-release>versión <span data-release-version></span></a></span>. Elige la versión para tu equipo.</p>
+      <p class="texto-grande">Beta pública gratuita<span data-release-version-texto hidden>, <a href="https://github.com/marcorojasb/pteron-beta/releases" data-download-release>versión <span data-release-version></span></a></span>. Elige el instalador para tu equipo.</p>
       <!-- pieza:inicio --><div class="pieza" data-pieza aria-hidden="true" style="--giro:-4deg"><div class="pieza-cuerpo"><div class="pieza-cara"><img src="/assets/atlas/ciencias-andes-600.webp?v=2026-10-12.11" srcset="/assets/atlas/ciencias-andes-300.webp?v=2026-10-12.11 300w, /assets/atlas/ciencias-andes-600.webp?v=2026-10-12.11 600w" sizes="(max-width: 760px) 120px, 240px" width="600" height="600" alt="" decoding="async" draggable="false"></div><div class="pieza-reverso" style="clip-path:polygon(0% 0%,100% 0%,100% 100%,0% 100%);grid-template:repeat(1,1fr)/repeat(1,1fr)"><div class="reverso-figura" style="grid-area:1/1/2/2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 222" role="img" aria-labelledby="pieza-ciencias-andes--titulo pieza-ciencias-andes--descripcion" data-kit-version="6.0.0" data-kit-letra="pequena" data-kit-motor="climograma" class="pteron-figura" focusable="false">
 <title id="pieza-ciencias-andes--titulo">Climograma de una zona desértica</title>
 <desc id="pieza-ciencias-andes--descripcion">Climograma. Lluvia: 0, 1, 0, 0, 1, 2, 3, 2, 1, 0, 0, 0. Temperatura: 24, 24, 23, 21, 19, 17, 16, 17, 18, 19, 21, 23.</desc>
@@ -61,9 +61,9 @@
         <li class="plataforma" id="macos" data-platform="macos" data-capitulo="macOS">
           <div class="plataforma-nombre"><h2>macOS</h2><span class="tu-equipo destacado">Tu equipo</span></div>
           <div class="plataforma-datos">
-            <p data-download-macos-label>Apple Silicon</p>
+            <p data-download-macos-label>Chip M1 o posterior</p>
             <p class="plataforma-archivo" data-release-file="macosDmg">Instalador .dmg</p>
-            <p class="nota">Archivo .dmg firmado y notarizado.</p>
+            <p class="nota">Archivo .dmg firmado y notarizado. No funciona en Mac con procesador Intel.</p>
           </div>
           <a class="boton boton-papel" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-download-macos>Descargar para macOS</a>
         </li>
@@ -99,7 +99,7 @@
     <section class="contenedor firmas" id="firmas" data-capitulo="Verificar la descarga" aria-labelledby="firmas-titulo">
       <div class="firmas-cabeza">
         <h2 id="firmas-titulo">Verificar la descarga</h2>
-        <p class="texto">Los archivos para Linux traen firma GPG. Descarga la firma <code>.asc</code> y la clave pública, y confirma la huella. <a href="/docs?pagina=instalar-linux">Instalación y firma en Linux</a></p>
+        <p class="texto">Los archivos para Linux traen firma GPG. Descarga la firma <code>.asc</code> y la clave pública, y confirma la huella. Los pasos están en <a href="/docs?pagina=instalar-linux">Instalación y firma en Linux</a>.</p>
       </div>
       <div class="firmas-rejilla">
         <div class="formatos" id="formatos">
@@ -127,7 +127,7 @@
         </div>
         <div class="clave">
           <div class="clave-cabeza">
-            <div><h3>Clave pública de releases</h3><p class="nota"><code>pteron-releases-public.asc</code></p></div>
+            <div><h3>Clave pública de pteron</h3><p class="nota"><code>pteron-releases-public.asc</code></p></div>
             <a class="boton boton-papel" href="/descargar/pteron-releases-public.asc" download>Descargar la clave</a>
           </div>
           <p class="rotulo" id="huella-rotulo">Huella</p>
@@ -173,7 +173,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
           </ul>
         </nav>
         <div class="colofon-creditos">
-          <p>Compuesto en Archivo, de Omnibus-Type; la marca, sobre Outfit. Las hojas se arman con el código de Write y las figuras, con el motor de pteron.</p>
+          <p>Compuesto en Archivo, de Omnibus-Type; la marca, sobre Outfit. Las hojas se arman con Write, el editor de pteron, y las figuras, con su motor.</p>
           <p>Las láminas del sitio son obras de dominio público y piezas propias; sus créditos están en <a href="/privacidad#creditos">Privacidad</a>.</p>
         </div>
       </div>

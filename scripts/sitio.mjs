@@ -59,7 +59,7 @@ function esquina(route) {
 
 // El colofón dice cómo está hecha la página; los créditos completos de las láminas van donde las láminas se ven (el
 // inicio y /marca), y en las demás, un enlace a ellos.
-const CREDITOS = "Láminas de dominio público: Yciar (1564), Ercilla (1574), Hirschvogel (1543), Ovalle (1646), Westtown (1801), Byrne (1847), Gay (1854), Trouvelot (1875 y 1878), Haeckel (1904), una carta portulana de hacia 1500 y una fotografía de la NASA (2019). Las conservan The Metropolitan Museum of Art, la Library of Congress e Internet Archive.";
+const CREDITOS = "Láminas de dominio público: una carta portulana de hacia 1500, Hirschvogel (1543), Yciar (1564), Ercilla (1574), Ovalle (1646), Westtown (1801), Byrne (1847), Gay (1854), Trouvelot (1875 y 1878), Haeckel (1904) y una fotografía de la NASA (2019). Vienen de The Metropolitan Museum of Art, la Library of Congress, la NASA e Internet Archive.";
 const CON_LAMINAS = ["/", "/marca"];
 
 function colofon(route, version) {
@@ -81,7 +81,7 @@ function colofon(route, version) {
           </ul>
         </nav>
         <div class="colofon-creditos">
-          <p>Compuesto en Archivo, de Omnibus-Type; la marca, sobre Outfit. Las hojas se arman con el código de Write y las figuras, con el motor de pteron.</p>
+          <p>Compuesto en Archivo, de Omnibus-Type; la marca, sobre Outfit. Las hojas se arman con Write, el editor de pteron, y las figuras, con su motor.</p>
           ${laminas}
         </div>
       </div>

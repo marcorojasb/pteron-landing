@@ -26,7 +26,7 @@
 
   const PLATFORM = {
     windows: ["windowsExe", (version) => `Windows 11 · x64 · versión ${version}`],
-    macos: ["macosDmg", (version) => `Apple Silicon · versión ${version}`],
+    macos: ["macosDmg", (version) => `Chip M1 o posterior · versión ${version}`],
     linux: ["linuxAppImage", (version) => `x86_64 · AppImage · versión ${version}`],
   };
 

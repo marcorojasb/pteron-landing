@@ -47,7 +47,7 @@ export const MATERIALES = [
       {
         id: "q2",
         kind: "question",
-        text: "La luz del Sol llega desde la izquierda. ¿En qué posición de su órbita se ve Luna llena desde la Tierra?",
+        text: "La luz del Sol llega desde la izquierda. ¿En qué posición de su órbita se ve la Luna llena desde la Tierra?",
         points: 2,
         skill: "aplicar",
         expectedAnswer: "En la posición E, al lado opuesto del Sol.",
@@ -77,13 +77,13 @@ export const MATERIALES = [
       {
         id: "q1",
         kind: "question",
-        text: "Observa la línea de tiempo. ¿Qué período duró más?",
+        // La República sigue: sólo la Conquista y la Colonia tienen fin en la línea de tiempo
+        text: "Observa la línea de tiempo. ¿Cuál duró más: la Conquista o la Colonia?",
         points: 1,
         skill: "comprender",
         choices: [
           { id: "A", text: "Conquista" },
           { id: "B", text: "Colonia", correct: true },
-          { id: "C", text: "República" },
         ],
       },
       { id: "f1", kind: "figure", text: "Períodos de la historia de Chile", figura: ejemplo("linea_tiempo-periodos") },
@@ -173,7 +173,7 @@ export const MATERIALES = [
           totalScore: 6,
         },
       },
-      { id: "i", kind: "note", text: "Toma el lápiz con suavidad. Repasa primero y después escribe solo." },
+      { id: "i", kind: "note", text: "Toma el lápiz con suavidad. Repasa primero y después escribe sin ayuda." },
       { id: "q1", kind: "question", text: "Repasa cada palabra y escríbela dos veces más en la pauta.", points: 3, skill: "aplicar" },
       { id: "f1", kind: "figure", text: "Pauta de caligrafía", figura: ejemplo("escritura-caligrafia") },
       { id: "q2", kind: "question", text: "Separa cada palabra en sílabas. Escribe una sílaba en cada casilla.", points: 3, skill: "analizar" },

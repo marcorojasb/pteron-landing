@@ -49,7 +49,7 @@
   let renderedSlug = "";
 
   // Las guías de instalación abren con la ficha de su sistema, la misma fila que en /descargar.
-  const PLATAFORMAS = { mac: ["macos", "macOS con Apple Silicon"], win: ["windows", "Windows 11"], linux: ["linux", "Linux x86_64"] };
+  const PLATAFORMAS = { mac: ["macos", "Mac con chip M1 o posterior"], win: ["windows", "Windows 11"], linux: ["linux", "Linux x86_64"] };
   const platformCard = ([variant, , caption]) => {
     const [id, name] = PLATAFORMAS[variant] || [];
     if (!id) return "";

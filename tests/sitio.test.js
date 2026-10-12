@@ -91,9 +91,9 @@ test("los capítulos de cada página tienen ancla y nombre; los del inicio sigue
     }
   }
   const home = [...read("index.html").matchAll(/data-capitulo="([^"]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(home, ["Portada", "Cuatro hojas", "Cómo se pide", "La hoja", "En tu computador", "Descargar"]);
+  assert.deepEqual(home, ["Portada", "Cuatro hojas", "Cómo se pide", "La hoja", "En tu computador", "macOS, Windows y Linux"]);
   assert.match(read("index.html"), /id="hojas" data-mesa data-capitulo="Cuatro hojas" data-capitulo-avance="0\.9"/, "las hojas son un momento de la escena");
   const legal = (page) => [...read(page).matchAll(/<section id="([^"]+)" data-capitulo/g)].map((m) => m[1]);
   assert.deepEqual(legal("terminos.html"), ["naturaleza", "disponibilidad", "beta-gratuita", "responsabilidad", "propiedad", "contacto"]);
-  assert.equal(legal("privacidad.html").length, 6);
+  assert.deepEqual(legal("privacidad.html"), ["minimizacion", "trabajo-local", "originales", "estudiantes", "cuenta", "sitio-web", "consultas"]);
 });

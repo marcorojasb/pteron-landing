@@ -67,8 +67,27 @@ function pedidoDe(figura) {
 }
 
 /** SVG de la figura sin ancho ni alto propios: los fija el estilo, como al <img> que reemplaza. */
+/** Las descripciones de figura que lee el lector de pantalla, en buen español: pteron-design las arma con plantillas
+ *  («barra dividido», «1 polígono(s)», «circulo») y aquí se corrigen. */
+function decir(texto) {
+  return texto
+    .replace(/\bbarra dividido\b/g, "barra dividida")
+    .replace(/\b(\d+) ([a-záéíóúñ]+)\(s\)/g, (_, n, palabra) => (n === "1" ? `1 ${palabra}` : `${n} ${palabra}s`))
+    .replace(/\b1 (punto|casilla|polígono|círculo|ángulo|lado)s\b/g, "1 $1")
+    .replace(/\bcirculo/g, "círculo")
+    .replace(/\bhexagono/g, "hexágono")
+    .replace(/\brectangulo/g, "rectángulo")
+    .replace(/ con 0 sombreadas \(0\)/g, " sin sombrear");
+}
+
+/** Una figura del motor de pteron, con su título y su descripción corregidos. */
+function render(pedido, opciones) {
+  const figura = kit.renderDetallado(pedido, opciones);
+  return { ...figura, svg: figura.svg.replace(/(<(title|desc)\b[^>]*>)([^<]*)(<\/\2>)/g, (_, abre, _etiqueta, texto, cierra) => abre + decir(texto) + cierra) };
+}
+
 function figuraSVG(pedido, prefijo, style) {
-  const { svg } = kit.renderDetallado(pedido, { prefijoIds: prefijo });
+  const { svg } = render(pedido, { prefijoIds: prefijo });
   return svg.replace(/^<svg\b([^>]*)>/, (_, attrs) => `<svg${attrs.replace(/\s(width|height)="[^"]*"/g, "")} class="pteron-figura" style="${style}">`);
 }
 
@@ -228,11 +247,14 @@ function zonas(filas, aspecto) {
   return { figura: area(mejor), pie: pie ? area(pie) : null, grid: `repeat(${rows},1fr)/repeat(${cols},1fr)` };
 }
 
+/** El crédito al pie del reverso: la fuente de la lámina, o «Lámina propia» si se hizo para el sitio. */
+const credito = (lamina) => (lamina.fuente === "Pieza propia" ? "Lámina propia" : `Lámina: ${escape(lamina.fuente)}`);
+
 const laminas = LAMINAS.map((lamina) => {
   const pedido = lamina.hoja ? pedidos.get(`${lamina.hoja}/${lamina.bloque}`) : pedidoDe(lamina.figura);
   if (!pedido) throw new Error(`La lámina ${lamina.archivo} apunta a una figura que no existe`);
   const reflejo = lamina.forma.map((fila) => [...fila].reverse().join(""));
-  const { svg, ancho, alto } = kit.renderDetallado(pedido, { prefijoIds: `lamina-${lamina.archivo}-` });
+  const { svg, ancho, alto } = render(pedido, { prefijoIds: `lamina-${lamina.archivo}-` });
   const zona = zonas(reflejo, ancho / alto);
   const figura = svg.replace(/^<svg\b([^>]*)>/, (_, attrs) => `<svg${attrs.replace(/\s(width|height)="[^"]*"/g, "")} class="pteron-figura" focusable="false">`);
   const [x, y, w, capa, giro] = lamina.escritorio;
@@ -240,7 +262,7 @@ const laminas = LAMINAS.map((lamina) => {
   if (lamina.movil) vars.push(`--xm:${lamina.movil[0]}`, `--ym:${lamina.movil[1]}`, `--wm:${lamina.movil[2]}`, `--rm:${lamina.movil[4]}`);
   const src = (size) => `/assets/atlas/${lamina.archivo}-${size}.webp?v=${version}`;
   const pie = zona.pie
-    ? `<p class="reverso-pie" style="grid-area:${zona.pie}"><b>${escape(pedido.titulo)}</b> <span>Lámina: ${escape(lamina.fuente)}</span></p>`
+    ? `<p class="reverso-pie" style="grid-area:${zona.pie}"><b>${escape(pedido.titulo)}</b> <span>${credito(lamina)}</span></p>`
     : "";
   return `<div class="lamina" data-lamina="${lamina.archivo}" data-capa="${capa}"${lamina.hoja ? ` data-hoja="${lamina.hoja}" data-bloque="${lamina.bloque}"` : ""}${lamina.movil ? "" : " data-solo-escritorio"} style="${vars.join(";")}">`
     + `<div class="lamina-sombra"><img src="${src(300)}" alt="" decoding="async" draggable="false"></div>`
@@ -269,12 +291,12 @@ const pares = PARES.map((archivo) => {
   const lamina = LAMINAS.find((item) => item.archivo === archivo);
   if (!lamina) throw new Error(`/marca pide la lámina ${archivo}, que no está en materiales.mjs`);
   const pedido = lamina.hoja ? pedidos.get(`${lamina.hoja}/${lamina.bloque}`) : pedidoDe(lamina.figura);
-  const { svg } = kit.renderDetallado(pedido, { prefijoIds: `par-${archivo}-` });
+  const { svg } = render(pedido, { prefijoIds: `par-${archivo}-` });
   const figura = svg.replace(/^<svg\b([^>]*)>/, (_, attrs) => `<svg${attrs.replace(/\s(width|height)="[^"]*"/g, "")} class="pteron-figura" focusable="false">`);
   const src = (size) => `/assets/atlas/${lamina.archivo}-${size}.webp?v=${version}`;
   return `<li class="par" data-lamina="${archivo}"><img class="par-lamina" src="${src(600)}" srcset="${src(300)} 300w, ${src(600)} 600w" sizes="(max-width: 760px) 40vw, 220px" width="600" height="600" alt="Recorte de ${escape(lamina.obra)}, ${escape(lamina.fuente)}" decoding="async">`
     + `<div class="par-figura">${figura}</div>`
-    + `<p class="par-pie"><b>${escape(pedido.titulo)}</b> <span>${escape(lamina.asignatura)} · Lámina: ${escape(lamina.fuente)}</span></p></li>`;
+    + `<p class="par-pie"><b>${escape(pedido.titulo)}</b> <span>${escape(lamina.asignatura)} · ${credito(lamina)}</span></p></li>`;
 });
 writeFileSync(marcaPath, inject(readFileSync(marcaPath, "utf8"), "pares", pares.join(""), "marca/index.html"));
 
@@ -289,12 +311,12 @@ for (const [pagina, archivo, giro] of CABEZAS) {
   if (!lamina) throw new Error(`${pagina} pide la lámina ${archivo}, que no está en materiales.mjs`);
   const pedido = lamina.hoja ? pedidos.get(`${lamina.hoja}/${lamina.bloque}`) : pedidoDe(lamina.figura);
   const reflejo = lamina.forma.map((fila) => [...fila].reverse().join(""));
-  const { svg, ancho, alto } = kit.renderDetallado(pedido, { prefijoIds: `pieza-${archivo}-` });
+  const { svg, ancho, alto } = render(pedido, { prefijoIds: `pieza-${archivo}-` });
   const zona = zonas(reflejo, ancho / alto);
   const figura = svg.replace(/^<svg\b([^>]*)>/, (_, attrs) => `<svg${attrs.replace(/\s(width|height)="[^"]*"/g, "")} class="pteron-figura" focusable="false">`);
   const src = (size) => `/assets/atlas/${lamina.archivo}-${size}.webp?v=${version}`;
   const pie = zona.pie
-    ? `<p class="reverso-pie" style="grid-area:${zona.pie}"><b>${escape(pedido.titulo)}</b> <span>Lámina: ${escape(lamina.fuente)}</span></p>`
+    ? `<p class="reverso-pie" style="grid-area:${zona.pie}"><b>${escape(pedido.titulo)}</b> <span>${credito(lamina)}</span></p>`
     : "";
   const markup = `<div class="pieza" data-pieza aria-hidden="true" style="--giro:${giro}deg"><div class="pieza-cuerpo">`
     + `<div class="pieza-cara"><img src="${src(600)}" srcset="${src(300)} 300w, ${src(600)} 600w" sizes="(max-width: 760px) 120px, 240px" width="600" height="600" alt="" decoding="async" draggable="false"></div>`

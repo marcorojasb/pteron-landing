@@ -320,7 +320,7 @@
 
   /* Contenido: el pedido de la guía de Matemática que el inicio muestra en «La hoja»; sus partes son los bloques
      de esa guía (scripts/pteron-hojas/materiales.mjs) */
-  const SESSIONS = ["Fracciones · 7° básico", "Homotecia · 8° básico", "Gráficos · 6° básico"];
+  const SESSIONS = ["Fracciones · 7° básico", "Homotecia · 1° medio", "Gráficos · 6° básico"];
   const TILES = [
     ["calendar-days", "Planificar", "organiza clases y unidades"],
     ["file-plus-2", "Crear", "produce material listo para usar"],

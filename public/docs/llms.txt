@@ -1,12 +1,12 @@
 # pteron
 
 > pteron es un espacio de trabajo local-first para docentes. Prepara guías,
-> planificaciones, evaluaciones, rúbricas y presentaciones a partir de las
+> pruebas, planificaciones, rúbricas y presentaciones a partir de las
 > fuentes del profesor, y las entrega como un documento editable que él decide
 > si conservar. No reemplaza su criterio.
 
 El núcleo local es gratis para siempre y no depende de un plan de pago. Los
-planes añaden capacidad de IA incluida, no el trabajo local.
+planes sólo agregan IA incluida.
 
 ## Empezar
 
@@ -20,10 +20,10 @@ planes añaden capacidad de IA incluida, no el trabajo local.
 
 ## Conocer la aplicación
 
-El selector superior derecho cambia entre cuatro espacios: Chats (conversaciones
-y pestañas), Biblioteca (materiales y archivos), Planificador (clases, unidades y
-calendario, todavía en implementación) y Configuración (Perfil, Modelo de IA,
-Memoria y contexto, Complementos, Labs y Sobre pteron).
+El selector superior derecho cambia entre tres espacios: Chats (conversaciones y
+pestañas), Biblioteca (materiales y archivos) y Configuración (Perfil, Modelo de
+IA, Memoria y contexto, Complementos, Labs y Sobre pteron). El Planificador
+(clases, unidades y calendario) está pausado y se activa en Configuración › Labs.
 
 - [La pantalla de inicio](https://pteron.patagua.dev/docs?pagina=pantalla-inicio)
 - [Sesiones y memoria](https://pteron.patagua.dev/docs?pagina=sesiones-memoria)
@@ -67,21 +67,21 @@ un curso, un plan o un tipo de material.
 
 ## Notas sobre el estado actual
 
-Windows 11 está soportado durante la beta. El instalador todavía no está firmado
+pteron funciona en Windows 11 durante la beta. El instalador todavía no está firmado
 y Microsoft Defender SmartScreen puede pedir confirmación. Linux x86_64 está
 disponible en beta mediante AppImage, .deb, .rpm y .tar.gz, con firmas GPG
-separadas. macOS requiere procesadores Apple serie M. El canal estable está
-próximamente, sin fecha comprometida.
+separadas. macOS requiere un Mac con chip M1 o posterior; no funciona en Mac con
+procesador Intel. Todas las versiones salen por ahora en el canal beta; el
+estable no tiene fecha.
 
 La detección de datos de estudiantes es una salvaguarda acotada: reconoce un
 nombre declarado en un campo de persona y un RUT con formato chileno antes de un
 envío a un proveedor externo. Salud, NEE/PIE, calificaciones o disciplina no la
 disparan por sí solas.
 
-Los materiales nuevos se abren en los editores nativos Write y Present: cinta por
-pestañas, hojas físicas con reflujo automático, configuración de página por
+Los materiales nuevos se abren en los editores nativos Write y Present: cinta de
+una fila, hojas físicas con reflujo automático, configuración de página por
 documento que el PDF respeta, listas e imágenes integradas y ecuaciones que se
-editan dentro del documento. El espacio Planificador sigue en implementación y su
-superficie todavía puede cambiar.
+editan dentro del documento.
 
 pteron no abre ni convierte archivos PPTX externos: los crea y los exporta.
