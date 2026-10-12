@@ -48,9 +48,11 @@
       return Math.max(0, el.getBoundingClientRect().top + window.scrollY - margen);
     };
 
-    // El foco va al título del capítulo (o al capítulo mismo), sin volver a desplazar la página
+    // El foco va al título del capítulo: el que lo nombra (aria-labelledby), el primero visible que tenga dentro (no los
+    // de las hojas de muestra, que están ocultos al lector) o, si no hay, el capítulo mismo. Sin volver a desplazar.
     const enfocar = (el) => {
-      const titulo = el.matches("h1, h2, h3") ? el : document.getElementById(el.getAttribute("aria-labelledby") || "") || el;
+      const interno = $$("h1, h2, h3", el).find((h) => !h.closest('[aria-hidden="true"]'));
+      const titulo = el.matches("h1, h2, h3") ? el : document.getElementById(el.getAttribute("aria-labelledby") || "") || interno || el;
       if (!titulo.hasAttribute("tabindex")) titulo.setAttribute("tabindex", "-1");
       titulo.focus({ preventScroll: true });
     };

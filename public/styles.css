@@ -65,7 +65,7 @@ a:hover{text-decoration-thickness:2px}
 ::selection{background:color-mix(in srgb,var(--lapiz) 70%,white);color:var(--tinta)}
 :focus-visible{outline:3px solid var(--azul);outline-offset:3px;border-radius:4px}
 /* Un título que recibe el foco al llegar desde el índice no es un control: no lleva anillo */
-:is(h1,h2,h3,section,div)[tabindex="-1"]:focus{outline:none}
+:is(h1,h2,h3,section,div,li)[tabindex="-1"]:focus{outline:none}
 [hidden]{display:none!important}
 
 h1,h2,h3,h4{color:var(--azul);font-weight:760;text-wrap:balance;letter-spacing:-.012em}
