@@ -254,3 +254,52 @@
 .hero .tetris{--cols:5;--rows:4;--T-clear:1.46s;--T-end:3.71s;width:calc(100% + 2*var(--gutter));margin:18px calc(-1*var(--gutter)) 0}
 .tetris .cutout{--col:var(--mc);--row:var(--mr);--w:var(--mw,1);--land:var(--mt)}
 .tetris .cutout.t-dk,.js .tetris.is-ready .cutout.t-dk{display:none}}
+
+/* Héroe vivo (2026-10-12.7): a la izquierda, el titular, la acción y los cuatro pasos de la demostración; a la derecha,
+   la interfaz de pteron reconstruida en HTML (pteron-ui.css), entera en la primera pantalla. Reemplaza al pozo de recortes. */
+.hero.hero-live{padding:clamp(112px,9.5vw,136px) 0 0;background:#0b1320}
+.hero-live .hero-media{top:0;bottom:auto;height:min(1100px,100%);aspect-ratio:auto}
+.hero-live .hero-media img{-webkit-mask-image:linear-gradient(180deg,#000 55%,transparent);mask-image:linear-gradient(180deg,#000 55%,transparent)}
+.hero-live .hero-media::after{display:none}
+.hero-live .hero-glow{top:auto;bottom:calc(var(--r-sheet) + 60px);transform:translate(-50%,0)}
+.hero-grid{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,25rem) minmax(0,1fr);align-items:start;gap:clamp(36px,4.5vw,72px)}
+.hero-live .hero-copy{position:relative;display:grid;justify-items:start;gap:20px;padding-top:6px;text-align:left}
+.hero-live .hero-copy::before{content:"";position:absolute;z-index:-1;inset:-50px -30% -40px -20%;background:radial-gradient(50% 50% at 45% 40%,#060a10a6,#060a1047 60%,transparent 80%);pointer-events:none}
+.hero-live h1{font-size:clamp(2.75rem,1.4rem + 3vw,4.1rem);line-height:1;color:var(--snow);text-shadow:0 2px 30px #05090f73}
+.hero-live .lead{max-width:30ch;color:#dcdee2;text-shadow:0 1px 18px #05090f99}
+.hero-live .actions{margin-top:6px}
+.hero-note{color:#c3c7cd;font-size:14px;line-height:1.4;text-shadow:0 1px 12px #05090fcc}
+.pt-demo{position:relative;margin:0;min-width:0}
+.pt-demo .pt-window{width:100%;aspect-ratio:1.36}
+/* Pasos: una secuencia real (por eso van numerados); el actual se marca con la línea completa */
+.pt-steps{display:grid;gap:4px;width:100%;margin-top:18px;padding-top:22px;border-top:1px solid #ffffff1f}
+.pt-steps-title{margin-bottom:6px;color:#aeb4bd;font:500 13px/1.4 var(--sans)}
+.pt-steps ol{display:grid;gap:2px;margin:0;padding:0;list-style:none}
+.pt-steps button{position:relative;display:block;width:100%;min-height:44px;padding:11px 8px 11px 40px;border:0;border-radius:12px;background:none;color:#aeb4bd;font:400 15px/1.4 var(--sans);text-align:left;cursor:pointer;transition:background .35s var(--ease),color .35s var(--ease)}
+.pt-steps button>span{position:absolute;left:10px;top:11px;display:grid;place-items:center;width:21px;height:21px;border-radius:50%;box-shadow:inset 0 0 0 1px #ffffff40;color:#c3c7cd;font:500 11.5px/1 var(--mono);font-variant-numeric:tabular-nums;transition:background .35s var(--ease),color .35s var(--ease),box-shadow .35s var(--ease)}
+.pt-steps b{color:var(--snow);font-weight:600}
+.pt-steps button:hover{color:var(--snow)}
+.pt-steps button.is-done>span{background:#ffffff24;box-shadow:none;color:var(--snow)}
+.pt-steps button.is-current{background:#ffffff12;color:var(--snow)}
+.pt-steps button.is-current>span{background:var(--ember);box-shadow:none;color:#1b1206}
+.pt-replay{justify-self:start;display:inline-flex;align-items:center;gap:8px;min-height:44px;margin-top:10px;padding:0 16px;border:1px solid #ffffff2e;border-radius:999px;background:#ffffff0d;color:var(--snow);font:500 14px/1 var(--sans);visibility:hidden;opacity:0;transition:opacity .4s var(--ease),visibility 0s .4s}
+.pt-replay .icon{width:16px;height:16px}
+.hero-live:has(.pt-demo.is-done) .pt-replay,.hero-live:has(.pt-demo:not(.is-live)) .pt-replay{visibility:visible;opacity:1;transition-delay:0s}
+/* La hoja clara empieza bajo la ventana: lo que se comprueba hoy */
+.hero-paper{position:relative;z-index:2;margin-top:clamp(56px,6vw,88px);background:var(--paper);border-radius:var(--r-sheet) var(--r-sheet) 0 0;box-shadow:0 -30px 60px -30px #00000080}
+.hero-paper .truth{padding-top:clamp(36px,4vw,56px)}
+@media (max-width:1100px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-live .hero-copy{max-width:640px}
+  .pt-steps ol{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px}
+  .pt-demo .pt-window{aspect-ratio:1.5}
+}
+@media (max-width:760px){
+  .hero-live .hero-copy{display:contents}
+  .hero-grid{gap:20px}
+  .hero-live .pt-steps{order:10;margin-top:4px}
+  .hero-live .actions{width:100%}
+  .pt-steps ol{grid-template-columns:1fr}
+  .pt-demo .pt-window{aspect-ratio:auto;height:min(660px,172vw)}
+}
+.hero-live .actions{justify-content:flex-start}

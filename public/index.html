@@ -31,14 +31,16 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..600&amp;family=Geist+Mono:wght@400;500&amp;family=Newsreader:opsz,wght@6..72,300..500&amp;display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..600&amp;family=Geist+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Serif:wght@600&amp;family=Newsreader:opsz,wght@6..72,300..500&amp;family=Outfit:wght@400;500;600;700&amp;display=swap">
   <link rel="preload" as="image" href="/assets/photos/araucarias-2400.webp?v=2026-10-12.6" imagesrcset="/assets/photos/araucarias-1440.webp?v=2026-10-12.6 1440w, /assets/photos/araucarias-2400.webp?v=2026-10-12.6 2400w" imagesizes="100vw" media="(min-width: 761px)">
   <link rel="preload" as="image" href="/assets/photos/araucarias-movil.webp?v=2026-10-12.6" media="(max-width: 760px)">
   <script>document.documentElement.classList.add("js")</script>
   <link rel="stylesheet" href="/styles.css?v=2026-10-12.6">
   <link rel="stylesheet" href="/inicio.css?v=2026-10-12.6">
+  <link rel="stylesheet" href="/pteron-ui.css?v=2026-10-12.7">
   <script src="/release-data.js?v=2026-10-12.6" defer></script>
   <script src="/script.js?v=2026-10-12.6" defer></script>
+  <script src="/pteron-ui.js?v=2026-10-12.7" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -71,90 +73,87 @@
 
   <main id="contenido">
 
-    <!-- Héroe: hora azul en Nahuelbuta; la ventana real sube entre la foto y la hoja -->
-    <section class="hero hero-split" aria-labelledby="hero-title">
-      <div class="wrap hero-top">
-      <div class="hero-copy">
-        <p class="kicker" data-intro style="--d:0">Beta pública gratuita<span class="sep-lg" aria-hidden="true"> · </span><br class="br-sm"><span class="wm">macOS</span>, Windows y Linux</p>
-        <h1 class="display-xl" id="hero-title" data-intro style="--d:1">Construido por profes,<br class="br-lg"> para profes.</h1>
-        <p class="lead" data-intro style="--d:2">Guías, planificaciones, evaluaciones y rúbricas con tus materiales. En tu computador.</p>
-        <div class="actions" data-intro style="--d:3">
-          <a class="button button-ember button-large" href="/descargar"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.6#i-download"/></svg>Descargar la beta</a>
-          <a class="button button-glass button-large" href="#como-trabaja">Cómo trabaja</a>
+    <!-- Héroe: la interfaz de pteron reconstruida en HTML (no es una captura). El pedido se escribe, pteron reconoce
+         el contexto con su mismo algoritmo (pteron-ui.js) y la guía se escribe a la vista, como en la app -->
+    <section class="hero hero-live" aria-labelledby="hero-title">
+      <div class="hero-media" aria-hidden="true">
+        <div data-parallax="0.12">
+          <picture>
+            <source media="(max-width: 760px)" srcset="/assets/photos/araucarias-movil.webp?v=2026-10-12.6" width="1080" height="1350">
+            <img src="/assets/photos/araucarias-2400.webp?v=2026-10-12.6" srcset="/assets/photos/araucarias-1440.webp?v=2026-10-12.6 1440w, /assets/photos/araucarias-2400.webp?v=2026-10-12.6 2400w" sizes="100vw" width="2400" height="1600" alt="" fetchpriority="high" decoding="async">
+          </picture>
         </div>
       </div>
-      <div class="tetris cutouts" data-cutouts data-tetris aria-hidden="true">
-        <div class="tetris-stack">
-          <figure class="cutout t-stack is-lenguaje" style="--dc:0;--dr:4;--dw:2;--dt:0.77s;--mc:0;--mr:2;--mw:2;--mt:0.74s;--spin:-90deg;--rot:-0.6deg;--er:-5deg;--img:url(/assets/atlas/lenguaje-araucana-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><img class="cutout-face" src="/assets/atlas/lenguaje-araucana-300.webp?v=2026-10-12.6" srcset="/assets/atlas/lenguaje-araucana-300.webp?v=2026-10-12.6 300w, /assets/atlas/lenguaje-araucana-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 160px, 230px" width="600" height="600" alt="" decoding="async"><span class="cutout-back"><b>Lenguaje</b>Ercilla, 1574</span></div></div></figure>
-          <figure class="cutout t-stack is-lenguaje" style="--dc:1;--dr:4;--dt:0.97s;--mc:1;--mr:2;--mt:0.825s;--rot:1.1deg;--er:8deg;--img:url(/assets/atlas/lenguaje-enie-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><img class="cutout-face" src="/assets/atlas/lenguaje-enie-300.webp?v=2026-10-12.6" srcset="/assets/atlas/lenguaje-enie-300.webp?v=2026-10-12.6 300w, /assets/atlas/lenguaje-enie-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"><span class="cutout-back"><b>Lenguaje</b>Pieza propia</span></div></div></figure>
-          <figure class="cutout t-stack t-dk is-historia" style="--dc:1;--dr:3;--dt:1.22s;--rot:-1.2deg;--er:-9deg;--img:url(/assets/atlas/historia-chile-1816-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><picture><source media="(max-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="cutout-face" src="/assets/atlas/historia-chile-1816-300.webp?v=2026-10-12.6" srcset="/assets/atlas/historia-chile-1816-300.webp?v=2026-10-12.6 300w, /assets/atlas/historia-chile-1816-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"></picture><span class="cutout-back"><b>Historia</b>Pinkerton, 1816</span></div></div></figure>
-          <figure class="cutout t-stack t-dk is-ciencias" style="--dc:3;--dr:5;--dt:0.72s;--spin:-90deg;--rot:0.7deg;--er:4deg;--img:url(/assets/atlas/ciencias-orion-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><picture><source media="(max-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="cutout-face" src="/assets/atlas/ciencias-orion-300.webp?v=2026-10-12.6" srcset="/assets/atlas/ciencias-orion-300.webp?v=2026-10-12.6 300w, /assets/atlas/ciencias-orion-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"></picture><span class="cutout-back"><b>Ciencias</b>Trouvelot, 1881</span></div></div></figure>
-          <figure class="cutout t-stack t-dk is-mezcla" style="--dc:3;--dr:4;--dt:1.02s;--rot:-0.9deg;--er:-7deg;--img:url(/assets/atlas/mezcla-salpicadura-crayon-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><picture><source media="(max-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="cutout-face" src="/assets/atlas/mezcla-salpicadura-crayon-300.webp?v=2026-10-12.6" srcset="/assets/atlas/mezcla-salpicadura-crayon-300.webp?v=2026-10-12.6 300w, /assets/atlas/mezcla-salpicadura-crayon-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"></picture><span class="cutout-back"><b>Artes</b>Pieza propia</span></div></div></figure>
-          <figure class="cutout t-stack t-dk is-ciencias" style="--dc:3;--dr:3;--dt:1.27s;--spin:90deg;--rot:0.8deg;--er:6deg;--img:url(/assets/atlas/ciencias-luna-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><picture><source media="(max-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="cutout-face" src="/assets/atlas/ciencias-luna-300.webp?v=2026-10-12.6" srcset="/assets/atlas/ciencias-luna-300.webp?v=2026-10-12.6 300w, /assets/atlas/ciencias-luna-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"></picture><span class="cutout-back"><b>Ciencias</b>Trouvelot, 1875</span></div></div></figure>
-          <figure class="cutout t-stack t-dk is-matematica" style="--dc:3;--dr:2;--dt:1.47s;--rot:-1deg;--er:-8deg;--img:url(/assets/atlas/matematica-byrne-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><picture><source media="(max-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="cutout-face" src="/assets/atlas/matematica-byrne-300.webp?v=2026-10-12.6" srcset="/assets/atlas/matematica-byrne-300.webp?v=2026-10-12.6 300w, /assets/atlas/matematica-byrne-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"></picture><span class="cutout-back"><b>Matemática</b>Byrne, 1847</span></div></div></figure>
-          <figure class="cutout t-stack t-dk is-ciencias" style="--dc:4;--dr:5;--dt:0.87s;--spin:90deg;--rot:-0.6deg;--er:-3deg;--img:url(/assets/atlas/ciencias-eclipse-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><picture><source media="(max-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="cutout-face" src="/assets/atlas/ciencias-eclipse-300.webp?v=2026-10-12.6" srcset="/assets/atlas/ciencias-eclipse-300.webp?v=2026-10-12.6 300w, /assets/atlas/ciencias-eclipse-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"></picture><span class="cutout-back"><b>Ciencias</b>Trouvelot, 1878</span></div></div></figure>
-          <figure class="cutout t-stack t-dk is-lenguaje" style="--dc:4;--dr:4;--dt:1.12s;--spin:-90deg;--rot:0.9deg;--er:5deg;--img:url(/assets/atlas/lenguaje-muestrario-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><picture><source media="(max-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="cutout-face" src="/assets/atlas/lenguaje-muestrario-300.webp?v=2026-10-12.6" srcset="/assets/atlas/lenguaje-muestrario-300.webp?v=2026-10-12.6 300w, /assets/atlas/lenguaje-muestrario-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"></picture><span class="cutout-back"><b>Lenguaje</b>Westtown, 1801</span></div></div></figure>
-          <figure class="cutout t-stack t-dk is-ciencias" style="--dc:4;--dr:3;--dt:1.37s;--rot:-0.7deg;--er:-6deg;--img:url(/assets/atlas/ciencias-flores-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><picture><source media="(max-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="cutout-face" src="/assets/atlas/ciencias-flores-300.webp?v=2026-10-12.6" srcset="/assets/atlas/ciencias-flores-300.webp?v=2026-10-12.6 300w, /assets/atlas/ciencias-flores-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"></picture><span class="cutout-back"><b>Ciencias</b>Gay, 1854</span></div></div></figure>
-          <figure class="cutout t-stack t-dk is-historia" style="--dc:4;--dr:2;--dt:1.52s;--spin:90deg;--rot:1.2deg;--er:9deg;--img:url(/assets/atlas/historia-ovalle-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><picture><source media="(max-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="cutout-face" src="/assets/atlas/historia-ovalle-300.webp?v=2026-10-12.6" srcset="/assets/atlas/historia-ovalle-300.webp?v=2026-10-12.6 300w, /assets/atlas/historia-ovalle-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"></picture><span class="cutout-back"><b>Historia</b>Ovalle, 1646</span></div></div></figure>
-          <figure class="cutout t-stack is-historia" style="--dc:5;--dr:5;--dt:0.82s;--mc:3;--mr:3;--mt:0.91s;--rot:0.6deg;--er:4deg;--img:url(/assets/atlas/historia-portulano-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><img class="cutout-face" src="/assets/atlas/historia-portulano-300.webp?v=2026-10-12.6" srcset="/assets/atlas/historia-portulano-300.webp?v=2026-10-12.6 300w, /assets/atlas/historia-portulano-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"><span class="cutout-back"><b>Historia</b>Portulano, s. XVI</span></div></div></figure>
-          <figure class="cutout t-stack t-dk is-ciencias" style="--dc:5;--dr:4;--dt:1.07s;--rot:-0.8deg;--er:-5deg;--img:url(/assets/atlas/ciencias-diatomeas-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><picture><source media="(max-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="cutout-face" src="/assets/atlas/ciencias-diatomeas-300.webp?v=2026-10-12.6" srcset="/assets/atlas/ciencias-diatomeas-300.webp?v=2026-10-12.6 300w, /assets/atlas/ciencias-diatomeas-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"></picture><span class="cutout-back"><b>Ciencias</b>Haeckel, 1904</span></div></div></figure>
-          <figure class="cutout t-stack t-dk is-ciencias" style="--dc:5;--dr:3;--dt:1.32s;--spin:-90deg;--rot:0.7deg;--er:6deg;--img:url(/assets/atlas/ciencias-algas-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><picture><source media="(max-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="cutout-face" src="/assets/atlas/ciencias-algas-300.webp?v=2026-10-12.6" srcset="/assets/atlas/ciencias-algas-300.webp?v=2026-10-12.6 300w, /assets/atlas/ciencias-algas-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"></picture><span class="cutout-back"><b>Ciencias</b>Gay, 1854</span></div></div></figure>
-          <figure class="cutout t-stack is-ciencias" style="--dc:6;--dr:5;--dt:0.92s;--mc:4;--mr:3;--mt:0.995s;--rot:-0.5deg;--er:3deg;--img:url(/assets/atlas/ciencias-andes-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><img class="cutout-face" src="/assets/atlas/ciencias-andes-300.webp?v=2026-10-12.6" srcset="/assets/atlas/ciencias-andes-300.webp?v=2026-10-12.6 300w, /assets/atlas/ciencias-andes-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"><span class="cutout-back"><b>Ciencias</b>NASA, 2019</span></div></div></figure>
-          <figure class="cutout t-stack t-dk is-matematica" style="--dc:6;--dr:4;--dt:1.17s;--spin:90deg;--rot:1deg;--er:7deg;--img:url(/assets/atlas/matematica-perspectiva-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><picture><source media="(max-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="cutout-face" src="/assets/atlas/matematica-perspectiva-300.webp?v=2026-10-12.6" srcset="/assets/atlas/matematica-perspectiva-300.webp?v=2026-10-12.6 300w, /assets/atlas/matematica-perspectiva-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"></picture><span class="cutout-back"><b>Matemática</b>Hirschvogel, 1543</span></div></div></figure>
-          <figure class="cutout t-stack t-dk is-ciencias" style="--dc:6;--dr:3;--dt:1.42s;--spin:-90deg;--rot:-0.9deg;--er:-6deg;--img:url(/assets/atlas/ciencias-corcho-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><picture><source media="(max-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="cutout-face" src="/assets/atlas/ciencias-corcho-300.webp?v=2026-10-12.6" srcset="/assets/atlas/ciencias-corcho-300.webp?v=2026-10-12.6 300w, /assets/atlas/ciencias-corcho-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"></picture><span class="cutout-back"><b>Ciencias</b>Hooke, 1665</span></div></div></figure>
-        </div>
-        <figure class="cutout t-clear is-historia shape-step-r" style="--dc:0;--dr:5;--dt:0.47s;--mc:0;--mr:3;--mt:0.485s;--rot:-0.8deg;--er:-6deg;--img:url(/assets/atlas/historia-gay-mapa-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><img class="cutout-face" src="/assets/atlas/historia-gay-mapa-300.webp?v=2026-10-12.6" srcset="/assets/atlas/historia-gay-mapa-300.webp?v=2026-10-12.6 300w, /assets/atlas/historia-gay-mapa-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"><span class="cutout-back"><b>Historia</b>Gay, 1854</span></div></div></figure>
-        <figure class="cutout t-clear is-lenguaje" style="--dc:1;--dr:5;--dt:0.57s;--mc:1;--mr:3;--mt:0.57s;--spin:-90deg;--rot:0.6deg;--er:5deg;--img:url(/assets/atlas/lenguaje-yciar-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><img class="cutout-face" src="/assets/atlas/lenguaje-yciar-300.webp?v=2026-10-12.6" srcset="/assets/atlas/lenguaje-yciar-300.webp?v=2026-10-12.6 300w, /assets/atlas/lenguaje-yciar-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"><span class="cutout-back"><b>Lenguaje</b>Yciar, 1564</span></div></div></figure>
-        <figure class="cutout t-clear t-gap is-matematica shape-step-r" style="--dc:2;--dr:5;--dt:1.98s;--mc:2;--mr:3;--mt:1.46s;--spin:90deg;--img:url(/assets/atlas/matematica-pizarra-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><img class="cutout-face" src="/assets/atlas/matematica-pizarra-300.webp?v=2026-10-12.6" srcset="/assets/atlas/matematica-pizarra-300.webp?v=2026-10-12.6 300w, /assets/atlas/matematica-pizarra-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"><span class="cutout-back"><b>Matemática</b>Pieza propia</span></div></div></figure>
-        <figure class="cutout t-clear is-ciencias" style="--dc:3;--dr:5;--dt:0.42s;--mc:3;--mr:3;--mt:0.4s;--spin:90deg;--rot:-0.5deg;--er:-4deg;--img:url(/assets/atlas/ciencias-espectro-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><img class="cutout-face" src="/assets/atlas/ciencias-espectro-300.webp?v=2026-10-12.6" srcset="/assets/atlas/ciencias-espectro-300.webp?v=2026-10-12.6 300w, /assets/atlas/ciencias-espectro-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"><span class="cutout-back"><b>Ciencias</b>Pieza propia</span></div></div></figure>
-        <figure class="cutout t-clear is-mezcla" style="--dc:4;--dr:5;--dt:0.67s;--mc:4;--mr:3;--mt:0.655s;--rot:0.9deg;--er:6deg;--img:url(/assets/atlas/mezcla-pintura-kraft-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><img class="cutout-face" src="/assets/atlas/mezcla-pintura-kraft-300.webp?v=2026-10-12.6" srcset="/assets/atlas/mezcla-pintura-kraft-300.webp?v=2026-10-12.6 300w, /assets/atlas/mezcla-pintura-kraft-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"><span class="cutout-back"><b>Artes</b>Pieza propia</span></div></div></figure>
-        <figure class="cutout t-clear t-dk is-matematica shape-bl" style="--dc:5;--dr:5;--dt:0.52s;--spin:90deg;--rot:-0.7deg;--er:-5deg;--img:url(/assets/atlas/matematica-circulos-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><picture><source media="(max-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="cutout-face" src="/assets/atlas/matematica-circulos-300.webp?v=2026-10-12.6" srcset="/assets/atlas/matematica-circulos-300.webp?v=2026-10-12.6 300w, /assets/atlas/matematica-circulos-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"></picture><span class="cutout-back"><b>Matemática</b>Hirschvogel, 1543</span></div></div></figure>
-        <figure class="cutout t-clear t-dk is-lenguaje shape-bl" style="--dc:6;--dr:5;--dt:0.62s;--rot:0.5deg;--er:7deg;--img:url(/assets/atlas/lenguaje-yciar-xyz-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><picture><source media="(max-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="cutout-face" src="/assets/atlas/lenguaje-yciar-xyz-300.webp?v=2026-10-12.6" srcset="/assets/atlas/lenguaje-yciar-xyz-300.webp?v=2026-10-12.6 300w, /assets/atlas/lenguaje-yciar-xyz-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"></picture><span class="cutout-back"><b>Lenguaje</b>Yciar, 1564</span></div></div></figure>
-        <figure class="cutout t-post is-matematica" style="--dc:2;--dr:5;--dt:3.46s;--mc:2;--mr:3;--mt:2.94s;--rot:0.8deg;--er:-4deg;--img:url(/assets/atlas/matematica-semicirculos-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><img class="cutout-face" src="/assets/atlas/matematica-semicirculos-300.webp?v=2026-10-12.6" srcset="/assets/atlas/matematica-semicirculos-300.webp?v=2026-10-12.6 300w, /assets/atlas/matematica-semicirculos-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"><span class="cutout-back"><b>Matemática</b>Byrne, 1847</span></div></div></figure>
-        <figure class="cutout t-post is-matematica" style="--dc:2;--dr:4;--dt:3.6s;--mc:2;--mr:2;--mt:3.08s;--spin:90deg;--rot:-1deg;--er:5deg;--img:url(/assets/atlas/matematica-paralelogramos-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><img class="cutout-face" src="/assets/atlas/matematica-paralelogramos-300.webp?v=2026-10-12.6" srcset="/assets/atlas/matematica-paralelogramos-300.webp?v=2026-10-12.6 300w, /assets/atlas/matematica-paralelogramos-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 80px, 115px" width="600" height="600" alt="" decoding="async"><span class="cutout-back"><b>Matemática</b>Byrne, 1847</span></div></div></figure>
-        <figure class="cutout t-post t-crown is-ciencias shape-step-r" style="--dc:5;--dr:1;--dw:2;--dt:4.36s;--mc:3;--mr:1;--mw:2;--mt:3.71s;--rot:0.5deg;--er:8deg;--img:url(/assets/atlas/ciencias-loica-300.webp?v=2026-10-12.6)"><div class="cutout-float"><div class="cutout-inner"><img class="cutout-face" src="/assets/atlas/ciencias-loica-300.webp?v=2026-10-12.6" srcset="/assets/atlas/ciencias-loica-300.webp?v=2026-10-12.6 300w, /assets/atlas/ciencias-loica-600.webp?v=2026-10-12.6 600w" sizes="(max-width: 760px) 160px, 230px" width="600" height="600" alt="" decoding="async"><span class="cutout-back"><b>Ciencias</b>Gay, 1854</span></div></div></figure>
-        <span class="tetris-flash"></span>
-      </div>
-      </div>
-
-      <div class="wrap hero-stage">
-        <div class="hero-media" aria-hidden="true">
-          <div data-parallax="0.12">
-            <picture>
-              <source media="(max-width: 760px)" srcset="/assets/photos/araucarias-movil.webp?v=2026-10-12.6" width="1080" height="1350">
-              <img src="/assets/photos/araucarias-2400.webp?v=2026-10-12.6" srcset="/assets/photos/araucarias-1440.webp?v=2026-10-12.6 1440w, /assets/photos/araucarias-2400.webp?v=2026-10-12.6 2400w" sizes="100vw" width="2400" height="1600" alt="" fetchpriority="high" decoding="async">
-            </picture>
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <h1 class="display-xl" id="hero-title" data-intro style="--d:0">Construido por profes, para profes.</h1>
+          <p class="lead" data-intro style="--d:1">Guías, planificaciones, evaluaciones y rúbricas con tus materiales. En tu computador.</p>
+          <div class="actions" data-intro style="--d:2">
+            <a class="button button-ember button-large" href="/descargar"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.7#i-download"/></svg>Descargar la beta</a>
+            <a class="button button-glass button-large" href="#como-trabaja">Cómo trabaja</a>
+          </div>
+          <p class="hero-note" data-intro style="--d:3">Beta pública gratuita para <span class="wm">macOS</span>, Windows y Linux.</p>
+          <div class="pt-steps" data-intro style="--d:4">
+            <p class="pt-steps-title">Así trabaja, con la interfaz de verdad</p>
+            <ol role="list">
+              <li><button type="button" data-pt-step aria-controls="demo-pteron"><span>1</span><b>Pides</b> con tus palabras.</button></li>
+              <li><button type="button" data-pt-step aria-controls="demo-pteron"><span>2</span><b>Confirmas</b> curso, asignatura, tema y duración.</button></li>
+              <li><button type="button" data-pt-step aria-controls="demo-pteron"><span>3</span><b>Se escribe</b> la guía, parte por parte.</button></li>
+              <li><button type="button" data-pt-step aria-controls="demo-pteron"><span>4</span><b>Es tuya</b>: la editas y la exportas a Word.</button></li>
+            </ol>
+            <button class="pt-replay" type="button" data-pt-replay aria-controls="demo-pteron"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.7#i-history"/></svg>Ver de nuevo</button>
           </div>
         </div>
-        <div class="hero-glow" aria-hidden="true"></div>
-        <div class="hero-ground" aria-hidden="true"></div>
-
-        <div class="hero-product">
-          <figure class="window hero-window" data-hero-window>
-            <span class="lights" aria-hidden="true"><span></span><span></span><span></span></span>
-            <img src="/assets/app/01-inicio.webp?v=2026-10-12.6" srcset="/assets/app/01-inicio.webp?v=2026-10-12.6 1440w, /assets/app/01-inicio-2x.webp?v=2026-10-12.6 2880w" sizes="(max-width: 760px) 140vw, 1120px" width="1440" height="880" fetchpriority="high" alt="Pantalla de inicio de pteron 0.7: las sesiones abiertas arriba, el nombre pteron al centro, los cuatro rumbos Planificar, Crear, Evaluar y Adaptar, el compositor con «Por ejemplo: presentación sobre el ciclo del agua para 3° básico» y los accesos Retomar y Reflexión por voz">
-          </figure>
-
-          <div class="ui float float-plan" aria-hidden="true">
-            <div class="ui-pad">
-              <div class="ui-row"><span class="ui-pick"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.6#i-cap"/></svg>Curso<svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.6#i-chevron"/></svg></span><span class="ui-pick"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.6#i-book"/></svg>Asignatura<svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.6#i-chevron"/></svg></span></div>
-              <p class="ui-compose">Quiero una guía sobre el ciclo del agua para 3° básico de ciencias naturales, unos 45 minutos</p>
+        <figure class="pt-demo" id="demo-pteron" data-pt-demo data-pt-icons="/assets/pt-icons.svg?v=2026-10-12.7">
+          <div class="pt pt-window" data-view="chat" data-pt-window aria-hidden="true">
+            <div class="pt-topbar">
+              <span class="pt-lights"><i></i><i></i><i></i></span>
+              <div class="pt-tabs">
+                <div class="pt-tab-strip">
+                  <span class="pt-tab"><span>Fracciones · 7° básico</span></span>
+                  <span class="pt-tab"><span>Homotecia · 8° básico</span></span>
+                  <span class="pt-tab"><span>Gráficos · 6° básico</span></span>
+                  <span class="pt-tab is-active"><span data-pt-tab-label>Fracciones equivalentes · 6° básico</span><span class="pt-tab-x"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-x"/></svg></span></span>
+                </div>
+                <span class="pt-round"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-plus"/></svg></span>
+                <span class="pt-round"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-history"/></svg></span>
+              </div>
+              <span class="pt-menu"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-message-square"/></svg>Chats<svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-chevron-down"/></svg></span>
             </div>
-            <div class="ui-divider"></div>
-            <div class="ui-pad ui-suggest"><span class="ui-sub"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.6#i-bulb"/></svg>¿Agregar?</span><span class="ui-add"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.6#i-plus"/></svg>Guía</span><span class="ui-add"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.6#i-plus"/></svg>3° básico</span><span class="ui-add"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.6#i-plus"/></svg>Ciencias Naturales</span><span class="ui-add"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.6#i-plus"/></svg>Tema: el ciclo del agua</span><span class="ui-add"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.6#i-plus"/></svg>45 minutos</span><span class="ui-link">Agregar todo</span></div>
-          </div>
-
-          <div class="ui float float-result" aria-hidden="true">
-            <div class="ui-pad ui-row">
-              <span class="ui-doc-ico"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.6#i-file"/></svg><b>DOCX</b></span>
-              <div><p class="ui-title">El ciclo del agua en la naturaleza</p><p class="ui-sub">Guía · Listo · 10 oct 2026</p></div>
+            <div class="pt-main">
+              <div class="pt-home">
+                <p class="pt-wordmark">pteron</p>
+                <div class="pt-tiles"><span class="pt-tile"><span class="pt-ico"><svg class="pt-i is-prominent" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-calendar-days"/></svg></span><b>Planificar</b><small>organiza clases y unidades</small></span><span class="pt-tile"><span class="pt-ico"><svg class="pt-i is-prominent" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-file-plus-2"/></svg></span><b>Crear</b><small>produce material listo para usar</small></span><span class="pt-tile"><span class="pt-ico"><svg class="pt-i is-prominent" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-clipboard-check"/></svg></span><b>Evaluar</b><small>comprueba y analiza aprendizajes</small></span><span class="pt-tile"><span class="pt-ico"><svg class="pt-i is-prominent" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-sliders-horizontal"/></svg></span><b>Adaptar</b><small>ajusta material existente</small></span></div>
+                <div class="pt-home-composer">
+                  <div class="pt-dock" data-pt-dock>
+                    <div class="pt-composer is-rest" data-pt-composer>
+                      <div class="pt-reveal"><div class="pt-chips" data-pt-chips><span class="pt-pick is-empty"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-graduation-cap"/></svg>Curso<svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-chevron-down"/></svg></span><span class="pt-pick is-empty"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-book-open"/></svg>Asignatura<svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-chevron-down"/></svg></span></div></div>
+                      <div class="pt-field"><p class="pt-text is-placeholder" data-pt-text>Por ejemplo: guía de fracciones equivalentes para 6° básico, 45 minutos</p></div>
+                      <div class="pt-toolbar"><div class="pt-toolbar-start" data-pt-start><span class="pt-tool"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-paperclip"/></svg></span></div><div class="pt-toolbar-end"><span class="pt-tool"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-mic"/></svg></span><span class="pt-send" data-pt-send aria-disabled="true"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-arrow-up"/></svg></span></div></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="pt-quiet">
+                  <span class="pt-door"><span class="pt-door-i"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-history"/></svg></span><span><strong>Retomar</strong><small>Fracciones · 7° básico · hace 27 min</small></span></span>
+                  <span class="pt-door"><span class="pt-door-i"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-mic"/></svg></span><span><strong>Reflexión por voz</strong><small>Piensa en voz alta una clase o un desafío</small></span></span>
+                </div>
+                <div class="pt-home-reserve"></div>
+              </div>
+              <div class="pt-chat">
+                <div class="pt-history" data-pt-history><div class="pt-column" data-pt-column><div class="pt-msg is-user"><p class="pt-bubble">Necesito una guía de fracciones equivalentes para 6° básico de matemática, unos 45 minutos, con figuras para pintar.</p><span class="pt-time">09:42 p.&nbsp;m.</span></div><div class="pt-msg is-ai"><span class="pt-kicker">pteron</span><div class="pt-prose"><p>Guía de trabajo de 45 minutos para 6° básico: primero, representación gráfica con figuras para pintar; después, fracciones equivalentes con barras y una tabla para amplificar y simplificar. Suma 30 puntos y queda lista para imprimir en Word.</p></div><article class="pt-card"><span class="pt-card-tile"><svg class="pt-i is-prominent" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-file-pen"/></svg><span class="pt-card-format">DOCX</span></span><div class="pt-card-body"><p class="pt-card-title">Guía de trabajo: fracciones equivalentes</p><p class="pt-card-meta"><span>Guía</span><span>Listo</span><span>12 oct 2026</span></p><div class="pt-card-tags"><span>6° básico</span><span>Matemática</span><span>fracciones equivalentes</span></div></div><div class="pt-card-actions"><span class="pt-quiet-btn"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-layers"/></svg>Versiones</span><span class="pt-btn">Abrir en editor</span></div></article></div></div></div>
+                <div class="pt-chat-dock"><div class="pt-dock"><div class="pt-composer"><div class="pt-field"><p class="pt-text is-placeholder">Pregunta, explora o crea con pteron…</p></div><div class="pt-toolbar"><div class="pt-toolbar-start"><span class="pt-tool"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-paperclip"/></svg></span></div><div class="pt-toolbar-end"><span class="pt-tool"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-mic"/></svg></span><span class="pt-send" aria-disabled="true"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.7#pt-arrow-up"/></svg></span></div></div></div></div></div>
+              </div>
             </div>
-            <div class="ui-divider"></div>
-            <div class="ui-pad ui-row ui-between"><span class="ui-link"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.6#i-layers"/></svg>Versiones</span><span class="ui-btn is-ink">Abrir en editor</span></div>
           </div>
-        </div>
-
-        <div class="truth">
+          <figcaption>
+            <p class="sr-only">Demostración de pteron hecha con su interfaz: una profesora pide «Necesito una guía de fracciones equivalentes para 6° básico de matemática, unos 45 minutos, con figuras para pintar.». pteron reconoce Guía, 6° básico, Matemática, el tema fracciones equivalentes y 45 minutos; la profesora los confirma; la guía se escribe en doce partes y queda lista para abrir en el editor.</p>
+          </figcaption>
+        </figure>
+      </div>
+      <div class="hero-paper">
+        <div class="wrap">
+          <div class="truth">
           <p class="truth-label">Lo que puedes comprobar hoy</p>
           <ul role="list">
             <li><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.6#i-lock"/></svg>100&nbsp;% local</li>
@@ -162,6 +161,7 @@
             <li><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.6#i-book"/></svg>Currículum Nacional y Begonia</li>
             <li><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.6#i-file"/></svg>Exporta DOCX, PPTX y PDF</li>
           </ul>
+        </div>
         </div>
       </div>
     </section>
