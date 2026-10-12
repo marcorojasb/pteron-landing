@@ -93,8 +93,9 @@ Worker, desde este repositorio en GitHub.
     `assets/marca/pteron-marca-1.0.0.zip`, que ofrece `/marca`, y el completo
     en `dist/`, con los parches para la app de `kit/app` (fuera del
     repositorio). `--revisar` comprueba que el público esté al día.
-  - `kit-letras.py` convierte Archivo y Outfit a TTF para instalar
-    (`--revisar` comprueba los del kit); necesita fontTools y brotli.
+  - `kit-letras.py` convierte Archivo a TTF para instalar y copia la Outfit
+    de pteron (`--outfit`, desde pteron-design en la app), fijada por su suma
+    (`--revisar` comprueba las dos); necesita fontTools y brotli.
   - `og.mjs` fotografía las imágenes para compartir con la tarjeta de
     `scripts/og/tarjeta.html` (la marca, el título y un dato en el cuadrado del
     centro; a los lados, una lámina y su reverso) y deja al día `og:image`,

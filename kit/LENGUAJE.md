@@ -84,8 +84,12 @@ Son los colores de las hojas que arma pteron.
 | Regla | `#DCE3EE` | las reglas entre filas y secciones | |
 | Línea | `#C9D3E1` | los bordes de controles y cuadros | |
 
-Estados (los de los momentos de pteron-design): éxito `#1D5C3C` sobre `#EAF5EF` con borde `#CBE5D6`; error `#9A2F23`
-sobre `#FBEDEB` con borde `#F0C9C4`; nota sobre `#F2F6FC` con borde `#D6E0EF`; aviso sobre `#FDF5E2` con borde `#EDD49B`.
+En fotocopia, el gris de cada color es 100 − L*, su luminosidad CIELAB: la mesa y los papeles claros desaparecen, así
+que el significado nunca va sólo en el color (lo llevan el rótulo, el trazo o la trama, como en las figuras).
+
+Estados: éxito `#1D5C3C` sobre `#EAF5EF` con borde `#CBE5D6` (los de la franja «Inicio» de las hojas); error `#9A2F23`
+sobre `#FBEDEB` con borde `#F0C9C4`; nota sobre `#F2F6FC` con borde `#D6E0EF`; aviso sobre `#FDF5E2` con borde `#EDD49B`
+(en la app, con el texto `#7A4E10` de la franja «Cierre»).
 Sobre el azul, el texto secundario va en `#C9D3EA` y los enlaces en `#DCE3F2`.
 
 En la app, sobre la mesa, el texto tiene tres niveles: tinta, el **rótulo** `#4A5A72` (el de los rótulos de campo de
@@ -147,7 +151,8 @@ En la web, una sola familia: la jerarquía la hacen el ancho y el peso de Archiv
 
 Reglas: sin cursivas; sin mayúsculas espaciadas (los rótulos van en minúscula); cifras tabulares donde se alinean;
 Outfit no compone texto en la web. `letras/` trae Archivo y Outfit para instalar en el computador (TTF variables) y
-para la web (woff2), con su licencia.
+para la web (woff2), con su licencia. La Outfit para instalar es la de pteron, byte a byte (la de pteron-design, con las
+flechas y los signos de sus figuras); las de la web son un subconjunto latino.
 
 ## 5. Geometría
 

@@ -221,7 +221,7 @@ function plan() {
     ["color/CONTRASTES.md", { texto: tablaContraste }, PUBLICO, "El contraste de cada par de texto, claro y oscuro."],
     // Letras
     ["letras/Archivo.ttf", kit("archivos/letras/Archivo.ttf"), PUBLICO, "Archivo, variable (peso 100 a 900, ancho 62 a 125 %), para instalar en el computador."],
-    ["letras/Outfit.ttf", kit("archivos/letras/Outfit.ttf"), PUBLICO, "Outfit, variable (peso 100 a 900), para instalar en el computador."],
+    ["letras/Outfit.ttf", kit("archivos/letras/Outfit.ttf"), PUBLICO, "Outfit, variable (peso 100 a 900): la misma de pteron (pteron-design 6.0.0), con los signos de sus figuras, para instalar en el computador."],
     ["letras/web/archivo-latin-wdth-normal.woff2", sitio("assets/fonts/archivo-latin-wdth-normal.woff2"), PUBLICO, "Archivo para la web (latín)."],
     ["letras/web/archivo-latin-ext-wdth-normal.woff2", sitio("assets/fonts/archivo-latin-ext-wdth-normal.woff2"), PUBLICO, "Archivo para la web (latín extendido)."],
     ["letras/web/outfit-latin-wght-normal.woff2", sitio("assets/fonts/outfit-latin-wght-normal.woff2"), PUBLICO, "Outfit para la web (latín)."],

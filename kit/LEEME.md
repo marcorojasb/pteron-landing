@@ -10,7 +10,8 @@ del mismo dibujo y del mismo archivo de medidas, y `manifiesto.json` guarda su s
 2. **`marca/`** e **`icono/`**: los archivos para usar. PNG para Word, PowerPoint o Canva; SVG para imprenta o diseño.
 3. **`color/`**: los colores y medidas en `tokens.json` (la fuente única), `tokens.css` y `tokens.ts`, y la tabla de
    contrastes.
-4. **`letras/`**: Archivo y Outfit para instalar en el computador (TTF) y para la web (woff2), con su licencia.
+4. **`letras/`**: Archivo y Outfit para instalar en el computador (TTF; la Outfit es la misma de pteron) y para la web
+   (woff2), con su licencia.
 5. **`app/`**: el icono de la aplicación listo para su carpeta `build/` (también `build/icons/` para Linux). El kit
    completo trae además los tres parches que alinean la app con este lenguaje, sus capturas de antes y después y la
    guía para aplicarlos (`app/APLICAR.md`).

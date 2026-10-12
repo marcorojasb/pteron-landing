@@ -25,7 +25,7 @@
   --linea:#C9D3E1;
   --lapiz:#F0C060;
   --lapiz-hondo:#E2AC3A;
-  /* Estados (los de los momentos de pteron-design): éxito, error, nota y aviso, cada uno con su papel y su borde */
+  /* Estados: éxito (el de la franja «Inicio» de las hojas), error, nota y aviso, cada uno con su papel y su borde */
   --ok:#1D5C3C;--ok-papel:#EAF5EF;--ok-borde:#CBE5D6;
   --error:#9A2F23;--error-papel:#FBEDEB;--error-borde:#F0C9C4;
   --nota-papel:#F2F6FC;--nota-borde:#D6E0EF;

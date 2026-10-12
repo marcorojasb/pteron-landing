@@ -14,7 +14,7 @@ La primera versión del lenguaje «La lámina y la figura».
   caligrafía; Arial en las diapositivas; IBM Plex en la app.
 - Geometría: el doblez a 45° y la escalera de uno, tres o seis cuadros.
 - Archivos: la marca con y sin su espacio libre, el icono en todas sus variantes (también en la cuadrícula de macOS),
-  el icono de la app para macOS, Windows y Linux (`build/icons/`), los tokens en JSON, CSS y TypeScript, las letras y
-  un manifiesto con sumas SHA-256.
-- La app: la marca como dibujo y la paleta nueva, en dos parches con su guía (`app/APLICAR.md`, sólo en el kit
-  completo).
+  el icono de la app para macOS, Windows y Linux (`build/icons/`), los tokens en JSON, CSS y TypeScript, las letras
+  (la Outfit, la misma de pteron) y un manifiesto con sumas SHA-256.
+- La app: la marca como dibujo, la paleta nueva y la respuesta guardada sin la firma de la marca, en tres parches con
+  su guía (`app/APLICAR.md`, sólo en el kit completo).

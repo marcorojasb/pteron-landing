@@ -1,14 +1,22 @@
-"""Las letras del kit para instalar en un computador: Archivo y Outfit en TTF, desde los woff2 que sirve el sitio.
+"""Las letras del kit para instalar en un computador: Archivo y Outfit en TTF.
 
-Son las fuentes variables tal cual (todo el peso y, en Archivo, todo el ancho), del subconjunto latino que publica
-fontsource: cubre el castellano entero (á é í ó ú ü ñ ¿ ¡ « »). Sólo se cambia el envoltorio (woff2 → TTF); los nombres y
-la licencia (SIL Open Font License 1.1) son los de sus autores.
+Archivo sale del woff2 que sirve el sitio: la fuente variable tal cual (todo el peso y todo el ancho), del subconjunto
+latino que publica fontsource, que cubre el castellano entero (á é í ó ú ü ñ ¿ ¡ « »). Sólo cambia el envoltorio
+(woff2 → TTF).
 
-    python3 scripts/kit-letras.py            escribe kit/archivos/letras/*.ttf
-    python3 scripts/kit-letras.py --revisar  sólo comprueba que estén al día
+Outfit es la misma de pteron, byte a byte: la que trae pteron-design 6.0.0 (fonts/outfit/Outfit-wght.ttf) y con la que
+pteron compone sus hojas y rotula sus figuras. Tiene los signos de las figuras que el subconjunto de la web no trae
+(→, −). No se genera: se copia de la app y se fija por su suma.
 
-Necesita fontTools con brotli (pip install fonttools brotli). No son dependencias del sitio: los TTF viven en el repositorio.
+    python3 scripts/kit-letras.py                    escribe kit/archivos/letras/Archivo.ttf
+    python3 scripts/kit-letras.py --outfit RUTA      además copia Outfit desde la app, si su suma es la esperada
+                                                     (RUTA: src/vendor/pteron-design/fonts/outfit/Outfit-wght.ttf)
+    python3 scripts/kit-letras.py --revisar          sólo comprueba que estén al día
+
+Los nombres y la licencia (SIL Open Font License 1.1) son los de sus autores. Necesita fontTools con brotli
+(pip install fonttools brotli). No son dependencias del sitio: los TTF viven en el repositorio.
 """
+import hashlib
 import io
 import pathlib
 import sys
@@ -16,10 +24,9 @@ import sys
 from fontTools.ttLib import TTFont
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
-LETRAS = {
-    "Archivo.ttf": RAIZ / "public/assets/fonts/archivo-latin-wdth-normal.woff2",
-    "Outfit.ttf": RAIZ / "public/assets/fonts/outfit-latin-wght-normal.woff2",
-}
+ARCHIVO = RAIZ / "public/assets/fonts/archivo-latin-wdth-normal.woff2"
+# La suma de Outfit-wght.ttf en el manifiesto de pteron-design 6.0.0 (src/vendor/pteron-design/upstream.json de la app)
+OUTFIT_SHA256 = "fc7287273e66929776e2ba54f144fe699080bec29f61bf649d70d871468aeade"
 SALIDA = RAIZ / "kit/archivos/letras"
 
 
@@ -32,20 +39,38 @@ def ttf(origen):
     return buf.getvalue()
 
 
+def sha256(datos):
+    return hashlib.sha256(datos).hexdigest()
+
+
 def main():
     revisar = "--revisar" in sys.argv
     SALIDA.mkdir(parents=True, exist_ok=True)
-    desactualizados = 0
-    for nombre, origen in LETRAS.items():
-        datos = ttf(origen)
-        destino = SALIDA / nombre
-        if destino.exists() and destino.read_bytes() == datos:
-            continue
-        desactualizados += 1
-        if not revisar:
+    fallas = 0
+
+    destino = SALIDA / "Archivo.ttf"
+    datos = ttf(ARCHIVO)
+    if not (destino.exists() and destino.read_bytes() == datos):
+        if revisar:
+            fallas += 1
+        else:
             destino.write_bytes(datos)
         print(f"{'desactualizado' if revisar else 'escrito'}: {destino.relative_to(RAIZ)}")
-    if revisar and desactualizados:
+
+    destino = SALIDA / "Outfit.ttf"
+    if "--outfit" in sys.argv and not revisar:
+        origen = pathlib.Path(sys.argv[sys.argv.index("--outfit") + 1])
+        datos = origen.read_bytes()
+        if sha256(datos) != OUTFIT_SHA256:
+            sys.exit(f"{origen} no es la Outfit de pteron-design 6.0.0: si cambió en la app, actualiza OUTFIT_SHA256")
+        if not (destino.exists() and destino.read_bytes() == datos):
+            destino.write_bytes(datos)
+            print(f"escrito: {destino.relative_to(RAIZ)}")
+    if not destino.exists() or sha256(destino.read_bytes()) != OUTFIT_SHA256:
+        fallas += 1
+        print(f"no es la Outfit de pteron: {destino.relative_to(RAIZ)} (cópiala con --outfit)")
+
+    if fallas:
         sys.exit(1)
 
 
