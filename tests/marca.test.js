@@ -34,15 +34,32 @@ test("la marca tiene sus huecos: los contornos interiores van al revés y con ev
     return a / 2;
   };
   const partes = d.split(/(?=M)/).filter((p) => p.trim()).map(area);
-  // Seis letras y tres huecos (la «p», la «e» y la «o»)
-  assert.equal(partes.filter((a) => a > 0).length, 6);
-  assert.equal(partes.filter((a) => a < 0).length, 3);
+  // Seis letras que giran en un sentido y tres huecos (la «p», la «e» y la «o») que giran en el otro
+  const sentidos = [partes.filter((a) => a > 0).length, partes.filter((a) => a < 0).length].sort((x, y) => y - x);
+  assert.deepEqual(sentidos, [6, 3]);
+});
+
+test("cada marca de la web usa la caja del símbolo de marca.svg", () => {
+  const [, ancho, alto] = /<symbol id="pteron" viewBox="[-\d.]+ [-\d.]+ ([\d.]+) ([\d.]+)"/.exec(read("assets/marca.svg"));
+  const caja = `viewBox="0 0 ${ancho} ${alto}"`;
+  const usos = /<svg[^>]*?(viewBox="[^"]*")[^>]*><use href="\/assets\/marca\.svg[^"]*#pteron"/g;
+  let n = 0;
+  for (const page of ALL) {
+    for (const m of read(page).matchAll(usos)) {
+      assert.equal(m[1], caja, `${page}: la marca con otra caja`);
+      n += 1;
+    }
+  }
+  assert.ok(n >= ALL.length, "cada página lleva la marca");
+  for (const archivo of ["scripts/sitio.mjs", "scripts/og/tarjeta.html"]) {
+    assert.ok(readFileSync(path.join(root, archivo), "utf8").includes(caja), `${archivo}: la caja de la marca`);
+  }
 });
 
 test("los archivos de la marca están al día con marca.svg (node scripts/marca.mjs)", () => {
   execFileSync(process.execPath, [path.join(root, "scripts/marca.mjs"), "--revisar"], { stdio: "pipe" });
   assert.ok(existsSync(path.join(pub, "favicon.ico")), "favicon.ico en la raíz");
-  for (const file of ["favicon-v4-16.png", "favicon-v4-32.png", "favicon-v4-48.png", "apple-touch-icon-v3.png", "app-icon-v3-192.png", "app-icon-v3-512.png", "app-icon-v3-mascara.png", "icono-v3.svg"]) {
+  for (const file of ["favicon-v5-16.png", "favicon-v5-32.png", "favicon-v5-48.png", "apple-touch-icon-v4.png", "app-icon-v4-192.png", "app-icon-v4-512.png", "app-icon-v4-mascara.png", "icono-v4.svg"]) {
     assert.ok(existsSync(path.join(pub, "assets", file)), `falta assets/${file}`);
   }
 });
@@ -52,7 +69,7 @@ test("cada página usa el icono nuevo y su imagen para compartir existe", () => 
     const html = read(page);
     if (!html.includes('rel="icon"')) continue;
     assert.doesNotMatch(html, /favicon-v2|apple-touch-icon-v2|app-icon-v2/, `${page} todavía enlaza el icono anterior`);
-    assert.match(html, /<link rel="icon" type="image\/svg\+xml" href="\/assets\/icono-v3\.svg">/, `${page}: favicon SVG`);
+    assert.match(html, /<link rel="icon" type="image\/svg\+xml" href="\/assets\/icono-v4\.svg">/, `${page}: favicon SVG`);
     for (const m of html.matchAll(/<meta (?:property="og:image"|name="twitter:image") content="([^"]+)">/g)) {
       assert.ok(exists(m[1]), `${page}: no existe ${m[1]}`);
     }

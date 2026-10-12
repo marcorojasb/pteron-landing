@@ -1,7 +1,7 @@
 /**
  * Los archivos de la marca, derivados del único dibujo que existe: el contorno de public/assets/marca.svg («pteron» en
- * Iowan Old Style tal como lo muestra la app en macOS, tomado de una captura sin pérdida). De ahí salen la marca para
- * descargar en tres colores y el icono, que es la «p» de esa marca sobre el azul.
+ * Outfit con la esquina de la «t» doblada; lo escribe scripts/marca-trazado.py). De ahí salen la marca para descargar en
+ * tres colores y el icono, que es la «p» de esa marca sobre el azul.
  *
  *   node scripts/marca.mjs              escribe los SVG (sin dependencias)
  *   node scripts/marca.mjs --png        además los PNG; necesita Playwright con Chromium:
@@ -9,8 +9,8 @@
  *   node scripts/marca.mjs --revisar    sólo comprueba que los SVG estén al día (lo usa la prueba)
  *
  * Salidas: public/assets/marca/pteron-{azul,tinta,blanco}.svg y .png, public/assets/marca/p-{azul,blanco}.svg,
- * public/assets/icono-v3.svg (favicon) y, con --png, los iconos PNG (favicon-v4-16/32/48, apple-touch-icon-v3,
- * app-icon-v3-192/512 y app-icon-v3-mascara) y public/favicon.ico.
+ * public/assets/icono-v4.svg (favicon) y, con --png, los iconos PNG (favicon-v5-16/32/48, apple-touch-icon-v4,
+ * app-icon-v4-192/512 y app-icon-v4-mascara) y public/favicon.ico.
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -79,22 +79,23 @@ const SVG = {
   "marca/p-azul.svg": pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, radio: 224 }),
   "marca/p-blanco.svg": pSVG({ fondo: COLOR.blanco, letra: COLOR.azul, radio: 224 }),
   // El favicon: la letra más grande, porque a 16 px cada píxel cuenta
-  "icono-v3.svg": pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, alto: 860, y: 0.52, radio: 200 }),
+  "icono-v4.svg": pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, alto: 860, y: 0.52, radio: 200 }),
 };
 
-// Para 16 y 32 px, la letra engruesada: medio píxel más por lado a cada tamaño
-const pChica = (px) => pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, alto: 860, y: 0.52, radio: 200, grosor: Math.round((1024 / px) * (728 / 860) * 0.9) });
+// Para 16 y 32 px, la letra engruesada: medio píxel más por lado a cada tamaño (el trazo va en las unidades de la «p»,
+// que se escala a 860 de 1024)
+const pChica = (px) => pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, alto: 860, y: 0.52, radio: 200, grosor: Math.round((1024 / px) * ((P.y1 - P.y0) / 860) * 0.9) });
 
 // Cada PNG: de qué dibujo sale y a qué tamaño. Los iconos que el sistema recorta van a sangre (sin radio).
 const PNG = [
-  ["favicon-v4-16.png", pChica(16), 16],
-  ["favicon-v4-32.png", pChica(32), 32],
-  ["favicon-v4-48.png", pChica(48), 48],
-  ["apple-touch-icon-v3.png", pSVG({ fondo: COLOR.azul, letra: COLOR.blanco }), 180],
-  ["app-icon-v3-192.png", "marca/p-azul.svg", 192],
-  ["app-icon-v3-512.png", "marca/p-azul.svg", 512],
+  ["favicon-v5-16.png", pChica(16), 16],
+  ["favicon-v5-32.png", pChica(32), 32],
+  ["favicon-v5-48.png", pChica(48), 48],
+  ["apple-touch-icon-v4.png", pSVG({ fondo: COLOR.azul, letra: COLOR.blanco }), 180],
+  ["app-icon-v4-192.png", "marca/p-azul.svg", 192],
+  ["app-icon-v4-512.png", "marca/p-azul.svg", 512],
   // Android recorta en círculo o en gota: la letra cabe en el 80 % central
-  ["app-icon-v3-mascara.png", pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, alto: 470 }), 512],
+  ["app-icon-v4-mascara.png", pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, alto: 470 }), 512],
   ["marca/pteron-azul.png", "marca/pteron-azul.svg", 1600],
   ["marca/pteron-tinta.png", "marca/pteron-tinta.svg", 1600],
   ["marca/pteron-blanco.png", "marca/pteron-blanco.svg", 1600],
@@ -138,7 +139,7 @@ if (png) {
   // favicon.ico: el pedido por omisión de navegadores, accesos directos de Windows y lectores de enlaces. Es sólo un
   // contenedor de los PNG de 16, 32 y 48 px.
   const tamanos = [16, 32, 48];
-  const pngs = tamanos.map((px) => readFileSync(path.join(assets, `favicon-v4-${px}.png`)));
+  const pngs = tamanos.map((px) => readFileSync(path.join(assets, `favicon-v5-${px}.png`)));
   const cabeza = Buffer.alloc(6 + 16 * pngs.length);
   cabeza.writeUInt16LE(0, 0);
   cabeza.writeUInt16LE(1, 2);

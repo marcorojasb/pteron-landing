@@ -39,7 +39,7 @@ function routeOf(file) {
 }
 
 function marca(version, label = "pteron, inicio") {
-  return `<a class="marca" href="/" aria-label="${label}"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=${version}#pteron"/></svg></a>`;
+  return `<a class="marca" href="/" aria-label="${label}"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=${version}#pteron"/></svg></a>`;
 }
 
 const current = (route, href) => (route === href || (href !== "/" && route.startsWith(`${href}/`)) ? ' aria-current="page"' : "");
@@ -81,7 +81,7 @@ function colofon(route, version) {
           </ul>
         </nav>
         <div class="colofon-creditos">
-          <p>Compuesto en Archivo, de Omnibus-Type. La marca se dibuja con su propio trazado; las hojas se arman con el código de Write y las figuras, con el motor de pteron.</p>
+          <p>Compuesto en Archivo, de Omnibus-Type; la marca, sobre Outfit. Las hojas se arman con el código de Write y las figuras, con el motor de pteron.</p>
           ${laminas}
         </div>
       </div>

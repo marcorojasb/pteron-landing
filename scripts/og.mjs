@@ -5,7 +5,7 @@
  *   PLAYWRIGHT=/ruta/a/playwright/index.mjs node scripts/og.mjs
  *
  * Levanta un servidor propio de public/ en un puerto libre, fotografía cada tarjeta con Chromium y escribe
- * public/assets/og/<nombre>-v6.jpg. Las páginas las enlazan en su <meta property="og:image">.
+ * public/assets/og/<nombre>-v7.jpg. Las páginas las enlazan en su <meta property="og:image">.
  */
 import { createServer } from "node:http";
 import { mkdirSync, readFileSync, statSync } from "node:fs";
@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const pub = path.join(root, "public");
 const salida = path.join(pub, "assets/og");
-const VERSION = "v6";
+const VERSION = "v7";
 
 export const TARJETAS = [
   { nombre: "planes", titulo: "Planes", linea: "El núcleo local es gratis para siempre.", laminas: ["matematica-byrne-cuadrados", "ciencias-luna", "lenguaje-enie"] },

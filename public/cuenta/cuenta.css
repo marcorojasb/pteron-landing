@@ -1,4 +1,4 @@
-/* pteron · cuenta (2026-10-12.10)
+/* pteron · cuenta (2026-10-12.11)
    Tres estados: sin sesión (acceso), esperando /api/account con una sesión guardada (html.has-session, esqueleto)
    y con sesión (panel). */
 

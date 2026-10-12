@@ -1,8 +1,8 @@
-/* pteron · /marca (2026-10-12.10)
+/* pteron · /marca (2026-10-12.11)
    La marca, el icono, los colores, la letra, las láminas y la voz, cada uno en su bloque numerado como las preguntas de
    una hoja de pteron. Las muestras son los archivos reales: lo que se ve es lo que se descarga. */
 
-@font-face{font-family:"Playwrite CL";font-style:normal;font-weight:100 400;font-display:swap;src:url(/assets/fonts/playwrite-cl-wght-normal.woff2?v=2026-10-12.10) format("woff2")}
+@font-face{font-family:"Playwrite CL";font-style:normal;font-weight:100 400;font-display:swap;src:url(/assets/fonts/playwrite-cl-wght-normal.woff2?v=2026-10-12.11) format("woff2")}
 
 /* ——— Bloques ——— */
 .bloque{padding-block:clamp(56px,8vw,112px)}
@@ -24,7 +24,7 @@
 /* ——— 1. La marca: el espacio libre y los tres colores ——— */
 .lamina-marca{display:grid;gap:12px;margin:0;padding:clamp(20px,3vw,40px);border-radius:6px;background:var(--hoja);
   box-shadow:0 1px 2px rgb(var(--sombra)/.08),0 30px 60px -36px rgb(var(--sombra)/.45)}
-.aire{--h:clamp(56px,8vw,112px);justify-self:center;max-width:100%;padding:calc(var(--h) * .63);border:1.5px dashed color-mix(in srgb,var(--azul) 35%,var(--linea));
+.aire{--h:clamp(56px,8vw,112px);justify-self:center;max-width:100%;padding:calc(var(--h) * .57);border:1.5px dashed color-mix(in srgb,var(--azul) 35%,var(--linea));
   border-radius:2px;background:repeating-linear-gradient(135deg,transparent 0 7px,color-mix(in srgb,var(--lapiz) 22%,transparent) 7px 8px)}
 .aire-marca{display:block;width:auto;height:var(--h);max-width:100%;color:var(--azul);background:var(--hoja);outline:1px dashed color-mix(in srgb,var(--azul) 30%,transparent)}
 .lamina-marca figcaption{text-align:center}

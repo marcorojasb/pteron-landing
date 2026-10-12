@@ -47,10 +47,10 @@ Worker, desde este repositorio en GitHub.
     sus créditos están en `/privacidad#creditos`. `assets/app/` y
     `assets/docs/`: capturas reales de pteron para la documentación.
   - `assets/fonts/`: Archivo, Outfit, Playwrite CL e IBM Plex, con sus
-    licencias; `assets/marca.svg`: el contorno de la marca «pteron» (Iowan Old
-    Style tal como la muestra la app en macOS); `assets/marca/`: la marca en azul, blanco y
+    licencias; `assets/marca.svg`: el contorno de la marca «pteron» (Outfit con
+    la esquina de la «t» doblada); `assets/marca/`: la marca en azul, blanco y
     tinta y el icono, para descargar; `assets/pt-icons.svg`: los iconos Lucide
-    de la app; los iconos `*-v3` (la «p» de la marca sobre el azul) y
+    de la app; los iconos `*-v4` y `favicon-v5-*` (la «p» de la marca sobre el azul) y
     `assets/og/`: una imagen para compartir por página.
 - `src/worker.js`: el Worker. Atiende `/api/*` y reescribe `/docs/:slug` a la
   página de documentación; todo lo demás lo sirven los assets.
@@ -77,6 +77,9 @@ Worker, desde este repositorio en GitHub.
     (jsdom, @xmldom/xmldom, temml y mathml2omml) en su `node_modules` o en la
     carpeta que indique `PTERON_DEPS`. Los materiales y las láminas viven en
     `scripts/pteron-hojas/materiales.mjs`.
+  - `marca-trazado.py` escribe `assets/marca.svg`: compone «pteron» en Outfit
+    y le hace los dos cortes. Necesita fontTools, uharfbuzz y skia-pathops; no
+    son dependencias del sitio, porque el SVG queda en el repositorio.
   - `marca.mjs` deriva de `assets/marca.svg` la marca para descargar y el
     icono; con `--png` (y `PLAYWRIGHT` apuntando a Playwright) también los PNG.
   - `og.mjs` fotografía las imágenes para compartir: la portada del inicio y,
@@ -97,8 +100,9 @@ el gris `--mesa` (#E9EDF1) es el que pone la app detrás de sus hojas, y la tint
 
 Una sola familia para el sitio, **Archivo** (variable en ancho y peso), con la
 jerarquía hecha por ancho y peso. La marca «pteron» no se escribe con una letra:
-se dibuja con su contorno (`assets/marca.svg`). Las hojas usan las letras de los
-materiales de pteron (Outfit y Playwrite CL) y la ventana las de la app (IBM
+se dibuja con su contorno (`assets/marca.svg`), sobre Outfit, la letra de las
+figuras de pteron, que en la web no compone texto. Las hojas usan las letras de
+los materiales de pteron (Outfit y Playwrite CL) y la ventana las de la app (IBM
 Plex). Sin cursivas.
 
 Sin barra superior: la esquina de arriba a la derecha está doblada y debajo
