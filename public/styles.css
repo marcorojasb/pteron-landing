@@ -1,4 +1,4 @@
-/* pteron · sistema «La hora azul» · 2026-10-12.1. Sin cursivas salvo el wordmark. */
+/* pteron · sistema «La hora azul» · 2026-10-12.2. Sin cursivas salvo el wordmark. */
 
 /* 1. Tokens */
 :root{
@@ -7,6 +7,8 @@
 --paper:#faf8f4;--paper-2:#f2efe9;--paper-3:#e7e2d8;
 --ink:#0f2238;--ink-2:#44546a;--ink-3:#5c6879;
 --ember:#e9a25b;--ember-hi:#f6c48a;--ember-lo:#c9772f;--copper:#9a5a1c;--glacier:#9ccbee;
+--rosa:#ef6a98;--rosa-hi:#ffa9c6;--rosa-bg:#fde6ee;--azul:#4a8af0;--azul-hi:#9fc3ff;--azul-bg:#e4eeff;--verde:#2cb285;--verde-hi:#8fe4c4;--verde-bg:#def4ea;--sol:#f2bd3f;--sol-hi:#ffdf86;--sol-bg:#fff1cc;--violeta:#8a79f5;--violeta-hi:#c4baff;--violeta-bg:#ebe7ff;
+--ac:var(--ember);--ac-hi:var(--ember-hi);--ac-bg:#fbeedd;
 --ok:#3f9d78;--ok-ink:#1d6747;--ok-bg:#e2f0e9;--warn-ink:#7d4c12;--warn-bg:#f7ead8;--danger:#b3402a;--danger-bg:#fbe9e4;
 --line-d:rgba(255,255,255,.09);--line-d2:rgba(255,255,255,.16);--line-l:rgba(15,34,56,.10);--line-l2:rgba(15,34,56,.18);
 --serif:"Newsreader","Iowan Old Style",Georgia,serif;
@@ -658,3 +660,85 @@ html{scroll-behavior:smooth}
 @media (max-width:420px){
 .button-large{--bh:54px;padding:0 22px;font-size:16px}
 .footer-grid{grid-template-columns:1fr}}
+
+
+/* 29. Color por sección y movimiento ampliado (2026-10-12.2) */
+/* Acento de sección: --ac (sólido), --ac-hi (sobre oscuro), --ac-bg (lavado claro). El rótulo, los marcadores,
+   los numerales y los iconos de hechos lo toman; en superficies oscuras usan la variante clara. */
+.ac-rosa{--ac:var(--rosa);--ac-hi:var(--rosa-hi);--ac-bg:var(--rosa-bg)}
+.ac-azul{--ac:var(--azul);--ac-hi:var(--azul-hi);--ac-bg:var(--azul-bg)}
+.ac-verde{--ac:var(--verde);--ac-hi:var(--verde-hi);--ac-bg:var(--verde-bg)}
+.ac-sol{--ac:var(--sol);--ac-hi:var(--sol-hi);--ac-bg:var(--sol-bg)}
+.ac-violeta{--ac:var(--violeta);--ac-hi:var(--violeta-hi);--ac-bg:var(--violeta-bg)}
+.ac-ember{--ac:var(--ember);--ac-hi:var(--ember-hi);--ac-bg:#fbeedd}
+:is(.ac-rosa,.ac-azul,.ac-verde,.ac-sol,.ac-violeta,.ac-ember){--kc:var(--ac);--tem:var(--ac)}
+:is(.night,.band,.lake,.hero,.film):is(.ac-rosa,.ac-azul,.ac-verde,.ac-sol,.ac-violeta,.ac-ember){--kc:var(--ac-hi);--tem:var(--ac-hi);--focus:var(--ac-hi)}
+.marker{background:var(--ac);color:#fff;box-shadow:0 0 0 4px color-mix(in srgb,var(--ac) 22%,transparent)}
+:is(.night,.band,.lake,.film) .marker{color:#0b0e13;background:var(--ac-hi)}
+.step-num{color:var(--ac-hi)}
+.fact-ico{color:var(--ac-hi);background:color-mix(in srgb,var(--ac) 16%,transparent);border-color:color-mix(in srgb,var(--ac) 36%,transparent)}
+.c-rosa{color:var(--rosa)}.c-azul{color:var(--azul)}.c-verde{color:var(--verde)}.c-sol{color:#d9a21c}.c-violeta{color:var(--violeta)}.c-ember{color:var(--ember-lo)}
+:is(.night,.band,.lake,.hero,.film) :is(.c-rosa){color:var(--rosa-hi)}
+:is(.night,.band,.lake,.hero,.film) :is(.c-azul){color:var(--azul-hi)}
+:is(.night,.band,.lake,.hero,.film) :is(.c-verde){color:var(--verde-hi)}
+:is(.night,.band,.lake,.hero,.film) :is(.c-sol){color:var(--sol-hi)}
+:is(.night,.band,.lake,.hero,.film) :is(.c-violeta){color:var(--violeta-hi)}
+/* Lavado de color en una hoja clara: una mancha suave arriba, con grano, que no toca la legibilidad */
+.sheet .section.wash{isolation:isolate}
+.sheet .section.wash::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(70% 46% at 50% 0%,color-mix(in srgb,var(--ac) 18%,transparent),transparent 72%),radial-gradient(40% 30% at 92% 70%,color-mix(in srgb,var(--ac-hi) 22%,transparent),transparent 70%)}
+/* Resplandores de color en secciones oscuras: dos manchas que derivan despacio */
+.glow{isolation:isolate;overflow:clip}
+.glow::before,.glow::after{content:"";position:absolute;z-index:-1;pointer-events:none;border-radius:50%;filter:blur(60px);opacity:.55}
+.glow::before{width:min(60vw,760px);aspect-ratio:1;left:-12%;top:-10%;background:radial-gradient(circle,color-mix(in srgb,var(--ac) 55%,transparent),transparent 65%)}
+.glow::after{width:min(50vw,620px);aspect-ratio:1;right:-10%;bottom:-16%;background:radial-gradient(circle,color-mix(in srgb,var(--ac-hi) 40%,transparent),transparent 65%)}
+/* Luz que sigue al puntero (script.js escribe --mx/--my); sólo con puntero fino */
+@media (hover:hover) and (pointer:fine){
+.glow-follow::after{inset:auto;width:min(60vw,760px);aspect-ratio:1;left:calc(var(--mx,50%) - min(30vw,380px));top:calc(var(--my,50%) - min(30vw,380px));right:auto;bottom:auto;opacity:0;transition:opacity .8s ease;filter:blur(70px)}
+.glow-follow:hover::after{opacity:.5}}
+/* Marquesina de asignaturas: palabras serif de colores que se desplazan; sin movimiento, una nube quieta */
+.marquee{position:relative;overflow:hidden;padding-block:10px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.marquee-track{display:flex;width:max-content;gap:0;will-change:transform}
+.marquee-track>span{display:inline-flex;align-items:baseline;gap:.42em;padding:0 .42em;font-family:var(--serif);font-weight:340;font-size:clamp(1.9rem,1rem + 2.8vw,3.4rem);letter-spacing:-.02em;line-height:1.15;white-space:nowrap}
+.marquee-track>span::after{content:"·";color:var(--ink-3);opacity:.45}
+.marquee-track>span:nth-child(6n+1){color:var(--rosa)}.marquee-track>span:nth-child(6n+2){color:var(--azul)}.marquee-track>span:nth-child(6n+3){color:var(--verde)}.marquee-track>span:nth-child(6n+4){color:#d9a21c}.marquee-track>span:nth-child(6n+5){color:var(--violeta)}.marquee-track>span:nth-child(6n+6){color:var(--ember-lo)}
+:is(.night,.band,.lake) .marquee-track>span:nth-child(6n+1){color:var(--rosa-hi)}:is(.night,.band,.lake) .marquee-track>span:nth-child(6n+2){color:var(--azul-hi)}:is(.night,.band,.lake) .marquee-track>span:nth-child(6n+3){color:var(--verde-hi)}:is(.night,.band,.lake) .marquee-track>span:nth-child(6n+4){color:var(--sol-hi)}:is(.night,.band,.lake) .marquee-track>span:nth-child(6n+5){color:var(--violeta-hi)}:is(.night,.band,.lake) .marquee-track>span:nth-child(6n+6){color:var(--ember-hi)}
+@keyframes marquee{to{transform:translateX(-50%)}}
+/* Botones con destello al pasar; tarjetas y ventanas que se elevan */
+.button:not(.button-link){position:relative;overflow:hidden}
+.button:not(.button-link)::after{content:"";position:absolute;inset:-1px;background:linear-gradient(112deg,transparent 36%,#ffffff5c 50%,transparent 64%);translate:-130% 0;pointer-events:none}
+.button:not(.button-link):hover::after{translate:130% 0;transition:translate .9s var(--ease)}
+.tile,.plan,.platform,.card{transition:translate .5s var(--ease),box-shadow .5s var(--ease)}
+.tile:hover,.plan:hover,.platform:hover,.card:hover{translate:0 -4px}
+.window:not(.hero-window):not(.film-window){transition:translate .6s var(--ease),box-shadow .6s var(--ease)}
+.window:not(.hero-window):not(.film-window):hover{translate:0 -6px}
+.atlas-tile{transition:rotate .6s var(--ease),scale .6s var(--ease)}
+.atlas-tile:hover{rotate:-3deg;scale:1.05}
+.atlas-tile:nth-child(2n):hover{rotate:3deg}
+/* Firma con degradado de color */
+.signature span{background:linear-gradient(90deg,var(--ember-hi),var(--rosa-hi) 55%,var(--violeta-hi));-webkit-background-clip:text;background-clip:text;color:transparent}
+/* Transición entre páginas (navegación del mismo origen): fundido corto */
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.32s}
+@media (prefers-reduced-motion:no-preference){
+.marquee-track{animation:marquee 70s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+.glow::before{animation:glow-a 18s ease-in-out infinite alternate}
+.glow::after{animation:glow-b 24s ease-in-out infinite alternate}
+.hero-glow{animation:hue 16s ease-in-out infinite alternate}
+.ui.float,.ui.float+.ui.float{animation:float 9s ease-in-out infinite}
+/* Apariciones ligadas al desplazamiento cuando el navegador las soporta (progresivo) */
+@supports (animation-timeline:view()){
+.atlas-tile{animation:tile-in linear both;animation-timeline:view();animation-range:entry 0% entry 70%}
+.band-photo img{animation:zoom-settle linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
+.tile .stage img,.steps .shot img{animation:zoom-settle linear both;animation-timeline:view();animation-range:entry 0% cover 60%}
+.marquee-track{animation:marquee 70s linear infinite}}}
+@keyframes glow-a{to{transform:translate3d(18%,22%,0) scale(1.15)}}
+@keyframes glow-b{to{transform:translate3d(-16%,-18%,0) scale(1.2)}}
+@keyframes hue{to{filter:hue-rotate(-50deg) saturate(1.3)}}
+@keyframes tile-in{from{translate:0 38px;rotate:-5deg;opacity:.3}to{translate:0 0;rotate:0deg;opacity:1}}
+@keyframes zoom-settle{from{scale:1.08}to{scale:1}}
+@media (prefers-reduced-motion:reduce){
+.marquee{-webkit-mask-image:none;mask-image:none}
+.marquee-track{flex-wrap:wrap;justify-content:center;width:auto;animation:none}
+.marquee-track>span.is-dup{display:none}
+.glow-follow::after{display:none}}

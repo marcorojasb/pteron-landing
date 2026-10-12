@@ -1,4 +1,4 @@
-/* pteron · Planes (2026-10-12.1). Sólo lo propio de /planes; el resto es styles.css. */
+/* pteron · Planes (2026-10-12.2). Sólo lo propio de /planes; el resto es styles.css. */
 
 /* Héroe compacto: los precios entran en el primer pantallazo (.band gana a la vecindad con .sheet) */
 .band.planes-hero{padding-top:clamp(104px,8vw,114px);padding-bottom:calc(clamp(56px,6vw,88px) + var(--r-sheet))}
@@ -13,48 +13,9 @@
 .planes-fine{margin:34px auto 0;text-align:center;color:#b9bdc4}
 
 /* Comparación: Basic es una columna continua */
-.planes-compare thead th{vertical-align:top}
-.planes-th-cta{display:flex;width:fit-content;margin:14px auto 0}
-.planes-compare .compare-group .icon{width:15px;height:15px;margin:-2px 9px 0 0;color:var(--copper)}
-.planes-compare :is(td,thead th).is-featured{box-shadow:inset 1px 0 #e9a25b38,inset -1px 0 #e9a25b38}
-.planes-compare thead th.is-featured{box-shadow:inset 0 3px var(--ember),inset 1px 0 #e9a25b38,inset -1px 0 #e9a25b38}
-.planes-compare tbody tr:not(.compare-group):hover>*{background-color:#fbf9f5}
-.planes-compare tbody tr:not(.compare-group):hover>.is-featured{background-color:#fbefe1}
-.planes-val{font-size:14px;font-weight:500;color:var(--ink-2)}
-.planes-note{margin:22px auto 0;text-align:center}
 
 /* Licencia: aurora que deriva despacio (quieta con movimiento reducido) y tres ventanas bajo el cielo austral (textura propia) */
-.planes-aurora{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-.planes-aurora span{position:absolute;border-radius:50%;animation:planes-drift 38s ease-in-out infinite alternate}
-.planes-aurora span:nth-child(1){left:-14%;top:-10%;width:72%;height:52%;background:radial-gradient(closest-side,#9ccbee52,#9ccbee17 56%,transparent);rotate:-12deg}
-.planes-aurora span:nth-child(2){right:-16%;top:2%;width:64%;height:44%;background:radial-gradient(closest-side,#a493e64a,#a493e614 56%,transparent);rotate:13deg;animation-duration:46s;animation-delay:-14s;animation-direction:alternate-reverse}
-.planes-aurora span:nth-child(3){left:22%;bottom:-14%;width:62%;height:40%;background:radial-gradient(closest-side,#e9a25b2e,transparent);animation-duration:54s;animation-delay:-26s}
 @keyframes planes-drift{to{transform:translate3d(8%,6%,0) scale(1.16)}}
-.planes-license .head-split{position:relative}
-.planes-license .head-split::before{content:"";position:absolute;z-index:-1;inset:-70px -8% -50px;background:radial-gradient(closest-side,#06111ce6,#06111c99 55%,transparent);pointer-events:none}
-.planes-stage{margin-top:clamp(44px,5vw,72px);border-radius:var(--r-l);background:var(--vault);box-shadow:0 0 0 1px #ffffff17,0 50px 100px -50px #000000e6}
-.planes-stage-photo{position:absolute;inset:-12% 0;z-index:-1}
-.planes-stage-photo img{object-position:50% 42%}
-.planes-stage-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#07090d47,#07090d1f 30%,#07090d66 54%,#0b0e13f2 70%,#0b0e13)}
-.planes-flow{grid-template-rows:auto auto;gap:0 clamp(26px,3.4vw,52px);padding:clamp(40px,4.4vw,64px) clamp(22px,3.4vw,48px) clamp(30px,3vw,40px)}
-.planes-flow>li{position:relative;display:grid;grid-row:span 2;grid-template-rows:subgrid;grid-template-columns:minmax(0,1fr)}
-.planes-flow>li>*{grid-column:1}
-.planes-flow .mini-window{grid-row:1;box-shadow:0 0 0 1px #0f22381a,0 2px 6px #0000002e,0 40px 70px -30px #000000d9}
-.planes-flow .mini-body{gap:11px;min-height:0;padding:18px 18px 20px}
-.planes-flow .url{max-width:none;font-size:12px}
-.planes-flow .url .icon{width:12px;height:12px;color:var(--ok)}
-.planes-flow .ui-title{font-size:18px}
-.planes-flow .ui-opt{align-items:flex-start}
-.planes-flow .ui-opt small{display:block;margin-top:2px}
-.planes-flow .ui-opt .ui-label{display:block;margin-bottom:3px;font-size:10px}
-.planes-cta-ui{position:relative}
-.planes-cta-ui .cursor{left:96px;top:15px}
-.planes-cta-ui .ripple{left:86px;top:4px}
-.planes-ui-ok{display:flex;gap:9px;align-items:flex-start;padding:10px 12px;border-radius:11px;background:#e5f1ea;color:#1f6b4b;font:500 12.5px/1.45 var(--sans)}
-.planes-ui-ok .ui-check{width:20px;height:20px;background:#fff}
-.planes-flow .mini-caption{grid-row:2;align-content:start;margin-top:clamp(28px,3vw,40px)}
-.planes-flow .step-num{color:var(--ember)}
-.planes-license-note{margin:clamp(28px,3vw,40px) auto 0}
 
 /* Cierre: la ventana real de Write sube desde el borde de la banda */
 .planes-close{padding-bottom:0}
@@ -71,32 +32,21 @@
 
 /* Encabezado fijo (sistema): la columna destacada conserva su filete ámbar al quedar fija */
 @media (min-width:761px){
-.planes-compare thead th.is-featured{box-shadow:inset 0 3px var(--ember),inset 1px 0 #e9a25b38,inset -1px 0 #e9a25b38,0 -74px #fff}}
+}
 
 /* Tres columnas: Basic sobresale arriba y abajo; flechas entre pasos */
 @media (min-width:1025px){
 .planes-hero .plan.is-featured{margin-block:-18px;padding-block:26px}
-.planes-flow>li:nth-child(2) .mini-window{translate:0 -18px}
-.planes-flow>li+li::before,.planes-flow>li+li::after{content:"";grid-row:1;grid-column:1;align-self:center;z-index:3}
-.planes-flow>li+li::before{width:34px;height:34px;margin-left:calc(-17px - clamp(13px,1.7vw,26px));border-radius:50%;background:var(--ember-fill);box-shadow:0 0 0 5px #e9a25b2e,0 10px 24px -8px #000000b3}
-.planes-flow>li+li::after{z-index:4;width:16px;height:16px;margin-left:calc(-8px - clamp(13px,1.7vw,26px));background:#1d1105;-webkit-mask:var(--arrow) center/contain no-repeat;mask:var(--arrow) center/contain no-repeat;--arrow:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 5l7 7-7 7'/%3E%3C/svg%3E")}}
+}
 @media (max-width:1180px){.planes-close-menu{right:14px}}
 
 /* Tableta: los pasos de licencia en filas (ventana y texto) sobre el cielo austral */
 @media (min-width:761px) and (max-width:1024px){
-.planes-flow{grid-template-columns:minmax(0,1fr);grid-template-rows:none;gap:36px}
-.planes-flow>li{grid-row:auto;grid-template-rows:none;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:center;column-gap:clamp(28px,4vw,44px)}
-.planes-flow>li>*,.planes-flow :is(.mini-window,.mini-caption){grid-column:auto;grid-row:auto;margin-top:0}
-.planes-stage-photo::after{background:linear-gradient(90deg,#0b0e1380,#0b0e13d9 50%,#0b0e13f5)}}
+}
 
 @media (max-width:760px){
 .band.planes-hero{padding-top:100px}
 .planes-status-text,.planes-th-cta,.planes-stage-photo{display:none}
-.planes-stage{overflow:visible;border-radius:0;background:none;box-shadow:none}
-.planes-flow{gap:0;padding:0}
-.planes-flow>li{display:block}
-.planes-flow>li+li{margin-top:40px}
-.planes-flow .mini-caption{margin-top:18px}
 .planes-close-stage{--h:370px}
 .planes-close-window img{height:330px;object-fit:none;object-position:-232px -158px}
 .planes-close-window .lights{display:none}

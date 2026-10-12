@@ -1,4 +1,4 @@
-/* pteron · /admin · revisión 2026-10-12.1. Panel interno sobre papel.
+/* pteron · /admin · revisión 2026-10-12.2. Panel interno sobre papel.
    Primero, los componentes que genera admin.js (sólo existen aquí); después, cómo se afinan dentro de .admin. Las tablas son del sistema. */
 /* Componentes que genera admin.js (sólo se usan aquí; antes vivían en styles.css): pestañas, paneles, barra de herramientas, indicadores y barras */
 .tabs{display:inline-flex;width:fit-content;flex-wrap:wrap;gap:4px;padding:4px;border-radius:999px;background:var(--paper-2);border:1px solid var(--line-l)}

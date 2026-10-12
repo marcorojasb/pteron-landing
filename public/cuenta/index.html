@@ -33,15 +33,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..600&amp;family=Geist+Mono:wght@400;500&amp;family=Newsreader:opsz,wght@6..72,300..500&amp;display=swap">
-  <link rel="preload" as="image" href="/assets/photos/paine-cisnes-2400.webp?v=2026-10-12.1" media="(min-width: 761px)">
-  <link rel="preload" as="image" href="/assets/photos/paine-cisnes-movil.webp?v=2026-10-12.1" media="(max-width: 760px)">
+  <link rel="preload" as="image" href="/assets/photos/paine-cisnes-2400.webp?v=2026-10-12.2" media="(min-width: 761px)">
+  <link rel="preload" as="image" href="/assets/photos/paine-cisnes-movil.webp?v=2026-10-12.2" media="(max-width: 760px)">
   <!-- has-session: con una sesión guardada (o recién llegada en el enlace) la página espera a /api/account
        sin mostrar el formulario de acceso, así no destella antes del panel. Sin sesión no cambia nada. -->
   <script>document.documentElement.classList.add("js");try{var s=JSON.parse(localStorage.getItem("pteron-account-session")||"null");if((s&&s.access_token&&s.refresh_token)||/(^|[#&])access_token=/.test(location.hash))document.documentElement.classList.add("has-session")}catch(e){}</script>
-  <link rel="stylesheet" href="/styles.css?v=2026-10-12.1">
-  <link rel="stylesheet" href="/cuenta/cuenta.css?v=2026-10-12.1">
-  <script src="/script.js?v=2026-10-12.1" defer></script>
-  <script src="/cuenta/cuenta.js?v=2026-10-12.1" defer></script>
+  <link rel="stylesheet" href="/styles.css?v=2026-10-12.2">
+  <link rel="stylesheet" href="/cuenta/cuenta.css?v=2026-10-12.2">
+  <script src="/script.js?v=2026-10-12.2" defer></script>
+  <script src="/cuenta/cuenta.js?v=2026-10-12.2" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -55,19 +55,19 @@
         <a href="/cuenta" aria-current="page">Cuenta</a>
       </nav>
       <div class="nav-end">
-        <a class="button button-light button-small nav-cta" href="/descargar"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Descargar</a>
+        <a class="button button-light button-small nav-cta" href="/descargar"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.2#i-download"/></svg>Descargar</a>
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú" data-menu-button><span></span><span></span></button>
       </div>
     </div>
     <div class="nav-menu" id="menu" hidden data-menu>
       <nav aria-label="Principal">
         <ul>
-          <li><a href="/docs">Documentación<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></li>
-          <li><a href="/planes">Planes<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></li>
-          <li><a href="/cuenta" aria-current="page">Cuenta<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a></li>
+          <li><a href="/docs">Documentación<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.2#i-arrow"/></svg></a></li>
+          <li><a href="/planes">Planes<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.2#i-arrow"/></svg></a></li>
+          <li><a href="/cuenta" aria-current="page">Cuenta<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.2#i-arrow"/></svg></a></li>
         </ul>
       </nav>
-      <a class="button button-ember button-large button-block" href="/descargar"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-download"/></svg>Descargar gratis</a>
+      <a class="button button-ember button-large button-block" href="/descargar"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.2#i-download"/></svg>Descargar gratis</a>
       <p class="nav-menu-note">Beta pública · macOS, Windows y Linux</p>
     </div>
   </header>
@@ -80,8 +80,8 @@
     <section class="band page-hero cuenta-hero" aria-labelledby="titulo">
       <div class="band-photo" data-parallax="0.08" aria-hidden="true">
         <picture>
-          <source media="(max-width: 760px)" srcset="/assets/photos/paine-cisnes-movil.webp?v=2026-10-12.1" width="960" height="1280">
-          <img src="/assets/photos/paine-cisnes-2400.webp?v=2026-10-12.1" width="2400" height="1600" alt="" fetchpriority="high" decoding="async">
+          <source media="(max-width: 760px)" srcset="/assets/photos/paine-cisnes-movil.webp?v=2026-10-12.2" width="960" height="1280">
+          <img src="/assets/photos/paine-cisnes-2400.webp?v=2026-10-12.2" width="2400" height="1600" alt="" fetchpriority="high" decoding="async">
         </picture>
       </div>
       <div class="band-shade" aria-hidden="true"></div>
@@ -90,21 +90,21 @@
         <div class="cuenta-hero-copy">
           <p class="kicker" data-intro style="--d:0">Cuenta y licencias</p>
           <h1 class="display-xl" id="titulo" data-intro style="--d:1">Tu cuenta. <span class="soft">Tu forma de trabajar.</span></h1>
-          <p class="lead" data-intro style="--d:2">Gestiona tu plan, registra el medio de pago con Flow y activa pteron en tu equipo desde el navegador.</p>
+          <p class="lead" data-intro style="--d:2">Tu plan, tu pago con Flow y la activación de pteron, desde el navegador.</p>
         </div>
 
         <ul class="cuenta-points" role="list" data-intro style="--d:3">
-          <li><span class="cuenta-point-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-lock"/></svg></span><span><strong>Sin contraseñas</strong>Te enviamos un enlace de un solo uso.</span></li>
-          <li><span class="cuenta-point-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-card"/></svg></span><span><strong>7 días gratis en Basic</strong>Flow registra tu tarjeta, sin cobro durante la prueba.</span></li>
-          <li><span class="cuenta-point-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-key"/></svg></span><span><strong>Licencia firmada</strong>Se verifica en tu equipo.</span></li>
+          <li><span class="cuenta-point-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.2#i-lock"/></svg></span><span><strong>Sin contraseñas</strong>Te enviamos un enlace de un solo uso.</span></li>
+          <li><span class="cuenta-point-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.2#i-card"/></svg></span><span><strong>7 días gratis en Basic</strong>Flow registra tu tarjeta, sin cobro durante la prueba.</span></li>
+          <li><span class="cuenta-point-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.2#i-key"/></svg></span><span><strong>Licencia firmada</strong>Se verifica en tu equipo.</span></li>
         </ul>
 
         <!-- Acceso sin contraseña (cuenta.js lo oculta cuando hay sesión) -->
         <div class="cuenta-access" data-auth-panel>
           <form class="form-card form-glass cuenta-login" data-login-form aria-labelledby="acceso-title" data-intro style="--d:2">
             <div class="cuenta-login-cover" aria-hidden="true">
-              <img src="/assets/photos/escritorio-900.webp?v=2026-10-12.1" width="900" height="601" alt="" decoding="async">
-              <span class="cuenta-login-badge"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-lock"/></svg>Enlace de un solo uso</span>
+              <img src="/assets/photos/escritorio-900.webp?v=2026-10-12.2" width="900" height="601" alt="" decoding="async">
+              <span class="cuenta-login-badge"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.2#i-lock"/></svg>Enlace de un solo uso</span>
             </div>
             <div class="cuenta-login-body">
               <div class="cuenta-login-head">
@@ -120,7 +120,7 @@
               <p class="form-error cuenta-login-error" id="account-email-error" data-login-message role="alert"></p>
               <button class="button button-large button-block cuenta-login-submit" type="submit">Enviar enlace</button>
               <div class="cuenta-sent" data-link-sent role="status" hidden>
-                <span class="cuenta-sent-ico" aria-hidden="true"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-mail"/></svg></span>
+                <span class="cuenta-sent-ico" aria-hidden="true"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.2#i-mail"/></svg></span>
                 <div>
                   <strong>Revisa tu correo.</strong>
                   <p>El enlace de acceso es de un solo uso y caduca pronto. Puedes cerrar esta ventana mientras lo recibes.</p>
@@ -146,11 +146,11 @@
         <!-- Panel con sesión (cuenta.js lo muestra al cargar /api/account) -->
         <div class="cuenta-dash" data-dashboard hidden>
           <header class="cuenta-session">
-            <span class="cuenta-avatar" aria-hidden="true"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-user"/></svg></span>
+            <span class="cuenta-avatar" aria-hidden="true"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.2#i-user"/></svg></span>
             <div class="cuenta-session-copy">
               <p class="label">Sesión iniciada</p>
               <h2 class="display-s" id="sesion-title">Hola, <span data-display-name>profesor</span>.</h2>
-              <p class="cuenta-email"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-mail"/></svg><span data-account-email></span></p>
+              <p class="cuenta-email"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.2#i-mail"/></svg><span data-account-email></span></p>
             </div>
             <button class="button button-outline cuenta-signout" type="button" data-sign-out>Cerrar sesión</button>
           </header>
@@ -161,14 +161,14 @@
               <p class="label">Activar <span class="wm">pteron</span></p>
               <h2 id="activar-title">Autoriza este equipo desde tu cuenta.</h2>
               <p class="cuenta-activation-lead">Abre la aplicación, inicia una activación y vuelve aquí. Después de autorizarla, el navegador abrirá pteron y la licencia se guardará en ese equipo.</p>
-              <p class="cuenta-expira"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-history"/></svg>La autorización es de un solo uso y caduca en 10 minutos.</p>
+              <p class="cuenta-expira"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.2#i-history"/></svg>La autorización es de un solo uso y caduca en 10 minutos.</p>
             </div>
 
             <div class="cuenta-state cuenta-state-result" data-activation-result hidden>
-              <span class="cuenta-state-ico" aria-hidden="true"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-check"/></svg></span>
+              <span class="cuenta-state-ico" aria-hidden="true"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.2#i-check"/></svg></span>
               <p class="cuenta-state-title">Equipo autorizado.</p>
               <p class="cuenta-state-text">Haz clic para volver a pteron y terminar la activación.</p>
-              <a class="button button-ember button-large" data-open-app>Abrir pteron<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a>
+              <a class="button button-ember button-large" data-open-app>Abrir pteron<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.2#i-arrow"/></svg></a>
             </div>
 
             <div class="cuenta-state cuenta-state-pending" data-activation-pending hidden>
@@ -180,14 +180,14 @@
                 <div class="window-bar"><span class="lights"><span></span><span></span><span></span></span><span class="url">pteron · Configuración → Perfil</span></div>
                 <div class="mini-body">
                   <p class="ui-title">Plan y licencia</p>
-                  <p class="cuenta-ui-note"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-info"/></svg>Se abrió tu cuenta en el navegador. Elige o confirma tu plan y autoriza este equipo.</p>
+                  <p class="cuenta-ui-note"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.2#i-info"/></svg>Se abrió tu cuenta en el navegador. Elige o confirma tu plan y autoriza este equipo.</p>
                 </div>
               </div>
             </div>
 
             <div class="cuenta-state cuenta-state-idle" data-activation-idle>
               <p class="cuenta-state-text">Para activar, abre pteron y elige «Activar este equipo» en Configuración → Perfil.</p>
-              <p class="cuenta-path" aria-hidden="true"><span>pteron</span><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-chevron-right"/></svg><span>Configuración</span><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-chevron-right"/></svg><span>Perfil</span><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-chevron-right"/></svg><span class="is-key"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-key"/></svg>Activar este equipo</span></p>
+              <p class="cuenta-path" aria-hidden="true"><span>pteron</span><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.2#i-chevron-right"/></svg><span>Configuración</span><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.2#i-chevron-right"/></svg><span>Perfil</span><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.2#i-chevron-right"/></svg><span class="is-key"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.2#i-key"/></svg>Activar este equipo</span></p>
             </div>
           </section>
 
@@ -207,7 +207,7 @@
                 <div class="cuenta-empty" data-subscription-empty>
                   <div class="subscription-plan"><strong>Núcleo local</strong><span class="cuenta-free">Gratis</span></div>
                   <p>Aún usas el núcleo local gratuito.</p>
-                  <a class="link-arrow" href="/descargar">Descargar pteron<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a>
+                  <a class="link-arrow" href="/descargar">Descargar pteron<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.2#i-arrow"/></svg></a>
                 </div>
                 <div data-subscription-summary hidden></div>
                 <button class="button button-outline button-small cuenta-cancel" type="button" data-cancel-subscription hidden>Cancelar renovación</button>
@@ -240,13 +240,13 @@
                 </li>
               </ul>
             </div>
-            <p class="fine cuenta-fine"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-shield"/></svg>Al confirmar Basic, Flow registrará tu tarjeta y el primer cobro será al terminar los 7 días si no cancelas antes. Puedes cancelar cuando quieras.</p>
+            <p class="fine cuenta-fine"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.2#i-shield"/></svg>Al confirmar Basic, Flow registrará tu tarjeta y el primer cobro será al terminar los 7 días si no cancelas antes. Puedes cancelar cuando quieras.</p>
           </section>
 
           <!-- Licencias emitidas -->
           <section class="account-card cuenta-licenses" id="licencias" aria-labelledby="licencias-title">
             <header class="cuenta-card-head">
-              <span class="cuenta-card-ico" aria-hidden="true"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-key"/></svg></span>
+              <span class="cuenta-card-ico" aria-hidden="true"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.2#i-key"/></svg></span>
               <div>
                 <p class="label">Licencias</p>
                 <h2 id="licencias-title">Tus activaciones.</h2>
@@ -259,109 +259,16 @@
           </section>
         </div>
 
-        <!-- Sin sesión: lo que se hace desde la cuenta, con estados reales de esta página y de pteron 0.7 -->
-        <section class="cuenta-tour" aria-labelledby="tour-title">
-          <header class="head cuenta-tour-head" data-reveal>
-            <p class="kicker"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-key"/></svg>Después de entrar</p>
-            <h2 class="display" id="tour-title">Tu plan y tu licencia, <span class="soft">en un solo lugar.</span></h2>
-          </header>
-          <!-- Horizonte del atlas: el arco y dos baldosas escalonadas de láminas de dominio público (Yciar, 1564; Pinkerton, 1816) -->
-          <div class="cuenta-horizon" aria-hidden="true" data-reveal="fade">
-            <svg class="cuenta-arc" viewBox="0 0 1240 96" preserveAspectRatio="none"><path d="M4 92 Q620 -34 1236 92" pathLength="1" vector-effect="non-scaling-stroke"/></svg>
-            <span class="cuenta-tile-l cuenta-tile-a" data-parallax="0.05"><img src="/assets/atlas/lenguaje-yciar-300.webp?v=2026-10-12.1" srcset="/assets/atlas/lenguaje-yciar-300.webp?v=2026-10-12.1 300w, /assets/atlas/lenguaje-yciar-600.webp?v=2026-10-12.1 600w" sizes="128px" width="300" height="300" alt="" loading="lazy" decoding="async"></span>
-            <span class="cuenta-tile-l cuenta-tile-b" data-parallax="-0.04"><img src="/assets/atlas/historia-chile-1816-300.webp?v=2026-10-12.1" srcset="/assets/atlas/historia-chile-1816-300.webp?v=2026-10-12.1 300w, /assets/atlas/historia-chile-1816-600.webp?v=2026-10-12.1 600w" sizes="128px" width="300" height="300" alt="" loading="lazy" decoding="async"></span>
-          </div>
-          <p class="lead cuenta-tour-lead" data-reveal>La cuenta web gestiona el plan; la aplicación recibe una licencia firmada y la verifica en tu equipo. El servidor de licencias no necesita tus documentos.</p>
-
-          <div class="bento section-body">
-            <div class="tile-row" role="group" aria-label="Lo que haces desde tu cuenta">
-              <article class="tile cuenta-tile" data-reveal style="--d:0">
-                <div class="stage stage-dots cuenta-stage" aria-hidden="true">
-                  <div class="cuenta-comp">
-                    <div class="ui cuenta-mini-plan cuenta-mini-pro">
-                      <p class="ui-label">Más capacidad</p>
-                      <p class="cuenta-mini-name">Pro</p>
-                      <p class="cuenta-mini-price">$9.990 <small>CLP / mes</small></p>
-                      <span class="ui-btn is-ink">Elegir Pro</span>
-                    </div>
-                    <div class="ui cuenta-mini-plan cuenta-mini-basic">
-                      <span class="cuenta-mini-tag">7 días gratis</span>
-                      <p class="cuenta-mini-name">Basic</p>
-                      <p class="cuenta-mini-price">$2.999 <small>CLP / mes</small></p>
-                      <span class="ui-btn">Elegir Basic</span>
-                    </div>
-                    <p class="ui cuenta-mini-toast">Estamos preparando el registro seguro de tu tarjeta con Flow…</p>
-                  </div>
-                </div>
-                <div class="tile-copy">
-                  <span class="step-num">01</span>
-                  <h3>Elige tu plan</h3>
-                  <p>Basic o Pro. Al confirmar Basic, Flow registrará tu tarjeta y el primer cobro será al terminar los 7 días si no cancelas antes.</p>
-                </div>
-              </article>
-
-              <article class="tile cuenta-tile" data-reveal style="--d:1">
-                <div class="stage cuenta-stage cuenta-stage-art" aria-hidden="true">
-                  <img class="stage-photo" src="/assets/atlas/textura-acuarela-hora-azul-900.webp?v=2026-10-12.1" width="900" height="900" alt="" loading="lazy" decoding="async">
-                  <div class="cuenta-comp">
-                    <div class="mini-window cuenta-mini-app">
-                      <div class="window-bar"><span class="lights"><span></span><span></span><span></span></span><span class="url">pteron · Configuración → Perfil</span></div>
-                      <div class="mini-body">
-                        <p class="ui-title">Plan y licencia</p>
-                        <div class="ui-opt"><span class="ui-tile"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-key"/></svg></span><span><strong>Plan libre</strong></span></div>
-                        <div class="ui-actions"><span class="ui-btn">Activar este equipo</span></div>
-                      </div>
-                    </div>
-                    <div class="ui ui-pad cuenta-mini-auth">
-                      <div class="ui-row ui-between"><span class="ui-label">Activar <span class="wm">pteron</span></span></div>
-                      <span class="ui-status is-pending">Solicitud recibida</span>
-                      <p class="ui-sub">Este equipo está esperando autorización.</p>
-                      <div class="ui-actions"><span class="ui-btn cuenta-mini-ember">Autorizar equipo</span></div>
-                    </div>
-                    <span class="ripple ripple-anim"></span>
-                    <span class="cursor cursor-anim"><svg viewBox="0 0 26 26"><use href="/assets/icons.svg?v=2026-10-12.1#i-cursor"/></svg><span class="cursor-label">Tú</span></span>
-                  </div>
-                </div>
-                <div class="tile-copy">
-                  <span class="step-num">02</span>
-                  <h3>Activa este equipo</h3>
-                  <p>En pteron eliges «Activar este equipo» en Configuración → Perfil. Autorizas aquí y el navegador abre pteron para guardar la licencia. La autorización caduca en 10 minutos.</p>
-                </div>
-              </article>
-
-              <article class="tile cuenta-tile" data-reveal style="--d:2">
-                <div class="stage stage-grid cuenta-stage" aria-hidden="true">
-                  <div class="cuenta-comp">
-                    <div class="ui cuenta-mini-list">
-                      <p class="ui-label">Tus activaciones</p>
-                      <div class="cuenta-mini-row"><span class="ui-tile"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-laptop"/></svg></span><strong>Basic · licencia local</strong><span class="ui-status">Vigente</span><small>Emitida 09-10-2026 · vence 16-10-2026</small></div>
-                    </div>
-                    <div class="ui ui-pad cuenta-mini-device">
-                      <div class="ui-row"><span class="ui-tile"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-laptop"/></svg></span><div><p class="ui-title">Plan Basic</p><p class="ui-sub">Válida hasta 16-10-2026</p></div></div>
-                      <p class="ui-sub cuenta-mini-device-text">Este equipo puede usar las funciones incluidas en tu plan.</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="tile-copy">
-                  <span class="step-num">03</span>
-                  <h3>Revisa tus licencias</h3>
-                  <p>Ves cada licencia emitida y hasta cuándo vale. Si cancelas, pteron vuelve al núcleo gratuito sin borrar tu trabajo local.</p>
-                </div>
-              </article>
-            </div>
-          </div>
-        </section>
-
         <!-- Ayuda: siempre visible -->
         <aside class="cuenta-help" aria-labelledby="ayuda-title" data-reveal>
-          <span class="cuenta-help-ico" aria-hidden="true"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.1#i-mail"/></svg></span>
+          <span class="cuenta-help-ico" aria-hidden="true"><svg class="icon"><use href="/assets/icons.svg?v=2026-10-12.2#i-mail"/></svg></span>
           <div class="cuenta-help-copy">
             <h2 id="ayuda-title">¿Necesitas ayuda?</h2>
             <p>Escribe a pteron@patagua.dev. La documentación explica cómo se activa y se verifica la licencia.</p>
           </div>
           <div class="actions">
-            <a class="button" href="mailto:pteron@patagua.dev"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-mail"/></svg>Escribe a pteron@patagua.dev</a>
-            <a class="link-arrow" href="/docs?pagina=trabajo-local#licencia">La licencia en la documentación<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.1#i-arrow"/></svg></a>
+            <a class="button" href="mailto:pteron@patagua.dev"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.2#i-mail"/></svg>Escribe a pteron@patagua.dev</a>
+            <a class="link-arrow" href="/docs?pagina=trabajo-local#licencia">La licencia en la documentación<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.2#i-arrow"/></svg></a>
           </div>
         </aside>
       </div>

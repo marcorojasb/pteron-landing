@@ -1,4 +1,4 @@
-/* pteron · comportamiento compartido del sitio (revisión 2026-10-12.1).
+/* pteron · comportamiento compartido del sitio (revisión 2026-10-12.2).
    Sin dependencias. Todo lo que mueve algo respeta prefers-reduced-motion,
    y el contenido es visible aunque este archivo no llegue a cargar. */
 (() => {
@@ -14,7 +14,7 @@
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     return Boolean(connection && (connection.saveData || /2g|3g/.test(connection.effectiveType || "")));
   };
-  const VERSION = "?v=2026-10-12.1";
+  const VERSION = "?v=2026-10-12.2";
 
   /* Año en el pie y donde se pida. */
   $$("[data-year]").forEach((node) => { node.textContent = String(new Date().getFullYear()); });
@@ -340,10 +340,11 @@
     const H = canvas.height;
     const TAU = Math.PI * 2;
     const curtains = [
-      { base: 0.32, amp: 0.07, k: 1.3, speed: 0.021, phase: 0.4, height: 0.5, alpha: 0.55, rgb: [88, 196, 214] },
-      { base: 0.25, amp: 0.06, k: 2.1, speed: -0.017, phase: 2.1, height: 0.42, alpha: 0.42, rgb: [104, 140, 238] },
-      { base: 0.4, amp: 0.05, k: 0.9, speed: 0.013, phase: 4.2, height: 0.3, alpha: 0.24, rgb: [150, 112, 226] },
-      { base: 0.44, amp: 0.035, k: 3.2, speed: 0.026, phase: 1.3, height: 0.1, alpha: 0.26, rgb: [240, 168, 96] },
+      { base: 0.32, amp: 0.07, k: 1.3, speed: 0.021, phase: 0.4, height: 0.5, alpha: 0.6, rgb: [72, 210, 196] },
+      { base: 0.25, amp: 0.06, k: 2.1, speed: -0.017, phase: 2.1, height: 0.42, alpha: 0.5, rgb: [96, 146, 255] },
+      { base: 0.4, amp: 0.05, k: 0.9, speed: 0.013, phase: 4.2, height: 0.3, alpha: 0.34, rgb: [168, 118, 255] },
+      { base: 0.36, amp: 0.045, k: 1.7, speed: -0.011, phase: 3.1, height: 0.26, alpha: 0.3, rgb: [255, 122, 176] },
+      { base: 0.44, amp: 0.035, k: 3.2, speed: 0.026, phase: 1.3, height: 0.1, alpha: 0.3, rgb: [250, 172, 92] },
     ].map((curtain) => {
       // Cada cortina es una tira vertical: borde inferior brillante que se desvanece hacia arriba.
       const strip = document.createElement("canvas");
@@ -462,4 +463,14 @@
       }
     });
   });
+  /* Luz de color que sigue al puntero en las secciones .glow-follow (sólo con puntero fino). */
+  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    $$(".glow-follow").forEach((section) => {
+      section.addEventListener("pointermove", (event) => {
+        const rect = section.getBoundingClientRect();
+        section.style.setProperty("--mx", `${Math.round(event.clientX - rect.left)}px`);
+        section.style.setProperty("--my", `${Math.round(event.clientY - rect.top)}px`);
+      }, { passive: true });
+    });
+  }
 })();

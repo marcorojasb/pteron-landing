@@ -1,4 +1,4 @@
-/* pteron · Cuenta (2026-10-12.1). Sólo lo propio de /cuenta; el resto es styles.css.
+/* pteron · Cuenta (2026-10-12.2). Sólo lo propio de /cuenta; el resto es styles.css.
    Tres estados: sin sesión (acceso + recorrido), esperando /api/account (html.has-session, esqueleto) y con sesión (panel). */
 
 /* Avisos de cuenta.js: flotan bajo la píldora para verse desde cualquier punto de la página */
@@ -145,56 +145,10 @@ html:has(.cuenta-notice:not([hidden])){scroll-padding-top:156px}
 .cuenta-license-foot{padding-top:14px;border-top:1px solid var(--line-l);color:var(--ink-3);font-size:14px}
 
 /* Recorrido sin sesión: arco de horizonte bajo el titular y escenarios con una caja de 360×264 que escala */
-.cuenta-tour-head .display{position:relative;z-index:1}
-.cuenta-horizon{position:relative;height:clamp(56px,7vw,96px);margin-top:clamp(-30px,-2vw,-14px)}
-.cuenta-arc{position:relative;z-index:1;display:block;width:100%;height:100%;overflow:visible}
-.cuenta-arc path{fill:none;stroke:var(--ink-3);stroke-width:1.2;stroke-dasharray:1;stroke-dashoffset:0;transition:stroke-dashoffset 2.6s var(--ease) .2s}
-.reveal-on .cuenta-horizon:not(.is-in) .cuenta-arc path{stroke-dashoffset:1}
 /* Baldosas en L: el arco pasa por su base; se desplazan con el scroll a velocidades distintas */
-.cuenta-tile-l{position:absolute;bottom:-14px;width:clamp(84px,9vw,128px);aspect-ratio:1;filter:drop-shadow(0 2px 2px #0f22381a) drop-shadow(0 14px 16px #0f223829)}
-.cuenta-tile-l img{width:100%;height:100%}
-.cuenta-tile-a{left:2.5%}
-.cuenta-tile-b{right:2.5%;bottom:-6px}
-.cuenta-tour-lead{max-width:680px;margin:clamp(4px,1vw,14px) auto 0;text-align:center}
-.cuenta-tour .step-num{color:var(--copper)}
-.cuenta-tile .tile-copy{gap:10px}
-.cuenta-stage{height:clamp(250px,23vw,300px);container-type:inline-size}
-.cuenta-comp{position:absolute;left:50%;top:50%;width:360px;height:264px;translate:-50% -50%}
-.cuenta-comp>*{position:absolute}
 @container (max-width:384px){.cuenta-comp{scale:.93}}
 @container (max-width:352px){.cuenta-comp{scale:.86}}
 @container (max-width:324px){.cuenta-comp{scale:.8}}
-.cuenta-mini-plan{width:172px;padding:15px 16px 14px;border-radius:16px}
-.cuenta-mini-basic{left:8px;top:16px;z-index:2;background:linear-gradient(180deg,#151922,#0d1016);color:var(--snow);box-shadow:0 0 0 1px #ffffff14,0 26px 46px -20px #07090dcc}
-.cuenta-mini-pro{left:172px;top:32px;rotate:3deg;padding-left:24px}
-.cuenta-mini-tag{display:block;font:600 10.5px/1.3 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--ember-hi)}
-.cuenta-mini-name{margin-top:8px;font:400 25px/1.05 var(--serif);letter-spacing:-.02em}
-.cuenta-mini-price{margin:8px 0 12px;font:400 27px/1 var(--serif);letter-spacing:-.03em;white-space:nowrap}
-.cuenta-mini-price small{font:400 11.5px/1 var(--sans);letter-spacing:0;color:#5a677a}
-.cuenta-mini-basic .cuenta-mini-price small{color:var(--mist)}
-.cuenta-mini-basic .ui-btn{background:var(--snow);border-color:var(--snow);color:#0b0e13}
-.cuenta-mini-toast{left:18px;right:18px;top:196px;z-index:3;display:flex;gap:9px;align-items:flex-start;padding:10px 12px;border-radius:12px;font:500 12px/1.45 var(--sans)}
-.cuenta-mini-toast::before{content:"";flex:none;width:14px;height:14px;margin-top:1px;background:var(--ember-lo);-webkit-mask:var(--ic-info) center/contain no-repeat;mask:var(--ic-info) center/contain no-repeat}
-.cuenta-stage-art .stage-photo{object-position:50% 34%}
-.cuenta-stage-art::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#07111f0d,#07111f40)}
-.cuenta-mini-app{left:2px;top:12px;width:266px;rotate:-2deg;box-shadow:0 0 0 1px #0f22381a,0 30px 50px -24px #140c04b3}
-.cuenta-mini-app .url{font-size:11.5px}
-.cuenta-mini-app .mini-body{gap:9px;min-height:0;padding:13px 14px 15px}
-.cuenta-mini-app .ui-title{font:500 15px/1.2 var(--serif)}
-.cuenta-mini-app .ui-opt{padding:8px 10px}
-.cuenta-mini-auth{left:166px;top:114px;z-index:2;display:grid;gap:8px;justify-items:start;width:190px;padding:13px 14px 14px}
-.cuenta-mini-auth .ui-actions{margin-top:4px}
-.cuenta-mini-ember{background:var(--ember-fill);border-color:#c9772f66;color:#1d1105}
-.cuenta-comp .cursor{left:284px;top:226px}
-.cuenta-comp .ripple{left:272px;top:214px}
-.cuenta-mini-list{left:8px;right:8px;top:18px;padding:14px 16px 4px}
-.cuenta-mini-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:2px 12px;margin-top:10px;padding:12px 0;border-top:1px solid #efece6}
-.cuenta-mini-row .ui-tile{grid-row:span 2}
-.cuenta-mini-row strong{font-weight:600;font-size:13px}
-.cuenta-mini-row small{grid-column:2/-1;font-size:11.5px;color:#5a677a}
-.cuenta-mini-device{left:112px;top:142px;z-index:2;width:240px;padding:13px 14px 14px}
-.cuenta-mini-device .ui-title{font-size:15px}
-.cuenta-mini-device-text{margin-top:10px}
 
 /* Ayuda */
 .cuenta-help{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:18px 26px;margin-top:clamp(36px,4.6vw,64px);padding:clamp(20px,2.4vw,28px) clamp(20px,2.6vw,32px);border-radius:var(--r-l);background:var(--paper-2);border:1px solid var(--line-l)}
@@ -215,7 +169,7 @@ html:has(.cuenta-notice:not([hidden])){scroll-padding-top:156px}
 .cuenta-activation:has(>[data-activation-idle][hidden]){grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}}
 
 @media (min-width:761px) and (max-width:1024px){
-.cuenta-tour .tile-row>.tile:first-child{grid-column:1/-1}}
+}
 
 @media (max-width:900px){
 .cuenta-hero-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"copy" "access" "points";row-gap:30px}
@@ -244,8 +198,7 @@ html:has(.cuenta-notice:not([hidden])){scroll-padding-top:156px}
 .cuenta-help .actions{flex-direction:column;align-items:flex-start;gap:16px}
 .cuenta-help .actions .button{max-width:100%;height:auto;min-height:var(--bh);padding-block:10px;white-space:normal;text-align:center}
 .cuenta-main:has(>.cuenta-notice:not([hidden])) .band.page-hero.cuenta-hero{padding-top:184px}
-.cuenta-stage{height:250px}
-.cuenta-tile-l{display:none}}
+}
 
 @media (prefers-reduced-motion:reduce){
 .cuenta-sk{animation:none}
