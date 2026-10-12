@@ -22,6 +22,7 @@ const PAGINAS = [
   ["/docs", "Documentación"],
   ["/cuenta", "Cuenta"],
 ];
+const CON_DESCARGAR = ["/", "/planes", "/docs"];
 const PIE = [
   ["/privacidad", "Privacidad"],
   ["/terminos", "Términos"],
@@ -44,8 +45,9 @@ function marca(version, label = "pteron, inicio") {
 const current = (route, href) => (route === href || (href !== "/" && route.startsWith(`${href}/`)) ? ' aria-current="page"' : "");
 
 function esquina(route) {
-  // En /descargar la página es la descarga y /admin es interno: ahí no se ofrece Descargar
-  const descargar = route === "/descargar" || route === "/admin" ? "" : `<a class="boton boton-principal esquina-descargar" href="/descargar" data-descargar${route === "/" ? " data-oculto" : ""}>Descargar</a>`;
+  // Descargar flota sólo donde descargar es el trabajo de la página; en la cuenta, los legales o la 404 competiría
+  // con la acción de la página
+  const descargar = CON_DESCARGAR.includes(route) ? `<a class="boton boton-principal esquina-descargar" href="/descargar" data-descargar${route === "/" ? " data-oculto" : ""}>Descargar</a>` : "";
   // La esquina de arriba a la derecha está doblada: debajo asoma la hoja azul del índice. Sin JavaScript lleva al pie.
   return `
   <nav class="esquina" aria-label="Sitio">
@@ -55,15 +57,23 @@ function esquina(route) {
   `;
 }
 
+// El colofón dice cómo está hecha la página; los créditos completos de las láminas van donde las láminas se ven (el
+// inicio y /marca), y en las demás, un enlace a ellos.
+const CREDITOS = "Láminas de dominio público: Yciar (1564), Ercilla (1574), Hirschvogel (1543), Ovalle (1646), Westtown (1801), Byrne (1847), Gay (1854), Trouvelot (1875 y 1878), Haeckel (1904), una carta portulana de hacia 1500 y una fotografía de la NASA (2019). Las conservan The Metropolitan Museum of Art, la Library of Congress e Internet Archive.";
+const CON_LAMINAS = ["/", "/marca"];
+
 function colofon(route, version) {
+  const laminas = CON_LAMINAS.includes(route)
+    ? `<p>${CREDITOS} Créditos completos en <a href="/privacidad#creditos">Privacidad</a>.</p>`
+    : `<p>Las láminas del sitio son obras de dominio público y piezas propias; sus créditos están en <a href="/privacidad#creditos">Privacidad</a>.</p>`;
   return `
   <footer class="colofon" id="colofon">
     <div class="contenedor">
       <div class="colofon-rejilla">
         <div>
           ${marca(version)}
-          <p class="colofon-lema">Construido por profes, para profes.</p>
-          <p class="colofon-lugar">Hecho en Chile.</p>
+          ${route === "/" ? "" : `<p class="colofon-lema">Construido por profes, para profes.</p>
+          `}<p class="colofon-lugar">Hecho en Chile.</p>
         </div>
         <nav aria-label="Páginas">
           <ul>
@@ -71,8 +81,8 @@ function colofon(route, version) {
           </ul>
         </nav>
         <div class="colofon-creditos">
-          <p>Láminas de dominio público: Yciar (1564), Ercilla (1574), Hirschvogel (1543), Ovalle (1646), Westtown (1801), Byrne (1847), Gay (1854), Trouvelot (1875 y 1878), Haeckel (1904), una carta portulana de hacia 1500 y una fotografía de la NASA (2019). Las conservan The Metropolitan Museum of Art, la Library of Congress e Internet Archive.</p>
-          <p>Figuras y hojas: pteron. Créditos completos en <a href="/privacidad#creditos">Privacidad</a>.</p>
+          <p>Compuesto en Archivo, de Omnibus-Type. La marca se dibuja con su propio trazado; las hojas se arman con el código de Write y las figuras, con el motor de pteron.</p>
+          ${laminas}
         </div>
       </div>
       <div class="colofon-legal">

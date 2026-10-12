@@ -1,15 +1,11 @@
 /* pteron · descargar (2026-10-12.10) */
-.descargar-titulo{display:flex;gap:clamp(18px,3vw,32px);align-items:flex-end;margin-top:clamp(40px,7vw,96px)}
-.descargar-titulo h1{margin-top:0}
-.icono-app{flex:none;width:clamp(64px,8vw,96px);height:auto;filter:drop-shadow(0 1px 1px rgb(var(--sombra)/.14)) drop-shadow(0 12px 14px rgb(var(--sombra)/.26));margin-bottom:.6em}
 .plataformas-lista{list-style:none;margin:0;padding:0;background:var(--hoja);border-radius:6px;box-shadow:0 1px 2px rgb(var(--sombra)/.08),0 30px 60px -36px rgb(var(--sombra)/.45)}
 .plataforma{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr) auto;gap:16px 28px;align-items:center;padding:clamp(20px,2.6vw,32px) clamp(20px,3vw,40px)}
 .plataforma+.plataforma{border-top:var(--borde) solid var(--regla)}
 .plataforma-nombre{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
 .plataforma-nombre h2{font-size:clamp(1.5rem,1.2rem + 1vw,2.1rem);font-stretch:110%}
-.tu-equipo{display:none;padding:2px 10px;border-radius:999px;background:var(--lapiz);color:var(--azul-hondo);font-size:.8125rem;font-weight:700}
+.tu-equipo{display:none;font-size:.875rem}
 .plataforma.is-detected .tu-equipo{display:inline-block}
-.plataforma.is-detected{background:linear-gradient(90deg,color-mix(in srgb,var(--lapiz) 10%,white),#fff 60%)}
 .plataforma-datos{display:grid;gap:4px;color:var(--tinta)}
 .plataforma-archivo{font-size:var(--t-chico);color:var(--grafito);overflow-wrap:anywhere}
 .descargar-estado:not(:empty){margin-top:16px;padding:12px 16px;border-radius:10px;background:var(--hoja);color:var(--tinta);font-size:var(--t-chico)}
@@ -35,7 +31,7 @@ code,pre{font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;font
 .clave-cabeza{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center}
 .codigo{position:relative;display:flex;gap:10px;align-items:flex-start;padding:12px 12px 12px 14px;border-radius:10px;background:var(--mesa);color:var(--tinta)}
 .codigo code,.codigo pre{flex:1;min-width:0;margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.8125rem;line-height:1.6}
-.copiar{flex:none;min-height:36px;padding:0 12px;border:var(--borde) solid var(--linea);border-radius:999px;background:var(--hoja);color:var(--azul);font-weight:600;font-size:.8125rem}
+.copiar{flex:none;min-height:44px;padding:0 16px;border:var(--borde) solid var(--linea);border-radius:999px;background:var(--hoja);color:var(--azul);font-weight:600;font-size:.8125rem}
 .copiar:hover{border-color:var(--azul)}
 .descargar-hechos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,3vw,40px);margin-top:clamp(40px,6vw,64px)}
 .descargar-hechos div{padding-top:14px;border-top:2px solid var(--azul)}

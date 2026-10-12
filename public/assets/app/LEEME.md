@@ -1,7 +1,10 @@
 # pteron 0.7.0 · capturas para la web
 
-2880 × 1760 (ventana de 1440 × 880 a escala 2), tema claro, sin marco. Los materiales son reales:
+2880 × 1760 (ventana de 1440 × 880 a escala 2), tema claro. Los materiales son reales:
 los compusieron modelos en la batería live del candidato 0.7.0.
+
+La web usa las versiones con el marco real de la ventana de macOS (`NN-nombre-marco.webp` y
+`NN-nombre-marco-2x.webp`); las capturas sin marco quedaron en el historial del repositorio.
 
 | Captura | Qué muestra | Dónde va en la web |
 | --- | --- | --- |

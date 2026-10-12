@@ -37,7 +37,7 @@
 .portada{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);grid-template-rows:1fr auto auto;
   column-gap:clamp(24px,4vw,72px);min-height:100svh;padding:clamp(20px,3vw,40px) var(--margen) clamp(36px,7vh,80px);pointer-events:none}
 .portada>*{pointer-events:auto}
-.portada-marca{grid-column:1 / -1;grid-row:1;align-self:start;justify-self:start;font-size:clamp(34px,2.9vw,48px)}
+.portada-marca{grid-column:1 / -1;grid-row:1;align-self:start;justify-self:start;font-size:var(--membrete)}
 .portada h1{grid-column:1;grid-row:2 / span 2;align-self:end;max-width:9.6em;font-size:clamp(3rem,1.1rem + 5.4vw,7.2rem);
   text-shadow:0 0 28px var(--mesa),0 0 2px var(--mesa)}
 .portada-texto{grid-column:2;grid-row:2;align-self:end;max-width:30ch;font-size:clamp(1.0625rem,.95rem + .45vw,1.3rem);line-height:1.45;color:var(--tinta)}
@@ -134,9 +134,9 @@ html.no-js .aviso{display:none}
 .plataformas a:hover{border-color:var(--azul);box-shadow:0 14px 30px -18px rgb(var(--sombra)/.45);transform:translateY(-1px)}
 .plataformas b{font-size:1.375rem;font-weight:720;font-stretch:110%;color:var(--azul);letter-spacing:-.01em}
 .plataformas span{color:var(--grafito);font-size:var(--t-chico)}
-.plataformas li.is-detected a{border-color:var(--lapiz-hondo);background:linear-gradient(0deg,color-mix(in srgb,var(--lapiz) 12%,white),#fff)}
-.plataformas li.is-detected b::after{content:"Tu equipo";margin-left:12px;padding:2px 9px;border-radius:999px;background:var(--lapiz);color:var(--azul-hondo);
-  font-size:.75rem;font-weight:700;font-stretch:96%;vertical-align:.3em;letter-spacing:0}
+.plataformas li.is-detected a{border-color:color-mix(in srgb,var(--azul) 45%,var(--linea))}
+.plataformas .tu-equipo{display:none;margin-left:10px;color:var(--tinta);font-size:.875rem;font-stretch:100%;letter-spacing:0}
+.plataformas li.is-detected .tu-equipo{display:inline}
 .descarga-planes{grid-column:2;color:var(--grafito)}
 
 /* ——— Anchos ——— */

@@ -6,14 +6,14 @@
 
 :root{--mono:ui-monospace,"SFMono-Regular","SF Mono",Menlo,Consolas,"Liberation Mono",monospace}
 
-.docs{padding-block:clamp(20px,3vw,32px) clamp(64px,8vw,104px)}
+.docs{padding-block:var(--membrete-y) clamp(64px,8vw,104px)}
 .docs-rejilla{width:min(1360px,100% - 2 * var(--margen));margin-inline:auto;display:grid;grid-template-columns:15.5rem minmax(0,1fr) 11rem;
   gap:clamp(24px,3vw,44px);align-items:start}
 
 /* ——— Lado: marca, buscador e índice ——— */
-.docs-lado{position:sticky;top:20px;z-index:5;display:flex;flex-direction:column;gap:16px;max-height:calc(100svh - 40px);min-height:0}
-.docs-marca{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;padding:4px 2px 0}
-.docs-marca .marca{font-size:30px}
+.docs-lado{position:sticky;top:var(--membrete-y);z-index:5;display:flex;flex-direction:column;gap:16px;max-height:calc(100svh - 40px);min-height:0}
+.docs-marca{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px}
+.docs-marca .marca{font-size:var(--membrete)}
 .docs-titulo{color:var(--azul);font-weight:700;font-stretch:108%;text-decoration:none}
 .docs-titulo:hover{text-decoration:underline}
 .docs-barra{display:flex;gap:8px}
@@ -42,7 +42,7 @@
 .docs-toc nav{display:grid;border-left:var(--borde) solid var(--linea)}
 .docs-toc a{margin-left:-1px;padding:5px 0 5px 13px;border-left:2px solid transparent;color:var(--grafito);font-size:.875rem;line-height:1.4;text-decoration:none}
 .docs-toc a:hover{color:var(--azul)}
-.docs-toc a.is-active{border-left-color:var(--lapiz-hondo);color:var(--tinta);font-weight:600}
+.docs-toc a.is-active{border-left-color:var(--azul);color:var(--tinta);font-weight:600}
 html:not(.js) :is(.docs-lado,.docs-toc){visibility:hidden}
 
 /* ——— La hoja ——— */
@@ -75,17 +75,17 @@ html:not(.js) :is(.docs-lado,.docs-toc){visibility:hidden}
 .docs-hoja li+li{margin-top:.4em}
 .docs-hoja li::marker{color:var(--azul)}
 .docs-hoja code{padding:.1em .35em;border-radius:5px;background:var(--mesa);color:var(--tinta);font:500 .875em/1.4 var(--mono);overflow-wrap:anywhere}
-.docs-hoja pre{margin-top:1.2em;padding:16px 18px;border-radius:10px;background:var(--tinta);color:#E9EDF1;overflow-x:auto}
+.docs-hoja pre{margin-top:1.2em;padding:16px 18px;border-radius:10px;background:var(--tinta);color:var(--mesa);overflow-x:auto}
 .docs-hoja pre code{padding:0;background:none;color:inherit;font-size:.8125rem;overflow-wrap:normal;white-space:pre}
 
 /* Avisos: una nota al margen, azul o lápiz */
-.docs-hoja .notice{position:relative;max-width:40em;padding:14px 18px 14px 46px;border:var(--borde) solid #D6E0EF;border-radius:10px;background:#F2F6FC;
+.docs-hoja .notice{position:relative;max-width:40em;padding:14px 18px 14px 46px;border:var(--borde) solid var(--nota-borde);border-radius:10px;background:var(--nota-papel);
   color:var(--tinta);font-size:var(--t-chico);line-height:1.55}
 .docs-hoja .notice::before{content:"i";position:absolute;left:16px;top:15px;display:grid;place-items:center;width:18px;height:18px;border-radius:50%;
   background:var(--azul);color:#fff;font:700 .75rem/1 var(--letra)}
 .docs-hoja .notice strong{display:block;margin-bottom:2px;font-weight:700}
 .docs-hoja .notice p{margin-top:2px}
-.docs-hoja .notice-prominent{border-color:#EDD49B;background:#FDF5E2}
+.docs-hoja .notice-prominent{border-color:var(--aviso-borde);background:var(--aviso-papel)}
 .docs-hoja .notice-prominent::before{content:"!";background:var(--lapiz);color:var(--azul-hondo)}
 
 /* Pedidos de ejemplo: como el compositor de la app, con el clip y el botón de enviar */
@@ -97,17 +97,11 @@ html:not(.js) :is(.docs-lado,.docs-toc){visibility:hidden}
 .docs-hoja blockquote::after{content:"";position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;
   background:var(--azul) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19V5M5 12l7-7 7 7'/%3E%3C/svg%3E") center/15px no-repeat}
 
-/* Capturas de la app: la ventana con sus semáforos de macOS dibujados encima */
+/* Capturas de la app tal cual: las de assets/app traen su marco real de macOS (-marco), las demás son la ventana sin marco */
 .docs-hoja .product-shot{position:relative;margin-top:1.6em;overflow:hidden;border-radius:10px;background:var(--hoja);container-type:inline-size;
   box-shadow:0 0 0 1px rgb(var(--sombra)/.12),0 2px 6px rgb(var(--sombra)/.06),0 26px 52px -30px rgb(var(--sombra)/.5)}
-.docs-hoja .product-shot::before{--d:max(7px,.86cqw);--g:.72cqw;content:"";position:absolute;z-index:1;left:1.3cqw;top:1.96cqw;width:calc(3 * var(--d) + 2 * var(--g));
-  height:var(--d);transform:translateY(-50%);
-  background:radial-gradient(circle closest-side,#ff5f57 80%,#ff5f5700) 0 0/var(--d) var(--d) no-repeat,
-    radial-gradient(circle closest-side,#febc2e 80%,#febc2e00) calc(var(--d) + var(--g)) 0/var(--d) var(--d) no-repeat,
-    radial-gradient(circle closest-side,#28c840 80%,#28c84000) 100% 0/var(--d) var(--d) no-repeat}
-.docs-hoja .product-shot:has(>img[src*="/assets/app/"])::before{--d:max(4px,.833cqw);--g:.556cqw;left:.972cqw;top:1.319cqw}
-.docs-hoja .product-shot-crop::before{display:none}
-.docs-hoja .product-shot img{display:block;width:100%;height:auto;background:#F6F3EE}
+.docs-hoja .product-shot img{display:block;width:100%;height:auto;background:#f6f5f2}
+.docs-hoja .product-shot img[src*="-marco"]{background:none}
 .docs-hoja .product-shot figcaption{padding:11px 16px;border-top:var(--borde) solid var(--regla);background:var(--hoja);color:var(--grafito);font-size:.875rem;line-height:1.45}
 .crop{position:relative;overflow:hidden;aspect-ratio:var(--cw) / var(--ch);container-type:inline-size}
 .docs-hoja .crop>img{position:absolute;max-width:none;width:calc(var(--sw,1760) / var(--cw) * 100cqw);height:auto;left:calc(var(--cx) / var(--cw) * -100cqw);
@@ -146,8 +140,7 @@ html:not(.js) :is(.docs-lado,.docs-toc){visibility:hidden}
 .release-current{display:grid;gap:8px;padding:20px 22px;border:var(--borde) solid var(--regla);border-radius:10px;background:var(--mesa)}
 .release-current-version{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;color:var(--azul);font-size:clamp(2.2rem,1.7rem + 1.6vw,3rem);font-weight:760;
   font-stretch:114%;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
-.release-channel{display:inline-flex;align-items:center;padding:2px 10px;border-radius:999px;background:var(--lapiz);color:var(--azul-hondo);font-size:.8125rem;
-  font-weight:700;font-stretch:100%;letter-spacing:0}
+.release-channel{font-size:.875rem;letter-spacing:0}
 .release-current-meta{color:var(--grafito);font-size:var(--t-chico)}
 .release-note{padding:20px 22px;border:var(--borde) solid var(--regla);border-radius:10px}
 .release-note-heading{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
@@ -184,7 +177,7 @@ html:not(.js) :is(.docs-lado,.docs-toc){visibility:hidden}
 .docs-siguiente a::after{content:"";position:absolute;inset:0;border-radius:inherit}
 .docs-siguiente::after{content:"";position:absolute;right:24px;top:50%;width:12px;height:12px;margin-top:-6px;border-top:2.5px solid var(--azul);border-right:2.5px solid var(--azul);
   transform:rotate(45deg);transition:transform .25s var(--curva);pointer-events:none}
-.docs-siguiente:hover{border-color:var(--azul);background:#F7F9FC}
+.docs-siguiente:hover{border-color:var(--azul);background:color-mix(in srgb,var(--mesa) 30%,var(--hoja))}
 .docs-siguiente:hover::after{transform:translateX(3px) rotate(45deg)}
 .docs-siguiente a:focus-visible{outline:none}
 .docs-siguiente:has(a:focus-visible){outline:3px solid var(--azul);outline-offset:3px}

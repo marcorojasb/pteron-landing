@@ -9,8 +9,8 @@
  *   node scripts/marca.mjs --revisar    sólo comprueba que los SVG estén al día (lo usa la prueba)
  *
  * Salidas: public/assets/marca/pteron-{azul,tinta,blanco}.svg y .png, public/assets/marca/p-{azul,blanco}.svg,
- * public/assets/icono-v3.svg (favicon) y, con --png, los iconos PNG (favicon-v3-16/32, apple-touch-icon-v3,
- * app-icon-v3-192/512 y app-icon-v3-mascara).
+ * public/assets/icono-v3.svg (favicon) y, con --png, los iconos PNG (favicon-v4-16/32/48, apple-touch-icon-v3,
+ * app-icon-v3-192/512 y app-icon-v3-mascara) y public/favicon.ico.
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -61,13 +61,15 @@ function marcaSVG(color) {
  * La «p» en un cuadrado de 1024. alto: cuánto mide la letra (con su descendente); y: dónde cae el centro de su caja,
  * un poco bajo la mitad para que el ojo de la «p» quede al centro. radio 0 para los iconos que el sistema recorta.
  */
-function pSVG({ fondo, letra, alto = 600, y = 0.53, radio = 0 }) {
+function pSVG({ fondo, letra, alto = 600, y = 0.53, radio = 0, grosor = 0 }) {
   const k = alto / (P.y1 - P.y0);
   const cx = (P.x0 + P.x1) / 2;
   const cy = (P.y0 + P.y1) / 2;
   const t = `translate(512 ${r1(1024 * y)}) scale(${k.toFixed(5)}) translate(${r1(-cx)} ${r1(-cy)})`;
   const base = fondo ? `<rect width="1024" height="1024"${radio ? ` rx="${radio}"` : ""} fill="${fondo}"/>` : "";
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><title>pteron</title>${base}<path fill="${letra}" fill-rule="evenodd" transform="${t}" d="${P.d}"/></svg>\n`;
+  // grosor: un trazo del mismo color engruesa la letra para los tamaños chicos (a 16 px el trazo fino se pierde)
+  const trazo = grosor ? ` stroke="${letra}" stroke-width="${grosor}" stroke-linejoin="round"` : "";
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><title>pteron</title>${base}<path fill="${letra}" fill-rule="evenodd"${trazo} transform="${t}" d="${P.d}"/></svg>\n`;
 }
 
 const SVG = {
@@ -80,10 +82,14 @@ const SVG = {
   "icono-v3.svg": pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, alto: 860, y: 0.52, radio: 200 }),
 };
 
+// Para 16 y 32 px, la letra engruesada: medio píxel más por lado a cada tamaño
+const pChica = (px) => pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, alto: 860, y: 0.52, radio: 200, grosor: Math.round((1024 / px) * (728 / 860) * 0.9) });
+
 // Cada PNG: de qué dibujo sale y a qué tamaño. Los iconos que el sistema recorta van a sangre (sin radio).
 const PNG = [
-  ["favicon-v3-16.png", "icono-v3.svg", 16],
-  ["favicon-v3-32.png", "icono-v3.svg", 32],
+  ["favicon-v4-16.png", pChica(16), 16],
+  ["favicon-v4-32.png", pChica(32), 32],
+  ["favicon-v4-48.png", pChica(48), 48],
   ["apple-touch-icon-v3.png", pSVG({ fondo: COLOR.azul, letra: COLOR.blanco }), 180],
   ["app-icon-v3-192.png", "marca/p-azul.svg", 192],
   ["app-icon-v3-512.png", "marca/p-azul.svg", 512],
@@ -128,4 +134,26 @@ if (png) {
     console.log(`png: assets/${file} (${ancho}×${alto})`);
   }
   await browser.close();
+
+  // favicon.ico: el pedido por omisión de navegadores, accesos directos de Windows y lectores de enlaces. Es sólo un
+  // contenedor de los PNG de 16, 32 y 48 px.
+  const tamanos = [16, 32, 48];
+  const pngs = tamanos.map((px) => readFileSync(path.join(assets, `favicon-v4-${px}.png`)));
+  const cabeza = Buffer.alloc(6 + 16 * pngs.length);
+  cabeza.writeUInt16LE(0, 0);
+  cabeza.writeUInt16LE(1, 2);
+  cabeza.writeUInt16LE(pngs.length, 4);
+  let desde = cabeza.length;
+  pngs.forEach((datos, i) => {
+    const o = 6 + 16 * i;
+    cabeza.writeUInt8(tamanos[i], o);
+    cabeza.writeUInt8(tamanos[i], o + 1);
+    cabeza.writeUInt16LE(1, o + 4);
+    cabeza.writeUInt16LE(32, o + 6);
+    cabeza.writeUInt32LE(datos.length, o + 8);
+    cabeza.writeUInt32LE(desde, o + 12);
+    desde += datos.length;
+  });
+  writeFileSync(path.join(root, "public/favicon.ico"), Buffer.concat([cabeza, ...pngs]));
+  console.log("ico: favicon.ico (16, 32 y 48 px)");
 }

@@ -8,8 +8,7 @@
   font-variant-numeric:tabular-nums}
 .plan-precio small{font-size:.9375rem;font-weight:550;font-stretch:100%;letter-spacing:0;color:var(--grafito)}
 .plan-condicion{min-height:3em;color:var(--grafito);font-size:var(--t-chico)}
-.plan-marca{display:inline-block;margin-right:6px;padding:1px 9px;border-radius:999px;background:var(--lapiz);color:var(--azul-hondo);font-weight:700;
-  font-size:.8125rem}
+.plan-condicion .destacado{margin-right:4px}
 .plan-accion{align-self:flex-start}
 .plan-incluye{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:0}
 .plan-incluye li{position:relative;padding:10px 0 10px 22px;border-top:var(--borde) solid var(--regla);font-size:var(--t-chico);color:var(--tinta)}

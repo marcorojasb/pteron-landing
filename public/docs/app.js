@@ -153,7 +153,7 @@
     version.className = "release-current-version";
     version.textContent = latest.version;
     const channel = document.createElement("span");
-    channel.className = "release-channel";
+    channel.className = "release-channel destacado";
     channel.textContent = latest.channel === "stable" ? "Estable" : "Beta";
     version.append(channel);
     const meta = document.createElement("p");

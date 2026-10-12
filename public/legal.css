@@ -56,9 +56,8 @@
 
 /* 404: una hoja que no está en la carpeta */
 .perdida{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:clamp(32px,6vw,96px);align-items:center;
-  padding-block:clamp(28px,5vw,44px) clamp(80px,12vw,160px);min-height:min(100svh,940px)}
+  padding-block:calc(var(--membrete-y) + var(--membrete)) clamp(80px,12vw,160px);min-height:min(100svh,940px)}
 .perdida-texto{display:grid;gap:18px;align-content:start}
-.perdida-texto .marca{font-size:clamp(30px,3vw,38px)}
 .perdida-texto h1{margin-top:clamp(28px,6vw,80px);font-size:clamp(2.6rem,1.5rem + 4vw,5.2rem)}
 .perdida-acciones{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
 .perdida-lista{margin:8px 0 0;display:grid;max-width:30rem}
@@ -67,13 +66,17 @@
 .perdida-lista li:last-child a{border-bottom:var(--borde) solid var(--linea)}
 .perdida-lista a>span{color:var(--grafito);font-weight:450;font-size:var(--t-chico)}
 .perdida-lista a:hover{text-decoration:underline}
-.perdida-hoja{position:relative;aspect-ratio:215.9 / 279.4;max-width:100%;width:min(100%,420px);justify-self:center}
-.perdida-hoja::before,.perdida-hoja::after{content:"";position:absolute;inset:0;border-radius:3px;background:var(--hoja);
+/* Una hoja oficio a la que le falta su lámina: queda el hueco con la forma de la pieza */
+.perdida-hoja{position:relative;aspect-ratio:215.9 / 330.2;width:min(100%,380px);justify-self:center;transform:rotate(2deg)}
+.perdida-hoja::before{content:"";position:absolute;inset:0;border-radius:2px;background:var(--hoja);transform:rotate(-5deg) translate(-5%,2%);opacity:.65;
   box-shadow:0 1px 2px rgb(var(--sombra)/.08),0 30px 60px -36px rgb(var(--sombra)/.45)}
-.perdida-hoja::before{transform:rotate(-4deg) translate(-4%,3%);opacity:.7}
-.perdida-hoja::after{transform:rotate(2deg)}
-.perdida-hueco{position:absolute;inset:12% 14%;z-index:1;display:grid;place-items:center;border:2px dashed var(--linea);border-radius:4px;color:var(--suave);
-  transform:rotate(2deg);text-align:center;font-weight:650;font-stretch:110%;font-size:clamp(3rem,2rem + 4vw,5.5rem);letter-spacing:-.03em}
+.perdida-hoja svg{position:relative;display:block;width:100%;height:100%;border-radius:2px;background:var(--hoja);
+  box-shadow:0 1px 2px rgb(var(--sombra)/.08),0 30px 60px -36px rgb(var(--sombra)/.45)}
+.perdida-texto-hoja rect{fill:var(--regla)}
+.perdida-texto-hoja .perdida-titulo{fill:color-mix(in srgb,var(--azul) 30%,var(--regla))}
+.perdida-texto-hoja .perdida-n{fill:none;stroke:var(--linea);stroke-width:1.2}
+.perdida-pieza{fill:var(--mesa);stroke:var(--grafito);stroke-width:1.1;stroke-dasharray:4 3;stroke-linejoin:round}
+.perdida-404{fill:var(--grafito);font:650 13px/1 var(--letra);font-stretch:110%;letter-spacing:.02em}
 
 @media (max-width:980px){
   .legal{grid-template-columns:minmax(0,1fr)}
@@ -82,7 +85,7 @@
   .legal-indice li:nth-last-child(2) a{border-bottom:var(--borde) solid var(--regla)}
   .creditos-lista,.creditos-notas{grid-template-columns:minmax(0,1fr)}
   .perdida{grid-template-columns:minmax(0,1fr);min-height:0}
-  .perdida-hoja{display:none}
+  .perdida-hoja{width:min(62vw,260px);justify-self:start;margin-left:6px}
 }
 @media (max-width:560px){
   .legal-indice ol{grid-template-columns:minmax(0,1fr)}

@@ -69,6 +69,7 @@ try {
   await expect("planes limpio", { path: "/planes" }, status(200));
   await expect("planes con barra redirige", { path: "/planes/" }, redirectTo("/planes"));
   await expect("marca limpia", { path: "/marca" }, (res, body) => (res.status === 200 && body.includes("<h1>Marca</h1>") ? null : `status ${res.status}`));
+  await expect("favicon.ico", { path: "/favicon.ico" }, status(200));
   await expect("marca descargable", { path: "/assets/marca/pteron-azul.svg" }, (res) => (res.status === 200 && /svg/.test(res.headers.get("content-type") || "") ? null : `status ${res.status}`));
   await expect("html explícito redirige", { path: "/privacidad.html" }, redirectTo("/privacidad"));
   await expect("cuenta sin barra", { path: "/cuenta", headers: navigate }, status(200));
@@ -78,7 +79,7 @@ try {
   await expect("docs archivo real", { path: "/docs/app.js" }, (res) => (res.status === 200 && /javascript/.test(res.headers.get("content-type") || "") ? null : `status ${res.status}`));
   await expect("docs datos", { path: "/docs/data/releases.json" }, status(200));
   await expect("cabeceras assets", { path: "/" }, (res) => (res.headers.get("x-frame-options") === "DENY" ? null : "falta X-Frame-Options"));
-  await expect("caché immutable", { path: "/assets/favicon-v3-32.png" }, (res) => (/immutable/.test(res.headers.get("cache-control") || "") ? null : `cache-control ${res.headers.get("cache-control")}`));
+  await expect("caché immutable", { path: "/assets/favicon-v4-32.png" }, (res) => (/immutable/.test(res.headers.get("cache-control") || "") ? null : `cache-control ${res.headers.get("cache-control")}`));
   await expect("api desconocida", { path: "/api/nada" }, jsonError("not_found", 404));
   await expect("api desconocida por navegación", { path: "/api/nada", headers: navigate }, jsonError("not_found", 404));
   await expect("retorno de Flow por navegación", { path: "/api/billing/card-callback?intent=x", method: "POST", headers: { ...navigate, "content-type": "application/x-www-form-urlencoded" }, body: "token=abc" }, jsonError("checkout_expired", 410));

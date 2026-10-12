@@ -41,7 +41,8 @@ test("la marca tiene sus huecos: los contornos interiores van al revés y con ev
 
 test("los archivos de la marca están al día con marca.svg (node scripts/marca.mjs)", () => {
   execFileSync(process.execPath, [path.join(root, "scripts/marca.mjs"), "--revisar"], { stdio: "pipe" });
-  for (const file of ["favicon-v3-16.png", "favicon-v3-32.png", "apple-touch-icon-v3.png", "app-icon-v3-192.png", "app-icon-v3-512.png", "app-icon-v3-mascara.png", "icono-v3.svg"]) {
+  assert.ok(existsSync(path.join(pub, "favicon.ico")), "favicon.ico en la raíz");
+  for (const file of ["favicon-v4-16.png", "favicon-v4-32.png", "favicon-v4-48.png", "apple-touch-icon-v3.png", "app-icon-v3-192.png", "app-icon-v3-512.png", "app-icon-v3-mascara.png", "icono-v3.svg"]) {
     assert.ok(existsSync(path.join(pub, "assets", file)), `falta assets/${file}`);
   }
 });
@@ -75,7 +76,32 @@ test("/marca: cada descarga existe, los colores son los del sistema y las lámin
   assert.equal((html.match(/class="pteron-figura"/g) || []).length, 4, "cada par lleva la figura de pteron");
 });
 
-test("/descargar muestra el icono que de verdad tiene la app", () => {
-  assert.match(read("descargar/index.html"), /<img class="icono-app" src="\/assets\/app\/icono-pteron-256\.png"/);
-  assert.ok(existsSync(path.join(pub, "assets/app/icono-pteron-256.png")));
+
+test("las cabeceras de planes, descargar y cuenta llevan una lámina con su figura detrás", () => {
+  for (const page of ["planes/index.html", "descargar/index.html", "cuenta/index.html"]) {
+    const html = read(page);
+    const pieza = html.match(/<!-- pieza:inicio -->([\s\S]*?)<!-- pieza:fin -->/)?.[1] || "";
+    assert.match(pieza, /<div class="pieza" data-pieza aria-hidden="true"/, `${page}: la pieza`);
+    assert.match(pieza, /class="pteron-figura"/, `${page}: la figura de pteron en el reverso`);
+    const src = /<img src="([^"]+)"/.exec(pieza)?.[1];
+    assert.ok(src && exists(src), `${page}: la lámina existe`);
+  }
+});
+
+test("el colofón da los créditos completos de las láminas sólo donde se ven", () => {
+  const completo = /Láminas de dominio público: Yciar/;
+  assert.match(read("index.html"), completo);
+  assert.match(read("marca/index.html"), completo);
+  for (const page of ["planes/index.html", "cuenta/index.html", "privacidad.html", "404.html"]) {
+    const html = read(page);
+    assert.doesNotMatch(html.match(/<footer class="colofon"[\s\S]*?<\/footer>/)[0], completo, `${page}`);
+    assert.match(html, /sus créditos están en <a href="\/privacidad#creditos">Privacidad<\/a>/, `${page}: enlace a los créditos`);
+  }
+});
+
+test("Privacidad promete sólo el aviso que pteron tiene (ADR-049): nombre declarado o RUT, no un clasificador", () => {
+  const seccion = read("privacidad.html").match(/<section id="estudiantes"[\s\S]*?<\/section>/)[0];
+  assert.match(seccion, /un nombre declarado en un campo de persona o un RUT con formato chileno/);
+  assert.match(seccion, /no un clasificador de datos sensibles/);
+  assert.doesNotMatch(seccion, /incluidos nombres, RUT, calificaciones/);
 });

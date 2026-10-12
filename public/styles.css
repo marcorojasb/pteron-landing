@@ -6,6 +6,7 @@
 @font-face{font-family:"Archivo";font-style:normal;font-weight:100 900;font-stretch:62% 125%;font-display:swap;
   src:url(/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-12.10) format("woff2");
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Outfit";font-style:normal;font-weight:100 900;font-display:swap;src:url(/assets/fonts/outfit-latin-wght-normal.woff2?v=2026-10-12.10) format("woff2")}
 @font-face{font-family:"Archivo";font-style:normal;font-weight:100 900;font-stretch:62% 125%;font-display:swap;
   src:url(/assets/fonts/archivo-latin-ext-wdth-normal.woff2?v=2026-10-12.10) format("woff2");
   unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
@@ -24,6 +25,11 @@
   --linea:#C9D3E1;
   --lapiz:#F0C060;
   --lapiz-hondo:#E2AC3A;
+  /* Estados (los de los momentos de pteron-design): éxito, error, nota y aviso, cada uno con su papel y su borde */
+  --ok:#1D5C3C;--ok-papel:#EAF5EF;--ok-borde:#CBE5D6;
+  --error:#9A2F23;--error-papel:#FBEDEB;--error-borde:#F0C9C4;
+  --nota-papel:#F2F6FC;--nota-borde:#D6E0EF;
+  --aviso-papel:#FDF5E2;--aviso-borde:#EDD49B;
   --sombra:31 42 61;
   --letra:"Archivo",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --borde:max(1px,.0625rem);
@@ -78,8 +84,17 @@ small{font-size:var(--t-chico)}
 .rotulo{font-size:var(--t-rotulo);font-stretch:92%;font-weight:620;letter-spacing:.01em;color:var(--grafito)}
 
 /* ——— Marca ——— */
-.marca{display:inline-block;color:var(--azul);line-height:0;border-radius:6px}
+.marca{display:inline-block;justify-self:start;width:max-content;color:var(--azul);line-height:0;border-radius:6px}
 .marca svg{width:auto;height:1em;overflow:visible}
+/* El membrete: la marca arriba a la izquierda de cada página, a la misma altura y del mismo tamaño que en el inicio;
+   la esquina doblada queda en la esquina opuesta. */
+:root{--membrete:clamp(30px,2.7vw,38px);--membrete-y:clamp(20px,3vw,40px)}
+.pagina-cabeza>.marca:first-child,.perdida-texto>.marca:first-child,.admin-cabeza>.marca:first-child{position:absolute;top:var(--membrete-y);left:var(--margen);
+  font-size:var(--membrete)}
+
+/* ——— El destacador: lo que conviene notar se marca como con un destacador amarillo, sin cápsula ——— */
+.destacado{padding-inline:.15em;margin-inline:-.05em;background:linear-gradient(transparent 50%,color-mix(in srgb,var(--lapiz) 82%,white) 50% 94%,transparent 94%);
+  color:var(--tinta);font-weight:650;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 
 /* ——— Botones: el principal es amarillo lápiz; el resto, tinta sobre papel ——— */
 .boton{display:inline-flex;align-items:center;justify-content:center;gap:.6em;min-height:48px;padding:.7em 1.35em;border:var(--borde) solid transparent;
@@ -116,7 +131,8 @@ small{font-size:var(--t-chico)}
 
 .esquina-descargar{position:fixed;z-index:59;right:calc(max(18px,env(safe-area-inset-right,0px)) + var(--barra,0px));bottom:max(18px,env(safe-area-inset-bottom,0px));
   min-height:44px;padding:.6em 1.15em;font-size:.9375rem;transition:opacity .3s,transform .3s var(--curva)}
-.esquina-descargar[data-oculto]{opacity:0;transform:translateY(8px);pointer-events:none}
+/* Oculto, tampoco recibe el foco: visibility cambia al final de la transición */
+.esquina-descargar[data-oculto]{opacity:0;transform:translateY(8px);pointer-events:none;visibility:hidden;transition:opacity .3s,transform .3s var(--curva),visibility 0s .3s}
 
 /* El índice: la hoja azul sale de debajo de la esquina. La sombra la dibuja el diálogo (sigue la forma mientras se
    despliega); sin movimiento aparece de una vez. */
@@ -154,9 +170,9 @@ html.con-indice body{padding-right:var(--barra,0px)}
   border-top:var(--borde) solid rgb(255 255 255/.16);border-radius:2px;font-size:1.25rem;font-weight:680;font-stretch:108%;letter-spacing:-.01em;line-height:1.2;
   transition:background-color .15s}
 .indice-capitulos li:last-child a{border-bottom:var(--borde) solid rgb(255 255 255/.16)}
-.indice-capitulos a::before{content:counter(capitulo);color:var(--lapiz);font-size:.875rem;font-weight:650;font-stretch:96%;font-variant-numeric:tabular-nums;text-align:right}
+.indice-capitulos a::before{content:counter(capitulo);color:#C9D3EA;font-size:.875rem;font-weight:650;font-stretch:96%;font-variant-numeric:tabular-nums;text-align:right}
 .indice-capitulos a:hover{background:rgb(255 255 255/.07)}
-.indice-capitulos a[aria-current]{color:var(--lapiz)}
+.indice-capitulos a[aria-current],.indice-capitulos a[aria-current]::before{color:var(--lapiz)}
 .indice-capitulos a[aria-current]::after{content:"Estás aquí";color:#C9D3EA;font-size:.8125rem;font-weight:560;font-stretch:96%;letter-spacing:0;white-space:nowrap}
 .indice-paginas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px}
 .indice-paginas a{display:flex;align-items:center;gap:9px;min-height:44px;font-size:1.0625rem;font-weight:620;font-stretch:104%}
@@ -180,7 +196,7 @@ html.con-indice body{padding-right:var(--barra,0px)}
 .colofon nav a{display:inline-flex;min-height:36px;align-items:center;color:var(--tinta);text-decoration:none;font-weight:560}
 .colofon nav a:hover{color:var(--azul);text-decoration:underline}
 .colofon nav a[aria-current="page"]{color:var(--azul);font-weight:700}
-.colofon nav a[aria-current="page"]::before{content:"";width:6px;height:6px;margin-right:9px;border-radius:50%;background:var(--lapiz-hondo)}
+.colofon nav a[aria-current="page"]::before{content:"";width:6px;height:6px;margin-right:9px;border-radius:50%;background:var(--azul)}
 .colofon-creditos{font-size:var(--t-chico);color:var(--grafito);max-width:56ch}
 .colofon-creditos p+p{margin-top:10px}
 .colofon-legal{margin-top:clamp(36px,5vw,56px);padding-top:18px;border-top:var(--borde) solid var(--regla);display:flex;flex-wrap:wrap;gap:8px 24px;
@@ -189,8 +205,7 @@ html.con-indice body{padding-right:var(--barra,0px)}
 .colofon-legal a[aria-current="page"]{color:var(--azul);font-weight:650}
 
 /* ——— Páginas interiores: cabecera en el flujo, sin barra ——— */
-.pagina-cabeza{padding-block:clamp(28px,5vw,44px) clamp(36px,6vw,72px)}
-.pagina-cabeza .marca{font-size:clamp(30px,3vw,38px)}
+.pagina-cabeza{padding-block:calc(var(--membrete-y) + var(--membrete)) clamp(36px,6vw,72px)}
 .pagina-cabeza h1{margin-top:clamp(40px,7vw,96px);font-size:clamp(2.6rem,1.5rem + 4vw,5.2rem)}
 .pagina-cabeza .texto-grande{margin-top:18px}
 
@@ -205,6 +220,26 @@ html.con-indice body{padding-right:var(--barra,0px)}
 .segmento input:focus-visible+span{outline:3px solid var(--azul);outline-offset:3px}
 .segmento label:hover input:not(:checked)+span{border-color:var(--azul);color:var(--azul)}
 
+/* ——— Pieza: una lámina sola en la cabecera de una página interior. Al pasar el cursor (o al tocarla) se da vuelta y
+   muestra la figura con que pteron enseña lo mismo; la marcan pteron-hojas.mjs y script.js. ——— */
+.pagina-cabeza--pieza{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:clamp(20px,4vw,64px);align-items:end}
+.pagina-cabeza--pieza>:not(.pieza){grid-column:1}
+.pagina-cabeza--pieza>.pieza{grid-column:2;grid-row:1 / span 3;align-self:end;margin-bottom:-12px}
+.pieza{--pieza:clamp(150px,17vw,240px);position:relative;width:var(--pieza);aspect-ratio:1;perspective:1400px;transform:rotate(var(--giro,3deg));
+  cursor:pointer;-webkit-tap-highlight-color:transparent;filter:drop-shadow(0 1px 1px rgb(var(--sombra)/.26)) drop-shadow(10px 16px 14px rgb(var(--sombra)/.2))}
+.pieza-cuerpo{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .9s var(--curva)}
+.pieza.is-volteada .pieza-cuerpo{transform:rotateY(180deg)}
+@media (hover:hover) and (pointer:fine){.pieza:hover .pieza-cuerpo{transform:rotateY(180deg)}}
+.pieza-cara,.pieza-reverso{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.pieza-cara img{width:100%;height:100%;-webkit-user-drag:none;user-select:none}
+.pieza-reverso{transform:rotateY(180deg);display:grid;gap:3.5%;padding:5.5%;color:var(--tinta);container-type:inline-size}
+.pieza-reverso::before{content:"";position:absolute;inset:0;background:linear-gradient(160deg,var(--hoja) 0%,color-mix(in srgb,var(--mesa) 30%,var(--hoja)) 100%)}
+.pieza .reverso-figura,.pieza .reverso-pie{position:relative}
+.pieza .reverso-figura{display:grid;place-items:center;min-width:0;min-height:0;padding:2%}
+.pieza .reverso-figura svg{width:100%;height:100%;max-height:100%}
+.pieza .reverso-pie{align-self:end;margin:0;padding:0 2% 1%;color:var(--azul);font:600 clamp(9px,5.2cqi,14px)/1.2 "Outfit",var(--letra)}
+.pieza .reverso-pie span{display:block;margin-top:.25em;color:var(--grafito);font-weight:400;font-size:.82em}
+
 /* ——— Formularios (cuenta y administración) ——— */
 label{font-weight:600;font-size:var(--t-chico)}
 input:not([type="checkbox"]):not([type="radio"]),select,textarea{width:100%;min-height:48px;padding:.65em .9em;border:var(--borde) solid var(--linea);border-radius:10px;
@@ -218,6 +253,9 @@ input::placeholder,textarea::placeholder{color:var(--suave)}
 }
 @media (max-width:560px){
   .colofon-rejilla{grid-template-columns:minmax(0,1fr)}
+  /* En el teléfono la cabecera es sólo título y texto: las láminas quedan en el inicio */
+  .pagina-cabeza--pieza{display:block}
+  .pagina-cabeza--pieza>.pieza{display:none}
   .esquina-descargar{display:none}
   .oreja{--o:64px;--d:11px}
   .oreja-texto{font-size:.6875rem}

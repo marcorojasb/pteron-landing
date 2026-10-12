@@ -2,7 +2,6 @@
    La marca, el icono, los colores, la letra, las láminas y la voz, cada uno en su bloque numerado como las preguntas de
    una hoja de pteron. Las muestras son los archivos reales: lo que se ve es lo que se descarga. */
 
-@font-face{font-family:"Outfit";font-style:normal;font-weight:100 900;font-display:swap;src:url(/assets/fonts/outfit-latin-wght-normal.woff2?v=2026-10-12.10) format("woff2")}
 @font-face{font-family:"Playwrite CL";font-style:normal;font-weight:100 400;font-display:swap;src:url(/assets/fonts/playwrite-cl-wght-normal.woff2?v=2026-10-12.10) format("woff2")}
 
 /* ——— Bloques ——— */
@@ -11,7 +10,7 @@
 .bloque-rejilla{display:grid;grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);gap:clamp(28px,5vw,80px);align-items:start}
 .bloque-texto{display:grid;gap:18px;align-content:start}
 .bloque-texto h2{display:flex;align-items:baseline;gap:.5em}
-.bloque-n{font-size:.5em;font-weight:650;font-stretch:96%;letter-spacing:0;color:var(--lapiz-hondo);font-variant-numeric:tabular-nums;
+.bloque-n{font-size:.5em;font-weight:650;font-stretch:96%;letter-spacing:0;color:var(--grafito);font-variant-numeric:tabular-nums;
   transform:translateY(-.35em)}
 .bloque-muestra{display:grid;gap:18px;min-width:0}
 .reglas{display:grid;gap:0;max-width:46ch}

@@ -8,6 +8,7 @@
  *     <!-- hojas:inicio -->: las cuatro hojas que se arman en el escenario;
  *     <!-- hoja:inicio -->: la guía de Matemática del estudiante y la versión docente.
  * - public/marca/index.html, entre <!-- pares:inicio --> y <!-- pares:fin -->: cuatro láminas con su figura al lado.
+ * - planes, descargar y cuenta, entre <!-- pieza:inicio --> y <!-- pieza:fin -->: una lámina en la cabecera.
  *
  *   node scripts/pteron-hojas.mjs [ruta de pteron]   (por omisión ../pteron o $PTERON_DIR)
  *
@@ -271,4 +272,30 @@ const pares = PARES.map((archivo) => {
     + `<p class="par-pie"><b>${escape(pedido.titulo)}</b> <span>${escape(lamina.asignatura)} · Lámina: ${escape(lamina.fuente)}</span></p></li>`;
 });
 writeFileSync(marcaPath, inject(readFileSync(marcaPath, "utf8"), "pares", pares.join(""), "marca/index.html"));
+
+// Una lámina sola en la cabecera de algunas páginas interiores: se da vuelta (cursor o toque) y muestra su figura
+const CABEZAS = [
+  ["planes/index.html", "matematica-pizarra", 3],
+  ["descargar/index.html", "ciencias-andes", -4],
+  ["cuenta/index.html", "historia-portulano", 2],
+];
+for (const [pagina, archivo, giro] of CABEZAS) {
+  const lamina = LAMINAS.find((item) => item.archivo === archivo);
+  if (!lamina) throw new Error(`${pagina} pide la lámina ${archivo}, que no está en materiales.mjs`);
+  const pedido = lamina.hoja ? pedidos.get(`${lamina.hoja}/${lamina.bloque}`) : pedidoDe(lamina.figura);
+  const reflejo = lamina.forma.map((fila) => [...fila].reverse().join(""));
+  const { svg, ancho, alto } = kit.renderDetallado(pedido, { prefijoIds: `pieza-${archivo}-` });
+  const zona = zonas(reflejo, ancho / alto);
+  const figura = svg.replace(/^<svg\b([^>]*)>/, (_, attrs) => `<svg${attrs.replace(/\s(width|height)="[^"]*"/g, "")} class="pteron-figura" focusable="false">`);
+  const src = (size) => `/assets/atlas/${lamina.archivo}-${size}.webp?v=${version}`;
+  const pie = zona.pie
+    ? `<p class="reverso-pie" style="grid-area:${zona.pie}"><b>${escape(pedido.titulo)}</b> <span>Lámina: ${escape(lamina.fuente)}</span></p>`
+    : "";
+  const markup = `<div class="pieza" data-pieza aria-hidden="true" style="--giro:${giro}deg"><div class="pieza-cuerpo">`
+    + `<div class="pieza-cara"><img src="${src(600)}" srcset="${src(300)} 300w, ${src(600)} 600w" sizes="(max-width: 760px) 120px, 240px" width="600" height="600" alt="" decoding="async" draggable="false"></div>`
+    + `<div class="pieza-reverso" style="clip-path:${contorno(reflejo)};grid-template:${zona.grid}"><div class="reverso-figura" style="grid-area:${zona.figura}">${figura}</div>${pie}</div>`
+    + `</div></div>`;
+  const ruta = path.join(root, "public", pagina);
+  writeFileSync(ruta, inject(readFileSync(ruta, "utf8"), "pieza", markup, pagina));
+}
 console.log(`${LAMINAS.length} láminas, ${MATERIALES.length} hojas y la guía de Matemática en dos versiones · pteron ${origen || "sin git"} · kit ${FIGURE_KIT_VERSION}`);

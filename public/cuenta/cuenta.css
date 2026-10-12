@@ -6,8 +6,8 @@
 .cuenta-aviso{position:fixed;z-index:70;top:max(14px,env(safe-area-inset-top));left:50%;width:max-content;max-width:min(100% - 24px,620px);translate:-50% 0;
   padding:12px 18px;border-radius:12px;background:var(--hoja);color:var(--tinta);font-weight:560;
   box-shadow:0 0 0 1px var(--regla),0 18px 40px -18px rgb(var(--sombra)/.5);animation:aviso-entra .45s var(--curva) both}
-.cuenta-aviso[data-tone="success"]{box-shadow:0 0 0 1px #CBE5D6,0 18px 40px -18px rgb(var(--sombra)/.5);color:#1D5C3C}
-.cuenta-aviso[data-tone="error"]{box-shadow:0 0 0 1px #F0C9C4,0 18px 40px -18px rgb(var(--sombra)/.5);color:#9A2F23}
+.cuenta-aviso[data-tone="success"]{box-shadow:0 0 0 1px var(--ok-borde),0 18px 40px -18px rgb(var(--sombra)/.5);color:var(--ok)}
+.cuenta-aviso[data-tone="error"]{box-shadow:0 0 0 1px var(--error-borde),0 18px 40px -18px rgb(var(--sombra)/.5);color:var(--error)}
 @keyframes aviso-entra{from{opacity:0;translate:-50% -8px}}
 
 /* Estados */
@@ -22,10 +22,10 @@
 .acceso-hoja h2{font-size:clamp(1.6rem,1.3rem + 1vw,2.2rem)}
 .campo{display:grid;gap:8px}
 .acceso-error:empty{display:none}
-.acceso-error{padding:10px 14px;border-radius:10px;background:#FBEDEB;color:#9A2F23;font-size:var(--t-chico)}
+.acceso-error{padding:10px 14px;border-radius:10px;background:var(--error-papel);color:var(--error);font-size:var(--t-chico)}
 .acceso-enviar{justify-self:start}
 .acceso-enviar:disabled,[data-checkout-plan]:disabled,[data-confirm-activation]:disabled,[data-cancel-subscription]:disabled{opacity:.7;cursor:default}
-.acceso-enviado{display:grid;gap:4px;padding:14px 16px;border-radius:10px;background:#EAF5EF;color:#1D5C3C}
+.acceso-enviado{display:grid;gap:4px;padding:14px 16px;border-radius:10px;background:var(--ok-papel);color:var(--ok)}
 .acceso-enviado p{font-size:var(--t-chico)}
 .acceso:has([data-link-sent]:not([hidden])) .acceso-enviar{background:var(--hoja);color:var(--azul);box-shadow:0 0 0 1px var(--linea)}
 .acceso-hechos{display:grid;gap:0;align-content:start}
@@ -36,7 +36,7 @@
 
 /* Esqueleto */
 .esqueleto{gap:20px}
-.esqueleto span{display:block;height:120px;border-radius:6px;background:linear-gradient(90deg,var(--mesa-honda) 30%,#F2F4F7 50%,var(--mesa-honda) 70%) 0 0/300% 100%;
+.esqueleto span{display:block;height:120px;border-radius:6px;background:linear-gradient(90deg,var(--mesa-honda) 30%,color-mix(in srgb,var(--mesa) 60%,var(--hoja)) 50%,var(--mesa-honda) 70%) 0 0/300% 100%;
   animation:esqueleto 1.6s ease-in-out infinite}
 .esqueleto span:first-child{height:64px;width:min(420px,70%)}
 @keyframes esqueleto{from{background-position:100% 0}to{background-position:0 0}}
@@ -62,7 +62,7 @@
 .plan-actual h3,.plan-opcion h3{font-size:1.25rem}
 .plan-precio{font-size:2.2rem;font-weight:780;font-stretch:112%;letter-spacing:-.02em;line-height:1;color:var(--tinta);font-variant-numeric:tabular-nums}
 .plan-precio small{font-size:.875rem;font-weight:550;font-stretch:100%;letter-spacing:0;color:var(--grafito)}
-.plan-marca{display:inline-block;margin-right:6px;padding:1px 9px;border-radius:999px;background:var(--lapiz);color:var(--azul-hondo);font-weight:700;font-size:.8125rem}
+.nota .destacado{margin-right:4px}
 .plan-opcion .boton{justify-self:start}
 .plan-opcion[data-current="true"]{box-shadow:0 0 0 2px var(--azul),0 24px 48px -32px rgb(var(--sombra)/.4)}
 .subscription-plan{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 12px}
@@ -77,7 +77,7 @@
 .license-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 16px;padding:12px 0;border-top:var(--borde) solid var(--regla)}
 .license-row div{display:grid;gap:2px}
 .license-row span{font-size:var(--t-chico);color:var(--grafito)}
-.license-row-status{padding:2px 10px;border-radius:999px;background:#EAF5EF;color:#1D5C3C!important;font-weight:650}
+.license-row-status{padding:2px 10px;border-radius:999px;background:var(--ok-papel);color:var(--ok)!important;font-weight:650}
 .account-muted{color:var(--grafito)}
 .ayuda{display:grid;gap:8px;max-width:62ch;margin-block:clamp(48px,7vw,88px) clamp(56px,8vw,96px);padding-top:18px;border-top:2px solid var(--azul)}
 .ayuda h2{font-size:1.25rem}

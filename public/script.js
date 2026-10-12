@@ -181,6 +181,14 @@
     });
   }
 
+  /* ——— Piezas de las cabeceras: con el dedo se dan vuelta al tocarlas; con cursor, al pasar por encima (CSS) ——— */
+  const conCursor = window.matchMedia("(hover: hover) and (pointer: fine)");
+  $$("[data-pieza]").forEach((pieza) => {
+    pieza.addEventListener("click", () => {
+      if (!conCursor.matches) pieza.classList.toggle("is-volteada");
+    });
+  });
+
   /* ——— Plataforma del visitante. Sin una detección clara (teléfono, tableta, ChromeOS, Linux ARM) no se marca nada. ——— */
   const detectPlatform = () => {
     const ua = navigator.userAgent || "";
