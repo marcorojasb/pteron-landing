@@ -99,15 +99,6 @@
 .hoja-rejilla{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(28px,5vw,80px);align-items:start}
 .hoja-texto{position:sticky;top:clamp(24px,8vh,80px)}
 .controles{display:grid;gap:18px;margin-top:28px}
-.segmento{margin:0;padding:0;border:0;display:flex;flex-wrap:wrap;gap:6px}
-.segmento legend{width:100%;margin-bottom:8px;padding:0}
-.segmento label{position:relative;display:inline-flex}
-.segmento input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
-.segmento span{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border:var(--borde) solid var(--linea);border-radius:999px;background:var(--hoja);
-  font-weight:600;font-size:.9375rem;color:var(--grafito);transition:background-color .2s,border-color .2s,color .2s}
-.segmento input:checked+span{background:var(--azul);border-color:var(--azul);color:#fff}
-.segmento input:focus-visible+span{outline:3px solid var(--azul);outline-offset:3px}
-.segmento label:hover input:not(:checked)+span{border-color:var(--azul);color:var(--azul)}
 .datos{display:grid;gap:14px;margin-top:34px;max-width:46ch}
 .datos div{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:12px;padding-top:12px;border-top:var(--borde) solid var(--regla)}
 .datos dt{font-size:var(--t-rotulo);font-weight:650;font-stretch:94%;color:var(--azul);padding-top:.15em}

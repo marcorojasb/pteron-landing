@@ -35,4 +35,5 @@
   <url><loc>https://pteron.patagua.dev/planes</loc><priority>0.8</priority></url>
   <url><loc>https://pteron.patagua.dev/privacidad</loc><priority>0.4</priority></url>
   <url><loc>https://pteron.patagua.dev/terminos</loc><priority>0.4</priority></url>
+  <url><loc>https://pteron.patagua.dev/marca</loc><priority>0.4</priority></url>
 </urlset>

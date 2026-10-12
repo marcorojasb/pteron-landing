@@ -20,12 +20,15 @@ Worker, desde este repositorio en GitHub.
     catálogo de versiones que mantiene el workflow.
   - `admin/`: panel interno de cuentas, cortesías, consumo de IA y planes;
     reutiliza la sesión de `/cuenta` y sólo entra quien figura en `ADMIN_EMAILS`.
+  - `marca/`: la marca, el icono, los colores (con su valor en fotocopia), la
+    letra, las láminas con su figura y la voz, con los archivos para descargar.
   - `privacidad.html` (con los créditos), `terminos.html` y `404.html`.
   - `styles.css`: el sistema compartido (letras, colores, botones, la esquina,
     el índice y el colofón); `inicio.css`, `legal.css`, `planes/planes.css`,
     `descargar/descargar.css`, `cuenta/cuenta.css`, `admin/admin.css` y
     `docs/styles.css` son las hojas propias de cada página.
-  - `script.js`: el índice que sale de la esquina, Descargar con la plataforma
+  - `script.js`: el índice que sale de la esquina doblada (los capítulos de la
+    página, marcados con `data-capitulo`, y las páginas del sitio), Descargar con la plataforma
     del visitante, la versión publicada, el año y los botones de copiar;
     `inicio.js` mueve las láminas y las hojas, y `cuenta/cuenta.js`,
     `admin/admin.js`, `descargar/download.js` y `docs/app.js` son los scripts
@@ -44,9 +47,11 @@ Worker, desde este repositorio en GitHub.
     sus créditos están en `/privacidad#creditos`. `assets/app/` y
     `assets/docs/`: capturas reales de pteron para la documentación.
   - `assets/fonts/`: Archivo, Outfit, Playwrite CL e IBM Plex, con sus
-    licencias; `assets/marca.svg`: el contorno de la marca «pteron»;
-    `assets/pt-icons.svg`: los iconos Lucide de la app; favicons y
-    `og-pteron-v5.jpg`.
+    licencias; `assets/marca.svg`: el contorno de la marca «pteron» (el mismo
+    trazado que dibuja la app); `assets/marca/`: la marca en azul, blanco y
+    tinta y el icono, para descargar; `assets/pt-icons.svg`: los iconos Lucide
+    de la app; los iconos `*-v3` (la «p» de la marca sobre el azul) y
+    `assets/og/`: una imagen para compartir por página.
 - `src/worker.js`: el Worker. Atiende `/api/*` y reescribe `/docs/:slug` a la
   página de documentación; todo lo demás lo sirven los assets.
   - `src/lib/`: ayudantes HTTP, cliente de Supabase, cliente de Flow, firma y
@@ -68,10 +73,15 @@ Worker, desde este repositorio en GitHub.
     (`--revisar` sólo comprueba que estén al día; lo usa una prueba).
   - `pteron-hojas.mjs <ruta de pteron>` arma las hojas del inicio con el código
     de Write de pteron y las figuras de su motor, y escribe las láminas, las
-    hojas y `pteron-hoja.css`. Necesita el repositorio de pteron y sus paquetes
+    hojas y `pteron-hoja.css`, y los pares lámina y figura de `/marca`. Necesita el repositorio de pteron y sus paquetes
     (jsdom, @xmldom/xmldom, temml y mathml2omml) en su `node_modules` o en la
     carpeta que indique `PTERON_DEPS`. Los materiales y las láminas viven en
     `scripts/pteron-hojas/materiales.mjs`.
+  - `marca.mjs` deriva de `assets/marca.svg` la marca para descargar y el
+    icono; con `--png` (y `PLAYWRIGHT` apuntando a Playwright) también los PNG.
+  - `og.mjs` fotografía las imágenes para compartir: la portada del inicio y,
+    para las demás páginas, la tarjeta de `scripts/og/tarjeta.html` con su
+    título y tres láminas. También necesita `PLAYWRIGHT`.
   - `pteron-ventana.mjs` escribe la ventana en reposo con las plantillas de
     `pteron-ventana.js`, y `pteron-app-css.mjs` extrae y acota las reglas de la
     app a `pteron-app.css`.
@@ -91,15 +101,18 @@ se dibuja con su contorno (`assets/marca.svg`). Las hojas usan las letras de los
 materiales de pteron (Outfit y Playwrite CL) y la ventana las de la app (IBM
 Plex). Sin cursivas.
 
-Sin barra superior: abajo a la derecha, Descargar y la esquina doblada de la
-hoja, que abre el índice del sitio; el colofón lleva lo mismo al final de cada
-página. Si se muestra la interfaz de pteron, es la de la app: la ventana se
+Sin barra superior: la esquina de arriba a la derecha está doblada y debajo
+asoma la hoja azul del índice, con los capítulos de la página y las páginas del
+sitio; Descargar flota abajo a la derecha y el colofón lleva lo mismo al final
+de cada página. La marca y sus reglas están en `/marca`; el icono es la «p» de
+la marca en blanco sobre el azul. Si se muestra la interfaz de pteron, es la de la app: la ventana se
 dibuja con sus reglas (`pteron-app.css`) y las hojas con el código de Write.
 
 Movimiento: las láminas flotan y se dan vuelta al pasar el puntero (o al
 tocarlas); con el desplazamiento vuelan a sus figuras mientras las hojas se
-imprimen. Con `prefers-reduced-motion` todo queda quieto y legible, y sin
-JavaScript la página muestra las hojas y la ventana terminadas.
+imprimen. Con `prefers-reduced-motion` todo queda quieto y legible (sin
+transiciones), y sin JavaScript la página muestra las hojas y la ventana
+terminadas.
 
 Todo asset propio lleva `?v=<revisión>` para invalidar la caché (`assets/` se
 sirve como inmutable); al cambiar hojas, scripts o imágenes se sube la revisión

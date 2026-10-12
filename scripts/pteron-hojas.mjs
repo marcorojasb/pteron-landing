@@ -7,6 +7,7 @@
  *     <!-- laminas:inicio -->: las láminas que flotan, con la figura de pteron en su reverso;
  *     <!-- hojas:inicio -->: las cuatro hojas que se arman en el escenario;
  *     <!-- hoja:inicio -->: la guía de Matemática del estudiante y la versión docente.
+ * - public/marca/index.html, entre <!-- pares:inicio --> y <!-- pares:fin -->: cuatro láminas con su figura al lado.
  *
  *   node scripts/pteron-hojas.mjs [ruta de pteron]   (por omisión ../pteron o $PTERON_DIR)
  *
@@ -241,17 +242,33 @@ const laminas = LAMINAS.map((lamina) => {
     + `<div class="lamina-reverso" style="clip-path:${contorno(reflejo)};grid-template:${zona.grid}"><div class="reverso-figura" style="grid-area:${zona.figura}">${figura}</div>${pie}</div></div></div>`;
 });
 
-/** Reemplaza el contenido entre dos marcadores de index.html. */
-function inject(name, markup) {
+/** Reemplaza el contenido entre dos marcadores de un HTML. */
+function inject(html, name, markup, archivo = "index.html") {
   const start = `<!-- ${name}:inicio -->`;
   const end = `<!-- ${name}:fin -->`;
-  const a = index.indexOf(start);
-  const b = index.indexOf(end);
-  if (a < 0 || b < a) throw new Error(`index.html no tiene los marcadores de ${name}`);
-  index = `${index.slice(0, a + start.length)}${markup}${index.slice(b)}`;
+  const a = html.indexOf(start);
+  const b = html.indexOf(end);
+  if (a < 0 || b < a) throw new Error(`${archivo} no tiene los marcadores de ${name}`);
+  return `${html.slice(0, a + start.length)}${markup}${html.slice(b)}`;
 }
-inject("laminas", laminas.join(""));
-inject("hojas", MATERIALES.map((material) => `<div class="mesa-hoja" data-hoja="${material.id}">${hojas.get(`${material.id}/estudiante`).html}</div>`).join(""));
-inject("hoja", ["estudiante", "docente"].map((audiencia) => hojas.get(`matematica/${audiencia}`).html).join(""));
+index = inject(index, "laminas", laminas.join(""));
+index = inject(index, "hojas", MATERIALES.map((material) => `<div class="mesa-hoja" data-hoja="${material.id}">${hojas.get(`${material.id}/estudiante`).html}</div>`).join(""));
+index = inject(index, "hoja", ["estudiante", "docente"].map((audiencia) => hojas.get(`matematica/${audiencia}`).html).join(""));
 writeFileSync(indexPath, index);
+
+// /marca: una lámina por asignatura con su figura al lado, la cara y el reverso sin girar
+const PARES = ["ciencias-luna", "matematica-byrne-cuadrados", "historia-ovalle", "lenguaje-yciar"];
+const marcaPath = path.join(root, "public/marca/index.html");
+const pares = PARES.map((archivo) => {
+  const lamina = LAMINAS.find((item) => item.archivo === archivo);
+  if (!lamina) throw new Error(`/marca pide la lámina ${archivo}, que no está en materiales.mjs`);
+  const pedido = lamina.hoja ? pedidos.get(`${lamina.hoja}/${lamina.bloque}`) : pedidoDe(lamina.figura);
+  const { svg } = kit.renderDetallado(pedido, { prefijoIds: `par-${archivo}-` });
+  const figura = svg.replace(/^<svg\b([^>]*)>/, (_, attrs) => `<svg${attrs.replace(/\s(width|height)="[^"]*"/g, "")} class="pteron-figura" focusable="false">`);
+  const src = (size) => `/assets/atlas/${lamina.archivo}-${size}.webp?v=${version}`;
+  return `<li class="par" data-lamina="${archivo}"><img class="par-lamina" src="${src(600)}" srcset="${src(300)} 300w, ${src(600)} 600w" sizes="(max-width: 760px) 40vw, 220px" width="600" height="600" alt="Recorte de ${escape(lamina.obra)}, ${escape(lamina.fuente)}" decoding="async">`
+    + `<div class="par-figura">${figura}</div>`
+    + `<p class="par-pie"><b>${escape(pedido.titulo)}</b> <span>${escape(lamina.asignatura)} · Lámina: ${escape(lamina.fuente)}</span></p></li>`;
+});
+writeFileSync(marcaPath, inject(readFileSync(marcaPath, "utf8"), "pares", pares.join(""), "marca/index.html"));
 console.log(`${LAMINAS.length} láminas, ${MATERIALES.length} hojas y la guía de Matemática en dos versiones · pteron ${origen || "sin git"} · kit ${FIGURE_KIT_VERSION}`);

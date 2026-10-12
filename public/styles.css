@@ -194,6 +194,17 @@ html.con-indice body{padding-right:var(--barra,0px)}
 .pagina-cabeza h1{margin-top:clamp(40px,7vw,96px);font-size:clamp(2.6rem,1.5rem + 4vw,5.2rem)}
 .pagina-cabeza .texto-grande{margin-top:18px}
 
+/* ——— Segmento: opciones excluyentes como píldoras (la hoja del inicio, los colores de /marca) ——— */
+.segmento{margin:0;padding:0;border:0;display:flex;flex-wrap:wrap;gap:6px}
+.segmento legend{width:100%;margin-bottom:8px;padding:0}
+.segmento label{position:relative;display:inline-flex}
+.segmento input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.segmento span{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border:var(--borde) solid var(--linea);border-radius:999px;background:var(--hoja);
+  font-weight:600;font-size:.9375rem;color:var(--grafito);transition:background-color .2s,border-color .2s,color .2s}
+.segmento input:checked+span{background:var(--azul);border-color:var(--azul);color:#fff}
+.segmento input:focus-visible+span{outline:3px solid var(--azul);outline-offset:3px}
+.segmento label:hover input:not(:checked)+span{border-color:var(--azul);color:var(--azul)}
+
 /* ——— Formularios (cuenta y administración) ——— */
 label{font-weight:600;font-size:var(--t-chico)}
 input:not([type="checkbox"]):not([type="radio"]),select,textarea{width:100%;min-height:48px;padding:.65em .9em;border:var(--borde) solid var(--linea);border-radius:10px;
@@ -214,8 +225,10 @@ input::placeholder,textarea::placeholder{color:var(--suave)}
   .indice-hoja{padding:max(18px,env(safe-area-inset-top,0px)) max(18px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px));border-radius:0 0 8px 8px}
   .indice-capitulos a{font-size:1.125rem}
 }
+/* Sin movimiento: sin transiciones (como la app). Con una duración mínima, cada cambio de estilo se volvería una
+   transición —la propiedad por omisión es «all»— y lo medido justo después del cambio sería el valor anterior. */
 @media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important;scroll-behavior:auto!important}
 }
 @media print{
   .esquina,.indice,.saltar{display:none!important}

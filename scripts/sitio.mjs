@@ -25,6 +25,7 @@ const PAGINAS = [
 const PIE = [
   ["/privacidad", "Privacidad"],
   ["/terminos", "Términos"],
+  ["/marca", "Marca"],
   ["mailto:pteron@patagua.dev", "pteron@patagua.dev"],
 ];
 
@@ -76,7 +77,7 @@ function colofon(route, version) {
       </div>
       <div class="colofon-legal">
         <span>© <span data-year>2026</span> pteron · Patagua</span>
-        <span><a href="/privacidad"${current(route, "/privacidad")}>Privacidad</a> · <a href="/terminos"${current(route, "/terminos")}>Términos</a> · <a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></span>
+        <span>${PIE.map(([href, name]) => `<a href="${href}"${current(route, href)}>${name}</a>`).join(" · ")}</span>
       </div>
     </div>
   </footer>

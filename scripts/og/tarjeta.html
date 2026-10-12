@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<!-- Tarjeta para compartir (1200 × 630). scripts/og.mjs la abre con ?titulo=&linea=&laminas=a,b,c -->
+<link rel="stylesheet" href="/styles.css">
+<style>
+  html,body{margin:0;width:1200px;height:630px;overflow:hidden;background:var(--mesa)}
+  .tarjeta{position:relative;width:1200px;height:630px;overflow:hidden}
+  .tarjeta .marca{position:absolute;left:72px;top:58px;font-size:58px}
+  .titulo{position:absolute;left:68px;bottom:178px;width:max-content;max-width:600px;margin:0;color:var(--azul);font-size:118px;font-weight:780;
+    font-stretch:118%;letter-spacing:-.03em;line-height:.92;text-wrap:balance}
+  .linea{position:absolute;left:72px;bottom:118px;max-width:620px;margin:0;color:var(--tinta);font-size:31px;line-height:1.3}
+  .lema{position:absolute;left:72px;bottom:58px;margin:0;color:var(--grafito);font-size:22px;font-weight:600;font-stretch:104%}
+  .lamina{position:absolute;width:var(--w);filter:drop-shadow(0 1px 1px rgb(31 42 61/.3)) drop-shadow(14px 22px 18px rgb(31 42 61/.24))}
+  .lamina img{display:block;width:100%;height:auto}
+  /* La esquina doblada: debajo asoma el azul */
+  .oreja-og{position:absolute;right:0;top:0;width:92px;height:92px}
+  .oreja-og i{position:absolute;inset:0;background:var(--azul);clip-path:polygon(0 0,100% 0,100% 100%)}
+  .oreja-og b{position:absolute;inset:0;clip-path:polygon(0 0,100% 100%,0 100%);background:linear-gradient(225deg,#fff 50%,#F3F6FA 72%,#DCE3EC 100%);
+    filter:drop-shadow(-4px 6px 6px rgb(31 42 61/.2))}
+</style>
+</head>
+<body>
+<div class="tarjeta">
+  <span class="marca"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg#pteron"/></svg></span>
+  <h1 class="titulo" id="titulo"></h1>
+  <p class="linea" id="linea"></p>
+  <p class="lema">Construido por profes, para profes.</p>
+  <div id="laminas"></div>
+  <span class="oreja-og" aria-hidden="true"><i></i><b></b></span>
+</div>
+<script>
+  const q = new URLSearchParams(location.search);
+  const titulo = document.getElementById("titulo");
+  titulo.textContent = q.get("titulo") || "";
+  // El título cabe en su espacio (600 px, dos líneas a lo más): se achica de a poco hasta caber
+  // Se mide con Archivo ya cargada: con la letra de reemplazo el ancho sería otro
+  Promise.all([document.fonts.load('780 100px "Archivo"'), document.fonts.ready]).then(() => {
+    let size = 118;
+    while (size > 56 && (titulo.scrollWidth > 600 || titulo.offsetHeight > size * 0.92 * 2 + 4 || [...titulo.textContent.split(" ")].some((word) => {
+      const probe = document.createElement("span");
+      probe.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap;font:inherit;font-stretch:inherit;letter-spacing:inherit";
+      probe.textContent = word;
+      titulo.append(probe);
+      const ancho = probe.offsetWidth;
+      probe.remove();
+      return ancho > 600;
+    }))) {
+      size -= 2;
+      titulo.style.fontSize = `${size}px`;
+    }
+    document.body.dataset.listo = "";
+  });
+  document.getElementById("linea").textContent = q.get("linea") || "";
+  // Tres puestos a la derecha: grande, mediana y chica, cada una con su giro
+  const puestos = [
+    { x: 760, y: 120, w: 330, r: -6 },
+    { x: 1010, y: 330, w: 230, r: 7 },
+    { x: 735, y: 400, w: 190, r: 4 },
+  ];
+  (q.get("laminas") || "").split(",").filter(Boolean).slice(0, 3).forEach((archivo, i) => {
+    const p = puestos[i];
+    const d = document.createElement("div");
+    d.className = "lamina";
+    d.style.cssText = `left:${p.x}px;top:${p.y}px;--w:${p.w}px;transform:rotate(${p.r}deg)`;
+    d.innerHTML = `<img src="/assets/atlas/${archivo}-600.webp" alt="">`;
+    document.getElementById("laminas").append(d);
+  });
+</script>
+</body>
+</html>

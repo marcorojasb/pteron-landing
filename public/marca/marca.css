@@ -1,0 +1,133 @@
+/* pteron · /marca (2026-10-12.10)
+   La marca, el icono, los colores, la letra, las láminas y la voz, cada uno en su bloque numerado como las preguntas de
+   una hoja de pteron. Las muestras son los archivos reales: lo que se ve es lo que se descarga. */
+
+@font-face{font-family:"Outfit";font-style:normal;font-weight:100 900;font-display:swap;src:url(/assets/fonts/outfit-latin-wght-normal.woff2?v=2026-10-12.10) format("woff2")}
+@font-face{font-family:"Playwrite CL";font-style:normal;font-weight:100 400;font-display:swap;src:url(/assets/fonts/playwrite-cl-wght-normal.woff2?v=2026-10-12.10) format("woff2")}
+
+/* ——— Bloques ——— */
+.bloque{padding-block:clamp(56px,8vw,112px)}
+.bloque-papel{background:var(--hoja);border-block:var(--borde) solid var(--regla)}
+.bloque-rejilla{display:grid;grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);gap:clamp(28px,5vw,80px);align-items:start}
+.bloque-texto{display:grid;gap:18px;align-content:start}
+.bloque-texto h2{display:flex;align-items:baseline;gap:.5em}
+.bloque-n{font-size:.5em;font-weight:650;font-stretch:96%;letter-spacing:0;color:var(--lapiz-hondo);font-variant-numeric:tabular-nums;
+  transform:translateY(-.35em)}
+.bloque-muestra{display:grid;gap:18px;min-width:0}
+.reglas{display:grid;gap:0;max-width:46ch}
+.reglas div{display:grid;grid-template-columns:6.5em minmax(0,1fr);gap:12px;padding:12px 0;border-top:var(--borde) solid var(--regla)}
+.reglas div:last-child{border-bottom:var(--borde) solid var(--regla)}
+.reglas dt{padding-top:.15em;color:var(--azul);font-size:var(--t-rotulo);font-weight:650;font-stretch:94%}
+.reglas dd{margin:0;color:var(--tinta);font-size:var(--t-chico)}
+.archivos-linea{display:flex;flex-wrap:wrap;gap:6px 22px}
+.archivos-linea a{display:inline-flex;align-items:center;min-height:44px;font-weight:600}
+
+/* ——— 1. La marca: el espacio libre y los tres colores ——— */
+.lamina-marca{display:grid;gap:12px;margin:0;padding:clamp(20px,3vw,40px);border-radius:6px;background:var(--hoja);
+  box-shadow:0 1px 2px rgb(var(--sombra)/.08),0 30px 60px -36px rgb(var(--sombra)/.45)}
+.aire{--h:clamp(56px,8vw,112px);justify-self:center;max-width:100%;padding:calc(var(--h) * .63);border:1.5px dashed color-mix(in srgb,var(--azul) 35%,var(--linea));
+  border-radius:2px;background:repeating-linear-gradient(135deg,transparent 0 7px,color-mix(in srgb,var(--lapiz) 22%,transparent) 7px 8px)}
+.aire-marca{display:block;width:auto;height:var(--h);max-width:100%;color:var(--azul);background:var(--hoja);outline:1px dashed color-mix(in srgb,var(--azul) 30%,transparent)}
+.lamina-marca figcaption{text-align:center}
+.variantes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.variante{display:grid;gap:8px;align-content:start}
+.variante-fondo{display:grid;place-items:center;aspect-ratio:16/10;padding:12%;border-radius:6px;border:var(--borde) solid var(--regla)}
+.variante-fondo svg{width:100%;height:auto;max-height:100%}
+.variante-papel .variante-fondo{background:var(--hoja);color:var(--azul)}
+.variante-azul .variante-fondo{background:var(--azul);border-color:var(--azul);color:#fff}
+.variante-tinta .variante-fondo{background:var(--hoja);color:var(--tinta)}
+.variante-nombre{font-weight:650;font-size:var(--t-chico);color:var(--tinta)}
+.variante-archivos{display:flex;gap:14px;font-size:var(--t-chico)}
+.variante-archivos a{display:inline-flex;align-items:center;min-height:36px;font-weight:600}
+
+/* ——— 2. El icono a sus tamaños reales ——— */
+.tamanos{display:flex;flex-wrap:wrap;align-items:flex-end;gap:clamp(18px,3vw,40px);padding:clamp(20px,3vw,36px);border-radius:6px;background:var(--mesa)}
+.tamanos li{display:grid;justify-items:center;gap:10px}
+.tamanos img{display:block;border-radius:22%}
+.tamanos li:nth-child(n+3) img{border-radius:0}
+.tamanos li:first-child img{box-shadow:0 1px 2px rgb(var(--sombra)/.14),0 20px 34px -18px rgb(var(--sombra)/.5)}
+.tamanos span{color:var(--grafito);font-size:var(--t-rotulo);font-weight:600;font-variant-numeric:tabular-nums}
+
+/* ——— 3. Color: las muestras y su fotocopia ——— */
+.colores{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.color{display:grid;grid-template-rows:auto auto 1fr auto;gap:6px;padding-bottom:12px;border-bottom:var(--borde) solid var(--regla)}
+.color-muestra{aspect-ratio:16/10;border-radius:6px;background:var(--c);box-shadow:inset 0 0 0 1px rgb(var(--sombra)/.10);transition:filter .45s var(--curva)}
+.color-nombre{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 10px;margin-top:6px;font-weight:700;font-stretch:106%;color:var(--tinta)}
+.hex{font-weight:500;font-stretch:96%;color:var(--grafito);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.color-uso{color:var(--tinta);font-size:var(--t-chico);line-height:1.45}
+.color-gris{color:var(--grafito);font-size:var(--t-rotulo);font-weight:600;font-stretch:96%}
+.bloque:has(input[value="fotocopia"]:checked) .color-muestra{filter:grayscale(1) contrast(1.08)}
+.bloque:has(input[value="fotocopia"]:checked) .color-gris{color:var(--azul)}
+
+/* ——— 4. Letra ——— */
+.especimen{display:grid;gap:18px;padding:clamp(22px,3vw,40px);border-radius:6px;background:var(--mesa)}
+.especimen-titulo{color:var(--azul);font-size:clamp(2.2rem,1.3rem + 3.2vw,4.2rem);font-weight:780;font-stretch:118%;letter-spacing:-.028em;line-height:.95;
+  text-wrap:balance}
+.especimen-texto{max-width:52ch;color:var(--tinta)}
+.anchos{display:grid;gap:2px;margin-top:6px;padding-top:14px;border-top:var(--borde) solid var(--linea)}
+.anchos li{display:flex;align-items:baseline;justify-content:space-between;gap:16px;min-width:0}
+.anchos span{overflow:hidden;color:var(--tinta);font-size:clamp(1.5rem,1.1rem + 1.4vw,2.3rem);font-weight:650;font-stretch:calc(var(--w) * 1%);
+  letter-spacing:-.015em;line-height:1.2;white-space:nowrap;text-overflow:clip}
+.anchos small{flex:none;color:var(--grafito);font-size:var(--t-rotulo);font-weight:600;font-variant-numeric:tabular-nums}
+.otras-letras{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.otras-letras p{display:grid;gap:8px;padding:18px 20px;border-radius:6px;background:var(--hoja);border:var(--borde) solid var(--regla);color:var(--tinta);
+  font-size:1.25rem;line-height:1.35}
+.otras-letras span{font:600 var(--t-rotulo)/1.3 var(--letra);font-stretch:94%;color:var(--grafito)}
+.otra-outfit{font-family:"Outfit",var(--letra)}
+.otra-playwrite{font-family:"Playwrite CL",var(--letra)}
+
+/* ——— 5. Láminas: la cara y su figura, una al lado de la otra ——— */
+.pares{display:grid;gap:14px}
+.par{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:12px clamp(16px,2.4vw,28px);align-items:center;padding:clamp(14px,2vw,22px);
+  border-radius:6px;background:var(--hoja);box-shadow:0 1px 2px rgb(var(--sombra)/.08),0 24px 48px -34px rgb(var(--sombra)/.45)}
+.par-lamina{justify-self:center;width:min(100%,200px);height:auto;filter:drop-shadow(0 1px 1px rgb(var(--sombra)/.28)) drop-shadow(8px 12px 10px rgb(var(--sombra)/.2))}
+.par:nth-child(even) .par-lamina{transform:rotate(-2.5deg)}
+.par:nth-child(odd) .par-lamina{transform:rotate(2deg)}
+.par-figura{display:grid;place-items:center;min-width:0;padding-left:clamp(14px,2vw,24px);border-left:var(--borde) dashed var(--linea)}
+.par-figura svg{display:block;width:100%;height:auto;max-height:210px}
+.par-pie{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:2px 12px;padding-top:10px;border-top:var(--borde) solid var(--regla);font-size:var(--t-chico);color:var(--tinta)}
+.par-pie b{font-weight:650}
+.par-pie span{color:var(--grafito)}
+
+/* ——— 6. Voz ——— */
+.voz{display:grid;gap:0}
+.voz li{display:grid;gap:8px;padding:18px 0;border-top:var(--borde) solid var(--regla)}
+.voz li:last-child{border-bottom:var(--borde) solid var(--regla)}
+.voz h3{font-size:1.125rem;font-stretch:106%}
+.voz p{display:grid;grid-template-columns:5.5em minmax(0,1fr);gap:12px;align-items:baseline;color:var(--tinta)}
+.voz-rotulo{color:var(--grafito);font-size:var(--t-rotulo);font-weight:620;font-stretch:92%}
+.voz-asi{font-weight:560}
+.voz-no s{color:var(--grafito);text-decoration-color:var(--grafito);text-decoration-thickness:var(--borde)}
+
+/* ——— 7. Archivos ——— */
+.tabla-archivos{width:100%;border-collapse:collapse;overflow:hidden;border-radius:6px;background:var(--hoja);
+  box-shadow:0 1px 2px rgb(var(--sombra)/.08),0 24px 48px -34px rgb(var(--sombra)/.45)}
+.tabla-archivos th,.tabla-archivos td{padding:12px 16px;text-align:left;vertical-align:middle}
+.tabla-archivos thead th{background:var(--mesa);color:var(--grafito);font-size:var(--t-rotulo);font-weight:650}
+.tabla-archivos tbody tr+tr :is(th,td){border-top:var(--borde) solid var(--regla)}
+.tabla-archivos tbody th{color:var(--tinta);font-weight:650}
+.tabla-archivos td{color:var(--grafito);font-size:var(--t-chico)}
+.tabla-archivos td:last-child{white-space:nowrap;text-align:right}
+.tabla-archivos td a{display:inline-flex;align-items:center;min-height:40px;margin-left:12px;font-weight:650}
+
+@media (max-width:980px){
+  .bloque-rejilla{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:760px){
+  .colores{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .variantes{grid-template-columns:minmax(0,1fr)}
+  .variante{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:center;column-gap:16px}
+  .variante-fondo{grid-row:span 2}
+  .otras-letras{grid-template-columns:minmax(0,1fr)}
+  .par{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
+  .tabla-archivos thead{display:none}
+  .tabla-archivos tr{display:grid;grid-template-columns:minmax(0,1fr) auto;padding:12px 16px}
+  .tabla-archivos tbody tr+tr{border-top:var(--borde) solid var(--regla)}
+  .tabla-archivos tbody tr+tr :is(th,td){border-top:0}
+  .tabla-archivos th,.tabla-archivos td{padding:0}
+  .tabla-archivos td:nth-child(2){grid-row:2;grid-column:1}
+  .tabla-archivos td:last-child{grid-row:1 / span 2;grid-column:2;align-self:center}
+}
+@media (max-width:420px){
+  .voz p{grid-template-columns:minmax(0,1fr);gap:2px}
+}
