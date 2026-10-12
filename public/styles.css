@@ -268,6 +268,15 @@ input::placeholder,textarea::placeholder{color:var(--suave)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important;scroll-behavior:auto!important}
 }
+/* Impreso: papel blanco con márgenes, sin sombras ni láminas decorativas; del colofón queda la línea legal */
+@page{margin:14mm 14mm 16mm}
 @media print{
-  .esquina,.indice,.saltar{display:none!important}
+  .esquina,.indice,.saltar,.pieza{display:none!important}
+  html,body{background:#fff}
+  *,*::before,*::after{box-shadow:none!important;text-shadow:none!important}
+  .pagina-cabeza>.marca:first-child,.perdida-texto>.marca:first-child,.admin-cabeza>.marca:first-child{position:static;margin-bottom:24px}
+  .pagina-cabeza{padding-top:0}
+  .colofon{padding-block:18px 0;border-top:var(--borde) solid var(--linea)}
+  .colofon-rejilla{display:none}
+  .colofon-legal{margin-top:0;border-top:0}
 }

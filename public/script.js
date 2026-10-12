@@ -186,6 +186,20 @@
     });
   }
 
+  /* ——— Al imprimir, las preguntas cerradas se abren (y vuelven a cerrarse después) ——— */
+  window.addEventListener("beforeprint", () => {
+    $$("details:not([open])").forEach((details) => {
+      details.dataset.impresion = "";
+      details.open = true;
+    });
+  });
+  window.addEventListener("afterprint", () => {
+    $$("details[data-impresion]").forEach((details) => {
+      details.open = false;
+      delete details.dataset.impresion;
+    });
+  });
+
   /* ——— Piezas de las cabeceras: con el dedo se dan vuelta al tocarlas; con cursor, al pasar por encima (CSS) ——— */
   const conCursor = window.matchMedia("(hover: hover) and (pointer: fine)");
   $$("[data-pieza]").forEach((pieza) => {
