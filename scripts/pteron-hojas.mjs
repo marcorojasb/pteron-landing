@@ -99,6 +99,11 @@ for (const material of MATERIALES) {
       holder.content.firstElementChild.setAttribute("data-figura", key);
       img.replaceWith(holder.content.firstElementChild);
     }
+    // En la web nada de la hoja se edita: las ecuaciones pierden el botón de Write (foco, rol y «Editar ecuación») y el
+    // lector las lee como texto
+    for (const boton of article.querySelectorAll('[role="button"]')) {
+      for (const atributo of ["tabindex", "role", "title", "aria-label", "contenteditable"]) boton.removeAttribute(atributo);
+    }
     hojas.set(`${material.id}/${audiencia}`, { html: article.outerHTML, css: page.querySelector("style").textContent });
   }
 }

@@ -39,7 +39,7 @@
 .portada>*{pointer-events:auto}
 .portada-marca{grid-column:1 / -1;grid-row:1;align-self:start;justify-self:start;font-size:var(--membrete)}
 .portada h1{grid-column:1;grid-row:2 / span 2;align-self:end;max-width:9.6em;font-size:clamp(3rem,1.1rem + 5.4vw,7.2rem);
-  text-shadow:0 0 28px var(--mesa),0 0 2px var(--mesa)}
+  text-shadow:0 0 2px var(--mesa),0 0 6px var(--mesa),0 0 14px var(--mesa),0 0 28px var(--mesa)}
 .portada-texto{grid-column:2;grid-row:2;align-self:end;max-width:30ch;font-size:clamp(1.0625rem,.95rem + .45vw,1.3rem);line-height:1.45;color:var(--tinta)}
 .portada-acciones{grid-column:2;grid-row:3;display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;margin-top:22px}
 .portada-enlace{font-weight:600;min-height:44px;display:inline-flex;align-items:center}

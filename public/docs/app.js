@@ -9,6 +9,7 @@
   const results = document.querySelector("[data-search-results]");
   const searchToggle = document.querySelector("[data-search-toggle]");
   const searchPanel = document.querySelector("[data-search-panel]");
+  const searchClose = document.querySelector("[data-search-close]");
   const navToggle = document.querySelector("[data-nav-toggle]");
   const sidebar = document.querySelector("[data-sidebar]");
   const allPages = docs.groups.flatMap(group =>
@@ -393,7 +394,7 @@
   // Tab y Mayús+Tab recorren sólo el campo y los resultados, en ciclo, sin salir del diálogo.
   searchPanel.addEventListener("keydown", event => {
     if (event.key !== "Tab") return;
-    const items = [search, ...(results.hidden ? [] : searchLinks())];
+    const items = [search, ...(results.hidden ? [] : searchLinks()), ...(searchClose?.offsetParent ? [searchClose] : [])];
     const first = items[0];
     const last = items[items.length - 1];
     if (event.shiftKey && document.activeElement === first) {
@@ -403,6 +404,10 @@
       event.preventDefault();
       first.focus();
     }
+  });
+  searchClose?.addEventListener("click", () => {
+    search.value = "";
+    setSearchOpen(false, true);
   });
   document.addEventListener("keydown", event => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {

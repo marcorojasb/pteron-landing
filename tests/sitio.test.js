@@ -45,12 +45,11 @@ test("el índice y el colofón marcan la página actual, y sólo esa", () => {
   assert.equal(read("404.html").includes('aria-current="page"'), false);
 });
 
-test("Descargar flota sólo en el inicio (parte oculto), /planes y /docs", () => {
+test("Descargar flota sólo en el inicio (parte oculto) y en /planes; en la documentación taparía el texto", () => {
   const corner = (page) => read(page).match(/<nav class="esquina"[\s\S]*?<\/nav>/)[0];
   assert.match(corner("planes/index.html"), /esquina-descargar" href="\/descargar" data-descargar>Descargar<\/a>/);
-  assert.match(corner("docs/index.html"), /esquina-descargar/);
   assert.match(corner("index.html"), /data-descargar data-oculto>Descargar<\/a>/);
-  for (const page of ["descargar/index.html", "admin/index.html", "cuenta/index.html", "privacidad.html", "terminos.html", "404.html", "marca/index.html"]) {
+  for (const page of ["docs/index.html", "descargar/index.html", "admin/index.html", "cuenta/index.html", "privacidad.html", "terminos.html", "404.html", "marca/index.html"]) {
     assert.doesNotMatch(corner(page), /esquina-descargar/, `${page} no lleva Descargar flotante`);
   }
 });

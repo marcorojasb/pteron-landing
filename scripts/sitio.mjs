@@ -22,7 +22,7 @@ const PAGINAS = [
   ["/docs", "Documentación"],
   ["/cuenta", "Cuenta"],
 ];
-const CON_DESCARGAR = ["/", "/planes", "/docs"];
+const CON_DESCARGAR = ["/", "/planes"];
 const PIE = [
   ["/privacidad", "Privacidad"],
   ["/terminos", "Términos"],
@@ -46,7 +46,7 @@ const current = (route, href) => (route === href || (href !== "/" && route.start
 
 function esquina(route) {
   // Descargar flota sólo donde descargar es el trabajo de la página; en la cuenta, los legales o la 404 competiría
-  // con la acción de la página
+  // con la acción de la página, y en la documentación taparía el texto que se lee
   const descargar = CON_DESCARGAR.includes(route) ? `<a class="boton boton-principal esquina-descargar" href="/descargar" data-descargar${route === "/" ? " data-oculto" : ""}>Descargar</a>` : "";
   // La esquina de arriba a la derecha está doblada: debajo asoma la hoja azul del índice. Sin JavaScript lleva al pie.
   return `

@@ -4,6 +4,7 @@
   const authPanel = document.querySelector("[data-auth-panel]");
   const dashboard = document.querySelector("[data-dashboard]");
   const notice = document.querySelector("[data-account-notice]");
+  const noticeText = notice?.querySelector("[data-account-notice-text]");
   const loginForm = document.querySelector("[data-login-form]");
   const loginMessage = document.querySelector("[data-login-message]");
   const linkSent = document.querySelector("[data-link-sent]");
@@ -114,10 +115,13 @@
 
   function showNotice(message, tone = "") {
     if (!notice) return;
-    notice.textContent = message || "";
+    (noticeText || notice).textContent = message || "";
     notice.dataset.tone = tone;
     notice.hidden = !message;
   }
+  notice?.querySelector("[data-account-notice-close]")?.addEventListener("click", () => {
+    notice.hidden = true;
+  });
 
   function showLoginMessage(message) {
     if (loginMessage) loginMessage.textContent = message || "";
@@ -286,6 +290,8 @@
       showNotice("");
       if (pendingActivation) showNotice("Este equipo está listo para ser autorizado. Revisa la sección «Activar pteron».", "success");
     } catch (error) {
+      // Sin cuenta que mostrar, la página vuelve al formulario de entrada (no al esqueleto)
+      document.documentElement.classList.remove("has-session");
       if (error.status === 401) {
         setDashboardVisible(false);
         showNotice("Tu sesión expiró. Solicita un nuevo enlace para entrar.", "error");
@@ -390,6 +396,8 @@
   handleBillingReturn();
   if (loadSession()) loadAccount();
   else {
+    // Sin una sesión que se pueda usar (un enlace incompleto, por ejemplo), nada que esperar: vuelve el formulario
+    document.documentElement.classList.remove("has-session");
     setDashboardVisible(false);
     if (pendingActivation) {
       showNotice("Inicia sesión para autorizar el equipo que solicitó activación.");

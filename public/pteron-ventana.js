@@ -472,7 +472,7 @@
     `<p id="privacy-consent-body">${esc(message)}</p>` +
     (hints.length ? `<p class="privacy-consent-hints">Detectado: ${esc(hints.join(" · "))}</p>` : "") +
     (preview.trim()
-      ? `<details class="privacy-consent-preview"${open ? " open" : ""}><summary>Vista previa anonimizada</summary><pre>${esc(preview)}</pre></details>`
+      ? `<details class="privacy-consent-preview"${open ? " open" : ""}><summary tabindex="-1">Vista previa anonimizada</summary><pre>${esc(preview)}</pre></details>`
       : "") +
     `<div class="privacy-consent-actions"><button type="button" class="btn btn-primary" tabindex="-1">Excluir fragmentos</button>` +
     `<button type="button" class="btn btn-secondary" tabindex="-1">Anonimizar y continuar</button>` +

@@ -79,8 +79,8 @@
   const escena = $("[data-escena]");
   const capa = $("[data-laminas]");
   if (!escena || !capa) return;
-  const fija = $(".escena-fija", escena);
   const portada = $("[data-portada]", escena);
+  const fija = $(".escena-fija", escena);
   const mesa = $("[data-mesa]", escena);
   const pie = $(".mesa-pie", escena);
   const laminas = $$(".lamina", capa).map((node, index) => ({
@@ -132,8 +132,9 @@
     });
   });
 
-  // Sin movimiento: la página queda como la dibuja el CSS; el volteo es un cambio de clase sin transición.
-  const quieta = () => motion.matches;
+  // Sin movimiento, o si la portada no cabe en la pantalla (un teléfono en horizontal): la página queda como la dibuja el
+  // CSS, sin fijar la escena, y el volteo es un cambio de clase sin transición.
+  const quieta = () => motion.matches || (portada && portada.scrollHeight > window.innerHeight + 1);
   const staticFlip = () => {
     laminas.forEach((lamina) => lamina.node.classList.toggle("is-volteada", lamina.quiere > 0.5));
   };
@@ -270,7 +271,8 @@
       if (lamina.hoja) {
         const hi = hojas.findIndex((hoja) => hoja.id === lamina.hoja);
         const fig = hojas[hi]?.figuras.get(`${lamina.hoja}/${lamina.bloque}`);
-        if (fig && back) target = { hoja: hi, fig };
+        // En una pantalla muy angosta el reverso puede no dejarle lugar a la figura: esa lámina no vuela
+        if (fig && back && back.width >= 4 && back.height >= 4 && fig.w > 0) target = { hoja: hi, fig };
       }
       return { ...h, back, target };
     });
@@ -285,10 +287,11 @@
     rotulos: [0.66, 0.76],
     pie: [0.72, 0.82],
   };
-  // Orden de caída: por hoja y, dentro de cada hoja, de arriba abajo; sólo las láminas que esta pantalla muestra
+  // Orden de caída: por hoja y, dentro de cada hoja, de arriba abajo; sólo las láminas que esta pantalla muestra y que
+  // tienen dónde calzar
   function flights() {
     const caen = laminas
-      .filter((lamina) => lamina.hoja && !lamina.oculta)
+      .filter((lamina, i) => lamina.hoja && !lamina.oculta && layout.laminas[i]?.target)
       .sort((a, b) => hojas.findIndex((h) => h.id === a.hoja) - hojas.findIndex((h) => h.id === b.hoja) || (a.bloque < b.bloque ? -1 : 1));
     const step = Math.min(0.05, 0.28 / Math.max(1, caen.length - 1));
     laminas.forEach((lamina) => (lamina.vuelo = null));
@@ -309,10 +312,12 @@
   );
 
   let progress = 0;
+  let escenaAbajo = 0;
   const readProgress = () => {
     const rect = escena.getBoundingClientRect();
     const total = escena.offsetHeight - H;
     progress = total > 0 ? clamp(-rect.top / total) : 0;
+    escenaAbajo = rect.bottom;
   };
 
   /** Rotación de un vector. */
@@ -339,6 +344,8 @@
       pausadaDesde = 0;
     }
     const t = (now - intro - pausa) / 1000;
+    // La geometría se lee al comienzo del cuadro, antes de escribir estilos: así no se fuerza un cálculo de diseño
+    readProgress();
     const p = progress;
     pointer.x = lerp(pointer.x, pointer.tx, 0.06);
     pointer.y = lerp(pointer.y, pointer.ty, 0.06);
@@ -455,8 +462,11 @@
     });
 
     // La descarga de la esquina aparece cuando la portada ya se fue
-    if (corner && !cornerQuiet) corner.toggleAttribute("data-oculto", p < 0.1 && escena.getBoundingClientRect().bottom > H);
-    running = visible || laminas.some((lamina) => Math.abs(lamina.volteo - Math.max(lamina.quiere, lamina.demo || 0)) > 0.002);
+    if (corner && !cornerQuiet) corner.toggleAttribute("data-oculto", p < 0.1 && escenaAbajo > H);
+    // Pasadas las hojas (rótulos y pie ya puestos) no queda nada en movimiento: el ciclo se detiene hasta el próximo
+    // desplazamiento o volteo
+    const volteando = laminas.some((lamina) => Math.abs(lamina.volteo - Math.max(lamina.quiere, lamina.demo || 0)) > 0.002);
+    running = (visible && p < 0.85) || volteando;
     if (running) raf = requestAnimationFrame(frame);
   }
 
@@ -464,7 +474,7 @@
   const waiting = () =>
     hojas.forEach((hoja) =>
       $$("svg[data-figura]", hoja.doc).forEach((svg) => {
-        const lands = laminas.some((lamina) => !lamina.oculta && `${lamina.hoja}/${lamina.bloque}` === svg.getAttribute("data-figura"));
+        const lands = laminas.some((lamina, i) => layout.laminas[i]?.target && `${lamina.hoja}/${lamina.bloque}` === svg.getAttribute("data-figura"));
         svg.style.opacity = lands ? "0" : "";
       }),
     );
@@ -499,14 +509,8 @@
     window.addEventListener("load", () => setTimeout(alas, 0), { once: true });
   }
 
-  window.addEventListener(
-    "scroll",
-    () => {
-      readProgress();
-      start();
-    },
-    { passive: true },
-  );
+  // El desplazamiento sólo despierta el ciclo: el cuadro mide al comenzar
+  window.addEventListener("scroll", start, { passive: true });
   let resizing = 0;
   window.addEventListener("resize", () => {
     clearTimeout(resizing);

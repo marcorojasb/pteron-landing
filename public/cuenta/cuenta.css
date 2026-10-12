@@ -2,18 +2,28 @@
    Tres estados: sin sesión (acceso), esperando /api/account con una sesión guardada (html.has-session, esqueleto)
    y con sesión (panel). */
 
-/* Avisos de cuenta.js: arriba al centro, a la vista desde cualquier punto de la página */
-.cuenta-aviso{position:fixed;z-index:70;top:max(14px,env(safe-area-inset-top));left:50%;width:max-content;max-width:min(100% - 24px,620px);translate:-50% 0;
-  padding:12px 18px;border-radius:12px;background:var(--hoja);color:var(--tinta);font-weight:560;
+/* Avisos de cuenta.js: arriba al centro, a la vista desde cualquier punto de la página, y con su Cerrar */
+.cuenta-aviso{position:fixed;z-index:70;top:max(14px,env(safe-area-inset-top));left:50%;display:flex;align-items:center;gap:6px 14px;width:max-content;
+  max-width:min(100% - 24px,620px);translate:-50% 0;padding:6px 8px 6px 18px;border-radius:12px;background:var(--hoja);color:var(--tinta);font-weight:560;
   box-shadow:0 0 0 1px var(--regla),0 18px 40px -18px rgb(var(--sombra)/.5);animation:aviso-entra .45s var(--curva) both}
 .cuenta-aviso[data-tone="success"]{box-shadow:0 0 0 1px var(--ok-borde),0 18px 40px -18px rgb(var(--sombra)/.5);color:var(--ok)}
 .cuenta-aviso[data-tone="error"]{box-shadow:0 0 0 1px var(--error-borde),0 18px 40px -18px rgb(var(--sombra)/.5);color:var(--error)}
 @keyframes aviso-entra{from{opacity:0;translate:-50% -8px}}
+.cuenta-aviso[hidden]{display:none}
+.cuenta-aviso p{padding-block:6px}
+.cuenta-aviso-cerrar{flex:none;min-height:44px;padding:0 12px;border:0;border-radius:999px;background:none;color:var(--grafito);font-weight:600;font-size:var(--t-chico)}
+.cuenta-aviso-cerrar:hover{background:var(--mesa);color:var(--tinta)}
+/* Donde arriba alcanzaría la esquina del índice y el título, el aviso va abajo */
+@media (max-width:820px){
+  .cuenta-aviso{top:auto;bottom:max(14px,env(safe-area-inset-bottom,0px))}
+  @keyframes aviso-entra{from{opacity:0;translate:-50% 8px}}
+}
 
-/* Estados */
-:is(.cuenta-main:has([data-dashboard]:not([hidden])),.has-session .cuenta-main:has([data-dashboard][hidden]):not(:has(.cuenta-aviso[data-tone=error]:not([hidden])))) [data-auth-panel]{display:none}
+/* Estados: con una sesión guardada, mientras llega la cuenta, el esqueleto; si la sesión falla, cuenta.js quita
+   has-session y vuelve el formulario (aunque se cierre el aviso) */
+:is(.cuenta-main:has([data-dashboard]:not([hidden])),.has-session .cuenta-main:has([data-dashboard][hidden])) [data-auth-panel]{display:none}
 .esqueleto{display:none}
-.has-session .cuenta-main:has([data-dashboard][hidden]):not(:has(.cuenta-aviso[data-tone=error]:not([hidden]))) .esqueleto{display:grid}
+.has-session .cuenta-main:has([data-dashboard][hidden]) .esqueleto{display:grid}
 
 /* Acceso */
 .acceso{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.85fr);gap:clamp(24px,5vw,72px);align-items:start}

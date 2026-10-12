@@ -39,7 +39,7 @@
   --borde:max(1px,.0625rem);
   --radio:12px;
   --ancho:1200px;
-  --margen:clamp(16px,4vw,56px);
+  --margen:max(clamp(16px,4vw,56px),env(safe-area-inset-left,0px),env(safe-area-inset-right,0px));
   --t-cuerpo:1.0625rem;
   --t-chico:.9375rem;
   --t-rotulo:.8125rem;
@@ -131,7 +131,9 @@ small{font-size:var(--t-chico)}
 .oreja-sombra{position:absolute;inset:0;filter:drop-shadow(-2px 3px 3px rgb(var(--sombra)/.22)) drop-shadow(-5px 8px 10px rgb(var(--sombra)/.14))}
 .oreja-solapa{position:absolute;inset:0;clip-path:polygon(0 0,100% 100%,0 100%);background:linear-gradient(225deg,var(--hoja) 50%,var(--reverso) 72%,color-mix(in srgb,var(--linea) 70%,var(--hoja)) 100%)}
 .oreja:hover{transform:scale(1.13)}
-.oreja:focus-visible{outline:3px solid var(--lapiz-hondo);outline-offset:-6px;border-radius:2px;transform:scale(1.13)}
+/* El foco se dibuja encima de la solapa y del azul: tinta con un borde blanco, que se ve sobre el gris, la hoja y el azul */
+.oreja:focus-visible{outline:0;transform:scale(1.13)}
+.oreja:focus-visible::after{content:"";position:absolute;inset:5px;z-index:1;border-radius:3px;outline:3px solid var(--tinta);box-shadow:0 0 0 2px #fff,inset 0 0 0 2px #fff}
 .oreja[aria-expanded="true"]{opacity:0;transition:opacity .2s}
 
 .esquina-descargar{position:fixed;z-index:59;right:calc(max(18px,env(safe-area-inset-right,0px)) + var(--barra,0px));bottom:max(18px,env(safe-area-inset-bottom,0px));
@@ -186,7 +188,7 @@ html.con-indice body{padding-right:var(--barra,0px)}
 .indice-paginas a[aria-current="page"]{color:var(--lapiz)}
 .indice-paginas a[aria-current="page"]::before{border-color:var(--lapiz);background:var(--lapiz)}
 .indice-pie{display:flex;flex-wrap:wrap;gap:0 20px;margin-top:16px;padding-top:6px;border-top:var(--borde) solid rgb(255 255 255/.16);font-size:var(--t-chico)}
-.indice-pie a{display:inline-flex;align-items:center;min-height:40px;color:var(--sobre-azul-claro);text-decoration:underline;text-decoration-color:rgb(255 255 255/.35);
+.indice-pie a{display:inline-flex;align-items:center;min-height:44px;color:var(--sobre-azul-claro);text-decoration:underline;text-decoration-color:rgb(255 255 255/.35);
   text-decoration-thickness:var(--borde);text-underline-offset:.22em}
 .indice-pie a:hover{color:#fff;text-decoration-color:#fff}
 .indice-pie a[aria-current="page"]{color:var(--lapiz)}
@@ -197,8 +199,8 @@ html.con-indice body{padding-right:var(--barra,0px)}
 .colofon .marca{font-size:clamp(44px,5vw,64px);margin-bottom:14px}
 .colofon-lema{font-size:1.125rem;font-weight:650;font-stretch:108%;color:var(--azul);max-width:22ch}
 .colofon-lugar{margin-top:6px;color:var(--grafito)}
-.colofon nav ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
-.colofon nav a{display:inline-flex;min-height:36px;align-items:center;color:var(--tinta);text-decoration:none;font-weight:560}
+.colofon nav ul{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.colofon nav a{display:inline-flex;min-height:44px;align-items:center;color:var(--tinta);text-decoration:none;font-weight:560}
 .colofon nav a:hover{color:var(--azul);text-decoration:underline}
 .colofon nav a[aria-current="page"]{color:var(--azul);font-weight:700}
 .colofon nav a[aria-current="page"]::before{content:"";width:6px;height:6px;margin-right:9px;border-radius:50%;background:var(--azul)}
@@ -206,7 +208,7 @@ html.con-indice body{padding-right:var(--barra,0px)}
 .colofon-creditos p+p{margin-top:10px}
 .colofon-legal{margin-top:clamp(36px,5vw,56px);padding-top:18px;border-top:var(--borde) solid var(--regla);display:flex;flex-wrap:wrap;gap:8px 24px;
   justify-content:space-between;font-size:var(--t-chico);color:var(--grafito)}
-.colofon-legal a{color:var(--grafito)}
+.colofon-legal a{display:inline-flex;align-items:center;min-height:44px;color:var(--grafito)}
 .colofon-legal a[aria-current="page"]{color:var(--azul);font-weight:650}
 
 /* ——— Páginas interiores: cabecera en el flujo, sin barra ——— */
@@ -262,10 +264,12 @@ input::placeholder,textarea::placeholder{color:var(--suave)}
   .pagina-cabeza--pieza{display:block}
   .pagina-cabeza--pieza>.pieza{display:none}
   .esquina-descargar{display:none}
-  .oreja{--o:64px;--d:11px}
-  .oreja-texto{font-size:.6875rem}
+  html{scroll-padding-top:80px}
+  .oreja{--o:68px;--d:12px}
+  .oreja-texto{font-size:.75rem}
   .indice{width:100vw;padding:0 0 14px}
-  .indice-hoja{padding:max(18px,env(safe-area-inset-top,0px)) max(18px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px));border-radius:0 0 8px 8px}
+  .indice-hoja{max-height:calc(100dvh - 14px - env(safe-area-inset-bottom,0px));
+    padding:max(18px,env(safe-area-inset-top,0px)) max(18px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));border-radius:0 0 8px 8px}
   .indice-capitulos a{font-size:1.125rem}
 }
 /* Sin movimiento: sin transiciones (como la app). Con una duración mínima, cada cambio de estilo se volvería una

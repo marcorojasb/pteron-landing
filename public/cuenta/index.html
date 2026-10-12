@@ -32,7 +32,10 @@
 
   <main id="contenido" class="cuenta-main">
     <!-- Avisos de cuenta.js (sesión, pago, activación) -->
-    <p class="cuenta-aviso" data-account-notice role="status" aria-live="polite" hidden></p>
+    <div class="cuenta-aviso" data-account-notice hidden>
+      <p role="status" aria-live="polite" data-account-notice-text></p>
+      <button type="button" class="cuenta-aviso-cerrar" data-account-notice-close aria-label="Cerrar el aviso">Cerrar</button>
+    </div>
 
     <header class="pagina-cabeza pagina-cabeza--pieza contenedor">
       <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.11#pteron"/></svg></a>

@@ -47,7 +47,8 @@ test("la tarjeta del aviso usa el marcado de PrivacyConsentCard con sus tres acc
     '<section class="privacy-consent" role="alertdialog" aria-labelledby="privacy-consent-title" aria-describedby="privacy-consent-body">',
     "Datos identificables de estudiantes</h2>",
     '<p class="privacy-consent-hints">Detectado: RUT</p>',
-    '<details class="privacy-consent-preview" open><summary>Vista previa anonimizada</summary><pre>RUT [RUT omitido]</pre></details>',
+    // La vista previa se abre con el ratón, pero no entra en el orden de foco: la tarjeta está oculta al lector
+    '<details class="privacy-consent-preview" open><summary tabindex="-1">Vista previa anonimizada</summary><pre>RUT [RUT omitido]</pre></details>',
     '<button type="button" class="btn btn-primary" tabindex="-1">Excluir fragmentos</button>',
     '<button type="button" class="btn btn-secondary" tabindex="-1">Anonimizar y continuar</button>',
     '<button type="button" class="quiet-action" tabindex="-1">Cancelar</button>',

@@ -21,6 +21,7 @@
     const quieto = window.matchMedia("(prefers-reduced-motion: reduce)");
     const suave = () => (quieto.matches ? "auto" : "smooth");
     let alCerrar = null; // qué hacer al terminar de cerrar (ir a un capítulo); sin nada, el foco vuelve a la esquina
+    let abiertoEn = 0;
 
     oreja.setAttribute("role", "button");
     oreja.setAttribute("aria-haspopup", "dialog");
@@ -38,9 +39,9 @@
     };
 
     /** Dónde empieza un capítulo. Dentro de la escena fija del inicio, un capítulo es un momento del recorrido. */
-    const posicion = (el) => {
+    const posicion = (el, momento = el.dataset.capituloAvance) => {
       const escena = el.closest("[data-escena][data-viva]");
-      const avance = Number.parseFloat(el.dataset.capituloAvance);
+      const avance = Number.parseFloat(momento);
       if (escena && Number.isFinite(avance)) {
         return escena.getBoundingClientRect().top + window.scrollY + (escena.offsetHeight - window.innerHeight) * avance;
       }
@@ -55,12 +56,23 @@
       const titulo = el.matches("h1, h2, h3") ? el : document.getElementById(el.getAttribute("aria-labelledby") || "") || interno || el;
       if (!titulo.hasAttribute("tabindex")) titulo.setAttribute("tabindex", "-1");
       titulo.focus({ preventScroll: true });
+      return document.activeElement === titulo;
     };
 
     const ir = (el) => {
       window.scrollTo({ top: posicion(el), behavior: suave() });
       history.replaceState(history.state, "", `#${el.id}`);
-      enfocar(el);
+      if (enfocar(el)) return;
+      // El título todavía no se ve (la portada aparece al volver arriba): el foco llega cuando termina el desplazamiento
+      let hecho = false;
+      const otraVez = () => {
+        if (hecho) return;
+        hecho = true;
+        window.removeEventListener("scrollend", otraVez);
+        enfocar(el);
+      };
+      window.addEventListener("scrollend", otraVez);
+      setTimeout(otraVez, 1000);
     };
 
     /** Arma la lista de capítulos y marca dónde está el lector. */
@@ -69,10 +81,12 @@
       const items = capitulos();
       bloque.hidden = items.length < 2;
       if (bloque.hidden) return null;
-      const linea = window.scrollY + window.innerHeight * 0.3;
+      // El capítulo actual es el último que ya llegó adonde aterriza un salto: así, después de saltar a un capítulo corto,
+      // el siguiente no se marca. En la escena del inicio un capítulo cuenta desde data-capitulo-desde, si lo tiene.
+      const arriba = window.scrollY + 8;
       let actual = -1;
       items.forEach((item, i) => {
-        if (posicion(item.el) <= linea) actual = i;
+        if (posicion(item.el, item.el.dataset.capituloDesde ?? item.el.dataset.capituloAvance) <= arriba) actual = i;
       });
       if (window.scrollY > 0 && window.scrollY + window.innerHeight >= raiz.scrollHeight - 2) actual = items.length - 1;
       const enlaces = items.map((item, i) => {
@@ -102,6 +116,7 @@
       raiz.classList.add("con-indice");
       indice.classList.remove("is-cerrando");
       indice.showModal();
+      abiertoEn = performance.now();
       oreja.setAttribute("aria-expanded", "true");
       (primero || indice.querySelector('.indice-paginas [aria-current="page"]'))?.focus();
     };
@@ -147,10 +162,17 @@
       if (accion) accion();
       else oreja.focus({ preventScroll: true });
     });
-    $$("[data-indice-cerrar]", indice).forEach((button) => button.addEventListener("click", () => cerrar()));
+    // Cerrar queda donde estaba la esquina: el segundo clic de un doble clic (o un toque repetido mientras la hoja sale)
+    // no la cierra
+    const aDestiempo = (event) => event.detail > 1 || performance.now() - abiertoEn < 450;
+    $$("[data-indice-cerrar]", indice).forEach((button) =>
+      button.addEventListener("click", (event) => {
+        if (!aDestiempo(event)) cerrar();
+      }),
+    );
     // Un clic fuera de la hoja (en el fondo del diálogo) la cierra
     indice.addEventListener("click", (event) => {
-      if (event.target === indice) cerrar();
+      if (event.target === indice && !aDestiempo(event)) cerrar();
     });
     // La página en que uno ya está: se cierra y se vuelve al comienzo, sin recargar. Otra página: el índice se cierra
     // antes de seguir (la documentación navega sin recargar y el diálogo quedaría abierto sobre la página nueva).
