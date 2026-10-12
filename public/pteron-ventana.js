@@ -488,12 +488,66 @@
   const frame = stage.querySelector("[data-pt-frame]");
   const app = frame?.querySelector(".pt-app");
   if (!app) return;
+  // En el teléfono el marco no achica la ventana entera hasta lo ilegible: la vista se acerca a lo que pasa en cada paso
+  // y lo sigue. Mientras se escribe abarca el recuadro completo (crece a 958 de ancho); en la conversación y el material,
+  // la columna del chat con un margen. Sólo se mueve la vista; la app es la misma.
+  const APP_W = 1440;
+  const APP_H = 880;
+  const FOCO = [
+    { ancho: 1000, ver: [".composer"] },
+    { ancho: 1000, ver: [".composer"] },
+    { ancho: 800, ver: [".message.user", ".message.assistant"] },
+    { ancho: 800, ver: [".message.user", ".material-card"] },
+  ];
+  let encuadrePendiente = false;
+  const encuadrar = () => {
+    encuadrePendiente = false;
+    const crop = parseFloat(getComputedStyle(frame).getPropertyValue("--pt-crop")) || APP_W;
+    const W = frame.clientWidth;
+    const H = frame.clientHeight;
+    if (crop >= APP_W) {
+      frame.style.setProperty("--pt-s", String(W / APP_W));
+      frame.style.removeProperty("--pt-x");
+      frame.style.removeProperty("--pt-y");
+      return;
+    }
+    const foco = FOCO[Math.min(Number(stage.dataset.step) || 0, FOCO.length - 1)];
+    const s = W / foco.ancho;
+    frame.style.setProperty("--pt-s", String(s));
+    const cajas = foco.ver
+      .map((sel) => app.querySelector(sel))
+      .filter((el) => el && el.getClientRects().length)
+      .map((el) => el.getBoundingClientRect());
+    if (!cajas.length) return;
+    // Las cajas, en unidades de la app: la escala de este instante es el ancho visible de la app sobre 1440
+    const a = app.getBoundingClientRect();
+    const ahora = a.width / APP_W || s;
+    const izquierda = (Math.min(...cajas.map((r) => r.left)) - a.left) / ahora;
+    const derecha = (Math.max(...cajas.map((r) => r.right)) - a.left) / ahora;
+    const arriba = (Math.min(...cajas.map((r) => r.top)) - a.top) / ahora;
+    const abajo = (Math.max(...cajas.map((r) => r.bottom)) - a.top) / ahora;
+    // Lo que se mira queda al centro; si es más alto que el marco, se ve desde su comienzo. Nunca se sale de la ventana.
+    const maxX = Math.max(0, (APP_W * s - W) / 2);
+    const x = Math.max(-maxX, Math.min(maxX, ((APP_W - izquierda - derecha) / 2) * s));
+    const centro = H / 2 - ((arriba + abajo) / 2) * s;
+    const desdeArriba = 14 - arriba * s;
+    const y = Math.max(Math.min(0, H - APP_H * s), Math.min(0, (abajo - arriba) * s > H - 28 ? desdeArriba : centro));
+    frame.style.setProperty("--pt-x", `${Math.round(x)}px`);
+    frame.style.setProperty("--pt-y", `${Math.round(y)}px`);
+  };
+  const pedirEncuadre = () => {
+    if (encuadrePendiente) return;
+    encuadrePendiente = true;
+    requestAnimationFrame(encuadrar);
+  };
   const fit = () => {
-    const crop = parseFloat(getComputedStyle(frame).getPropertyValue("--pt-crop")) || 1440;
+    const crop = parseFloat(getComputedStyle(frame).getPropertyValue("--pt-crop")) || APP_W;
     frame.style.setProperty("--pt-s", String(frame.clientWidth / crop));
+    pedirEncuadre();
   };
   fit();
   if ("ResizeObserver" in window) new ResizeObserver(fit).observe(frame);
+  if ("MutationObserver" in window) new MutationObserver(pedirEncuadre).observe(app, { childList: true, subtree: true });
 
   const $ = (sel) => app.querySelector(sel);
   const controls = (sel) => [...document.querySelectorAll(sel)].filter((el) => el.getAttribute("aria-controls") === stage.id);
@@ -520,6 +574,7 @@
   };
   const setStep = (n) => {
     stage.dataset.step = String(n);
+    pedirEncuadre();
     steps.forEach((s, i) => {
       s.classList.toggle("is-current", i === n);
       s.classList.toggle("is-done", i < n);

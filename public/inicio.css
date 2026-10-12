@@ -100,7 +100,7 @@
 .ventana{position:relative;margin:0}
 .pt-frame{--pt-crop:1440;--pt-s:.6;position:relative;width:100%;aspect-ratio:1440/880;overflow:hidden;border-radius:12px;background:#f6f5f2;
   box-shadow:0 0 0 1px rgb(var(--sombra)/.12),0 2px 4px rgb(var(--sombra)/.08),0 40px 80px -40px rgb(var(--sombra)/.55)}
-.pt-frame>.pt-app{position:absolute;top:0;left:50%;margin-left:-720px;transform:scale(var(--pt-s));transform-origin:50% 0}
+.pt-frame>.pt-app{position:absolute;top:0;left:50%;margin-left:-720px;transform:translate(var(--pt-x,0px),var(--pt-y,0px)) scale(var(--pt-s));transform-origin:50% 0}
 
 /* ——— La hoja ——— */
 .hoja-seccion{padding-block:clamp(72px,10vw,140px)}
@@ -177,7 +177,9 @@ html.no-js .aviso{display:none}
   .portada h1{font-size:clamp(2.6rem,1.4rem + 7vw,4rem)}
   .mesa-hojas{--s:.2;gap:12px}
   .hoja-marco{--s:.42}
-  .pt-frame{--pt-crop:1000;aspect-ratio:1000/880}
+  /* La columna del chat, a un tamaño que se lee; pteron-ventana.js corre la vista a cada paso */
+  .pt-frame{--pt-crop:760;aspect-ratio:760/620}
+  .pt-frame>.pt-app{transition:transform .8s var(--curva)}
   .plataformas a{grid-template-columns:minmax(0,1fr)}
 }
 @media (max-width:400px){
