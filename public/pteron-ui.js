@@ -208,7 +208,40 @@
     return found.sort((a, b) => RECOGNIZED_ORDER.indexOf(a.field) - RECOGNIZED_ORDER.indexOf(b.field));
   }
 
-  window.pteronUI = { recognize };
+  /* ---------- 1b. Salvaguarda antes de la nube: copia fiel de pteron/src/shared/student-privacy.ts (ADR-049) ----------
+     Sólo dos hechos identificables: un RUT con formato chileno o un nombre con valor en un campo de persona. */
+  const RUT_FORMAT = /\b\d{1,2}\.\d{3}\.\d{3}-[\dkK]\b/u;
+  const RUT_FORMAT_GLOBAL = /\b\d{1,2}\.\d{3}\.\d{3}-[\dkK]\b/giu;
+  const NAMED_PERSON = /^.{0,15}\b(?:nombre|estudiante|alumn[oa]|apoderad[oa])\s*:\s*[^\n,;]{0,20}\p{L}{2}/imu;
+  const containsSensitive = (value) => RUT_FORMAT.test(value) || NAMED_PERSON.test(value);
+  const redactSensitive = (value) =>
+    !containsSensitive(value)
+      ? value
+      : value
+          .replace(RUT_FORMAT_GLOBAL, "[RUT omitido]")
+          .split("\n")
+          .map((line) => (NAMED_PERSON.test(line) ? "[Línea con datos identificables omitida]" : line))
+          .join("\n");
+  function excludeSensitive(value) {
+    if (!containsSensitive(value)) return value;
+    const kept = value
+      .split("\n")
+      .filter((line) => !NAMED_PERSON.test(line) && !RUT_FORMAT.test(line))
+      .join("\n")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+    return kept || "[Se excluyeron los fragmentos con datos identificables.]";
+  }
+  function sensitiveHints(value) {
+    const hints = [];
+    if (RUT_FORMAT.test(value)) hints.push("RUT");
+    if (NAMED_PERSON.test(value)) hints.push("nombres identificables");
+    return hints;
+  }
+  const privacyMessage = (hints) =>
+    `Detecté ${hints.length ? hints.join(" y ") : "datos identificables de estudiantes"} en lo que vas a enviar. Antes de que salga a un proveedor en la nube, elige cómo protegerlo.`;
+
+  window.pteronUI = { recognize, privacy: { containsSensitive, redactSensitive, excludeSensitive, sensitiveHints, privacyMessage } };
   if (typeof document === "undefined") return;
 
   /* ---------- 2. Piezas comunes ---------- */
@@ -284,6 +317,115 @@
       );
     };
     radios.forEach((r) => r.addEventListener("change", () => r.checked && turn(r.value)));
+  }
+
+  /* ---------- Aviso antes de la nube: el texto se revisa con la misma regla de la app, en vivo ---------- */
+  const gate = document.querySelector("[data-pt-gate]");
+  if (gate) {
+    const area = gate.querySelector("[data-pt-gate-text]");
+    const card = gate.querySelector("[data-pt-gate-card]");
+    const ok = gate.querySelector("[data-pt-gate-ok]");
+    const msg = gate.querySelector("[data-pt-gate-msg]");
+    const hintsEl = gate.querySelector("[data-pt-gate-hints]");
+    const dockBox = gate.querySelector(".pt-dock");
+    const original = area.value;
+    const { containsSensitive, redactSensitive, excludeSensitive, sensitiveHints, privacyMessage } = window.pteronUI.privacy;
+    const update = () => {
+      const value = area.value;
+      const flagged = containsSensitive(value);
+      card.hidden = !flagged;
+      ok.hidden = flagged || !value.trim();
+      dockBox.classList.toggle("is-alert", flagged);
+      if (flagged) {
+        const hints = sensitiveHints(value);
+        msg.textContent = privacyMessage(hints);
+        hintsEl.textContent = `Detectado: ${hints.join(" · ")}`;
+      }
+    };
+    gate.querySelectorAll("[data-pt-gate-act]").forEach((button) =>
+      button.addEventListener("click", () => {
+        const action = button.getAttribute("data-pt-gate-act");
+        area.value = action === "exclude" ? excludeSensitive(area.value) : action === "anonymize" ? redactSensitive(area.value) : original;
+        update();
+        area.focus({ preventScroll: true });
+      })
+    );
+    area.addEventListener("input", update);
+    update();
+  }
+
+  /* ---------- Write: «Pedir un ajuste» sobre la planificación abierta ----------
+     El pedido, «Editando el material abierto», el cambio propuesto en dorado y la decisión de la app
+     («Propongo estos cambios. Aún no se aplican.» · Conservar cambios · Descartar propuesta). Una vez, al entrar a la vista. */
+  const adjust = document.querySelector("[data-pt-adjust]");
+  if (adjust) {
+    const box = adjust.closest(".pt-write") || adjust;
+    const dockEl = adjust.querySelector("[data-pt-adjust-dock]");
+    const ctx = adjust.querySelector("[data-pt-adjust-context]");
+    const ctxInner = ctx.firstElementChild;
+    const field = adjust.querySelector("[data-pt-adjust-text]");
+    const sendBtn = adjust.querySelector("[data-pt-adjust-send]");
+    const cell = box.querySelector("[data-pt-adjust-cell]");
+    const saved = box.querySelector("[data-pt-adjust-saved]");
+    const resting = field.textContent;
+    const REQUEST = "Agrega a la clase 2 una tarea para quienes terminen antes.";
+    const ADDED = " Quienes terminen antes: desarrollar (x + 5)² en la cuadrícula y comparar con un compañero.";
+    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    let ran = false;
+    const runAdjust = async () => {
+      if (ran || !cell) return;
+      ran = true;
+      dockEl.classList.add("is-focus");
+      field.classList.remove("is-placeholder");
+      let shown = "";
+      for (const c of REQUEST) {
+        shown += c;
+        field.innerHTML = `${esc(shown)}<span class="pt-caret"></span>`;
+        await wait(c === " " ? 52 : c === "," ? 160 : 30);
+      }
+      sendBtn.setAttribute("aria-disabled", "false");
+      await wait(520);
+      sendBtn.classList.add("is-press");
+      await wait(160);
+      sendBtn.classList.remove("is-press");
+      sendBtn.setAttribute("aria-disabled", "true");
+      field.textContent = resting;
+      field.classList.add("is-placeholder");
+      dockEl.classList.remove("is-focus");
+      ctxInner.innerHTML = `<div class="pt-dock-row">${markSVG()}<p class="pt-dock-title">Editando el material abierto</p></div>`;
+      ctx.classList.add("is-open");
+      lightMark(ctxInner.querySelector(".pt-mark"), 3);
+      await wait(1800);
+      cell.innerHTML = `${cell.innerHTML}<ins>${esc(ADDED)}</ins>`;
+      cell.classList.add("is-proposed");
+      ctxInner.innerHTML = `<div class="pt-dock-row is-decision"><p class="pt-dock-title">Propongo estos cambios. Aún no se aplican.</p><span class="pt-decide">${icon("check")}Conservar cambios</span><span class="pt-quiet-act">${icon("x")}Descartar propuesta</span></div>`;
+      // Como la app, la hoja se desplaza lo justo para que lo propuesto quede a la vista sobre el recuadro
+      const pageEl = box.querySelector(".pt-page");
+      if (pageEl) {
+        const dy = Math.max(0, cell.getBoundingClientRect().bottom - dockEl.getBoundingClientRect().top + 28);
+        pageEl.style.transform = `translate(-50%, ${-Math.round(dy)}px)`;
+      }
+      await wait(2400);
+      const keep = ctxInner.querySelector(".pt-decide");
+      keep.classList.add("is-press");
+      await wait(200);
+      ctx.classList.remove("is-open");
+      cell.classList.remove("is-proposed");
+      cell.classList.add("is-kept");
+      saved?.classList.add("is-flash");
+    };
+    if (!reduce() && "IntersectionObserver" in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((e) => e.isIntersecting && e.intersectionRatio >= 0.6)) {
+            io.disconnect();
+            setTimeout(runAdjust, 600);
+          }
+        },
+        { threshold: [0, 0.6, 0.85] }
+      );
+      io.observe(box);
+    }
   }
 
   /* ---------- 3. Demostración del héroe ---------- */

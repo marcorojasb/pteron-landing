@@ -71,7 +71,7 @@
 .film-window{justify-self:end;width:min(1140px,100%);margin-top:calc(var(--fh)*.1);transform-origin:50% 100%;transform:perspective(2400px) rotateX(calc(var(--tilt,0)*1deg)) translate3d(0,calc(var(--lift,0)*1px),0);will-change:transform}
 .film-credit{justify-self:end;margin-top:clamp(24px,3vw,40px);text-align:right}
 /* Aurora del lago: canvas de 320×180 escalado; el póster sólo se ve sin JavaScript */
-.lake-aurora{position:absolute;z-index:-1;left:0;top:0;width:100%;height:78%;pointer-events:none;background:url("/assets/arte/aurora-lago.webp?v=2026-10-12.6") center/100% 100% no-repeat;-webkit-mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent);mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent)}
+.lake-aurora{position:absolute;z-index:-1;left:0;top:0;width:100%;height:78%;pointer-events:none;background:url("/assets/arte/aurora-lago.webp?v=2026-10-12.7") center/100% 100% no-repeat;-webkit-mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent);mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent)}
 .lake-aurora.is-drawn{background:none}
 .js .hero-media>div{animation:settle 2.6s var(--ease) both}
 .js .hero-product{animation:rise 1.6s var(--ease) .35s both}
@@ -169,7 +169,7 @@
 .download .plans-compact>li,.download .platforms>li{flex:0 0 min(82vw,320px);scroll-snap-align:center}
 .download .plans-foot{margin-top:4px}}
 
-/* Héroe partido (2026-10-12.6): copia a la izquierda y, a la derecha, un pozo de tetris armado con recortes del atlas */
+/* Héroe partido (2026-10-12.7): copia a la izquierda y, a la derecha, un pozo de tetris armado con recortes del atlas */
 .hero-split .hero-top{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,.93fr) minmax(0,1.07fr);gap:clamp(28px,4vw,64px);align-items:center}
 /* La fila de aparición del pozo sobresale una celda hacia arriba: el héroe baja lo justo para que nazca bajo la barra */
 .hero.hero-split{padding-top:calc(78px + min(7.3vw,113px))}
@@ -339,3 +339,7 @@
   .hoja-copy .pt-radio b{font-size:13.5px}
   .hoja-copy .pt-radio small{font-size:12px}
 }
+/* Local (2026-10-12.7): el muelle de pteron con el aviso de privacidad, editable, en lugar del recorte de captura */
+.local-visual:has(.pt-gate){min-height:0;display:grid;justify-items:end}
+.local-visual>.pt-gate{position:relative}
+@media (max-width:999px){.local-visual:has(.pt-gate){justify-items:start}}
