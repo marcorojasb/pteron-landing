@@ -170,3 +170,33 @@ html.no-js .aviso{display:none}
   .hoja-marco{--s:.4}
   .mesa-hojas{--s:.19}
 }
+
+/* Impreso: el inicio no depende del desplazamiento ni de la escena. Son tres páginas en carta, A4 u oficio: la
+   portada y los pasos; la hoja elegida, entera junto a su texto, y lo local; las plataformas y el pie. Las láminas, la
+   ventana y las demostraciones no se imprimen. Los !important ganan a los estilos que inicio.js escribe en línea a
+   mitad de la escena. */
+@media print{
+  .escena[data-viva]{height:auto!important}
+  .escena .escena-fija{position:static!important;height:auto!important;overflow:visible!important}
+  .laminas,.mesa,.ventana,.ver-de-nuevo,.controles,.portada-acciones,.aviso{display:none!important}
+  .portada{display:block!important;min-height:0!important;padding:0 0 8mm!important;opacity:1!important;transform:none!important;visibility:visible!important}
+  .portada-marca{display:inline-block;margin-bottom:12mm}
+  .portada h1{font-size:30pt!important;max-width:none!important;text-shadow:none!important}
+  .portada-texto{margin-top:5mm;max-width:none}
+  .portada-texto::before{display:none}
+  .contenedor{width:auto!important;margin-inline:0!important}
+  .pedir,.hoja-seccion,.local,.descarga{padding-block:8mm!important;border:0!important}
+  .pedir-rejilla,.local-rejilla,.descarga-rejilla{display:block!important}
+  h2{break-after:avoid}
+  .pasos button{color:#000!important;background:none!important;padding:1.5mm 0!important}
+  .pasos .paso-n{color:#000!important;background:none!important;border-color:#999!important}
+  .hoja-seccion{break-before:page}
+  /* La hoja a 0,5 (108 × 165 mm) junto a su texto: caben en una página de carta, A4 u oficio */
+  .hoja-rejilla{grid-template-columns:minmax(0,1fr) auto!important;gap:8mm!important;break-inside:avoid}
+  .hoja-texto{position:static!important}
+  .datos{margin-top:6mm}
+  .datos div{grid-template-columns:minmax(0,1fr)!important;gap:1mm!important}
+  .hoja-marco{--s:.5!important;margin:0!important}
+  .hoja-papel{box-shadow:none!important;outline:.3mm solid #999;outline-offset:-.3mm}
+  .descarga{break-before:page}
+}

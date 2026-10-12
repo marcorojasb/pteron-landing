@@ -30,8 +30,8 @@ Iowan Old Style de la app no lo convencía.
 4. **Letra**: Archivo (Omnibus-Type, OFL) compone la web, con la jerarquía hecha por ancho y peso. Outfit es la letra
    de la marca y de las figuras y los títulos de las hojas de pteron; en la web no compone texto. El texto de la hoja
    va en Arial y la pauta de caligrafía de primer ciclo, en Playwrite CL; la interfaz de la app, en IBM Plex.
-5. **Láminas y figuras**: obras de dominio público o piezas propias, recortadas en piezas de cuatro cuadrados, con la
-   figura de pteron detrás y su crédito siempre.
+5. **Láminas y figuras**: obras de dominio público o piezas propias, recortadas en escalera (uno, tres o seis
+   cuadros), con la figura de pteron detrás y su crédito siempre.
 6. **La hoja**: oficio por omisión. En la web, la página es una hoja: la esquina de arriba a la derecha se dobla y
    abre el índice; la marca va como membrete arriba a la izquierda.
 

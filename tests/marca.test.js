@@ -94,6 +94,22 @@ test("/marca: cada descarga existe, los colores son los del sistema y las lámin
 });
 
 
+test("cada lámina se recorta en escalera de uno, tres o seis cuadros, como dice /marca", () => {
+  const materiales = readFileSync(path.join(root, "scripts/pteron-hojas/materiales.mjs"), "utf8");
+  const formas = [...materiales.matchAll(/forma: (\[[^\]]*\])/g)].map((m) => JSON.parse(m[1]));
+  assert.ok(formas.length >= 16, "las láminas declaran su forma");
+  for (const forma of formas) {
+    const cuadros = forma.join("").split("#").length - 1;
+    assert.ok([1, 3, 6].includes(cuadros), `forma ${JSON.stringify(forma)}: ${cuadros} cuadros`);
+    // Escalera: cada fila tiene un cuadro más que la anterior, todas pegadas al mismo lado
+    forma.forEach((fila, i) => assert.equal(fila.split("#").length - 1, i + 1, `forma ${JSON.stringify(forma)}: fila ${i + 1}`));
+    const izquierda = forma.every((fila) => /^#+\.*$/.test(fila));
+    const derecha = forma.every((fila) => /^\.*#+$/.test(fila));
+    assert.ok(izquierda || derecha, `forma ${JSON.stringify(forma)}: escalera pegada a un lado`);
+  }
+  assert.match(read("marca/index.html"), /recortada en escalera sobre la cuadrícula, de uno, tres o seis cuadros/);
+});
+
 test("las cabeceras de planes, descargar y cuenta llevan una lámina con su figura detrás", () => {
   for (const page of ["planes/index.html", "descargar/index.html", "cuenta/index.html"]) {
     const html = read(page);

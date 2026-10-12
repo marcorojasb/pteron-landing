@@ -4,7 +4,7 @@
   "description": "Construido por profes, para profes.",
   "lang": "es-CL",
   "start_url": "/",
-  "display": "standalone",
+  "display": "browser",
   "background_color": "#E9EDF1",
   "theme_color": "#E9EDF1",
   "icons": [
