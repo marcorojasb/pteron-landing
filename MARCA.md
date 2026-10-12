@@ -18,8 +18,8 @@ Iowan Old Style de la app no lo convencía.
    cortes propios: la esquina de arriba a la derecha de la «t», doblada a 45° como la hoja de la web, y la esquina
    opuesta de la «p». Lo escribe `scripts/marca-trazado.py`. Siempre «pteron», en minúscula. Espacio libre: el alto
    de su «o». Tamaño mínimo: 30 px de alto en pantalla, 8 mm en papel.
-2. **Icono**: la «p» de esa marca, con su corte, en blanco sobre el azul. A 16 y 32 px, la letra se engruesa medio
-   píxel por lado.
+2. **Icono**: la «p» de esa marca, con su corte, en blanco sobre el azul, con esquinas de radio 229 en 1024 (el que ya
+   usa `build/icon.svg` en la app). A 16 y 32 px, la letra se engruesa medio píxel por lado y el radio baja a 200.
 3. **Color** (los de las hojas de pteron):
    - tinta `#1F2A3D` (classroom.ink) para el texto;
    - azul `#1E3F94` (classroom.navy) para títulos, enlaces y la marca;
@@ -33,7 +33,13 @@ Iowan Old Style de la app no lo convencía.
 5. **Láminas y figuras**: obras de dominio público o piezas propias, recortadas en escalera (uno, tres o seis
    cuadros), con la figura de pteron detrás y su crédito siempre.
 6. **La hoja**: oficio por omisión. En la web, la página es una hoja: la esquina de arriba a la derecha se dobla y
-   abre el índice; la marca va como membrete arriba a la izquierda.
+   abre el índice; la marca va como membrete arriba a la izquierda. En el material, nunca: las hojas que arma pteron
+   llevan el membrete del establecimiento que el profe configura en Perfil, o ninguno (`src/shared/school-brand.ts`,
+   ADR-140), y su pie dice sólo el título y «Pág. N de M». Ni la marca ni la «p» van en hojas, exportaciones, marcas
+   de agua o el centro de un código QR.
+7. **Geometría**: dos gestos y nada más. El doblez a 45° (la esquina que abre el índice y los cortes de la «t» y la
+   «p») y la escalera sobre la cuadrícula (las láminas, de uno, tres o seis cuadros, y la pieza que falta en la hoja
+   del 404). La esquina doblada significa índice y no se usa como adorno.
 
 ## Cómo se eligió la letra
 
@@ -57,7 +63,8 @@ las figuras de pteron: la marca y lo que pteron dibuja hablan igual.
 
 - Un ADR en `docs/DECISIONES.md` con esta decisión, y la línea 45 de `docs/INTERFAZ.md` («paleta navy/gold/ivory»)
   y los tokens de marca de «Gramática visual» separados de los de la interfaz.
-- `build/icon.svg`: la «p» blanca sobre `#1E3F94` (la misma de `public/assets/marca/p-azul.svg`) y `npm run icon`.
+- `build/icon.svg`: reemplazarlo por `public/assets/marca/p-azul.svg` (la «p» blanca sobre `#1E3F94`, ya con el radio
+  de 229 del icono actual) y correr `npm run icon`.
   Hasta entonces la web no muestra el icono de la app, para no tener dos iconos en la misma página.
 - El «pteron» de Home (`.home-hero h1`), el de arranque (`.startup-brand`) y el de `index.html` (`.boot-wordmark`)
   se escriben con `--font-brand` (Iowan Old Style; fuera de macOS, Times New Roman o Liberation Serif). Para adoptar

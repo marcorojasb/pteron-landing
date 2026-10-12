@@ -10,7 +10,7 @@
  *
  * Salidas: public/assets/marca/pteron-{azul,tinta,blanco}.svg y .png, public/assets/marca/p-{azul,blanco}.svg,
  * public/assets/icono-v4.svg (favicon) y, con --png, los iconos PNG (favicon-v5-16/32/48, apple-touch-icon-v4,
- * app-icon-v4-192/512 y app-icon-v4-mascara) y public/favicon.ico.
+ * app-icon-v5-192/512 y app-icon-v4-mascara) y public/favicon.ico.
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -51,10 +51,19 @@ const caja = {
 };
 const r1 = (n) => Math.round(n * 10) / 10;
 
-/** La marca sola, ajustada a su dibujo, en un color. */
+// El espacio libre de la marca es el alto de su «o»: la quinta letra entre las que no caben dentro de otra
+const letras = contornos
+  .filter((c) => !contornos.some((o) => o !== c && o.x0 < c.x0 && o.x1 > c.x1 && o.y0 < c.y0 && o.y1 > c.y1))
+  .sort((a, b) => a.x0 - b.x0);
+if (letras.length !== 6) throw new Error(`la marca debería tener seis letras y tiene ${letras.length}`);
+export const AIRE = letras[4].y1 - letras[4].y0;
+
+/** La marca en un color, con su espacio libre dentro del archivo: pegada en un documento, no queda apretada. */
 function marcaSVG(color) {
-  const vb = [caja.x0, caja.y0, caja.x1 - caja.x0, caja.y1 - caja.y0].map(r1).join(" ");
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" width="${r1(caja.x1 - caja.x0)}" height="${r1(caja.y1 - caja.y0)}"><title>pteron</title><path fill="${color}" fill-rule="evenodd" d="${d}"/></svg>\n`;
+  const w = caja.x1 - caja.x0 + 2 * AIRE;
+  const h = caja.y1 - caja.y0 + 2 * AIRE;
+  const vb = [caja.x0 - AIRE, caja.y0 - AIRE, w, h].map(r1).join(" ");
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" width="${r1(w)}" height="${r1(h)}"><title>pteron</title><path fill="${color}" fill-rule="evenodd" d="${d}"/></svg>\n`;
 }
 
 /**
@@ -72,19 +81,25 @@ function pSVG({ fondo, letra, alto = 600, y = 0.53, radio = 0, grosor = 0 }) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><title>pteron</title>${base}<path fill="${letra}" fill-rule="evenodd"${trazo} transform="${t}" d="${P.d}"/></svg>\n`;
 }
 
+// El radio de la «p» en su cuadrado de 1024: 229, el mismo de build/icon.svg en la app (cerca del 22,4 % de los iconos de
+// macOS), para que el icono de la web y el de la app sean un solo dibujo. El favicon va con 200: su letra ocupa el 84 % del
+// alto y un radio mayor le comería el pie de la «p».
+const RADIO = 229;
+const RADIO_FAVICON = 200;
+
 const SVG = {
   "marca/pteron-azul.svg": marcaSVG(COLOR.azul),
   "marca/pteron-tinta.svg": marcaSVG(COLOR.tinta),
   "marca/pteron-blanco.svg": marcaSVG(COLOR.blanco),
-  "marca/p-azul.svg": pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, radio: 224 }),
-  "marca/p-blanco.svg": pSVG({ fondo: COLOR.blanco, letra: COLOR.azul, radio: 224 }),
+  "marca/p-azul.svg": pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, radio: RADIO }),
+  "marca/p-blanco.svg": pSVG({ fondo: COLOR.blanco, letra: COLOR.azul, radio: RADIO }),
   // El favicon: la letra más grande, porque a 16 px cada píxel cuenta
-  "icono-v4.svg": pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, alto: 860, y: 0.52, radio: 200 }),
+  "icono-v4.svg": pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, alto: 860, y: 0.52, radio: RADIO_FAVICON }),
 };
 
 // Para 16 y 32 px, la letra engruesada: medio píxel más por lado a cada tamaño (el trazo va en las unidades de la «p»,
 // que se escala a 860 de 1024)
-const pChica = (px) => pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, alto: 860, y: 0.52, radio: 200, grosor: Math.round((1024 / px) * ((P.y1 - P.y0) / 860) * 0.9) });
+const pChica = (px) => pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, alto: 860, y: 0.52, radio: RADIO_FAVICON, grosor: Math.round((1024 / px) * ((P.y1 - P.y0) / 860) * 0.9) });
 
 // Cada PNG: de qué dibujo sale y a qué tamaño. Los iconos que el sistema recorta van a sangre (sin radio).
 const PNG = [
@@ -92,13 +107,14 @@ const PNG = [
   ["favicon-v5-32.png", pChica(32), 32],
   ["favicon-v5-48.png", pChica(48), 48],
   ["apple-touch-icon-v4.png", pSVG({ fondo: COLOR.azul, letra: COLOR.blanco }), 180],
-  ["app-icon-v4-192.png", "marca/p-azul.svg", 192],
-  ["app-icon-v4-512.png", "marca/p-azul.svg", 512],
+  ["app-icon-v5-192.png", "marca/p-azul.svg", 192],
+  ["app-icon-v5-512.png", "marca/p-azul.svg", 512],
   // Android recorta en círculo o en gota: la letra cabe en el 80 % central
   ["app-icon-v4-mascara.png", pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, alto: 470 }), 512],
-  ["marca/pteron-azul.png", "marca/pteron-azul.svg", 1600],
-  ["marca/pteron-tinta.png", "marca/pteron-tinta.svg", 1600],
-  ["marca/pteron-blanco.png", "marca/pteron-blanco.svg", 1600],
+  // La marca de 1600 px de ancho, más su espacio libre
+  ["marca/pteron-azul.png", "marca/pteron-azul.svg", 2160],
+  ["marca/pteron-tinta.png", "marca/pteron-tinta.svg", 2160],
+  ["marca/pteron-blanco.png", "marca/pteron-blanco.svg", 2160],
   ["marca/p-azul.png", "marca/p-azul.svg", 1024],
 ];
 

@@ -1,4 +1,4 @@
-/* pteron · descargar (2026-10-12.11)
+/* pteron · descargar (2026-10-12.12)
    Enlaces y rótulos de la última versión completa (release-data.js) y la plataforma del visitante destacada.
    Sin catálogo no se anuncia ninguna versión: los enlaces quedan en la página de versiones y la página lo dice. */
 (() => {

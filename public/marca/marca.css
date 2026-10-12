@@ -1,8 +1,8 @@
-/* pteron · /marca (2026-10-12.11)
+/* pteron · /marca (2026-10-12.12)
    La marca, el icono, los colores, la letra, las láminas y la voz, cada uno en su bloque numerado como las preguntas de
    una hoja de pteron. Las muestras son los archivos reales: lo que se ve es lo que se descarga. */
 
-@font-face{font-family:"Playwrite CL";font-style:normal;font-weight:100 400;font-display:swap;src:url(/assets/fonts/playwrite-cl-wght-normal.woff2?v=2026-10-12.11) format("woff2")}
+@font-face{font-family:"Playwrite CL";font-style:normal;font-weight:100 400;font-display:swap;src:url(/assets/fonts/playwrite-cl-wght-normal.woff2?v=2026-10-12.12) format("woff2")}
 
 /* ——— Bloques ——— */
 .bloque{padding-block:clamp(56px,8vw,112px)}
@@ -18,6 +18,13 @@
 .reglas div:last-child{border-bottom:var(--borde) solid var(--regla)}
 .reglas dt{padding-top:.15em;color:var(--azul);font-size:var(--t-rotulo);font-weight:650;font-stretch:94%}
 .reglas dd{margin:0;color:var(--tinta);font-size:var(--t-chico)}
+/* La regla del recorte, dibujada: uno, tres y seis cuadros en escalera */
+.escaleras{margin:22px 0 0;max-width:220px}
+.escaleras svg{display:block;width:100%;height:auto}
+.escalera-fondo{fill:var(--hoja)}
+.escalera-cuadros{fill:none;stroke:var(--linea);stroke-width:1}
+.escalera-borde{fill:none;stroke:var(--azul);stroke-width:1.5;stroke-linejoin:miter}
+.escaleras text{fill:var(--grafito);font:600 11px var(--letra);text-anchor:middle;font-variant-numeric:tabular-nums}
 .archivos-linea{display:flex;flex-wrap:wrap;gap:6px 22px}
 .archivos-linea a{display:inline-flex;align-items:center;min-height:44px;font-weight:600}
 
@@ -42,7 +49,7 @@
 /* ——— 2. El icono a sus tamaños reales ——— */
 .tamanos{display:flex;flex-wrap:wrap;align-items:flex-end;gap:clamp(18px,3vw,40px);padding:clamp(20px,3vw,36px);border-radius:6px;background:var(--mesa)}
 .tamanos li{display:grid;justify-items:center;gap:10px}
-.tamanos img{display:block;border-radius:22%}
+.tamanos img{display:block;border-radius:22.4%}
 .tamanos li:nth-child(n+3) img{border-radius:0}
 .tamanos li:first-child img{box-shadow:0 1px 2px rgb(var(--sombra)/.14),0 20px 34px -18px rgb(var(--sombra)/.5)}
 .tamanos span{color:var(--grafito);font-size:var(--t-rotulo);font-weight:600;font-variant-numeric:tabular-nums}
@@ -140,4 +147,15 @@
 }
 @media (max-width:420px){
   .voz p{grid-template-columns:minmax(0,1fr);gap:2px}
+}
+
+/* Impreso: las muestras de color y el fondo azul de la marca en blanco se imprimen tal cual (sólo ellas: la página no
+   imprime el gris de la mesa), con un filete para la hoja blanca; el control de pantalla no se imprime y cada ficha
+   queda entera en su página */
+@media print{
+  .color-muestra,.variante-azul .variante-fondo{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .color-muestra{outline:.3mm solid #bbb;outline-offset:-.3mm}
+  .bloque .segmento{display:none}
+  .lamina-marca,.variante,.color,.par,.reglas>div,.tamanos,.voz>*,.tabla-archivos tr,.oficio{break-inside:avoid}
+  h2,h3{break-after:avoid}
 }

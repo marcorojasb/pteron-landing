@@ -1,4 +1,4 @@
-/* pteron · descargar (2026-10-12.11) */
+/* pteron · descargar (2026-10-12.12) */
 /* En un teléfono: pteron se instala en un computador; el enlace se envía o se copia (download.js lo muestra) */
 .en-telefono{display:grid;gap:16px;margin-bottom:20px;padding:clamp(20px,2.6vw,32px);border-radius:6px;background:var(--hoja);color:var(--tinta)}
 .en-telefono-acciones{display:flex;flex-wrap:wrap;gap:10px}

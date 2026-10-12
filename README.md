@@ -82,9 +82,11 @@ Worker, desde este repositorio en GitHub.
     son dependencias del sitio, porque el SVG queda en el repositorio.
   - `marca.mjs` deriva de `assets/marca.svg` la marca para descargar y el
     icono; con `--png` (y `PLAYWRIGHT` apuntando a Playwright) también los PNG.
-  - `og.mjs` fotografía las imágenes para compartir: la portada del inicio y,
-    para las demás páginas, la tarjeta de `scripts/og/tarjeta.html` con su
-    título y tres láminas. También necesita `PLAYWRIGHT`.
+  - `og.mjs` fotografía las imágenes para compartir con la tarjeta de
+    `scripts/og/tarjeta.html` (la marca, el título y un dato en el cuadrado del
+    centro; a los lados, una lámina y su reverso) y deja al día `og:image`,
+    `twitter:image` y el texto alternativo de cada página. También necesita
+    `PLAYWRIGHT`.
   - `pteron-ventana.mjs` escribe la ventana en reposo con las plantillas de
     `pteron-ventana.js`, y `pteron-app-css.mjs` extrae y acota las reglas de la
     app a `pteron-app.css`.

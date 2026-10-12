@@ -1,4 +1,4 @@
-/* pteron · sitio — comportamiento compartido (2026-10-12.11)
+/* pteron · sitio — comportamiento compartido (2026-10-12.12)
    El índice que sale de la esquina doblada, Descargar con la plataforma del visitante y la versión publicada, el año del pie
    y los botones de copiar. Cada página agrega lo suyo en su propio script. */
 (() => {

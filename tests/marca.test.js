@@ -59,7 +59,7 @@ test("cada marca de la web usa la caja del símbolo de marca.svg", () => {
 test("los archivos de la marca están al día con marca.svg (node scripts/marca.mjs)", () => {
   execFileSync(process.execPath, [path.join(root, "scripts/marca.mjs"), "--revisar"], { stdio: "pipe" });
   assert.ok(existsSync(path.join(pub, "favicon.ico")), "favicon.ico en la raíz");
-  for (const file of ["favicon-v5-16.png", "favicon-v5-32.png", "favicon-v5-48.png", "apple-touch-icon-v4.png", "app-icon-v4-192.png", "app-icon-v4-512.png", "app-icon-v4-mascara.png", "icono-v4.svg"]) {
+  for (const file of ["favicon-v5-16.png", "favicon-v5-32.png", "favicon-v5-48.png", "apple-touch-icon-v4.png", "app-icon-v5-192.png", "app-icon-v5-512.png", "app-icon-v4-mascara.png", "icono-v4.svg"]) {
     assert.ok(existsSync(path.join(pub, "assets", file)), `falta assets/${file}`);
   }
 });
@@ -93,6 +93,20 @@ test("/marca: cada descarga existe, los colores son los del sistema y las lámin
   assert.equal((html.match(/class="pteron-figura"/g) || []).length, 4, "cada par lleva la figura de pteron");
 });
 
+
+test("cada página enlaza su tarjeta para compartir y la describe con su lámina y su crédito", async () => {
+  const { TARJETAS, VERSION, textoAlternativo } = await import("../scripts/og.mjs");
+  const inicio = read("index.html");
+  for (const tarjeta of TARJETAS) {
+    const html = read(tarjeta.pagina);
+    const url = `https://pteron.patagua.dev/assets/og/${tarjeta.nombre}-${VERSION}.jpg`;
+    assert.ok(exists(url), `falta ${url}`);
+    assert.match(html, new RegExp(`<meta property="og:image" content="${url}">`), `${tarjeta.pagina}: og:image`);
+    assert.match(html, new RegExp(`<meta name="twitter:image" content="${url}">`), `${tarjeta.pagina}: twitter:image`);
+    const alt = /<meta property="og:image:alt" content="([^"]*)">/.exec(html)?.[1];
+    assert.equal(alt, textoAlternativo(tarjeta, inicio).replace(/"/g, "&quot;"), `${tarjeta.pagina}: texto alternativo`);
+  }
+});
 
 test("el manifiesto no ofrece instalar la web como si fuera la app de pteron", () => {
   const manifest = JSON.parse(read("manifest.webmanifest"));

@@ -1,4 +1,4 @@
-/* pteron · inicio (2026-10-12.11)
+/* pteron · inicio (2026-10-12.12)
    1. Las láminas flotan y se dan vuelta: detrás de cada una está la figura con que pteron enseña lo mismo.
    2. La escena: al bajar, la mesa queda fija; las láminas de cada asignatura caen sobre su hoja y se funden en la
       figura, mientras las hojas se imprimen. Todo es función del avance del scroll: hacia atrás se deshace igual.
