@@ -114,7 +114,7 @@
             <li><button type="button" data-pt-step aria-controls="demo-pteron"><span class="pt-step-n">1</span><span class="pt-step-t"><b>Pides</b> con tus palabras.</span></button></li>
             <li><button type="button" data-pt-step aria-controls="demo-pteron"><span class="pt-step-n">2</span><span class="pt-step-t"><b>Confirmas</b> curso, asignatura, tema y duración.</span></button></li>
             <li><button type="button" data-pt-step aria-controls="demo-pteron"><span class="pt-step-n">3</span><span class="pt-step-t"><b>Se escribe</b> la guía, parte por parte.</span></button></li>
-            <li><button type="button" data-pt-step aria-controls="demo-pteron"><span class="pt-step-n">4</span><span class="pt-step-t"><b>Es tuya</b>: la editas y la exportas a Word.</span></button></li>
+            <li><button type="button" data-pt-step aria-controls="demo-pteron"><span class="pt-step-n">4</span><span class="pt-step-t"><b>La abres</b> en el editor y la exportas a Word.</span></button></li>
           </ol>
           <button class="pt-replay" type="button" data-pt-replay aria-controls="demo-pteron"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-history"/></svg>Ver de nuevo</button>
         </div>
@@ -122,8 +122,7 @@
       <div class="hero-paper">
         <div class="wrap">
           <div class="truth">
-            <p class="truth-label">Lo que puedes comprobar hoy</p>
-            <ul role="list">
+            <ul role="list" aria-label="pteron en breve">
               <li><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-lock"/></svg>100&nbsp;% local</li>
               <li><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-laptop"/></svg>macOS, Windows 11 y Linux</li>
               <li><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-book"/></svg>Currículum Nacional y Begonia</li>
@@ -143,8 +142,7 @@
     <section class="section hoja" id="como-trabaja" aria-labelledby="hoja-title" data-hoja-section>
       <div class="wrap hoja-grid">
         <div class="hoja-copy" data-reveal>
-          <h2 class="display" id="hoja-title">La hoja del estudiante no lleva respuestas.</h2>
-          <p class="lead">Cada pregunta guarda su respuesta y su criterio. La versión docente sale aparte, sólo cuando la pides.</p>
+          <h2 class="section-name" id="hoja-title">Archivo › Imprimir</h2>
           <div class="pt pt-print">
             <p class="pt-print-note">Se abre en Vista Previa para imprimir, con las mismas hojas de Guardar en PDF.</p>
             <fieldset class="pt-print-set">
@@ -203,9 +201,7 @@
       </div>
       <div class="wrap film-content">
         <div class="band-copy film-copy" data-reveal>
-          <p class="kicker"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-calendar"/></svg>Planificar</p>
-          <h2 class="display" id="film-title">La unidad completa, clase a clase. <span class="soft">Tú ajustas los tiempos.</span></h2>
-          <p class="lead">Objetivo, actividad, tiempo, recursos y evaluación por clase, en una hoja apaisada que editas.</p>
+          <h2 class="section-name" id="film-title">Planificar</h2>
           <p><a class="link-arrow" href="/docs?pagina=planificar">Cómo planificar con pteron<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-arrow"/></svg></a></p>
         </div>
         <figure class="film-window pt pt-write" data-film-window aria-label="Editor Write de pteron con la planificación de unidad de Álgebra para 1° medio: tabla clase a clase con objetivo, actividad, tiempo, recursos y evaluación">
@@ -249,19 +245,17 @@
       </div>
     </section>
 
-    <!-- Local y privado: una sola vez, con capturas reales -->
+    <!-- Local: el aviso de datos de estudiantes, editable, y lo que la interfaz no muestra -->
     <section class="lake section glow glow-follow ac-azul section-tight" id="local" aria-labelledby="local-title">
       <!-- Aurora generativa (canvas 2D, sin WebGL): cortinas de luz que derivan despacio; quieta con movimiento reducido -->
       <canvas class="lake-aurora" data-aurora width="320" height="180" aria-hidden="true"></canvas>
       <div class="wrap local-grid">
         <div class="band-copy" data-reveal>
-          <p class="kicker"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-lock"/></svg>100&nbsp;% local</p>
-          <h2 class="display" id="local-title">Tu trabajo vive en tu computador.</h2>
-          <p class="lead">Trabaja en la carpeta que eliges y puede usar un modelo local. Si algo va a salir, te avisa antes.</p>
+          <h2 class="section-name" id="local-title">Trabajo local</h2>
           <ul class="facts" role="list">
-            <li><span class="fact-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-folder"/></svg></span><div><strong>Una carpeta como límite</strong><p>Lee, indexa y crea sólo ahí. Nunca sobrescribe tus originales.</p></div></li>
-            <li><span class="fact-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-shield"/></svg></span><div><strong>Aviso antes de enviar datos</strong><p>Si detecta un RUT o un nombre, te deja excluir, anonimizar o cancelar.</p></div></li>
-            <li><span class="fact-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-key"/></svg></span><div><strong>Tus claves, cifradas</strong><p>En el almacén seguro de tu sistema.</p></div></li>
+            <li><span class="fact-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-folder"/></svg></span><p>Lee y crea sólo en la carpeta que eliges. Nunca sobrescribe tus originales.</p></li>
+            <li><span class="fact-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-cpu"/></svg></span><p>Puede usar un modelo local con Ollama.</p></li>
+            <li><span class="fact-ico"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-key"/></svg></span><p>Tus claves quedan cifradas en el almacén seguro de tu sistema.</p></li>
           </ul>
           <p><a class="link-arrow" href="/docs?pagina=trabajo-local">Cómo funciona el trabajo local<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg?v=2026-10-12.8#i-arrow"/></svg></a></p>
         </div>
@@ -290,7 +284,7 @@ Apoyo: leer en voz alta cada enunciado.</textarea>
                 <div class="pt-toolbar" aria-hidden="true"><div class="pt-toolbar-start"><span class="pt-tool"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.8#pt-paperclip"/></svg></span></div><div class="pt-toolbar-end"><span class="pt-tool"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.8#pt-mic"/></svg></span><span class="pt-send"><svg class="pt-i" aria-hidden="true"><use href="/assets/pt-icons.svg?v=2026-10-12.8#pt-arrow-up"/></svg></span></div></div>
               </div>
             </div>
-            <p class="pt-gate-note">Pruébalo: edita el texto. Es la misma regla de pteron, corre en tu navegador y no envía nada.</p>
+            <p class="pt-gate-note">Edita el texto: es la misma regla de pteron, corre en tu navegador y no envía nada.</p>
           </div>
         </div>
       </div>
@@ -307,9 +301,7 @@ Apoyo: leer en voz alta cada enunciado.</textarea>
       <div class="band-shade" aria-hidden="true"></div>
       <div class="wrap">
         <header class="head" data-reveal>
-          <p class="kicker">Beta pública<span class="release-version" data-release-version hidden></span></p>
-          <h2 class="display" id="descarga-title">Pruébalo en tu trabajo real.</h2>
-          <p class="lead">El núcleo local es gratis para siempre. Los planes añaden IA incluida.</p>
+          <h2 class="section-name" id="descarga-title">Descargar · beta pública<span class="release-version" data-release-version hidden></span></h2>
         </header>
         <ul class="plans plans-compact" role="list">
           <li class="plan" data-reveal style="--d:0">
@@ -362,7 +354,6 @@ Apoyo: leer en voz alta cada enunciado.</textarea>
 
   <footer class="footer">
     <div class="wrap">
-      <p class="signature">Tus fuentes. <span>Tu criterio.</span></p>
       <div class="footer-grid">
         <div class="footer-brand">
           <a class="wordmark" href="/" aria-current="page">pteron</a>

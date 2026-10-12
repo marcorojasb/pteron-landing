@@ -18,17 +18,12 @@
 @keyframes planes-drift{to{transform:translate3d(8%,6%,0) scale(1.16)}}
 
 /* Cierre: la ventana real de Write sube desde el borde de la banda */
-.planes-close{padding-bottom:0}
 .planes-close .band-shade{background:radial-gradient(70% 52% at 50% 30%,#07090dd1,#07090d73 70%,transparent),linear-gradient(180deg,#07090df2,#07090d8c 26%,#07090d33 52%,#07090d66 78%,#07090de6)}
 .planes-close .head .lead{color:#dcdad5;text-shadow:0 1px 14px #07090de6}
 .planes-close-actions{justify-content:center;gap:16px 28px;margin-top:8px}
 .planes-os{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 26px;margin-top:6px;color:var(--snow-2);font-size:14px}
 .planes-os li{display:inline-flex;align-items:center;gap:8px}
 .planes-os .icon{width:17px;height:17px}
-.planes-close-stage{--h:clamp(300px,34vw,440px);position:relative;width:min(100%,1040px);height:var(--h);margin:clamp(52px,5.6vw,80px) auto 0}
-.planes-close-window img{width:100%}
-.planes-close-stage::after{content:"";position:absolute;z-index:1;left:-50vw;right:-50vw;bottom:0;height:min(210px,60%);background:linear-gradient(180deg,#07090d00,#07090dc7 55%,#07090d 94%);pointer-events:none}
-.planes-close-menu{position:absolute;z-index:2;right:-44px;top:clamp(48px,6vw,92px);width:282px}
 
 /* Encabezado fijo (sistema): la columna destacada conserva su filete ámbar al quedar fija */
 @media (min-width:761px){
@@ -38,7 +33,6 @@
 @media (min-width:1025px){
 .planes-hero .plan.is-featured{margin-block:-18px;padding-block:26px}
 }
-@media (max-width:1180px){.planes-close-menu{right:14px}}
 
 /* Tableta: los pasos de licencia en filas (ventana y texto) sobre el cielo austral */
 @media (min-width:761px) and (max-width:1024px){
@@ -46,8 +40,4 @@
 
 @media (max-width:760px){
 .band.planes-hero{padding-top:100px}
-.planes-status-text,.planes-th-cta,.planes-stage-photo{display:none}
-.planes-close-stage{--h:370px}
-.planes-close-window img{height:330px;object-fit:none;object-position:-232px -158px}
-.planes-close-window .lights{display:none}
-.planes-close-menu{right:10px;top:184px;width:272px}}
+}
