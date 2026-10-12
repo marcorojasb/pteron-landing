@@ -54,7 +54,7 @@
   const platformStrip = ([variant, icon, caption]) => `
         <figure class="os-strip os-${variant} docs-os" aria-hidden="true">
           <span class="os-aurora"><span></span><span></span><span></span></span>
-          <span class="die-mark die-mark--strip"><span class="die-mark-plate"><span class="die-mark-core"><svg viewBox="0 0 24 24"><use href="/assets/icons.svg?v=2026-10-12.2#i-${icon}"/></svg></span></span></span>
+          <span class="die-mark die-mark--strip"><span class="die-mark-plate"><span class="die-mark-core"><svg viewBox="0 0 24 24"><use href="/assets/icons.svg?v=2026-10-12.3#i-${icon}"/></svg></span></span></span>
           <span class="os-strip-cap">${caption}</span>
         </figure>`;
 

@@ -1,4 +1,4 @@
-/* pteron · comportamiento compartido del sitio (revisión 2026-10-12.2).
+/* pteron · comportamiento compartido del sitio (revisión 2026-10-12.3).
    Sin dependencias. Todo lo que mueve algo respeta prefers-reduced-motion,
    y el contenido es visible aunque este archivo no llegue a cargar. */
 (() => {
@@ -14,7 +14,7 @@
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     return Boolean(connection && (connection.saveData || /2g|3g/.test(connection.effectiveType || "")));
   };
-  const VERSION = "?v=2026-10-12.2";
+  const VERSION = "?v=2026-10-12.3";
 
   /* Año en el pie y donde se pida. */
   $$("[data-year]").forEach((node) => { node.textContent = String(new Date().getFullYear()); });
@@ -471,6 +471,23 @@
         section.style.setProperty("--mx", `${Math.round(event.clientX - rect.left)}px`);
         section.style.setProperty("--my", `${Math.round(event.clientY - rect.top)}px`);
       }, { passive: true });
+    });
+  }
+  /* Recortes del atlas: las piezas siguen al puntero según su profundidad (--z); sólo con puntero fino y movimiento. */
+  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    $$("[data-cutouts]").forEach((box) => {
+      const host = box.parentElement;
+      let frame = 0;
+      host.addEventListener("pointermove", (event) => {
+        if (!canMove() || frame) return;
+        frame = requestAnimationFrame(() => {
+          frame = 0;
+          const rect = host.getBoundingClientRect();
+          box.style.setProperty("--mx1", (((event.clientX - rect.left) / rect.width) * 2 - 1).toFixed(3));
+          box.style.setProperty("--my1", (((event.clientY - rect.top) / rect.height) * 2 - 1).toFixed(3));
+        });
+      }, { passive: true });
+      host.addEventListener("pointerleave", () => { box.style.setProperty("--mx1", "0"); box.style.setProperty("--my1", "0"); });
     });
   }
 })();

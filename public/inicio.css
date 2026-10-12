@@ -1,4 +1,4 @@
-/* pteron · Inicio (2026-10-12.2). Lo que sólo usa la página de inicio: héroe con la ventana, el pedido de rumbos, banda local, bento, película, marquesina y descarga. El resto es styles.css. */
+/* pteron · Inicio (2026-10-12.3). Lo que sólo usa la página de inicio: héroe con la ventana, el pedido de rumbos, banda local, bento, película, marquesina y descarga. El resto es styles.css. */
 .hero{position:relative;overflow-x:clip;padding-top:clamp(118px,11vw,148px);background:linear-gradient(180deg,#0f1925,#16253a)}
 .hero-copy{position:relative;z-index:3;display:grid;justify-items:center;text-align:center;gap:22px}
 .hero-copy::before{content:"";position:absolute;z-index:-1;inset:-40px -8% -30px;background:radial-gradient(50% 55% at 50% 50%,#060a1094,#060a103d 62%,transparent 80%);pointer-events:none}
@@ -63,6 +63,7 @@
 .atlas-t3{--l:42.5cqw;--t:2.5cqw;--s:15cqw}
 .atlas-t4{--l:64.25cqw;--t:5.6cqw;--s:13.5cqw}
 .atlas-t5{--l:85cqw;--t:12.3cqw;--s:12cqw}
+.atlas-t6{--l:14cqw;--t:17.5cqw;--s:7.5cqw}.atlas-t7{--l:34cqw;--t:10cqw;--s:7.5cqw}.atlas-t8{--l:56.5cqw;--t:10cqw;--s:7.5cqw}.atlas-t9{--l:76.5cqw;--t:17.5cqw;--s:7.5cqw}
 .atlas-arc{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
 .atlas-arc path{fill:none;stroke:var(--ink);stroke-opacity:.62;stroke-width:1.35;vector-effect:non-scaling-stroke;stroke-dasharray:1;stroke-dashoffset:0;transition:stroke-dashoffset 2.4s var(--ease) .2s}
 .reveal-on .atlas-scene:not(.is-in) .atlas-arc path{stroke-dashoffset:1}
@@ -84,7 +85,7 @@
 .film-window{justify-self:end;width:min(1140px,100%);margin-top:calc(var(--fh)*.1);transform-origin:50% 100%;transform:perspective(2400px) rotateX(calc(var(--tilt,0)*1deg)) translate3d(0,calc(var(--lift,0)*1px),0);will-change:transform}
 .film-credit{justify-self:end;margin-top:clamp(24px,3vw,40px);text-align:right}
 /* Aurora del lago: canvas de 320×180 escalado; el póster sólo se ve sin JavaScript */
-.lake-aurora{position:absolute;z-index:-1;left:0;top:0;width:100%;height:78%;pointer-events:none;background:url("/assets/arte/aurora-lago.webp?v=2026-10-12.2") center/100% 100% no-repeat;-webkit-mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent);mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent)}
+.lake-aurora{position:absolute;z-index:-1;left:0;top:0;width:100%;height:78%;pointer-events:none;background:url("/assets/arte/aurora-lago.webp?v=2026-10-12.3") center/100% 100% no-repeat;-webkit-mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent);mask-image:linear-gradient(180deg,transparent,#000 16%,#000 30%,transparent)}
 .lake-aurora.is-drawn{background:none}
 .js .hero-media>div{animation:settle 2.6s var(--ease) both}
 .js .hero-product{animation:rise 1.6s var(--ease) .35s both}
@@ -102,7 +103,7 @@
 .truth ul{justify-content:flex-start}}
 @media (max-width:760px){
 .atlas-scene{aspect-ratio:100/46}
-.atlas-t2,.atlas-t4{display:none}
+.atlas-t2,.atlas-t4,.atlas-t6,.atlas-t7,.atlas-t8,.atlas-t9{display:none}
 .atlas-t1{--l:1.5cqw;--t:16cqw;--s:25cqw}
 .atlas-t3{--l:35cqw;--t:2cqw;--s:30cqw}
 .atlas-t5{--l:73.5cqw;--t:16cqw;--s:25cqw}
@@ -143,7 +144,7 @@
 .pedido-legend{grid-template-columns:minmax(0,1fr)}
 .doc-sheet{left:6%;top:9%;width:420px}
 
-/* Color por paso y marquesina de asignaturas (2026-10-12.2) */
+/* Color por paso y marquesina de asignaturas (2026-10-12.3) */
 .steps .step:nth-child(1){--ac:var(--azul);--ac-hi:var(--azul-hi)}
 .steps .step:nth-child(2){--ac:var(--rosa);--ac-hi:var(--rosa-hi)}
 .steps .step:nth-child(3){--ac:var(--verde);--ac-hi:var(--verde-hi)}

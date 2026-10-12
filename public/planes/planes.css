@@ -1,4 +1,4 @@
-/* pteron · Planes (2026-10-12.2). Sólo lo propio de /planes; el resto es styles.css. */
+/* pteron · Planes (2026-10-12.3). Sólo lo propio de /planes; el resto es styles.css. */
 
 /* Héroe compacto: los precios entran en el primer pantallazo (.band gana a la vecindad con .sheet) */
 .band.planes-hero{padding-top:clamp(104px,8vw,114px);padding-bottom:calc(clamp(56px,6vw,88px) + var(--r-sheet))}

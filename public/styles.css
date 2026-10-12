@@ -1,4 +1,4 @@
-/* pteron · sistema «La hora azul» · 2026-10-12.2. Sin cursivas salvo el wordmark. */
+/* pteron · sistema «La hora azul» · 2026-10-12.3. Sin cursivas salvo el wordmark. */
 
 /* 1. Tokens */
 :root{
@@ -662,7 +662,7 @@ html{scroll-behavior:smooth}
 .footer-grid{grid-template-columns:1fr}}
 
 
-/* 29. Color por sección y movimiento ampliado (2026-10-12.2) */
+/* 29. Color por sección y movimiento ampliado (2026-10-12.3) */
 /* Acento de sección: --ac (sólido), --ac-hi (sobre oscuro), --ac-bg (lavado claro). El rótulo, los marcadores,
    los numerales y los iconos de hechos lo toman; en superficies oscuras usan la variante clara. */
 .ac-rosa{--ac:var(--rosa);--ac-hi:var(--rosa-hi);--ac-bg:var(--rosa-bg)}
@@ -742,3 +742,46 @@ html{scroll-behavior:smooth}
 .marquee-track{flex-wrap:wrap;justify-content:center;width:auto;animation:none}
 .marquee-track>span.is-dup{display:none}
 .glow-follow::after{display:none}}
+
+
+/* 30. Recortes vivos del atlas (2026-10-12.3): piezas que flotan, siguen al puntero y al desplazamiento, y se voltean */
+.cutouts{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:visible}
+.hero .cutouts{z-index:2}
+.footer{isolation:isolate}
+.footer .cutouts{z-index:-1}
+.cutout{--amp:10px;position:absolute;left:var(--l);top:var(--t);width:var(--s);aspect-ratio:1;margin:0;pointer-events:auto;rotate:var(--r,0deg);filter:drop-shadow(0 2px 2px #0f22381f) drop-shadow(0 16px 20px #0f223833);transition:scale .6s var(--ease)}
+.cutouts .cutout[data-parallax]{translate:calc(var(--mx1,0)*var(--z,.5)*28px) calc(var(--py,0px) + var(--my1,0)*var(--z,.5)*28px)}
+.cutout:hover{scale:1.06;z-index:3}
+.cutout-float,.cutout-inner{position:relative;width:100%;aspect-ratio:1}
+.cutout-inner{transform-style:preserve-3d;transition:transform .8s var(--ease)}
+.cutout:hover .cutout-inner{transform:rotateY(180deg)}
+.cutout-face,.cutout-back{position:absolute;inset:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.cutout-face{object-fit:contain}
+.cutout-back{display:grid;place-content:center;gap:.25em;text-align:center;transform:rotateY(180deg);border-radius:16%;background:var(--ac,var(--ember));color:#fff;padding:8%;font:500 clamp(10px,calc(var(--s)*.09),15px)/1.2 var(--sans);letter-spacing:.01em;box-shadow:inset 0 0 0 1px #ffffff33}
+.cutout-back b{display:block;font:400 clamp(14px,calc(var(--s)*.16),26px)/1.05 var(--serif);letter-spacing:-.02em}
+.cutout.is-lenguaje{--ac:var(--rosa)}.cutout.is-matematica{--ac:var(--azul)}.cutout.is-ciencias{--ac:var(--verde)}.cutout.is-historia{--ac:#d9a21c}.cutout.is-mezcla{--ac:var(--violeta)}
+/* Cinta de baldosas: dos filas que se desplazan en sentidos opuestos */
+.tile-strip{display:grid;gap:18px;margin-top:clamp(44px,5vw,72px);-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.tile-strip-row{overflow:hidden}
+.tile-strip-track{display:flex;gap:22px;width:max-content;will-change:transform}
+.tile-strip-track img{width:clamp(84px,9vw,124px);height:auto;flex:none;filter:drop-shadow(0 10px 14px #0f223826);transition:scale .5s var(--ease),rotate .5s var(--ease)}
+.tile-strip-track img:nth-child(odd){rotate:-3deg;translate:0 6px}.tile-strip-track img:nth-child(3n){rotate:4deg}
+.tile-strip-track img:hover{scale:1.12;rotate:0deg}
+@keyframes drift{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(calc(var(--amp)*-1)) rotate(2.5deg)}}
+@keyframes cut-in{from{opacity:0;scale:.55}to{opacity:1;scale:1}}
+@media (prefers-reduced-motion:no-preference){
+.cutout-float{animation:drift calc(9s + var(--i,0)*1.3s) ease-in-out calc(var(--i,0)*-1.7s) infinite}
+.docs-tile{animation:drift calc(10s + var(--i,0)*1.5s) ease-in-out calc(var(--i,0)*-2s) infinite}
+.atlas-tile{--amp:8px;animation:drift calc(11s + var(--i,0)*1.4s) ease-in-out calc(var(--i,0)*-2.3s) infinite}
+.tile-strip-track{animation:marquee 90s linear infinite}
+.tile-strip-row.is-reverse .tile-strip-track{animation-direction:reverse}
+.tile-strip:hover .tile-strip-track{animation-play-state:paused}
+@supports (animation-timeline:view()){
+.atlas-tile{animation:tile-in linear both,drift calc(11s + var(--i,0)*1.4s) ease-in-out calc(var(--i,0)*-2.3s) infinite;animation-timeline:view(),auto;animation-range:entry 0% entry 70%,normal}
+.cutout{animation:cut-in linear both;animation-timeline:view();animation-range:entry 0% entry 60%}}}
+@media (max-width:760px){
+.cutout.hide-sm{display:none}
+.cutout{--amp:6px;width:calc(var(--s)*.72);opacity:.92}
+.tile-strip{gap:12px}.tile-strip-track{gap:14px}}
+@media (prefers-reduced-motion:reduce){
+.cutout:hover .cutout-inner{transform:none}}
