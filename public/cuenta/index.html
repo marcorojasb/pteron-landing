@@ -80,11 +80,12 @@ SOFTWARE.
           <p class="nota">Escribe tu correo y te enviamos un enlace de un solo uso. Esta web no guarda contraseñas.</p>
           <div class="campo">
             <label for="account-email">Correo electrónico</label>
-            <input id="account-email" name="email" type="email" autocomplete="email" placeholder="tu@correo.cl" required aria-describedby="account-email-ayuda account-email-error">
+            <input id="account-email" type="email" autocomplete="email" placeholder="tu@correo.cl" required aria-describedby="account-email-ayuda account-email-error">
             <p class="nota" id="account-email-ayuda">Revisa también la carpeta de spam. El enlace vuelve a esta página.</p>
           </div>
           <p class="acceso-error" id="account-email-error" data-login-message role="alert"></p>
           <button class="boton boton-tinta acceso-enviar" type="submit">Enviar enlace</button>
+          <noscript><p class="nota">Para entrar, activa JavaScript en tu navegador: el enlace se pide desde esta página.</p></noscript>
           <div class="acceso-enviado" data-link-sent role="status" hidden>
             <b>Revisa tu correo.</b>
             <p>El enlace es de un solo uso y caduca pronto. Puedes cerrar esta ventana mientras llega.</p>

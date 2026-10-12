@@ -46,6 +46,43 @@
     }
   };
 
+  // El índice del sitio (la esquina) suma las páginas de la sección que se lee: al final de un artículo largo en el
+  // teléfono, el menú de la documentación queda muy arriba
+  const indiceDocs = (() => {
+    const paginas = document.querySelector("#indice .indice-paginas")?.closest(".indice-bloque");
+    if (!paginas) return null;
+    const bloque = document.createElement("nav");
+    bloque.className = "indice-bloque";
+    bloque.setAttribute("aria-labelledby", "indice-docs");
+    bloque.innerHTML = '<h3 class="indice-rotulo" id="indice-docs"></h3><ul class="indice-paginas" role="list"></ul>';
+    paginas.before(bloque);
+    bloque.addEventListener("click", event => {
+      const link = event.target.closest("a");
+      if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      // El índice se cierra antes de que el enrutador pinte la página, y el foco pasa a su título
+      const dialogo = document.getElementById("indice");
+      if (dialogo?.open) dialogo.close();
+      requestAnimationFrame(() => {
+        const titulo = article.querySelector("h1");
+        if (!titulo) return;
+        titulo.setAttribute("tabindex", "-1");
+        titulo.focus({ preventScroll: true });
+      });
+    });
+    return bloque;
+  })();
+
+  const renderIndiceDocs = active => {
+    if (!indiceDocs) return;
+    const group = docs.groups.find(item => item.pages.some(([slug]) => slug === active));
+    indiceDocs.hidden = !group;
+    if (!group) return;
+    indiceDocs.querySelector("h3").textContent = group.label;
+    indiceDocs.querySelector("ul").innerHTML = group.pages.map(([slug, title]) =>
+      `<li><a href="${pageUrl(slug)}"${slug === active ? ' aria-current="page"' : ""}>${title}</a></li>`
+    ).join("");
+  };
+
   let renderedSlug = "";
 
   // Las guías de instalación abren con la ficha de su sistema, la misma fila que en /descargar.
@@ -253,6 +290,7 @@
       ${page.html}
       <nav class="docs-siguiente" aria-label="Siguiente página">${nextPageLink(resolvedSlug)}</nav>`;
     renderNav(resolvedSlug);
+    renderIndiceDocs(resolvedSlug);
     renderToc();
     renderReleaseData();
     // Al llegar con un ancla (/docs?pagina=trabajo-local#licencia) se va a esa sección; si no, al comienzo
@@ -266,7 +304,7 @@
   function setIndexOpen(open, returnFocus = false) {
     sidebar.classList.toggle("is-open", open);
     navToggle.setAttribute("aria-expanded", String(open));
-    navToggle.setAttribute("aria-label", open ? "Cerrar el índice de la documentación" : "Menú de la documentación");
+    navToggle.setAttribute("aria-label", open ? "Cerrar las páginas de la documentación" : "Menú de la documentación");
     navToggle.textContent = open ? "Cerrar" : "Menú";
     if (!open && returnFocus) navToggle.focus();
   }
@@ -353,6 +391,9 @@
   document.addEventListener("click", event => {
     const link = event.target.closest('a[href^="/docs"]');
     if (!link) return;
+    // Ctrl/⌘-clic o clic medio abren otra pestaña, y lo que ya resolvió otro manejador (el índice, en la misma
+    // página) no se vuelve a pintar ni suma otra entrada al historial
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || link.target) return;
     const url = new URL(link.href);
     if (url.origin !== location.origin) return;
     event.preventDefault();

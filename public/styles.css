@@ -90,6 +90,10 @@ small{font-size:var(--t-chico)}
 
 /* ——— Marca ——— */
 .marca{display:inline-block;justify-self:start;width:max-content;color:var(--azul);line-height:0;border-radius:6px}
+/* Su área táctil llega a 44 px de alto con un borde invisible por encima y por debajo, sin mover el dibujo ni la línea
+   en que va */
+.marca{position:relative;--toque:max(0px,(44px - 1em) / 2)}
+.marca::before{content:"";position:absolute;inset:calc(-1 * var(--toque)) 0}
 .marca svg{width:auto;height:1em;overflow:visible}
 /* El membrete: la marca arriba a la izquierda de cada página, a la misma altura y del mismo tamaño que en el inicio;
    la esquina doblada queda en la esquina opuesta. */
@@ -120,8 +124,10 @@ small{font-size:var(--t-chico)}
    Descargar flota abajo a la derecha cuando la página ya no muestra el suyo. --barra compensa la barra de desplazamiento
    que desaparece mientras el índice está abierto. ——— */
 .esquina{position:static}
-.oreja{--o:76px;--d:13px;position:fixed;z-index:60;top:env(safe-area-inset-top,0px);right:calc(env(safe-area-inset-right,0px) + var(--barra,0px));
-  display:block;width:var(--o);height:var(--o);color:#fff;text-decoration:none;-webkit-tap-highlight-color:transparent;
+/* La esquina va siempre en el borde de la pantalla; con zona segura (un iPhone de lado) crece lo que mide esa zona, y
+   el rótulo, que va en la diagonal, queda dentro de lo visible */
+.oreja{--o:76px;--d:13px;--lado:calc(var(--o) + max(env(safe-area-inset-top,0px),env(safe-area-inset-right,0px)));position:fixed;z-index:60;top:0;right:var(--barra,0px);
+  display:block;width:var(--lado);height:var(--lado);color:#fff;text-decoration:none;-webkit-tap-highlight-color:transparent;
   transform-origin:100% 0;transition:transform .35s var(--curva)}
 /* Lo que la esquina dejó a la vista: el borde de la hoja azul, con su título */
 .oreja-azul{position:absolute;inset:0;background:var(--azul);clip-path:polygon(0 0,100% 0,100% 100%)}
@@ -244,8 +250,10 @@ html.con-indice body{padding-right:var(--barra,0px)}
 .pieza .reverso-figura,.pieza .reverso-pie{position:relative}
 .pieza .reverso-figura{display:grid;place-items:center;min-width:0;min-height:0;padding:2%}
 .pieza .reverso-figura svg{width:100%;height:100%;max-height:100%}
-.pieza .reverso-pie{align-self:end;margin:0;padding:0 2% 1%;color:var(--azul);font:600 clamp(9px,5.2cqi,14px)/1.2 "Outfit",var(--letra)}
-.pieza .reverso-pie span{display:block;margin-top:.25em;color:var(--grafito);font-weight:400;font-size:.82em}
+.pieza .reverso-pie{container-type:size;display:flex;flex-direction:column;justify-content:safe flex-end;min-width:0;min-height:0;overflow:hidden;margin:0;
+  padding:0 2% 1%;color:var(--azul);font:600 clamp(10px,5.2cqi,14px)/1.2 "Outfit",var(--letra)}
+.pieza .reverso-pie span{display:block;margin-top:.3em;color:var(--grafito);font:500 max(10.5px,.8em)/1.25 var(--letra);font-stretch:94%}
+.pieza .reverso-pie.sin-credito span,.pieza .reverso-pie.sin-titulo>*{display:none}
 
 /* ——— Formularios (cuenta y administración) ——— */
 label{font-weight:600;font-size:var(--t-chico)}

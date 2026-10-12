@@ -750,7 +750,12 @@
   }
 
   steps.forEach((s, i) => s.addEventListener("click", () => (reduce() ? showFinal() : play(i))));
-  replay?.addEventListener("click", () => (reduce() ? showFinal() : play(0)));
+  replay?.addEventListener("click", () => {
+    if (reduce()) return showFinal();
+    // «Ver de nuevo» se oculta mientras corre la secuencia: el foco pasa al primer paso, que queda marcado
+    if (document.activeElement === replay) steps[0]?.focus({ preventScroll: true });
+    play(0);
+  });
 
   if (reduce()) {
     showFinal();

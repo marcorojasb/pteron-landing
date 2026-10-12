@@ -189,7 +189,7 @@ export const MATERIALES = [
  * son la posición al flotar: [x %, y %, ancho en vmin, capa 0 (lejos) a 2 (cerca), giro en grados].
  */
 export const LAMINAS = [
-  { archivo: "ciencias-luna", forma: ["#.", "##"], asignatura: "Ciencias Naturales", obra: "Mare Humorum", fuente: "Trouvelot, 1875", hoja: "ciencias", bloque: "f1", escritorio: [50, 27, 18, 2, -5], movil: [74, 13, 28, 2, -6] },
+  { archivo: "ciencias-luna", forma: ["#.", "##"], asignatura: "Ciencias Naturales", obra: "Mare Humorum", fuente: "Trouvelot, 1875", hoja: "ciencias", bloque: "f1", escritorio: [50, 27, 18, 2, -5], movil: [66, 11, 24, 2, -6] },
   { archivo: "ciencias-eclipse", forma: [".#", "##"], asignatura: "Ciencias Naturales", obra: "Eclipse total de 1878", fuente: "Trouvelot, 1878", hoja: "ciencias", bloque: "f2", escritorio: [91, 50, 13, 1, 6] },
   { archivo: "historia-ovalle", forma: ["..#", ".##", "###"], asignatura: "Historia", obra: "Tabula geographica regni Chile", fuente: "Ovalle, 1646", hoja: "historia", bloque: "f1", escritorio: [27, 35, 15, 1, 4], movil: [20, 34, 26, 1, 5] },
   { archivo: "matematica-pizarra", forma: ["#..", "##.", "###"], asignatura: "Matemática", obra: "Pizarra con fracciones", fuente: "Pieza propia", hoja: "matematica", bloque: "f1", escritorio: [77, 29, 20, 2, 4], movil: [64, 27, 28, 2, 4] },

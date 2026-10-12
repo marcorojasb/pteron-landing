@@ -94,6 +94,12 @@ test("/marca: cada descarga existe, los colores son los del sistema y las lámin
 });
 
 
+test("el manifiesto no ofrece instalar la web como si fuera la app de pteron", () => {
+  const manifest = JSON.parse(read("manifest.webmanifest"));
+  assert.equal(manifest.display, "browser");
+  assert.equal(manifest.display_override, undefined);
+});
+
 test("cada lámina se recorta en escalera de uno, tres o seis cuadros, como dice /marca", () => {
   const materiales = readFileSync(path.join(root, "scripts/pteron-hojas/materiales.mjs"), "utf8");
   const formas = [...materiales.matchAll(/forma: (\[[^\]]*\])/g)].map((m) => JSON.parse(m[1]));

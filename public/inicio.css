@@ -29,8 +29,14 @@
 .reverso-figura,.reverso-pie{position:relative}
 .reverso-figura{display:grid;place-items:center;min-width:0;min-height:0;padding:2%}
 .reverso-figura svg{width:100%;height:100%;max-height:100%}
-.reverso-pie{align-self:end;margin:0;font:600 clamp(9px,5.2cqi,15px)/1.2 "Outfit",sans-serif;color:var(--azul);padding:0 2% 1%;opacity:var(--pie,1)}
-.reverso-pie span{display:block;margin-top:.25em;font-weight:400;font-size:.82em;color:var(--grafito)}
+/* El título va en Outfit, como pteron rotula sus figuras; el crédito es texto de la web, en Archivo y legible. El pie
+   ocupa justo su celda y no la agranda: si el texto empujaba la fila o la columna, la escalera del recorte (fija en
+   porcentajes) dejaba de calzar y cortaba letras. Lo que no cabe no se muestra: script.js lo mide y quita primero el
+   crédito y después el título; el colofón del inicio nombra todas las láminas */
+.reverso-pie{container-type:size;display:flex;flex-direction:column;justify-content:safe flex-end;min-width:0;min-height:0;overflow:hidden;margin:0;
+  font:600 clamp(10px,5.2cqi,15px)/1.2 "Outfit",sans-serif;color:var(--azul);padding:0 2% 1%;opacity:var(--pie,1)}
+.reverso-pie span{display:block;margin-top:.3em;font:500 max(10.5px,.8em)/1.25 var(--letra);font-stretch:94%;color:var(--grafito)}
+.reverso-pie.sin-credito span,.reverso-pie.sin-titulo>*{display:none}
 .laminas .lamina{cursor:pointer}
 
 /* ——— Portada ——— */
@@ -87,8 +93,10 @@
 .pasos button.is-done .paso-n{background:var(--hoja);border-color:var(--azul);color:var(--azul)}
 .pasos button.is-done{color:var(--tinta)}
 .ver-de-nuevo{margin-top:18px;min-height:44px;padding:0 16px;border:var(--borde) solid var(--linea);border-radius:999px;background:var(--hoja);color:var(--azul);font-weight:600;font-size:.9375rem;
-  opacity:0;transition:opacity .3s}
-.ventana.is-done~* .ver-de-nuevo,.pedir:has(.ventana.is-done) .ver-de-nuevo,.no-js .ver-de-nuevo{opacity:1}
+  opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+/* Oculto, además de transparente, hasta que termina la secuencia: así no es una parada invisible del tabulador */
+.ventana.is-done~* .ver-de-nuevo,.pedir:has(.ventana.is-done) .ver-de-nuevo{opacity:1;visibility:visible;transition:opacity .3s}
+.no-js .ver-de-nuevo{display:none}
 .ventana{position:relative;margin:0}
 .pt-frame{--pt-crop:1440;--pt-s:.6;position:relative;width:100%;aspect-ratio:1440/880;overflow:hidden;border-radius:12px;background:#f6f5f2;
   box-shadow:0 0 0 1px rgb(var(--sombra)/.12),0 2px 4px rgb(var(--sombra)/.08),0 40px 80px -40px rgb(var(--sombra)/.55)}
@@ -110,6 +118,12 @@
 .hoja-marco[data-audiencia="estudiante"] .pteron-document[data-audiencia="docente"],
 .hoja-marco[data-audiencia="docente"] .pteron-document[data-audiencia="estudiante"]{opacity:0;visibility:hidden}
 .hoja-marco[data-impresion="fotocopia"] .hoja-papel{filter:grayscale(1) contrast(1.08)}
+/* Sin JavaScript los controles cambian la hoja igual; la ventana, que se arma con JavaScript, no se muestra */
+.no-js .hoja-seccion:has(input[value="docente"]:checked) .pteron-document[data-audiencia="estudiante"]{opacity:0;visibility:hidden}
+.no-js .hoja-seccion:has(input[value="docente"]:checked) .pteron-document[data-audiencia="docente"]{opacity:1;visibility:visible}
+.no-js .hoja-seccion:has(input[value="fotocopia"]:checked) .hoja-papel{filter:grayscale(1) contrast(1.08)}
+.no-js .ventana{display:none}
+.no-js .pasos button{pointer-events:none}
 
 /* ——— En tu computador ——— */
 .local{padding-block:clamp(72px,10vw,140px);background:var(--hoja);border-block:var(--borde) solid var(--regla)}
@@ -169,6 +183,11 @@ html.no-js .aviso{display:none}
 @media (max-width:400px){
   .hoja-marco{--s:.4}
   .mesa-hojas{--s:.19}
+}
+
+/* A 340 px o menos el titular ocupa la banda de las láminas: quedan las tres grandes (la Luna, la pizarra y la Ñ) */
+@media (max-width:340px){
+  .lamina:is([data-lamina="historia-ovalle"],[data-lamina="lenguaje-yciar"],[data-lamina="matematica-byrne-cuadrados"],[data-lamina="lenguaje-araucana"]){display:none}
 }
 
 /* Impreso: el inicio no depende del desplazamiento ni de la escena. Son tres páginas en carta, A4 u oficio: la

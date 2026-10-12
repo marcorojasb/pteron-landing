@@ -37,7 +37,7 @@
 .variante-tinta .variante-fondo{background:var(--hoja);color:var(--tinta)}
 .variante-nombre{font-weight:650;font-size:var(--t-chico);color:var(--tinta)}
 .variante-archivos{display:flex;gap:14px;font-size:var(--t-chico)}
-.variante-archivos a{display:inline-flex;align-items:center;min-height:36px;font-weight:600}
+.variante-archivos a{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;font-weight:600}
 
 /* ——— 2. El icono a sus tamaños reales ——— */
 .tamanos{display:flex;flex-wrap:wrap;align-items:flex-end;gap:clamp(18px,3vw,40px);padding:clamp(20px,3vw,36px);border-radius:6px;background:var(--mesa)}

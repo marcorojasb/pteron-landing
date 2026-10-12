@@ -304,7 +304,7 @@
 
   async function sendMagicLink(event) {
     event.preventDefault();
-    const input = loginForm.querySelector("input[name=email]");
+    const input = loginForm.querySelector("#account-email");
     const button = loginForm.querySelector("button");
     showLoginMessage("");
     button.disabled = true;

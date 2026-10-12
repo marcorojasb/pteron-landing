@@ -10,6 +10,8 @@
   const releaseLink = $("[data-download-release]");
   const status = $("[data-download-status]");
   const releasesPageUrl = releaseData?.RELEASES_PAGE_URL || "https://github.com/marcorojasb/pteron-beta/releases";
+  // script.js marca un teléfono o una tableta: ahí los botones llevan a la versión en GitHub, no al instalador
+  const movil = document.documentElement.dataset.equipo === "movil";
 
   const announceUnavailable = () => {
     if (releaseLink) releaseLink.href = releasesPageUrl;
@@ -40,13 +42,13 @@
     Object.entries(PLATFORM).forEach(([platform, [kind, label]]) => {
       const asset = releaseData.findAsset(latest, kind);
       if (!asset || !links[platform]) return;
-      links[platform].href = asset.url;
+      links[platform].href = movil ? latest.url || releasesPageUrl : asset.url;
       if (labels[platform]) labels[platform].textContent = label(latest.version);
     });
     Object.entries({ linuxDeb: "[data-download-linux-deb]", linuxRpm: "[data-download-linux-rpm]", linuxTar: "[data-download-linux-tar]" }).forEach(([kind, selector]) => {
       const link = $(selector);
       const asset = releaseData.findAsset(latest, kind);
-      if (link && asset) link.href = asset.url;
+      if (link && asset && !movil) link.href = asset.url;
     });
     Object.entries({
       linuxAppImage: "[data-download-linux-appimage-signature]",
@@ -69,6 +71,26 @@
     button.classList.toggle("boton-principal", detected);
     button.classList.toggle("boton-papel", !detected);
   });
+
+  // En el teléfono, lo primero es mandarse el enlace para abrirlo en el computador
+  const telefono = $("[data-en-telefono]");
+  if (movil && telefono) {
+    const enlace = new URL("/descargar", location.origin).href;
+    telefono.hidden = false;
+    telefono.querySelector("[data-copy]")?.setAttribute("data-copy", enlace);
+    telefono.querySelector("[data-enviar-enlace]")?.addEventListener("click", async () => {
+      const asunto = "pteron para el computador";
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: asunto, url: enlace });
+        } catch {
+          // Cerrar la hoja de compartir no es un error
+        }
+        return;
+      }
+      location.href = `mailto:?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(enlace)}`;
+    });
+  }
 
   loadLatestRelease().catch(announceUnavailable);
 })();

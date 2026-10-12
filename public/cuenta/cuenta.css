@@ -95,3 +95,6 @@
 @media (max-width:900px){
   .acceso,.activar,.planes-cuenta-rejilla{grid-template-columns:minmax(0,1fr)}
 }
+/* Sin JavaScript el enlace no se puede pedir: el campo no lleva name, para que el correo nunca quede en la URL, y el
+   formulario cede su lugar a la nota */
+.no-js .acceso-hoja .campo,.no-js .acceso-enviar{display:none}

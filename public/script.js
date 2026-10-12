@@ -123,8 +123,15 @@
 
     const cerrar = (despues = null) => {
       if (!indice.open) return;
+      // Un segundo cierre mientras la hoja sale (Escape tras elegir un capítulo) cierra de inmediato, sin borrar el
+      // salto que dejó pendiente el primero
+      if (indice.classList.contains("is-cerrando")) {
+        if (despues) alCerrar = despues;
+        indice.close();
+        return;
+      }
       alCerrar = despues;
-      if (quieto.matches || indice.classList.contains("is-cerrando")) {
+      if (quieto.matches) {
         indice.close();
         return;
       }
@@ -224,6 +231,31 @@
     });
   });
 
+  /* ——— El pie del reverso de una lámina ocupa justo su celda: si el texto no cabe (una palabra más ancha que la celda o
+     más líneas que su alto), sale primero el crédito y después el título, y queda sólo la figura ——— */
+  const pies = $$(".reverso-pie");
+  if (pies.length) {
+    const desborda = (pie) => pie.scrollHeight > pie.clientHeight + 1 || pie.scrollWidth > pie.clientWidth + 1;
+    const ajustar = () =>
+      pies.forEach((pie) => {
+        pie.classList.remove("sin-credito", "sin-titulo");
+        if (desborda(pie)) pie.classList.add("sin-credito");
+        if (desborda(pie)) pie.classList.add("sin-titulo");
+      });
+    let pendiente = false;
+    const pedir = () => {
+      if (pendiente) return;
+      pendiente = true;
+      requestAnimationFrame(() => {
+        pendiente = false;
+        ajustar();
+      });
+    };
+    ajustar();
+    document.fonts?.ready.then(pedir);
+    window.addEventListener("resize", pedir, { passive: true });
+  }
+
   /* ——— Piezas de las cabeceras: con el dedo se dan vuelta al tocarlas; con cursor, al pasar por encima (CSS) ——— */
   const conCursor = window.matchMedia("(hover: hover) and (pointer: fine)");
   $$("[data-pieza]").forEach((pieza) => {
@@ -243,6 +275,13 @@
     return null;
   };
   const platform = detectPlatform();
+  // Un teléfono o una tableta no instala pteron: sus enlaces llevan a /descargar (arriba, donde se envía el enlace),
+  // nunca a un instalador de escritorio
+  const movil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "") || (/Macintosh/i.test(navigator.userAgent || "") && navigator.maxTouchPoints > 1);
+  if (movil) {
+    document.documentElement.dataset.equipo = "movil";
+    $$('a[href^="/descargar#"]').forEach((link) => (link.href = "/descargar"));
+  }
   const PLATFORM_NAME = { macos: "macOS", windows: "Windows", linux: "Linux" };
   const PLATFORM_ASSET = { macos: "macosDmg", windows: "windowsExe", linux: "linuxAppImage" };
   if (platform) {
@@ -280,10 +319,12 @@
         $$("[data-release-link]").forEach((node) => {
           node.href = latest.url;
         });
-        $$("[data-release-asset]").forEach((node) => {
-          const asset = releases.findAsset(latest, node.dataset.releaseAsset);
-          if (asset) node.href = asset.url;
-        });
+        if (!movil) {
+          $$("[data-release-asset]").forEach((node) => {
+            const asset = releases.findAsset(latest, node.dataset.releaseAsset);
+            if (asset) node.href = asset.url;
+          });
+        }
         // El botón del visitante baja directo el archivo de su equipo
         const own = platform && releases.findAsset(latest, PLATFORM_ASSET[platform]);
         if (own) $$("[data-descargar]").forEach((link) => (link.href = own.url));

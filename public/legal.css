@@ -9,7 +9,7 @@
 /* Índice de la página: fijo al costado mientras se lee */
 .legal-indice{position:sticky;top:24px;display:grid;gap:12px}
 .legal-indice ol{margin:0;display:grid}
-.legal-indice a{display:grid;grid-template-columns:1.6em minmax(0,1fr);align-items:baseline;gap:6px;padding:7px 0;color:var(--tinta);font-size:var(--t-chico);
+.legal-indice a{display:grid;grid-template-columns:1.6em minmax(0,1fr);align-items:baseline;align-content:center;gap:6px;min-height:44px;padding:7px 0;color:var(--tinta);font-size:var(--t-chico);
   line-height:1.35;text-decoration:none;border-top:var(--borde) solid var(--regla)}
 .legal-indice li:last-child a{border-bottom:var(--borde) solid var(--regla)}
 .legal-indice a>span{font-weight:650;color:var(--grafito);font-variant-numeric:tabular-nums}
@@ -49,6 +49,9 @@
 .credito-laminas img:nth-child(3){transform:rotate(-2deg)}
 .credito div{display:grid;gap:4px;font-size:var(--t-chico);color:var(--grafito);min-width:0}
 .credito .credito-obra{font-size:1rem;font-weight:620;color:var(--tinta);line-height:1.35}
+/* El enlace a la fuente alcanza 44 px de alto con un borde invisible, sin mover la línea */
+.credito-obra a{position:relative}
+.credito-obra a::before{content:"";position:absolute;inset:-11px 0}
 .creditos-notas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(24px,4vw,56px);margin-top:clamp(18px,3vw,32px)}
 .creditos-notas section{display:grid;gap:10px;align-content:start}
 .creditos-notas h3{margin-top:0}

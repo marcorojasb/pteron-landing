@@ -22,6 +22,7 @@
 
   /* ——— 3. La hoja ——— */
   const marco = $("[data-hoja-marco]");
+  const angosta = window.matchMedia("(max-width: 760px)");
   if (marco) {
     const papel = $(".hoja-papel", marco);
     const fitSheet = () => {
@@ -38,6 +39,11 @@
         papel?.querySelectorAll(".pteron-document").forEach((sheet) => {
           sheet.toggleAttribute("inert", sheet.dataset.audiencia !== marco.dataset.audiencia);
         });
+        // En el teléfono la hoja queda bajo el texto: si no está a la vista, se trae para ver el cambio
+        const caja = marco.getBoundingClientRect();
+        if (angosta.matches && (caja.top > window.innerHeight * 0.5 || caja.bottom < 120)) {
+          marco.scrollIntoView({ block: "start", behavior: motion.matches ? "auto" : "smooth" });
+        }
       });
     });
     papel?.querySelectorAll(".pteron-document").forEach((sheet) => sheet.toggleAttribute("inert", sheet.dataset.audiencia !== "estudiante"));
