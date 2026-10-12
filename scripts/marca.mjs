@@ -1,93 +1,31 @@
 /**
- * Los archivos de la marca, derivados del único dibujo que existe: el contorno de public/assets/marca.svg («pteron» en
- * Outfit con la esquina de la «t» doblada; lo escribe scripts/marca-trazado.py). De ahí salen la marca para descargar en
- * tres colores y el icono, que es la «p» de esa marca sobre el azul.
+ * Los archivos de la marca que publica el sitio. Los dibujos salen de scripts/marca-dibujos.mjs (el mismo módulo que usa
+ * el kit del lenguaje, scripts/kit.mjs), y éste sólo decide qué se escribe y dónde.
  *
  *   node scripts/marca.mjs              escribe los SVG (sin dependencias)
  *   node scripts/marca.mjs --png        además los PNG; necesita Playwright con Chromium:
  *                                       PLAYWRIGHT=/ruta/a/playwright/index.mjs node scripts/marca.mjs --png
  *   node scripts/marca.mjs --revisar    sólo comprueba que los SVG estén al día (lo usa la prueba)
  *
- * Salidas: public/assets/marca/pteron-{azul,tinta,blanco}.svg y .png, public/assets/marca/p-{azul,blanco}.svg,
+ * Salidas del sitio: public/assets/marca/pteron-{azul,tinta,blanco}.svg y .png, public/assets/marca/p-{azul,blanco}.svg,
  * public/assets/icono-v4.svg (favicon) y, con --png, los iconos PNG (favicon-v5-16/32/48, apple-touch-icon-v4,
  * app-icon-v5-192/512 y app-icon-v4-mascara) y public/favicon.ico.
+ *
+ * Salidas del kit, en kit/archivos/ (las arma scripts/kit.mjs junto a las del sitio, sin volver a dibujar): la marca
+ * ajustada a su dibujo, la «p» a sangre, de perfil y en la cuadrícula de macOS, y el icono de la app (icon.svg, icon.png,
+ * icon.ico e icon.icns, éste en la cuadrícula de macOS).
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { COLOR, ICNS_TIPOS, ICONO, ICONO_MAC, LADO_MAC, RADIO, RADIO_FAVICON, icns, ico, marcaSVG, pChica, pSVG, raiz, rasterizar } from "./marca-dibujos.mjs";
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const assets = path.join(root, "public/assets");
+export { COLOR } from "./marca-dibujos.mjs";
+
+const assets = path.join(raiz, "public/assets");
 const check = process.argv.includes("--revisar");
 const png = process.argv.includes("--png");
 
-export const COLOR = { azul: "#1E3F94", tinta: "#1F2A3D", blanco: "#FFFFFF", lapiz: "#F0C060", mesa: "#E9EDF1" };
-
-const fuente = readFileSync(path.join(assets, "marca.svg"), "utf8");
-const d = /<path[^>]* d="([^"]+)"/.exec(fuente)?.[1];
-if (!d) throw new Error("public/assets/marca.svg no tiene el trazado de la marca");
-
-/** Los contornos del trazado con su caja: la marca son seis letras, tres de ellas con hueco. */
-const contornos = d
-  .split(/(?=M)/)
-  .filter((part) => part.trim())
-  .map((part) => {
-    const nums = part.match(/-?\d+(?:\.\d+)?/g).map(Number);
-    const xs = nums.filter((_, i) => i % 2 === 0);
-    const ys = nums.filter((_, i) => i % 2 === 1);
-    return { d: part, x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) };
-  });
-// La «p» es la letra que empieza más a la izquierda; su hueco es el contorno que cabe dentro de ella
-const letraP = contornos.reduce((a, b) => (b.x0 < a.x0 ? b : a));
-const huecoP = contornos.find((c) => c !== letraP && c.x0 > letraP.x0 && c.x1 < letraP.x1 && c.y0 > letraP.y0 && c.y1 < letraP.y1);
-if (!huecoP) throw new Error("no encuentro el hueco de la «p» en la marca");
-const P = { d: letraP.d + huecoP.d, x0: letraP.x0, x1: letraP.x1, y0: letraP.y0, y1: letraP.y1 };
-
-const caja = {
-  x0: Math.min(...contornos.map((c) => c.x0)),
-  x1: Math.max(...contornos.map((c) => c.x1)),
-  y0: Math.min(...contornos.map((c) => c.y0)),
-  y1: Math.max(...contornos.map((c) => c.y1)),
-};
-const r1 = (n) => Math.round(n * 10) / 10;
-
-// El espacio libre de la marca es el alto de su «o»: la quinta letra entre las que no caben dentro de otra
-const letras = contornos
-  .filter((c) => !contornos.some((o) => o !== c && o.x0 < c.x0 && o.x1 > c.x1 && o.y0 < c.y0 && o.y1 > c.y1))
-  .sort((a, b) => a.x0 - b.x0);
-if (letras.length !== 6) throw new Error(`la marca debería tener seis letras y tiene ${letras.length}`);
-export const AIRE = letras[4].y1 - letras[4].y0;
-
-/** La marca en un color, con su espacio libre dentro del archivo: pegada en un documento, no queda apretada. */
-function marcaSVG(color) {
-  const w = caja.x1 - caja.x0 + 2 * AIRE;
-  const h = caja.y1 - caja.y0 + 2 * AIRE;
-  const vb = [caja.x0 - AIRE, caja.y0 - AIRE, w, h].map(r1).join(" ");
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" width="${r1(w)}" height="${r1(h)}"><title>pteron</title><path fill="${color}" fill-rule="evenodd" d="${d}"/></svg>\n`;
-}
-
-/**
- * La «p» en un cuadrado de 1024. alto: cuánto mide la letra (con su descendente); y: dónde cae el centro de su caja,
- * un poco bajo la mitad para que el ojo de la «p» quede al centro. radio 0 para los iconos que el sistema recorta.
- */
-function pSVG({ fondo, letra, alto = 600, y = 0.53, radio = 0, grosor = 0 }) {
-  const k = alto / (P.y1 - P.y0);
-  const cx = (P.x0 + P.x1) / 2;
-  const cy = (P.y0 + P.y1) / 2;
-  const t = `translate(512 ${r1(1024 * y)}) scale(${k.toFixed(5)}) translate(${r1(-cx)} ${r1(-cy)})`;
-  const base = fondo ? `<rect width="1024" height="1024"${radio ? ` rx="${radio}"` : ""} fill="${fondo}"/>` : "";
-  // grosor: un trazo del mismo color engruesa la letra para los tamaños chicos (a 16 px el trazo fino se pierde)
-  const trazo = grosor ? ` stroke="${letra}" stroke-width="${grosor}" stroke-linejoin="round"` : "";
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><title>pteron</title>${base}<path fill="${letra}" fill-rule="evenodd"${trazo} transform="${t}" d="${P.d}"/></svg>\n`;
-}
-
-// El radio de la «p» en su cuadrado de 1024: 229, el mismo de build/icon.svg en la app (cerca del 22,4 % de los iconos de
-// macOS), para que el icono de la web y el de la app sean un solo dibujo. El favicon va con 200: su letra ocupa el 84 % del
-// alto y un radio mayor le comería el pie de la «p».
-const RADIO = 229;
-const RADIO_FAVICON = 200;
-
-const SVG = {
+export const SVG = {
   "marca/pteron-azul.svg": marcaSVG(COLOR.azul),
   "marca/pteron-tinta.svg": marcaSVG(COLOR.tinta),
   "marca/pteron-blanco.svg": marcaSVG(COLOR.blanco),
@@ -97,12 +35,8 @@ const SVG = {
   "icono-v4.svg": pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, alto: 860, y: 0.52, radio: RADIO_FAVICON }),
 };
 
-// Para 16 y 32 px, la letra engruesada: medio píxel más por lado a cada tamaño (el trazo va en las unidades de la «p»,
-// que se escala a 860 de 1024)
-const pChica = (px) => pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, alto: 860, y: 0.52, radio: RADIO_FAVICON, grosor: Math.round((1024 / px) * ((P.y1 - P.y0) / 860) * 0.9) });
-
 // Cada PNG: de qué dibujo sale y a qué tamaño. Los iconos que el sistema recorta van a sangre (sin radio).
-const PNG = [
+export const PNG = [
   ["favicon-v5-16.png", pChica(16), 16],
   ["favicon-v5-32.png", pChica(32), 32],
   ["favicon-v5-48.png", pChica(48), 48],
@@ -118,59 +52,111 @@ const PNG = [
   ["marca/p-azul.png", "marca/p-azul.svg", 1024],
 ];
 
-mkdirSync(path.join(assets, "marca"), { recursive: true });
-let stale = 0;
-for (const [file, svg] of Object.entries(SVG)) {
-  const full = path.join(assets, file);
-  let before = "";
-  try {
-    before = readFileSync(full, "utf8");
-  } catch {}
-  if (before === svg) continue;
-  stale += 1;
-  if (!check) writeFileSync(full, svg);
-  console.log(`${check ? "desactualizado" : "escrito"}: assets/${file}`);
-}
-if (check) process.exit(stale ? 1 : 0);
+const kit = path.join(raiz, "kit/archivos");
 
-if (png) {
-  const modulo = process.env.PLAYWRIGHT;
-  if (!modulo) throw new Error("--png necesita PLAYWRIGHT=/ruta/a/playwright/index.mjs");
-  const { chromium } = await import(modulo);
-  const browser = await chromium.launch();
-  const page = await browser.newPage({ deviceScaleFactor: 1 });
-  for (const [file, fuenteSVG, ancho] of PNG) {
-    const svg = fuenteSVG.startsWith("<svg") ? fuenteSVG : SVG[fuenteSVG];
-    const [, w, h] = /viewBox="[-\d.]+ [-\d.]+ ([\d.]+) ([\d.]+)"/.exec(svg);
-    const alto = Math.round((ancho * Number(h)) / Number(w));
-    const datos = `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
-    await page.setViewportSize({ width: ancho, height: alto });
-    await page.setContent(`<html><body style="margin:0;background:transparent"><img src="${datos}" width="${ancho}" height="${alto}" style="display:block"></body></html>`);
-    await page.locator("img").evaluate((img) => img.decode());
-    await page.screenshot({ path: path.join(assets, file), omitBackground: true, clip: { x: 0, y: 0, width: ancho, height: alto } });
-    console.log(`png: assets/${file} (${ancho}×${alto})`);
+const ORIGEN_ICONO = `<!--
+  El icono de la aplicación pteron: la «p» de la marca, blanca sobre el azul #1E3F94, con esquinas de radio 229 en
+  1024. Es un dibujo: no depende de ninguna letra instalada.
+
+  No se edita a mano. Este archivo, icon.png, icon.ico e icon.icns salen del kit del lenguaje visual de pteron (1.0.0;
+  scripts/marca-dibujos.mjs en pteron-landing) y sus sumas SHA-256 están en el manifiesto del kit. icon.ico e icon.icns
+  llevan la letra engruesada hasta 32 px; icon.icns, además, el cuadrado de 824 de la cuadrícula de macOS.
+-->
+`;
+
+// Lo que sólo va en el kit. Los SVG se comprueban con --revisar como los del sitio.
+export const SVG_KIT = {
+  "marca/pteron-azul-ajustada.svg": marcaSVG(COLOR.azul, { aire: false }),
+  "marca/pteron-tinta-ajustada.svg": marcaSVG(COLOR.tinta, { aire: false }),
+  "marca/pteron-blanco-ajustada.svg": marcaSVG(COLOR.blanco, { aire: false }),
+  // A sangre: para los sistemas que ponen su propia máscara (iOS, Android, los iconos por capas de macOS)
+  "icono/p-azul-sangre.svg": pSVG({ fondo: COLOR.azul, letra: COLOR.blanco }),
+  // Para las fotos de perfil, que se recortan en círculo: la letra cabe en el 80 % central
+  "icono/p-azul-perfil.svg": pSVG({ fondo: COLOR.azul, letra: COLOR.blanco, alto: 470 }),
+  // Para el Dock y Finder de macOS: el icono en el cuadrado de 824 de su cuadrícula
+  "icono/p-azul-macos.svg": ICONO_MAC,
+  // El icono de la app: el mismo dibujo de public/assets/marca/p-azul.svg, para reemplazar build/icon.svg. Lleva su origen
+  // escrito, porque en la app nadie debería volver a dibujarlo.
+  "app/icon.svg": ICONO.replace("<svg", `${ORIGEN_ICONO}<svg`),
+};
+
+export const PNG_KIT = [
+  ["marca/pteron-azul-ajustada.png", "marca/pteron-azul-ajustada.svg", 1600],
+  ["marca/pteron-tinta-ajustada.png", "marca/pteron-tinta-ajustada.svg", 1600],
+  ["marca/pteron-blanco-ajustada.png", "marca/pteron-blanco-ajustada.svg", 1600],
+  ["icono/p-blanco.png", pSVG({ fondo: COLOR.blanco, letra: COLOR.azul, radio: RADIO }), 1024],
+  ["icono/p-azul-sangre.png", "icono/p-azul-sangre.svg", 1024],
+  ["icono/p-azul-perfil.png", "icono/p-azul-perfil.svg", 1024],
+  ["icono/p-azul-macos.png", "icono/p-azul-macos.svg", 1024],
+  ["app/icon.png", "app/icon.svg", 1024],
+  // Linux: electron-builder toma build/icons/ (un PNG por tamaño, con el tamaño en el nombre) y los instala en el tema
+  // hicolor; sin esa carpeta deriva un solo icono del .icns. Hasta 32 px, la letra engruesada.
+  ...[16, 24, 32, 48, 64, 128, 256, 512].map((px) => [`app/icons/${px}x${px}.png`, px <= 32 ? pChica(px) : ICONO, px]),
+];
+
+// Los tamaños del icono de la app. Hasta 32 px, la letra engruesada del favicon (a ese tamaño el trazo fino se pierde
+// en la barra de tareas); desde 48 px, el dibujo del icono. En macOS, los dos en el cuadrado de 824 de su cuadrícula.
+const dibujoApp = (px) => (px <= 32 ? pChica(px) : ICONO);
+const dibujoMac = (px) => (px <= 32 ? pChica(px, LADO_MAC) : ICONO_MAC);
+const ICO_APP = [16, 24, 32, 48, 64, 128, 256];
+
+if (process.argv[1] && path.resolve(process.argv[1]) === path.join(raiz, "scripts/marca.mjs")) {
+  mkdirSync(path.join(assets, "marca"), { recursive: true });
+  for (const carpeta of ["marca", "icono", "app", "app/icons"]) mkdirSync(path.join(kit, carpeta), { recursive: true });
+  let stale = 0;
+  const todos = [...Object.entries(SVG).map(([file, svg]) => [path.join(assets, file), svg]), ...Object.entries(SVG_KIT).map(([file, svg]) => [path.join(kit, file), svg])];
+  for (const [full, svg] of todos) {
+    let before = "";
+    try {
+      before = readFileSync(full, "utf8");
+    } catch {}
+    if (before === svg) continue;
+    stale += 1;
+    if (!check) writeFileSync(full, svg);
+    console.log(`${check ? "desactualizado" : "escrito"}: ${path.relative(raiz, full)}`);
   }
-  await browser.close();
+  if (check) process.exit(stale ? 1 : 0);
 
-  // favicon.ico: el pedido por omisión de navegadores, accesos directos de Windows y lectores de enlaces. Es sólo un
-  // contenedor de los PNG de 16, 32 y 48 px.
-  const tamanos = [16, 32, 48];
-  const pngs = tamanos.map((px) => readFileSync(path.join(assets, `favicon-v5-${px}.png`)));
-  const cabeza = Buffer.alloc(6 + 16 * pngs.length);
-  cabeza.writeUInt16LE(0, 0);
-  cabeza.writeUInt16LE(1, 2);
-  cabeza.writeUInt16LE(pngs.length, 4);
-  let desde = cabeza.length;
-  pngs.forEach((datos, i) => {
-    const o = 6 + 16 * i;
-    cabeza.writeUInt8(tamanos[i], o);
-    cabeza.writeUInt8(tamanos[i], o + 1);
-    cabeza.writeUInt16LE(1, o + 4);
-    cabeza.writeUInt16LE(32, o + 6);
-    cabeza.writeUInt32LE(datos.length, o + 8);
-    cabeza.writeUInt32LE(desde, o + 12);
-    desde += datos.length;
-  });
-  writeFileSync(path.join(root, "public/favicon.ico"), Buffer.concat([cabeza, ...pngs]));
-  console.log("ico: favicon.ico (16, 32 y 48 px)");
+  if (png) {
+    const modulo = process.env.PLAYWRIGHT;
+    if (!modulo) throw new Error("--png necesita PLAYWRIGHT=/ruta/a/playwright/index.mjs");
+    const { chromium } = await import(modulo);
+    const browser = await chromium.launch();
+    const page = await browser.newPage({ deviceScaleFactor: 1 });
+    for (const [file, fuenteSVG, ancho] of PNG) {
+      const svg = fuenteSVG.startsWith("<svg") ? fuenteSVG : SVG[fuenteSVG];
+      const { png: datos, alto } = await rasterizar(page, svg, ancho);
+      writeFileSync(path.join(assets, file), datos);
+      console.log(`png: assets/${file} (${ancho}×${alto})`);
+    }
+    for (const [file, fuenteSVG, ancho] of PNG_KIT) {
+      const svg = fuenteSVG.startsWith("<svg") ? fuenteSVG : SVG_KIT[fuenteSVG];
+      const { png: datos, alto } = await rasterizar(page, svg, ancho);
+      writeFileSync(path.join(kit, file), datos);
+      console.log(`png: kit/archivos/${file} (${ancho}×${alto})`);
+    }
+
+    // El icono de la app para Windows (.ico) y macOS (.icns): contenedores de PNG, uno por tamaño
+    const cache = new Map();
+    const dibujar = async (dibujo, px) => {
+      const svg = dibujo(px);
+      if (!cache.has(svg + px)) cache.set(svg + px, (await rasterizar(page, svg, px)).png);
+      return cache.get(svg + px);
+    };
+    const entradasIco = [];
+    for (const px of ICO_APP) entradasIco.push([px, await dibujar(dibujoApp, px)]);
+    writeFileSync(path.join(kit, "app/icon.ico"), ico(entradasIco));
+    console.log(`ico: kit/archivos/app/icon.ico (${ICO_APP.join(", ")} px)`);
+    const entradasIcns = [];
+    for (const [tipo, px] of ICNS_TIPOS) entradasIcns.push([tipo, await dibujar(dibujoMac, px)]);
+    writeFileSync(path.join(kit, "app/icon.icns"), icns(entradasIcns));
+    console.log(`icns: kit/archivos/app/icon.icns (${ICNS_TIPOS.length} imágenes)`);
+    await browser.close();
+
+    // favicon.ico: el pedido por omisión de navegadores, accesos directos de Windows y lectores de enlaces. Es sólo un
+    // contenedor de los PNG de 16, 32 y 48 px.
+    const entradas = [16, 32, 48].map((px) => [px, readFileSync(path.join(assets, `favicon-v5-${px}.png`))]);
+    writeFileSync(path.join(raiz, "public/favicon.ico"), ico(entradas));
+    console.log("ico: favicon.ico (16, 32 y 48 px)");
+  }
 }

@@ -11,3 +11,10 @@ supabase/.temp
 output/
 
 .commandcode/
+
+# El kit completo del lenguaje (scripts/kit.mjs); el .zip público vive en public/assets/marca
+dist/
+
+# Lo interno de la app (parches, guía y capturas para alinear pteron): va sólo en el kit completo, que se entrega
+# aparte; el código de la app no se publica desde este repositorio.
+kit/app/

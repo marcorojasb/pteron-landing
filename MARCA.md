@@ -1,7 +1,9 @@
 # Marca de pteron · propuesta de actualización (octubre de 2026)
 
-Estado: aplicada en la web (rama `claude/lucid-galileo-p8x5t3`, vista previa tetris-r2); pendiente en la app.
-La página pública es `/marca`; este archivo registra la decisión y lo que falta para que la app la adopte.
+Estado: aplicada en la web (rama `claude/lucid-galileo-p8x5t3`, vista previa tetris-r2); en la app, lista para
+aplicar con los parches del kit completo (ADR-169 y ADR-170 de la app). La página pública es `/marca`; la
+especificación entera, con cada medida, es `kit/LENGUAJE.md`, y sus archivos salen de `node scripts/kit.mjs`. Este
+archivo registra la decisión y cómo se tomó.
 
 ## Contexto
 
@@ -28,8 +30,8 @@ Iowan Old Style de la app no lo convencía.
    - grafito `#5B6B82` (classroom.muted) para el texto secundario.
    En fotocopia: azul 71 % de gris, tinta 83 %, lápiz 20 %, mesa 6 %.
 4. **Letra**: Archivo (Omnibus-Type, OFL) compone la web, con la jerarquía hecha por ancho y peso. Outfit es la letra
-   de la marca y de las figuras y los títulos de las hojas de pteron; en la web no compone texto. El texto de la hoja
-   va en Arial y la pauta de caligrafía de primer ciclo, en Playwrite CL; la interfaz de la app, en IBM Plex.
+   de la marca y de las hojas de pteron —su texto, sus títulos y sus figuras—; en la web no compone texto. La pauta de
+   caligrafía de primer ciclo va en Playwrite CL, las diapositivas en Arial y la interfaz de la app en IBM Plex.
 5. **Láminas y figuras**: obras de dominio público o piezas propias, recortadas en escalera (uno, tres o seis
    cuadros), con la figura de pteron detrás y su crédito siempre.
 6. **La hoja**: oficio por omisión. En la web, la página es una hoja: la esquina de arriba a la derecha se dobla y
@@ -59,20 +61,21 @@ sobre el azul. Quedaron fuera:
 Outfit se distingue de los títulos (geométrica frente a grotesca), su «p» funciona sola en el icono y es la letra de
 las figuras de pteron: la marca y lo que pteron dibuja hablan igual.
 
-## Pendiente en la app (repositorio pteron, no se tocó desde aquí)
+## En la app
 
-- Un ADR en `docs/DECISIONES.md` con esta decisión, y la línea 45 de `docs/INTERFAZ.md` («paleta navy/gold/ivory»)
-  y los tokens de marca de «Gramática visual» separados de los de la interfaz.
-- `build/icon.svg`: reemplazarlo por `public/assets/marca/p-azul.svg` (la «p» blanca sobre `#1E3F94`, ya con el radio
-  de 229 del icono actual) y correr `npm run icon`.
-  Hasta entonces la web no muestra el icono de la app, para no tener dos iconos en la misma página.
-- El «pteron» de Home (`.home-hero h1`), el de arranque (`.startup-brand`) y el de `index.html` (`.boot-wordmark`)
-  se escriben con `--font-brand` (Iowan Old Style; fuera de macOS, Times New Roman o Liberation Serif). Para adoptar
-  la marca: dibujar el trazado de `public/assets/marca.svg` en línea, con el degradado de hoy, como ya lo hace
-  `public/pteron-ventana.js` con el contorno de Iowan, y en `index.html` el mismo trazado con `fill: #d2dbe2`. A
-  igual ancho que hoy (unas 2,7 em del h1), la marca nueva se probó en la réplica del Home y del arranque: se ve
-  igual en macOS, Windows y Linux.
-- Mientras la app no la adopte, la ventana de la web sigue mostrando el «pteron» de Iowan, porque muestra la app tal
-  como es. Cuando la app cambie, basta con cambiar `WORDMARK` y su caja en `public/pteron-ventana.js`.
-- El plan se llama «Basic» en la web y en parte de la app, y «Básico» en `src/shared/licensing.ts`: conviene
-  elegir uno.
+El kit completo (`dist/pteron-lenguaje-1.0.0.zip`, que no se publica) trae tres parches para el repositorio de
+pteron y su guía, `app/APLICAR.md`:
+
+- ADR-169: la marca dibujada en línea en la Home, el arranque y la carga, como marca de agua de un solo color que se
+  disuelve hacia abajo, a la misma escala que la letra anterior; el icono del kit para macOS (en su cuadrícula de
+  824), Windows y Linux, con pruebas que fijan sus sumas. Se retira `--font-brand`.
+- ADR-170: los tokens de la app con los colores de las hojas, en claro y en el oscuro de pteron-design; el foco y la
+  selección en azul, el lápiz sólo como destacador y la mesa plana.
+- La respuesta guardada como archivo ya no se titula «Material creado con pteron».
+
+Mientras la app no publique una versión con estos cambios, la ventana de la web sigue mostrando el «pteron» de Iowan
+y la paleta anterior, porque muestra la app tal como es; tampoco muestra el icono de la app, para no tener dos iconos
+en la misma página. Cuando salga, se regeneran `public/pteron-app.css` y el `WORDMARK` de `public/pteron-ventana.js`.
+
+Queda por elegir: «Basic» o «Básico» para el plan (la web y parte de la app dicen «Basic»; `src/shared/licensing.ts`,
+«Básico»).

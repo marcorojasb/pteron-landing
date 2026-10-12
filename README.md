@@ -80,8 +80,21 @@ Worker, desde este repositorio en GitHub.
   - `marca-trazado.py` escribe `assets/marca.svg`: compone «pteron» en Outfit
     y le hace los dos cortes. Necesita fontTools, uharfbuzz y skia-pathops; no
     son dependencias del sitio, porque el SVG queda en el repositorio.
-  - `marca.mjs` deriva de `assets/marca.svg` la marca para descargar y el
-    icono; con `--png` (y `PLAYWRIGHT` apuntando a Playwright) también los PNG.
+  - `marca-dibujos.mjs` es el único lugar donde se dibuja: la marca en cada
+    color, con y sin su espacio libre, la «p» del icono (también en la
+    cuadrícula de macOS) y los contenedores `.ico` e `.icns`.
+  - `marca.mjs` escribe con esos dibujos la marca para descargar y el icono del
+    sitio y del kit; con `--png` (y `PLAYWRIGHT` apuntando a Playwright) también
+    los PNG, el `.ico` y el `.icns` (`--revisar` comprueba los SVG).
+  - `kit.mjs` arma el kit del lenguaje visual: copia los archivos del sitio y de
+    `kit/archivos`, genera `tokens.css`, `tokens.ts` y la tabla de contrastes
+    desde `kit/tokens.json` (la fuente única de colores y medidas), escribe el
+    manifiesto con sus sumas y empaqueta dos .zip de bytes fijos: el público,
+    `assets/marca/pteron-marca-1.0.0.zip`, que ofrece `/marca`, y el completo
+    en `dist/`, con los parches para la app de `kit/app` (fuera del
+    repositorio). `--revisar` comprueba que el público esté al día.
+  - `kit-letras.py` convierte Archivo y Outfit a TTF para instalar
+    (`--revisar` comprueba los del kit); necesita fontTools y brotli.
   - `og.mjs` fotografía las imágenes para compartir con la tarjeta de
     `scripts/og/tarjeta.html` (la marca, el título y un dato en el cuadrado del
     centro; a los lados, una lámina y su reverso) y deja al día `og:image`,

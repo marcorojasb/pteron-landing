@@ -1,0 +1,12 @@
+{
+  "app/APLICAR.md": "Cómo aplicar los parches en la app, qué se verificó, qué falta y qué se decidió.",
+  "app/parches/0001-marca-e-icono.patch": "ADR-169: la marca dibujada en la Home, el arranque y la carga, y el icono para macOS, Windows y Linux.",
+  "app/parches/0002-paleta.patch": "ADR-170: tinta, azul y lápiz sobre la mesa, en claro y en oscuro.",
+  "app/parches/0003-la-marca-no-firma.patch": "Guardar una respuesta ya no firma el material con la marca.",
+  "app/capturas/home-claro.png": "La Home hoy y con el lenguaje, tema claro.",
+  "app/capturas/home-oscuro.png": "La Home hoy y con el lenguaje, tema oscuro.",
+  "app/capturas/conversacion-claro.png": "Una conversación con su material, hoy y con el lenguaje, tema claro.",
+  "app/capturas/conversacion-oscuro.png": "Una conversación con su material, hoy y con el lenguaje, tema oscuro.",
+  "app/capturas/carga.png": "La pantalla de carga con el lenguaje, en claro y en oscuro.",
+  "app/capturas/icono.png": "El icono de la app hoy y con el lenguaje, y a 32 y 16 px."
+}
