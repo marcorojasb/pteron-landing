@@ -40,7 +40,8 @@ test("el índice y el colofón marcan la página actual, y sólo esa", () => {
     const current = [...html.matchAll(/<a href="([^"]+)" aria-current="page">/g)].map((m) => m[1]);
     assert.deepEqual(current, [href, href], `${page}: colofón e índice marcan ${href}`);
   }
-  assert.deepEqual([...read("privacidad.html").matchAll(/<a href="([^"]+)" aria-current="page">/g)].map((m) => m[1]), ["/privacidad"]);
+  // Las páginas legales se marcan en el pie del colofón y en el pie del índice
+  assert.deepEqual([...read("privacidad.html").matchAll(/<a href="([^"]+)" aria-current="page">/g)].map((m) => m[1]), ["/privacidad", "/privacidad"]);
   assert.equal(read("404.html").includes('aria-current="page"'), false);
 });
 
@@ -67,4 +68,31 @@ test("la 404 dice qué pasó y es noindex", () => {
   const html = read("404.html");
   assert.match(html, /<h1>Página no encontrada<\/h1>/);
   assert.match(html, /<meta name="robots" content="noindex">/);
+});
+
+test("la esquina doblada abre el índice: sin JavaScript lleva al pie y su nombre es «Índice»", () => {
+  for (const page of ALL) {
+    const corner = read(page).match(/<nav class="esquina"[\s\S]*?<\/nav>/)[0];
+    assert.match(corner, /<a class="oreja" href="#colofon" data-indice>/, `${page}: la esquina lleva al pie sin JavaScript`);
+    assert.match(corner, /<span class="sr-only">Índice<\/span><\/a>/, `${page}: nombre accesible`);
+  }
+  const dialog = read("planes/index.html").match(/<dialog class="indice"[\s\S]*?<\/dialog>/)[0];
+  assert.match(dialog, /<h2 class="indice-titulo" id="indice-titulo">Índice<\/h2>/);
+  assert.match(dialog, /<nav class="indice-bloque" aria-labelledby="indice-aqui" data-indice-capitulos hidden>/, "los capítulos parten ocultos: los arma script.js");
+  assert.match(dialog, /<a href="\/planes" aria-current="page">Planes<\/a>/);
+});
+
+test("los capítulos de cada página tienen ancla y nombre; los del inicio siguen el recorrido", () => {
+  for (const page of ALL) {
+    for (const m of read(page).matchAll(/<[a-z]+ [^>]*data-capitulo="([^"]*)"[^>]*>/g)) {
+      assert.match(m[0], /\sid="[^"]+"/, `${page}: capítulo «${m[1]}» sin id`);
+      assert.ok(m[1].trim(), `${page}: capítulo sin nombre en ${m[0]}`);
+    }
+  }
+  const home = [...read("index.html").matchAll(/data-capitulo="([^"]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(home, ["Portada", "Cuatro hojas", "Cómo se pide", "La hoja", "En tu computador", "Descargar"]);
+  assert.match(read("index.html"), /id="hojas" data-mesa data-capitulo="Cuatro hojas" data-capitulo-avance="0\.9"/, "las hojas son un momento de la escena");
+  const legal = (page) => [...read(page).matchAll(/<section id="([^"]+)" data-capitulo/g)].map((m) => m[1]);
+  assert.deepEqual(legal("terminos.html"), ["naturaleza", "disponibilidad", "beta-gratuita", "responsabilidad", "propiedad", "contacto"]);
+  assert.equal(legal("privacidad.html").length, 6);
 });

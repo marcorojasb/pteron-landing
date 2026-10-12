@@ -1,4 +1,4 @@
-/* pteron · inicio (2026-10-12.9)
+/* pteron · inicio (2026-10-12.10)
    1. Las láminas flotan y se dan vuelta: detrás de cada una está la figura con que pteron enseña lo mismo.
    2. La escena: al bajar, la mesa queda fija; las láminas de cada asignatura caen sobre su hoja y se funden en la
       figura, mientras las hojas se imprimen. Todo es función del avance del scroll: hacia atrás se deshace igual.
@@ -322,10 +322,23 @@
   };
 
   const intro = performance.now();
+  // Con el índice abierto la escena se detiene (está bajo el fondo del diálogo) y al volver sigue donde quedó
+  const enIndice = () => document.documentElement.classList.contains("con-indice");
+  let pausa = 0;
+  let pausadaDesde = 0;
   const demoFlip = laminas.find((lamina) => lamina.node.dataset.lamina === "ciencias-luna");
 
   function frame(now) {
-    const t = (now - intro) / 1000;
+    if (enIndice()) {
+      pausadaDesde ||= now;
+      running = false;
+      return;
+    }
+    if (pausadaDesde) {
+      pausa += now - pausadaDesde;
+      pausadaDesde = 0;
+    }
+    const t = (now - intro - pausa) / 1000;
     const p = progress;
     pointer.x = lerp(pointer.x, pointer.tx, 0.06);
     pointer.y = lerp(pointer.y, pointer.ty, 0.06);
@@ -471,6 +484,21 @@
   readProgress();
   start();
 
+  // Al llegar con #hojas (desde el índice o un enlace), la escena se abre con las hojas ya impresas
+  const capitulo = $("#hojas", escena);
+  const avance = Number.parseFloat(capitulo?.dataset.capituloAvance);
+  const navegacion = performance.getEntriesByType?.("navigation")[0]?.type;
+  if (location.hash === "#hojas" && Number.isFinite(avance) && navegacion !== "reload" && navegacion !== "back_forward") {
+    const alas = () => {
+      window.scrollTo(0, escena.getBoundingClientRect().top + window.scrollY + (escena.offsetHeight - H) * avance);
+      readProgress();
+      start();
+    };
+    alas();
+    // El navegador vuelve a buscar el ancla al terminar de cargar: se corrige después de él
+    window.addEventListener("load", () => setTimeout(alas, 0), { once: true });
+  }
+
   window.addEventListener(
     "scroll",
     () => {
@@ -496,6 +524,7 @@
       if (visible) start();
     }).observe(escena);
   }
+  document.getElementById("indice")?.addEventListener("close", start);
   document.addEventListener("visibilitychange", () => {
     visible = document.visibilityState === "visible" && escena.getBoundingClientRect().bottom > 0;
     if (visible) start();

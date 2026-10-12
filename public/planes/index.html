@@ -26,28 +26,28 @@
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v2.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <script>document.documentElement.classList.replace("no-js", "js");</script>
-  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-12.9" crossorigin>
-  <link rel="stylesheet" href="/styles.css?v=2026-10-12.9">
-  <link rel="stylesheet" href="/planes/planes.css?v=2026-10-12.9">
-  <script src="/script.js?v=2026-10-12.9" defer></script>
+  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-12.10" crossorigin>
+  <link rel="stylesheet" href="/styles.css?v=2026-10-12.10">
+  <link rel="stylesheet" href="/planes/planes.css?v=2026-10-12.10">
+  <script src="/script.js?v=2026-10-12.10" defer></script>
 </head>
 <body class="planes">
   <a class="saltar" href="#contenido">Saltar al contenido</a>
   <!-- esquina:inicio -->
   <nav class="esquina" aria-label="Sitio">
+    <a class="oreja" href="#colofon" data-indice><span class="oreja-azul" aria-hidden="true"><span class="oreja-texto">Índice</span></span><span class="oreja-sombra" aria-hidden="true"><span class="oreja-solapa"></span></span><span class="sr-only">Índice</span></a>
     <a class="boton boton-principal esquina-descargar" href="/descargar" data-descargar>Descargar</a>
-    <a class="oreja" href="#colofon" data-indice aria-label="Índice del sitio"><span class="oreja-hoja" aria-hidden="true"></span><span class="oreja-pliegue" aria-hidden="true"></span><span class="oreja-texto" aria-hidden="true">Índice</span></a>
   </nav>
   <!-- esquina:fin -->
 
   <main id="contenido">
     <header class="pagina-cabeza contenedor">
-      <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.9#pteron"/></svg></a>
+      <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.10#pteron"/></svg></a>
       <h1>Planes</h1>
       <p class="texto-grande">El núcleo local es gratis para siempre. Los planes agregan IA incluida y se gestionan desde tu cuenta.</p>
     </header>
 
-    <section class="contenedor" aria-label="Planes disponibles">
+    <section class="contenedor" id="tarifa" data-capitulo="Núcleo local, Basic y Pro" aria-label="Planes disponibles">
       <div class="tarifa">
         <article class="plan" aria-labelledby="plan-nucleo">
           <h2 id="plan-nucleo">Núcleo local</h2>
@@ -93,7 +93,7 @@
       <p class="tarifa-pie"><sup>*</sup> La capacidad de IA incluida se definirá junto con el proveedor y las condiciones del plan. Al agotarla, el uso se bloquea hasta contratar capacidad adicional. Tus archivos y tu trabajo local siguen en tu equipo.</p>
     </section>
 
-    <section class="contenedor preguntas" id="preguntas" aria-labelledby="preguntas-titulo">
+    <section class="contenedor preguntas" id="preguntas" data-capitulo="Preguntas frecuentes" aria-labelledby="preguntas-titulo">
       <div class="preguntas-cabeza">
         <h2 id="preguntas-titulo">Preguntas frecuentes</h2>
         <p class="nota">¿Otra pregunta? Escríbenos antes de contratar a <a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a> o revisa las <a href="/docs?pagina=preguntas">preguntas de la documentación</a>.</p>
@@ -115,7 +115,7 @@
     <div class="contenedor">
       <div class="colofon-rejilla">
         <div>
-          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.9#pteron"/></svg></a>
+          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.10#pteron"/></svg></a>
           <p class="colofon-lema">Construido por profes, para profes.</p>
           <p class="colofon-lugar">Hecho en Chile.</p>
         </div>
@@ -142,19 +142,25 @@
   <!-- colofon:fin -->
   <!-- indice:inicio -->
   <dialog class="indice" id="indice" aria-labelledby="indice-titulo">
-    <div class="indice-hoja">
+    <div class="indice-hoja" data-indice-hoja>
       <div class="indice-cabeza">
-        <h2 class="sr-only" id="indice-titulo">Índice</h2>
-        <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.9#pteron"/></svg></a>
+        <h2 class="indice-titulo" id="indice-titulo">Índice</h2>
         <button class="indice-cerrar" type="button" data-indice-cerrar>Cerrar</button>
       </div>
-      <ol class="indice-lista" role="list">
-        <li><a href="/">Inicio<span></span></a></li>
-        <li><a href="/planes" aria-current="page">Planes<span></span></a></li>
-        <li><a href="/descargar">Descargar<span></span></a></li>
-        <li><a href="/docs">Documentación<span></span></a></li>
-        <li><a href="/cuenta">Cuenta<span></span></a></li>
-      </ol>
+      <nav class="indice-bloque" aria-labelledby="indice-aqui" data-indice-capitulos hidden>
+        <h3 class="indice-rotulo" id="indice-aqui">En esta página</h3>
+        <ol class="indice-capitulos" role="list"></ol>
+      </nav>
+      <nav class="indice-bloque" aria-labelledby="indice-paginas">
+        <h3 class="indice-rotulo" id="indice-paginas">Páginas</h3>
+        <ul class="indice-paginas" role="list">
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/planes" aria-current="page">Planes</a></li>
+          <li><a href="/descargar">Descargar</a></li>
+          <li><a href="/docs">Documentación</a></li>
+          <li><a href="/cuenta">Cuenta</a></li>
+        </ul>
+      </nav>
       <p class="indice-pie"><a href="/privacidad">Privacidad</a><a href="/terminos">Términos</a><a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></p>
     </div>
   </dialog>

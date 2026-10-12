@@ -1,4 +1,4 @@
-/* pteron · inicio (2026-10-12.9)
+/* pteron · inicio (2026-10-12.10)
    Las láminas flotan sobre la mesa; al bajar, pteron las toma y caen en cuatro hojas que se arman solas.
    Sin JavaScript o con movimiento reducido todo queda quieto y en orden: láminas en su lugar y las hojas completas. */
 
@@ -168,7 +168,6 @@ html.no-js .aviso{display:none}
   .lamina{left:calc(var(--xm, var(--x)) * 1%);top:calc(var(--ym, var(--y)) * 1%);width:calc(var(--wm, var(--w)) * 1vw);transform:translate(-50%,-50%) rotate(calc(var(--rm, var(--r)) * 1deg))}
   .lamina[data-solo-escritorio]{display:none}
   .portada{padding-bottom:max(36px,env(safe-area-inset-bottom))}
-  .portada-nota{padding-right:64px}
   .escena[data-viva] .mesa-rotulos{display:none}
   .portada h1{font-size:clamp(2.6rem,1.4rem + 7vw,4rem)}
   .mesa-hojas{--s:.2;gap:12px}

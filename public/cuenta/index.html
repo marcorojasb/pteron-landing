@@ -14,18 +14,18 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <!-- has-session: con una sesión guardada (o recién llegada en el enlace) la página espera a /api/account con un esqueleto -->
   <script>document.documentElement.classList.replace("no-js","js");try{var s=JSON.parse(localStorage.getItem("pteron-account-session")||"null");if((s&&s.access_token&&s.refresh_token)||/(^|[#&])access_token=/.test(location.hash))document.documentElement.classList.add("has-session")}catch(e){}</script>
-  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-12.9" crossorigin>
-  <link rel="stylesheet" href="/styles.css?v=2026-10-12.9">
-  <link rel="stylesheet" href="/cuenta/cuenta.css?v=2026-10-12.9">
-  <script src="/script.js?v=2026-10-12.9" defer></script>
-  <script src="/cuenta/cuenta.js?v=2026-10-12.9" defer></script>
+  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-12.10" crossorigin>
+  <link rel="stylesheet" href="/styles.css?v=2026-10-12.10">
+  <link rel="stylesheet" href="/cuenta/cuenta.css?v=2026-10-12.10">
+  <script src="/script.js?v=2026-10-12.10" defer></script>
+  <script src="/cuenta/cuenta.js?v=2026-10-12.10" defer></script>
 </head>
 <body class="cuenta">
   <a class="saltar" href="#contenido">Saltar al contenido</a>
   <!-- esquina:inicio -->
   <nav class="esquina" aria-label="Sitio">
+    <a class="oreja" href="#colofon" data-indice><span class="oreja-azul" aria-hidden="true"><span class="oreja-texto">Índice</span></span><span class="oreja-sombra" aria-hidden="true"><span class="oreja-solapa"></span></span><span class="sr-only">Índice</span></a>
     <a class="boton boton-principal esquina-descargar" href="/descargar" data-descargar>Descargar</a>
-    <a class="oreja" href="#colofon" data-indice aria-label="Índice del sitio"><span class="oreja-hoja" aria-hidden="true"></span><span class="oreja-pliegue" aria-hidden="true"></span><span class="oreja-texto" aria-hidden="true">Índice</span></a>
   </nav>
   <!-- esquina:fin -->
 
@@ -34,7 +34,7 @@
     <p class="cuenta-aviso" data-account-notice role="status" aria-live="polite" hidden></p>
 
     <header class="pagina-cabeza contenedor">
-      <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.9#pteron"/></svg></a>
+      <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.10#pteron"/></svg></a>
       <h1>Cuenta</h1>
       <p class="texto-grande">Tu plan, el pago con Flow y la activación de pteron en tu equipo.</p>
     </header>
@@ -80,7 +80,7 @@
           <button class="boton boton-papel" type="button" data-sign-out>Cerrar sesión</button>
         </section>
 
-        <section class="activar hoja-panel" id="activar" aria-labelledby="activar-titulo">
+        <section class="activar hoja-panel" id="activar" data-capitulo="Activar pteron" aria-labelledby="activar-titulo">
           <div class="activar-texto">
             <h2 id="activar-titulo">Activar pteron</h2>
             <p>Abre la aplicación, inicia una activación y vuelve aquí. Al autorizarla, el navegador abre pteron y la licencia se guarda en ese equipo.</p>
@@ -102,7 +102,7 @@
           </div>
         </section>
 
-        <section class="planes-cuenta" id="planes" aria-labelledby="planes-titulo">
+        <section class="planes-cuenta" id="planes" data-capitulo="Planes" aria-labelledby="planes-titulo">
           <div class="planes-cuenta-cabeza">
             <h2 id="planes-titulo">Planes</h2>
             <p class="nota">El núcleo local sigue siendo gratis. Los planes incluyen IA.</p>
@@ -134,7 +134,7 @@
           <p class="nota planes-cuenta-pie">Al confirmar Basic, Flow registra tu tarjeta y el primer cobro llega al terminar los 7 días si no cancelas antes. Puedes cancelar cuando quieras. <a href="/planes">Qué incluye cada plan</a></p>
         </section>
 
-        <section class="hoja-panel licencias" id="licencias" aria-labelledby="licencias-titulo">
+        <section class="hoja-panel licencias" id="licencias" data-capitulo="Activaciones" aria-labelledby="licencias-titulo">
           <h2 id="licencias-titulo">Activaciones</h2>
           <div data-license-list>
             <p class="account-muted">Todavía no hay licencias emitidas.</p>
@@ -155,7 +155,7 @@
     <div class="contenedor">
       <div class="colofon-rejilla">
         <div>
-          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.9#pteron"/></svg></a>
+          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.10#pteron"/></svg></a>
           <p class="colofon-lema">Construido por profes, para profes.</p>
           <p class="colofon-lugar">Hecho en Chile.</p>
         </div>
@@ -182,19 +182,25 @@
   <!-- colofon:fin -->
   <!-- indice:inicio -->
   <dialog class="indice" id="indice" aria-labelledby="indice-titulo">
-    <div class="indice-hoja">
+    <div class="indice-hoja" data-indice-hoja>
       <div class="indice-cabeza">
-        <h2 class="sr-only" id="indice-titulo">Índice</h2>
-        <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.9#pteron"/></svg></a>
+        <h2 class="indice-titulo" id="indice-titulo">Índice</h2>
         <button class="indice-cerrar" type="button" data-indice-cerrar>Cerrar</button>
       </div>
-      <ol class="indice-lista" role="list">
-        <li><a href="/">Inicio<span></span></a></li>
-        <li><a href="/planes">Planes<span></span></a></li>
-        <li><a href="/descargar">Descargar<span></span></a></li>
-        <li><a href="/docs">Documentación<span></span></a></li>
-        <li><a href="/cuenta" aria-current="page">Cuenta<span></span></a></li>
-      </ol>
+      <nav class="indice-bloque" aria-labelledby="indice-aqui" data-indice-capitulos hidden>
+        <h3 class="indice-rotulo" id="indice-aqui">En esta página</h3>
+        <ol class="indice-capitulos" role="list"></ol>
+      </nav>
+      <nav class="indice-bloque" aria-labelledby="indice-paginas">
+        <h3 class="indice-rotulo" id="indice-paginas">Páginas</h3>
+        <ul class="indice-paginas" role="list">
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/planes">Planes</a></li>
+          <li><a href="/descargar">Descargar</a></li>
+          <li><a href="/docs">Documentación</a></li>
+          <li><a href="/cuenta" aria-current="page">Cuenta</a></li>
+        </ul>
+      </nav>
       <p class="indice-pie"><a href="/privacidad">Privacidad</a><a href="/terminos">Términos</a><a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></p>
     </div>
   </dialog>

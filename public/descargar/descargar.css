@@ -1,4 +1,4 @@
-/* pteron · descargar (2026-10-12.9) */
+/* pteron · descargar (2026-10-12.10) */
 .descargar-titulo{display:flex;gap:clamp(18px,3vw,32px);align-items:flex-end;margin-top:clamp(40px,7vw,96px)}
 .descargar-titulo h1{margin-top:0}
 .icono-app{flex:none;width:clamp(64px,8vw,96px);height:auto;border-radius:22%;box-shadow:0 1px 1px rgb(var(--sombra)/.12),0 14px 28px -12px rgb(var(--sombra)/.45);

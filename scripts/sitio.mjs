@@ -22,6 +22,11 @@ const PAGINAS = [
   ["/docs", "Documentación"],
   ["/cuenta", "Cuenta"],
 ];
+const PIE = [
+  ["/privacidad", "Privacidad"],
+  ["/terminos", "Términos"],
+  ["mailto:pteron@patagua.dev", "pteron@patagua.dev"],
+];
 
 /** Ruta pública de un archivo de public/ (index.html → la carpeta, sin barra final). */
 function routeOf(file) {
@@ -38,12 +43,13 @@ function marca(version, label = "pteron, inicio") {
 const current = (route, href) => (route === href || (href !== "/" && route.startsWith(`${href}/`)) ? ' aria-current="page"' : "");
 
 function esquina(route) {
-  // En /descargar la página es la descarga y /admin es interno: ahí la esquina sólo lleva el índice
+  // En /descargar la página es la descarga y /admin es interno: ahí no se ofrece Descargar
   const descargar = route === "/descargar" || route === "/admin" ? "" : `<a class="boton boton-principal esquina-descargar" href="/descargar" data-descargar${route === "/" ? " data-oculto" : ""}>Descargar</a>`;
+  // La esquina de arriba a la derecha está doblada: debajo asoma la hoja azul del índice. Sin JavaScript lleva al pie.
   return `
   <nav class="esquina" aria-label="Sitio">
+    <a class="oreja" href="#colofon" data-indice><span class="oreja-azul" aria-hidden="true"><span class="oreja-texto">Índice</span></span><span class="oreja-sombra" aria-hidden="true"><span class="oreja-solapa"></span></span><span class="sr-only">Índice</span></a>
     ${descargar}
-    <a class="oreja" href="#colofon" data-indice aria-label="Índice del sitio"><span class="oreja-hoja" aria-hidden="true"></span><span class="oreja-pliegue" aria-hidden="true"></span><span class="oreja-texto" aria-hidden="true">Índice</span></a>
   </nav>
   `;
 }
@@ -77,19 +83,27 @@ function colofon(route, version) {
   `;
 }
 
-function indice(route, version) {
+// La hoja del índice: los capítulos de la página (script.js los toma de [data-capitulo] o de la tabla de la
+// documentación), las páginas del sitio y el pie legal. Sin capítulos, ese bloque queda oculto.
+function indice(route) {
   return `
   <dialog class="indice" id="indice" aria-labelledby="indice-titulo">
-    <div class="indice-hoja">
+    <div class="indice-hoja" data-indice-hoja>
       <div class="indice-cabeza">
-        <h2 class="sr-only" id="indice-titulo">Índice</h2>
-        ${marca(version)}
+        <h2 class="indice-titulo" id="indice-titulo">Índice</h2>
         <button class="indice-cerrar" type="button" data-indice-cerrar>Cerrar</button>
       </div>
-      <ol class="indice-lista" role="list">
-        ${PAGINAS.map(([href, name]) => `<li><a href="${href}"${current(route, href)}>${name}<span></span></a></li>`).join("\n        ")}
-      </ol>
-      <p class="indice-pie"><a href="/privacidad">Privacidad</a><a href="/terminos">Términos</a><a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></p>
+      <nav class="indice-bloque" aria-labelledby="indice-aqui" data-indice-capitulos hidden>
+        <h3 class="indice-rotulo" id="indice-aqui">En esta página</h3>
+        <ol class="indice-capitulos" role="list"></ol>
+      </nav>
+      <nav class="indice-bloque" aria-labelledby="indice-paginas">
+        <h3 class="indice-rotulo" id="indice-paginas">Páginas</h3>
+        <ul class="indice-paginas" role="list">
+          ${PAGINAS.map(([href, name]) => `<li><a href="${href}"${current(route, href)}>${name}</a></li>`).join("\n          ")}
+        </ul>
+      </nav>
+      <p class="indice-pie">${PIE.map(([href, name]) => `<a href="${href}"${current(route, href)}>${name}</a>`).join("")}</p>
     </div>
   </dialog>
   `;
@@ -112,7 +126,7 @@ for (const file of pages(pub)) {
   const version = /\/styles\.css\?v=([^"&]+)/.exec(before)?.[1];
   if (!version) throw new Error(`${route} no enlaza /styles.css?v=…`);
   let html = before;
-  for (const [name, markup] of [["esquina", esquina(route)], ["colofon", colofon(route, version)], ["indice", indice(route, version)]]) {
+  for (const [name, markup] of [["esquina", esquina(route)], ["colofon", colofon(route, version)], ["indice", indice(route)]]) {
     const start = `<!-- ${name}:inicio -->`;
     const end = `<!-- ${name}:fin -->`;
     const a = html.indexOf(start);

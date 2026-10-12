@@ -26,25 +26,25 @@
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v2.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <script>document.documentElement.classList.replace("no-js", "js");</script>
-  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-12.9" crossorigin>
-  <link rel="stylesheet" href="/styles.css?v=2026-10-12.9">
-  <link rel="stylesheet" href="/descargar/descargar.css?v=2026-10-12.9">
-  <script src="/release-data.js?v=2026-10-12.9" defer></script>
-  <script src="/script.js?v=2026-10-12.9" defer></script>
-  <script src="/descargar/download.js?v=2026-10-12.9" defer></script>
+  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-12.10" crossorigin>
+  <link rel="stylesheet" href="/styles.css?v=2026-10-12.10">
+  <link rel="stylesheet" href="/descargar/descargar.css?v=2026-10-12.10">
+  <script src="/release-data.js?v=2026-10-12.10" defer></script>
+  <script src="/script.js?v=2026-10-12.10" defer></script>
+  <script src="/descargar/download.js?v=2026-10-12.10" defer></script>
 </head>
 <body class="descargar">
   <a class="saltar" href="#contenido">Saltar al contenido</a>
   <!-- esquina:inicio -->
   <nav class="esquina" aria-label="Sitio">
+    <a class="oreja" href="#colofon" data-indice><span class="oreja-azul" aria-hidden="true"><span class="oreja-texto">Índice</span></span><span class="oreja-sombra" aria-hidden="true"><span class="oreja-solapa"></span></span><span class="sr-only">Índice</span></a>
     
-    <a class="oreja" href="#colofon" data-indice aria-label="Índice del sitio"><span class="oreja-hoja" aria-hidden="true"></span><span class="oreja-pliegue" aria-hidden="true"></span><span class="oreja-texto" aria-hidden="true">Índice</span></a>
   </nav>
   <!-- esquina:fin -->
 
   <main id="contenido">
     <header class="pagina-cabeza contenedor">
-      <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.9#pteron"/></svg></a>
+      <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.10#pteron"/></svg></a>
       <div class="descargar-titulo">
         <img class="icono-app" src="/assets/app-icon-v2.png" width="512" height="512" alt="">
         <div>
@@ -56,7 +56,7 @@
 
     <section class="contenedor" aria-label="Plataformas">
       <ul class="plataformas-lista" role="list">
-        <li class="plataforma" id="macos" data-platform="macos">
+        <li class="plataforma" id="macos" data-platform="macos" data-capitulo="macOS">
           <div class="plataforma-nombre"><h2>macOS</h2><span class="tu-equipo">Tu equipo</span></div>
           <div class="plataforma-datos">
             <p data-download-macos-label>Apple Silicon</p>
@@ -65,7 +65,7 @@
           </div>
           <a class="boton boton-papel" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-download-macos>Descargar para macOS</a>
         </li>
-        <li class="plataforma" id="windows" data-platform="windows">
+        <li class="plataforma" id="windows" data-platform="windows" data-capitulo="Windows 11">
           <div class="plataforma-nombre"><h2>Windows 11</h2><span class="tu-equipo">Tu equipo</span></div>
           <div class="plataforma-datos">
             <p data-download-windows-label>Windows 11 · x64</p>
@@ -74,7 +74,7 @@
           </div>
           <a class="boton boton-papel" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-download-windows>Descargar para Windows</a>
         </li>
-        <li class="plataforma" id="linux" data-platform="linux">
+        <li class="plataforma" id="linux" data-platform="linux" data-capitulo="Linux">
           <div class="plataforma-nombre"><h2>Linux</h2><span class="tu-equipo">Tu equipo</span></div>
           <div class="plataforma-datos">
             <p data-download-linux-label>x86_64 · AppImage</p>
@@ -94,7 +94,7 @@
       </ul>
     </section>
 
-    <section class="contenedor firmas" id="firmas" aria-labelledby="firmas-titulo">
+    <section class="contenedor firmas" id="firmas" data-capitulo="Verificar la descarga" aria-labelledby="firmas-titulo">
       <div class="firmas-cabeza">
         <h2 id="firmas-titulo">Verificar la descarga</h2>
         <p class="texto">Los archivos para Linux traen firma GPG. Descarga la firma <code>.asc</code> y la clave pública, y confirma la huella. <a href="/docs?pagina=instalar-linux">Instalación y firma en Linux</a></p>
@@ -157,7 +157,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
     <div class="contenedor">
       <div class="colofon-rejilla">
         <div>
-          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.9#pteron"/></svg></a>
+          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.10#pteron"/></svg></a>
           <p class="colofon-lema">Construido por profes, para profes.</p>
           <p class="colofon-lugar">Hecho en Chile.</p>
         </div>
@@ -184,19 +184,25 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
   <!-- colofon:fin -->
   <!-- indice:inicio -->
   <dialog class="indice" id="indice" aria-labelledby="indice-titulo">
-    <div class="indice-hoja">
+    <div class="indice-hoja" data-indice-hoja>
       <div class="indice-cabeza">
-        <h2 class="sr-only" id="indice-titulo">Índice</h2>
-        <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2706 858" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.9#pteron"/></svg></a>
+        <h2 class="indice-titulo" id="indice-titulo">Índice</h2>
         <button class="indice-cerrar" type="button" data-indice-cerrar>Cerrar</button>
       </div>
-      <ol class="indice-lista" role="list">
-        <li><a href="/">Inicio<span></span></a></li>
-        <li><a href="/planes">Planes<span></span></a></li>
-        <li><a href="/descargar" aria-current="page">Descargar<span></span></a></li>
-        <li><a href="/docs">Documentación<span></span></a></li>
-        <li><a href="/cuenta">Cuenta<span></span></a></li>
-      </ol>
+      <nav class="indice-bloque" aria-labelledby="indice-aqui" data-indice-capitulos hidden>
+        <h3 class="indice-rotulo" id="indice-aqui">En esta página</h3>
+        <ol class="indice-capitulos" role="list"></ol>
+      </nav>
+      <nav class="indice-bloque" aria-labelledby="indice-paginas">
+        <h3 class="indice-rotulo" id="indice-paginas">Páginas</h3>
+        <ul class="indice-paginas" role="list">
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/planes">Planes</a></li>
+          <li><a href="/descargar" aria-current="page">Descargar</a></li>
+          <li><a href="/docs">Documentación</a></li>
+          <li><a href="/cuenta">Cuenta</a></li>
+        </ul>
+      </nav>
       <p class="indice-pie"><a href="/privacidad">Privacidad</a><a href="/terminos">Términos</a><a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></p>
     </div>
   </dialog>
