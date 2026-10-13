@@ -56,7 +56,13 @@ test("las plantillas de supabase/correos/ traen asunto en español y las variabl
     assert.ok(asunto.length > 5 && !/[a-z] [a-z]+ your /i.test(asunto));
     assert.match(html, /^<!doctype html>/i);
     assert.ok(html.includes("{{ .ConfirmationURL }}"));
-    assert.ok(!/<img\b/i.test(html), "sin imágenes externas");
+    const imagenes = [...html.matchAll(/<img\b[^>]*>/gi)].map(([img]) => img);
+    assert.equal(imagenes.length, 1, "sólo el logo de la banda");
+    assert.ok(imagenes[0].includes('src="https://pteron.patagua.dev/assets/correo/pteron-banda-correo.png"') && imagenes[0].includes('alt="pteron"'), "el logo publicado, con texto alternativo");
+    assert.ok(html.includes('href="{{ .ConfirmationURL }}"') && html.includes("{{ .Email }}") && html.includes('href="https://pteron.patagua.dev/cuenta"'), "variables literales de Supabase");
+    // Site URL ya es /cuenta: {{ .SiteURL }}/cuenta daría /cuenta/cuenta (404). El pie usa la dirección absoluta.
+    assert.ok(!html.includes("{{ .SiteURL }}/cuenta"), "el pie no arma /cuenta/cuenta");
+    assert.doesNotMatch(html, /por definir|\{\{ \.Token/i);
     assert.ok(!/<script\b|<link\b/i.test(html));
     const vars = [...html.matchAll(/\{\{\s*\.(\w+)\s*\}\}/g)].map((m) => m[1]);
     assert.ok(vars.every((v) => ["ConfirmationURL", "Email", "SiteURL", "Token", "TokenHash"].includes(v)), `variables: ${vars}`);

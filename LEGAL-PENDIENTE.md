@@ -12,8 +12,9 @@ leer: hay que cotejarlos ahí.
 
 Estado de la implementación (los puntos de abajo dicen lo que falta decidir): el Worker ya tiene el correo de confirmación,
 el aviso de fin de prueba, el correo de cancelación y la copia inmutable de los Términos (`/terminos/2026-10-13`).
-Salen sólo cuando se carga `RESEND_API_KEY` y los `SELLER_*`; ver `README.md`, «Correos». Los borradores completos,
-con sus fuentes, están en `BORRADORES-LEGALES.md`.
+Están implementados y apagados: salen sólo cuando se carga `RESEND_API_KEY` y los `SELLER_*` (y `EMAIL_FROM`); ver
+`README.md`, «Correos». Supabase Auth ya envía el enlace de acceso por Resend desde no-reply@patagua.dev. Los borradores
+completos, con sus fuentes, están en `BORRADORES-LEGALES.md`.
 
 Los puntos 1 a 4 impiden abrir la venta. Mientras tanto, la venta sigue cerrada con `for_sale = false` en
 `plan_catalog` y /cuenta muestra «Disponible pronto».
@@ -22,7 +23,8 @@ Los puntos 1 a 4 impiden abrir la venta. Mientras tanto, la venta sigue cerrada 
 
 Borradores y fuentes: `BORRADORES-LEGALES.md`, sección 1. Implementado: el correo de confirmación ya incluye el bloque de
 quien vende, leído de `SELLER_NAME`, `SELLER_RUT`, `SELLER_ADDRESS` y `SELLER_EMAIL` en `wrangler.jsonc`, hoy vacíos
-(sin ellos no sale ningún correo). Decisión pendiente: quién vende; con eso se llenan las variables y se escribe la
+(sin ellos no sale ningún correo); si vende una persona jurídica, `SELLER_REPRESENTATIVE` (opcional) agrega su
+representante legal. Decisión pendiente: quién vende; con eso se llenan las variables y se escribe la
 sección en Términos, Privacidad, /cuenta y el colofón.
 
 Se vende en línea sin decir quién vende. El Reglamento de Comercio Electrónico (Decreto 6/2021 de Economía, vigente
@@ -55,7 +57,8 @@ https://web.flow.cl/es-cl/preguntas-frecuentes/cargo-automatico/
 
 ## 2. Derecho a retracto y devoluciones
 
-Borradores y fuentes: `BORRADORES-LEGALES.md`, sección 2 (opción A mantener, opción B excluir). Implementado: nada de
+Borradores y fuentes: `BORRADORES-LEGALES.md`, sección 2 (mismas letras y nombres: opción A, mantener el retracto;
+opción B, excluirlo). Implementado: nada de
 política; el correo omite el párrafo de retracto mientras `TERMS_RETRACTO` (`src/lib/terms.js`) esté vacío, y una prueba
 obliga a pegarlo ahí si los Términos lo incluyen. Decisión pendiente: mantenerlo o excluirlo, desde cuándo corre con la
 prueba, el tamaño de la advertencia y el procedimiento de reembolso.
@@ -71,14 +74,14 @@ El Decreto 52/2024 de Economía (vigente desde el 28-02-2025) fija cómo se excl
 mismo lugar o momento en que se informa el precio, con una advertencia destacada «cuyo tamaño no sea inferior a la
 información respecto del precio» y con la expresión «derecho a retracto».
 
-- **Opción A, excluirlo** (la que recomienda la auditoría). Junto al precio en /planes y en el resumen antes de Flow,
-  en letra no menor que «$2.990»; repetido en los Términos y en la confirmación:
-  > Basic no tiene derecho a retracto. Lo pruebas gratis 7 días y lo cancelas cuando quieras desde tu cuenta.
-- **Opción B, mantenerlo:**
+- **Opción A, mantener el retracto:**
   > Derecho a retracto: puedes retractarte dentro de 10 días desde que contratas, escribiendo a pteron@patagua.dev o
   > desde tu cuenta. Te devolvemos dentro de 45 días lo pagado que no corresponda a días ya usados.
+- **Opción B, excluir el retracto** (la que recomienda la auditoría). Junto al precio en /planes y en el resumen antes de
+  Flow, en letra no menor que «$2.990»; repetido en los Términos y en la confirmación:
+  > Basic no tiene derecho a retracto. Lo pruebas gratis 7 días y lo cancelas cuando quieras desde tu cuenta.
 
-Devoluciones, en las dos opciones:
+Devoluciones, en las dos opciones (A y B):
 
 > Al cancelar no se devuelven los días que queden del período pagado. Un cobro hecho por error nuestro se devuelve
 > completo{, también el primer cobro si nos avisas dentro de 10 días que olvidaste cancelar la prueba}.
@@ -101,15 +104,14 @@ Borradores y fuentes: `BORRADORES-LEGALES.md`, sección 3. Implementado (apagado
 `SELLER_*`): el Worker envía el correo de confirmación al crearse la suscripción, con la copia de los Términos aceptados
 adjunta y el enlace a la copia inmutable `/terminos/2026-10-13` (`public/terminos/`), por Resend, una vez por
 suscripción, con reintentos del Cron. Decisión pendiente: si basta ese adjunto o hay que enviar el texto íntegro y
-Privacidad, y los textos de quién vende y retracto. El párrafo de este punto que dice que el Worker no envía correos
-quedó atrás; ver `README.md`, «Correos».
+Privacidad, y los textos de quién vende y retracto. Ver `README.md`, «Correos».
 
 La aceptación previa ya existe: el resumen de /cuenta exige marcar «Leí y acepto los Términos (versión 2026-10-13) y
 la Política de privacidad», el checkout rechaza otra versión (`terms_required`) y la versión aceptada queda en el
-intento de pago y en la suscripción. Falta la otra mitad del art. 12 A: una vez perfeccionado el contrato, una
-confirmación escrita, por un medio informado antes, con copia íntegra, clara y legible del contrato. El Worker no envía
-correos: hace falta un proveedor de correo transaccional (un secreto más del Worker; conviene que sea el mismo del
-SMTP de Supabase, punto 6).
+intento de pago y en la suscripción. La otra mitad del art. 12 A es una vez perfeccionado el contrato: una
+confirmación escrita, por un medio informado antes, con copia íntegra, clara y legible del contrato. Ya está
+implementada (apagada) con Resend, el mismo proveedor del SMTP de Supabase Auth; lo que falta es cargar
+`RESEND_API_KEY` y los `SELLER_*`.
 
 Borrador del correo, que sale cuando `card-callback` crea la suscripción:
 
@@ -121,8 +123,8 @@ Borrador del correo, que sale cuando `card-callback` crea la suscripción:
 > incluida: {6.000.000} unidades por período ({1.500.000} durante la prueba). Aceptaste los Términos versión
 > {2026-10-13}: {enlace a esa versión y texto íntegro o PDF}.
 
-Cuando exista, el resumen de /cuenta puede decir «Te enviaremos la confirmación y una copia de los Términos a
-{correo}»; hoy no lo dice porque no se envía.
+El aviso previo al pago ya existe: el resumen de /cuenta dice «Te enviaremos la confirmación de la compra y una copia
+de los Términos a {correo de la cuenta}», para que el comprador sepa de antemano adónde llega la confirmación escrita.
 
 Versiones: antes de cambiar el texto de los Términos, publicar la versión vigente en una URL fija (por ejemplo
 `/terminos/2026-10-13`) para que lo aceptado siga legible.
@@ -181,12 +183,12 @@ https://blog.hackmetrix.com/proveedores-y-transferencia-internacional-en-la-ley-
 
 ## 6. Lo que le falta a Privacidad (art. 14 ter, desde el 1-12-2026)
 
-Borradores y fuentes: `BORRADORES-LEGALES.md`, sección 5. Implementado: el proveedor de correo ya es conocido (Resend,
-para el enlace de acceso con Supabase Auth y para los correos del Worker); falta nombrarlo en Privacidad junto con el
-resto de este punto. Decisión pendiente: todo lo demás, con los plazos de respuesta antes de diciembre.
+Borradores y fuentes: `BORRADORES-LEGALES.md`, sección 5. Implementado: el proveedor de correo (Resend, para el enlace de acceso de
+Supabase Auth, desde no-reply@patagua.dev, y para los correos del Worker) ya figura en Privacidad, sección 7. Lo demás de
+este punto sigue pendiente. Decisión pendiente: todo lo demás, con los plazos de respuesta antes de diciembre.
 
 Privacidad ya tiene: los datos de la cuenta y del plan, la IA incluida (contenido, identificador seudónimo, retención de
-Anthropic), los proveedores (Cloudflare con sus registros de hasta 7 días, Supabase, Flow, Anthropic, GitHub) y su
+Anthropic), los proveedores (Cloudflare con sus registros de hasta 7 días, Supabase, Resend, Flow, Anthropic, GitHub) y su
 versión. Falta lo que exige una decisión:
 
 - El responsable y su representante (punto 1).
@@ -197,8 +199,8 @@ versión. Falta lo que exige una decisión:
   responde, y el reclamo ante la Agencia de Protección de Datos Personales.
 - La región del proyecto de Supabase (`swzqblyllbudwbmbcthr`) y si eso es una transferencia internacional.
 - El rol de Flow: encargado de pteron o responsable de los datos de pago.
-- El proveedor de correo: Supabase Auth envía el enlace de acceso con un SMTP propio que hay que nombrar en cuanto se
-  configure (el SMTP incluido de Supabase sólo envía a direcciones autorizadas y no sirve para clientes).
+- El rol de Resend: encargado de pteron para el envío de correo (recibe la dirección y el mensaje). Supabase Auth ya
+  envía por su SMTP, no por el incluido de Supabase, que sólo envía a direcciones autorizadas.
 
 Borrador de derechos:
 

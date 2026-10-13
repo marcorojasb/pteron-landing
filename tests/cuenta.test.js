@@ -77,6 +77,21 @@ test("un plan que no está a la venta, o sin precio, no tiene resumen: su botón
   assert.equal(cuenta.checkoutSummary("basic", account({ termsVersion: "vigente" }), NOW).termsVersion, null);
 });
 
+test("antes de pagar se dice a qué correo llegan la confirmación y la copia de los Términos (Ley 19.496, art. 12 A)", () => {
+  const withEmail = cuenta.checkoutSummary("basic", account({ user: { email: " profe@colegio.cl " } }), NOW);
+  assert.equal(withEmail.confirmation, "Te enviaremos la confirmación de la compra y una copia de los Términos a profe@colegio.cl.");
+  assert.equal(cuenta.checkoutSummary("pro", account({ user: { email: "profe@colegio.cl" } }), NOW).confirmation, withEmail.confirmation, "igual para todos los planes");
+  // Sin correo conocido no se inventa uno
+  for (const user of [undefined, null, {}, { email: "" }]) {
+    assert.equal(cuenta.checkoutSummary("basic", account({ user }), NOW).confirmation, "Te enviaremos la confirmación de la compra y una copia de los Términos al correo de tu cuenta.");
+  }
+  // La línea es parte del resumen: la página la rellena con textContent y trae el mismo texto de respaldo
+  assert.match(source, /\[data-summary-confirmation\]"\)\.textContent = summary\.confirmation/);
+  const html = readFileSync(new URL("../public/cuenta/index.html", import.meta.url), "utf8");
+  const panel = html.slice(html.indexOf("data-checkout-summary"), html.indexOf("data-summary-form"));
+  assert.match(panel, /<p class="nota" data-summary-confirmation>Te enviaremos la confirmación de la compra y una copia de los Términos al correo de tu cuenta\.<\/p>/);
+});
+
 test("el estado del plan: en prueba, próximo cobro, termina, pago pendiente y cortesía", () => {
   const state = (subscription, plan = BASIC) => plain(cuenta.subscriptionState(subscription, plan));
   assert.deepEqual(state({ status: "trialing", trial_ends_at: "2026-10-20T03:00:00.000Z", current_period_end: "2026-10-20T03:00:00.000Z" }), {

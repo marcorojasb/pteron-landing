@@ -45,10 +45,11 @@ const SQL_AJUSTES = "select key, value from public.app_settings";
 const SQL_SIN_RLS = "select tablename from pg_tables where schemaname = 'public' and not rowsecurity";
 const SQL_CUENTAS = `select (select count(*) from auth.users) as cuentas, (select count(*) from public.profiles) as perfiles`;
 
-// Lo que debe quedar: id → [precio, días de prueba, unidades, unidades de prueba, a la venta].
+// Lo que debe quedar: id → [precio, días de prueba, unidades, unidades de prueba]. `for_sale` no se exige: el
+// esquema siembra false, pero al abrir la venta es true y --verificar sólo lo informa.
 const PLANES_ESPERADOS = {
-  basic: [2990, 7, 6_000_000, 1_500_000, false],
-  pro: [9990, 0, 30_000_000, null, false],
+  basic: [2990, 7, 6_000_000, 1_500_000],
+  pro: [9990, 0, 30_000_000, null],
 };
 const UNIDADES_TESTER = 6_000_000;
 
@@ -97,8 +98,8 @@ export async function verificar(contexto) {
   const porId = Object.fromEntries(planes.map((p) => [p.id, p]));
   for (const [id, esperado] of Object.entries(PLANES_ESPERADOS)) {
     const p = porId[id];
-    const real = p ? [num(p.monthly_price_clp), num(p.trial_period_days), num(p.ai_units_limit), num(p.trial_ai_units_limit), p.for_sale] : null;
-    resumen.push(`${id} ${real ? real.join("/") : "(no existe)"}`);
+    const real = p ? [num(p.monthly_price_clp), num(p.trial_period_days), num(p.ai_units_limit), num(p.trial_ai_units_limit)] : null;
+    resumen.push(`${id} ${real ? `${real.join("/")} (for_sale ${p.for_sale === true})` : "(no existe)"}`);
     if (!real || real.some((v, i) => v !== esperado[i])) {
       diferencias.push(`plan ${id}: esperado ${esperado.join("/")}, hay ${real ? real.join("/") : "nada"}`);
     }

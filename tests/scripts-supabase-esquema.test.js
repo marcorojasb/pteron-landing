@@ -72,7 +72,7 @@ test("--aplicar ejecuta supabase/esquema.sql entero en una sola llamada y luego 
   const despues = r.llamadas.slice(r.llamadas.indexOf(llamadas[0]) + 1);
   assert.equal(despues.length, 4, "las comprobaciones corren después del esquema");
   assert.match(r.salida, /Esquema ejecutado/);
-  assert.match(r.salida, /basic 2990\/7\/6000000\/1500000\/false/);
+  assert.match(r.salida, /basic 2990\/7\/6000000\/1500000 \(for_sale false\)/);
 });
 
 test("con suscripciones de Flow vivas se detiene sin tocar nada, también con --aplicar", async () => {
@@ -128,11 +128,24 @@ test("la verificación sale con código 1 y dice qué difiere", async () => {
   const planes = PLANES_OK.map((p) => (p.id === "basic" ? { ...p, monthly_price_clp: 3990 } : p));
   const r = await correr(["--verificar"], { planes, ajustes: [{ key: "included_ai_paused", value: true }], sinRls: [{ tablename: "x" }], cuentas: { cuentas: 6, perfiles: 5 } });
   assert.equal(r.codigo, 1);
-  assert.match(r.salida, /DIFIERE: plan basic: esperado 2990\/7\/6000000\/1500000\/false, hay 3990\//);
+  assert.match(r.salida, /DIFIERE: plan basic: esperado 2990\/7\/6000000\/1500000, hay 3990\//);
   assert.match(r.salida, /DIFIERE: included_ai_paused/);
   assert.match(r.salida, /DIFIERE: tablas sin RLS: x/);
   assert.match(r.salida, /DIFIERE: perfiles \(5\) no igualan a las cuentas \(6\)/);
   assert.equal(esquemaEjecutado(r.llamadas).length, 0);
+});
+
+test("la venta abierta (for_sale true) no hace fallar la verificación: se informa", async () => {
+  const planes = PLANES_OK.map((p) => (p.id === "basic" || p.id === "pro" ? { ...p, for_sale: true } : p));
+  const r = await correr(["--verificar"], { planes });
+  assert.equal(r.codigo, 0);
+  assert.match(r.salida, /basic 2990\/7\/6000000\/1500000 \(for_sale true\)/);
+  assert.match(r.salida, /pro 9990\/0\/30000000\/ \(for_sale true\)/);
+  assert.match(r.salida, /Todo calza con lo esperado/);
+  assert.doesNotMatch(r.salida, /DIFIERE/);
+  // Un precio distinto sigue fallando aunque la venta esté abierta
+  const caro = await correr(["--verificar"], { planes: planes.map((p) => (p.id === "basic" ? { ...p, monthly_price_clp: 3990 } : p)) });
+  assert.equal(caro.codigo, 1);
 });
 
 test("--aplicar sale con 1 si lo que queda no calza", async () => {

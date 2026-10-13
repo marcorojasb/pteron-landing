@@ -72,6 +72,8 @@ try {
   await expect("favicon.ico", { path: "/favicon.ico" }, status(200));
   await expect("marca descargable", { path: "/assets/marca/pteron-azul.svg" }, (res) => (res.status === 200 && /svg/.test(res.headers.get("content-type") || "") ? null : `status ${res.status}`));
   await expect("html explícito redirige", { path: "/privacidad.html" }, redirectTo("/privacidad"));
+  // La copia inmutable de los Términos a la que enlaza el correo de confirmación de la compra
+  await expect("términos 2026-10-13 (copia inmutable)", { path: "/terminos/2026-10-13" }, status(200));
   await expect("cuenta sin barra", { path: "/cuenta", headers: navigate }, status(200));
   await expect("404 propia", { path: "/no-existe", headers: navigate }, (res, body) => (res.status === 404 && body.includes("Página no encontrada") ? null : `status ${res.status}`));
   await expect("docs slug por navegación", { path: "/docs/instalar-macos", headers: navigate }, (res, body) => (res.status === 200 && body.includes("Documentación") ? null : `status ${res.status}`));

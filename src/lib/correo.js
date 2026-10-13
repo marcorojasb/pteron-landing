@@ -7,7 +7,9 @@ import { componerCorreo, documentoTerminos } from "./correo-textos.js";
  * vendedor (SELLER_NAME, SELLER_RUT, SELLER_ADDRESS, SELLER_EMAIL, que la ley de
  * consumo pide decir a quien contrata; LEGAL-PENDIENTE.md, punto 1). Si falta
  * algo no se envía nada y queda un evento `<tipo>_email_skipped` con los
- * nombres que faltan.
+ * nombres que faltan. SELLER_REPRESENTATIVE (representante legal de una
+ * persona jurídica) es opcional y no detiene el envío: una persona natural no
+ * tiene.
  *
  * Enviar nunca cambia el resultado de cobrar: ninguna función de aquí lanza.
  * Todo devuelve un resultado tipado y el error, si lo hay, queda en el evento
@@ -236,8 +238,10 @@ export function createCorreo(env, supabase, execution = null) {
           rut: String(env.SELLER_RUT).trim(),
           domicilio: String(env.SELLER_ADDRESS).trim(),
           correo: String(env.SELLER_EMAIL).trim(),
+          // Opcional: sólo una persona jurídica tiene representante legal.
+          representante: String(env.SELLER_REPRESENTATIVE ?? "").trim(),
         };
-        const componer = (copiaAdjunta) => componerCorreo(tipo, { suscripcion, plan, vendedor, base, enPrueba: suscripcion.status === "trialing", copiaAdjunta });
+        const componer = (copiaAdjunta) => componerCorreo(tipo, { suscripcion, plan, vendedor, base, destinatario, enPrueba: suscripcion.status === "trialing", copiaAdjunta });
         // La copia fija de los Términos va adjunta si se puede leer bien; si no, sólo el enlace.
         const adjunto = tipo === "purchase" ? await adjuntoTerminos(env, suscripcion.terms_version, base) : null;
         const respuesta = await sendEmail(env, {

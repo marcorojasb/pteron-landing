@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import worker from "../src/worker.js";
 import { createCorreo, faltantesCorreo, sendEmail } from "../src/lib/correo.js";
 import { componerCorreo, escapar, fechaLarga } from "../src/lib/correo-textos.js";
@@ -287,8 +287,21 @@ test("sendEmail convierte cualquier fallo en un resultado tipado y nunca lanza",
 
 // ── Contenido ─────────────────────────────────────────────────────────────
 
-const VENDEDOR_TEXTO = { nombre: "Ana Pérez", rut: "11.111.111-1", domicilio: "Av. Uno 1, Santiago", correo: "ana@vendedor.test" };
-const compuesto = (tipo, cambios = {}) => componerCorreo(tipo, { suscripcion: enPrueba(), plan: BASIC, vendedor: VENDEDOR_TEXTO, base: "https://pteron.patagua.dev", enPrueba: true, copiaAdjunta: false, ...cambios });
+const VENDEDOR_TEXTO = { nombre: "Ana Pérez", rut: "11.111.111-1", domicilio: "Av. Uno 1, Santiago", correo: "ana@vendedor.test", representante: "" };
+const compuesto = (tipo, cambios = {}) => componerCorreo(tipo, { suscripcion: enPrueba(), plan: BASIC, vendedor: VENDEDOR_TEXTO, base: "https://pteron.patagua.dev", destinatario: "profe@escuela.cl", enPrueba: true, copiaAdjunta: false, ...cambios });
+const LOGO = "https://pteron.patagua.dev/assets/correo/pteron-banda-correo.png";
+const sinPrueba = (cambios = {}) => enPrueba({ status: "active", trial_ends_at: null, current_period_start: "2026-10-13T03:00:00.000Z", current_period_end: "2026-11-13T03:00:00.000Z", ...cambios });
+// Una fila de la ficha: la etiqueta en su párrafo y, debajo, el valor en el suyo (no dos columnas).
+const fila = (etiqueta, valor) => new RegExp(`<p class="dk-mut"[^>]*>${etiqueta}</p><p class="dk-t"[^>]*>${valor}</p>`);
+const todos = () => [
+  compuesto("purchase"),
+  compuesto("purchase", { suscripcion: sinPrueba(), enPrueba: false, copiaAdjunta: true }),
+  compuesto("purchase", { suscripcion: sinPrueba({ status: "past_due" }), enPrueba: false }),
+  compuesto("trial_ending"),
+  compuesto("cancellation", { suscripcion: enPrueba({ cancel_at_period_end: true }) }),
+  compuesto("cancellation", { suscripcion: sinPrueba({ cancel_at_period_end: true }), enPrueba: false }),
+  compuesto("cancellation", { suscripcion: sinPrueba({ status: "past_due", cancel_at_period_end: true }), enPrueba: false }),
+];
 
 test("las fechas son del calendario de Chile, en verano (UTC-3) y en invierno (UTC-4)", () => {
   assert.equal(fechaLarga("2026-10-20T03:00:00.000Z"), "20 de octubre de 2026");
@@ -301,59 +314,115 @@ test("las fechas son del calendario de Chile, en verano (UTC-3) y en invierno (U
 
 test("confirmación de compra con prueba: vendedor, $2.990 con IVA, fechas, cómo cancelar, cuotas y la versión de los Términos con su enlace", () => {
   const { subject, text, html } = compuesto("purchase");
-  assert.equal(subject, "Tu plan Basic de pteron");
+  assert.equal(subject, "Confirmación de compra: pteron Basic");
   for (const fragmento of [
-    "Ana Pérez, RUT 11.111.111-1, domicilio Av. Uno 1, Santiago, correo ana@vendedor.test",
-    "Basic: $2.990 al mes, IVA incluido.",
+    "CONFIRMACIÓN DE COMPRA\nEmpezó tu prueba de Basic",
     "Tu prueba termina el 20 de octubre de 2026. Ese día se cobran $2.990, y luego cada mes, hasta que canceles.",
-    "https://pteron.patagua.dev/cuenta",
-    "«Cancelar renovación»",
+    "Plan: pteron Basic",
+    "Precio: $2.990 al mes, IVA incluido",
+    "Prueba gratis: Hasta el 20 de octubre de 2026",
+    "Primer cobro: $2.990 el 20 de octubre de 2026",
+    "Pago: Con tarjeta a través de Flow, que registra la tarjeta en su propio sitio: pteron no la recibe",
+    "Cuota de IA incluida: 6.000.000 unidades de IA por período (1.500.000 durante la prueba); lo que no usas no pasa al siguiente",
+    `Términos aceptados: Términos de uso, versión ${TERMS_VERSION} (https://pteron.patagua.dev/terminos/${TERMS_VERSION}) · copia fija, que no cambia`,
+    "CÓMO CANCELAR\nCancelas cuando quieras desde tu cuenta, en https://pteron.patagua.dev/cuenta, con «Cancelar renovación».",
     "Si cancelas durante la prueba, no se cobra nada y Basic termina el día en que terminaba la prueba.",
-    "Basic incluye 6.000.000 unidades de IA por período (1.500.000 durante la prueba).",
-    `versión ${TERMS_VERSION}`,
-    `https://pteron.patagua.dev/terminos/${TERMS_VERSION}`,
+    "Ir a mi cuenta: https://pteron.patagua.dev/cuenta",
+    "QUIÉN TE VENDE\nNombre o razón social: Ana Pérez\nRUT: 11.111.111-1\nDomicilio: Av. Uno 1, Santiago\nCorreo: ana@vendedor.test",
+    "Recibiste este correo porque contrataste pteron Basic con profe@escuela.cl. Guárdalo: es la confirmación de tu contratación y de los Términos que aceptaste.",
+    "pteron lo vende Ana Pérez, RUT 11.111.111-1, domicilio Av. Uno 1, Santiago. Si respondes este correo, tu mensaje llega a ana@vendedor.test.",
   ]) {
     assert.ok(text.includes(fragmento), `texto: ${fragmento}`);
   }
   assert.doesNotMatch(text, /Si ya pagaste/, "con prueba no se habla de lo ya pagado");
-  assert.doesNotMatch(text, /primer cobro de/);
-  assert.doesNotMatch(text, /También va adjunta/);
-  assert.ok(html.includes('<html lang="es-CL">') && html.includes("<title>Tu plan Basic de pteron</title>") && html.includes("<h1 "), "HTML con idioma, título y encabezado");
+  assert.doesNotMatch(text, /primer cobro de|Representante/);
+  assert.doesNotMatch(text, /adjunta/);
+  assert.ok(html.includes('<html lang="es-CL"') && html.includes("<title>Confirmación de compra: pteron Basic</title>"), "HTML con idioma y título");
+  assert.match(html, /<h1 [^>]*>Empezó tu prueba de Basic<\/h1>/);
+  assert.match(html, /<h2 [^>]*>Quién te vende<\/h2>/);
+  assert.match(html, /<h2 [^>]*>Cómo cancelar<\/h2>/);
+  assert.match(html, />Prueba gratis hasta el 20 de octubre de 2026\. Ese día se cobran \$2\.990, salvo que canceles antes\./, "preheader");
   assert.ok(html.includes('href="https://pteron.patagua.dev/cuenta"') && html.includes(`href="https://pteron.patagua.dev/terminos/${TERMS_VERSION}"`));
-  assert.match(html, /<h2 [^>]*>Quién vende<\/h2>/);
-  assert.doesNotMatch(html, /<(script|style|img|link)\b/i, "HTML simple: sin scripts, estilos externos ni imágenes");
-  assert.equal(compuesto("purchase", { copiaAdjunta: true }).text.includes("También va adjunta a este correo."), true);
+  assert.ok(html.includes('href="mailto:ana@vendedor.test"'));
+  assert.match(html, /<a href="https:\/\/pteron\.patagua\.dev\/cuenta" class="btn-a"[^>]*>Ir a mi cuenta<\/a>/, "botón píldora");
+  assert.match(html, fila("Primer cobro", "\\$2\\.990 el 20 de octubre de 2026"));
+  assert.match(html, fila("RUT", "11\\.111\\.111-1"));
+  assert.match(html, /Tu prueba termina el <strong[^>]*>20 de octubre de 2026<\/strong>/);
+  assert.equal(compuesto("purchase", { copiaAdjunta: true }).text.includes(`versión ${TERMS_VERSION} (https://pteron.patagua.dev/terminos/${TERMS_VERSION}) · copia fija, también adjunta a este correo`), true);
+});
+
+test("los correos tienen la hoja del diseño: banda con el logo publicado, ficha, sin scripts ni recursos externos más que el logo", () => {
+  for (const { html } of todos()) {
+    assert.match(html, /^<!doctype html>/);
+    const imagenes = [...html.matchAll(/<img\b[^>]*>/g)].map(([img]) => img);
+    assert.equal(imagenes.length, 1, "sólo el logo");
+    assert.ok(imagenes[0].includes(`src="${LOGO}"`) && imagenes[0].includes('alt="pteron"') && imagenes[0].includes('width="104" height="32"'));
+    assert.match(html, /class="band px" bgcolor="#162F70"/);
+    assert.match(html, /class="card" bgcolor="#FFFFFF"/);
+    assert.match(html, /class="nota"/, "ficha de datos");
+    assert.doesNotMatch(html, /<(script|link|iframe|form)\b/i);
+    assert.doesNotMatch(html, /url\(|@import/i, "el <style> no trae recursos");
+    assert.ok(Buffer.byteLength(html) < 60_000, "lejos del recorte de Gmail");
+  }
+  assert.ok(existsSync(new URL("../public/assets/correo/pteron-banda-correo.png", import.meta.url)), "el logo se publica con el sitio");
+});
+
+test("ningún correo sale con marcadores «por definir» ni corchetes, y el texto plano está completo", () => {
+  for (const { subject, html, text } of todos()) {
+    for (const parte of [subject, text, html.replace(/<!--\[if [^\]]+\]>|<!\[endif\]-->/g, "")]) {
+      assert.doesNotMatch(parte, /por definir|\[[^\]]*\]|undefined|null|NaN/i);
+    }
+    assert.ok(text.includes("\n—\nRecibiste este correo porque") && text.includes("profe@escuela.cl"), "el pie nombra al destinatario");
+    assert.ok(text.includes("Tu cuenta de pteron: https://pteron.patagua.dev/cuenta"));
+    assert.ok(text.includes("pteron lo vende Ana Pérez, RUT 11.111.111-1"));
+    assert.doesNotMatch(text, /<[a-z]/i, "texto sin etiquetas");
+  }
+});
+
+test("el representante legal es opcional: sale en la ficha y en el pie sólo si está configurado", () => {
+  const vendedor = { ...VENDEDOR_TEXTO, nombre: "Pteron SpA", representante: "Ana Pérez" };
+  const { text, html } = compuesto("purchase", { vendedor });
+  assert.ok(text.includes("Domicilio: Av. Uno 1, Santiago\nRepresentante legal: Ana Pérez\nCorreo: ana@vendedor.test"));
+  assert.ok(text.includes("pteron lo vende Pteron SpA, RUT 11.111.111-1, domicilio Av. Uno 1, Santiago, representante legal Ana Pérez."));
+  assert.match(html, fila("Representante legal", "Ana Pérez"));
+  for (const tipo of ["trial_ending", "cancellation"]) assert.ok(compuesto(tipo, { vendedor }).text.includes("representante legal Ana Pérez"), tipo);
+  assert.doesNotMatch(compuesto("purchase").html, /Representante/);
 });
 
 test("confirmación de compra sin prueba: el primer cobro ya se hizo, sin cuota de prueba ni fecha de fin de prueba", () => {
-  const sinPrueba = enPrueba({ status: "active", trial_ends_at: null, current_period_start: "2026-10-13T03:00:00.000Z", current_period_end: "2026-11-13T03:00:00.000Z" });
-  const { text } = compuesto("purchase", { suscripcion: sinPrueba, enPrueba: false });
+  const { text, html } = compuesto("purchase", { suscripcion: sinPrueba(), enPrueba: false });
+  assert.ok(text.includes("Tu plan Basic está activo"));
   assert.ok(text.includes("El primer cobro de $2.990 se hizo el 13 de octubre de 2026. Luego se cobra cada mes, hasta que canceles."));
-  assert.ok(text.includes("Basic incluye 6.000.000 unidades de IA por período. Lo que no usas no pasa al siguiente."));
+  assert.ok(text.includes("Primer cobro: $2.990, hecho el 13 de octubre de 2026"));
+  assert.ok(text.includes("Cuota de IA incluida: 6.000.000 unidades de IA por período; lo que no usas no pasa al siguiente"));
   assert.ok(text.includes("Si ya pagaste, el plan sigue hasta el fin del período pagado y no se renueva."));
-  assert.doesNotMatch(text, /1\.500\.000|Tu prueba|durante la prueba/);
+  assert.match(html, />Se cobraron \$2\.990 el 13 de octubre de 2026\./, "preheader");
+  assert.doesNotMatch(text, /1\.500\.000|Tu prueba|durante la prueba|Prueba gratis/);
 });
 
 test("confirmación de compra sin prueba: sin un período pagado no dice que el cobro se hizo (past_due o activa sin pago)", () => {
-  const base = { trial_ends_at: null, current_period_start: "2026-10-13T03:00:00.000Z", current_period_end: "2026-11-13T03:00:00.000Z" };
-  const pendiente = compuesto("purchase", { suscripcion: enPrueba({ ...base, status: "past_due" }), enPrueba: false }).text;
-  assert.doesNotMatch(pendiente, /se hizo el/);
-  assert.ok(pendiente.includes("El primer cobro de $2.990 todavía no se pudo hacer: tu cuenta muestra «Pago pendiente»"));
-  const sinPago = compuesto("purchase", { suscripcion: enPrueba({ ...base, status: "active", current_period_end: null }), enPrueba: false }).text;
-  assert.doesNotMatch(sinPago, /se hizo el|todavía no se pudo/);
-  assert.ok(sinPago.includes("Los planes se renuevan solos cada mes, hasta que canceles."));
-  const finDePrueba = compuesto("purchase", { suscripcion: enPrueba({ ...base, status: "active", trial_ends_at: base.current_period_end }), enPrueba: false }).text;
-  assert.doesNotMatch(finDePrueba, /se hizo el/, "un fin de período que es el de la prueba no es un pago");
+  const pendiente = compuesto("purchase", { suscripcion: sinPrueba({ status: "past_due" }), enPrueba: false });
+  assert.doesNotMatch(pendiente.text, /se hizo el|hecho el|está activo|Se cobraron/);
+  assert.doesNotMatch(pendiente.html, /se hizo el|hecho el|está activo|Se cobraron/);
+  assert.ok(pendiente.text.includes("El primer cobro de $2.990 todavía no se pudo hacer: tu cuenta muestra «Pago pendiente»"));
+  assert.ok(pendiente.text.includes("Primer cobro: Pago pendiente"));
+  const sinPago = compuesto("purchase", { suscripcion: sinPrueba({ current_period_end: null }), enPrueba: false });
+  assert.doesNotMatch(sinPago.text, /se hizo el|hecho el|está activo|todavía no se pudo|Primer cobro/);
+  assert.doesNotMatch(sinPago.html, /se hizo el|hecho el|está activo|Se cobraron/);
+  assert.ok(sinPago.text.includes("Los planes se renuevan solos cada mes, hasta que canceles."));
+  const finDePrueba = compuesto("purchase", { suscripcion: sinPrueba({ trial_ends_at: "2026-11-13T03:00:00.000Z" }), enPrueba: false });
+  assert.doesNotMatch(finDePrueba.text, /se hizo el|hecho el/, "un fin de período que es el de la prueba no es un pago");
+  assert.doesNotMatch(finDePrueba.html, /Se cobraron/);
 });
 
 test("la cuota de prueba sin valor en el catálogo es un cuarto de la cuota, como en /cuenta; sin cuota no se habla de unidades", () => {
   assert.ok(compuesto("purchase", { plan: { ...BASIC, trial_ai_units_limit: null } }).text.includes("(1.500.000 durante la prueba)"));
-  assert.doesNotMatch(compuesto("purchase", { plan: { ...BASIC, ai_units_limit: null } }).text, /unidades de IA/);
+  assert.doesNotMatch(compuesto("purchase", { plan: { ...BASIC, ai_units_limit: null } }).text, /unidades de IA|Cuota de IA/);
 });
 
 test("el correo repite lo que dicen los Términos y no inventa política: el retracto sólo sale si los Términos lo dicen", () => {
   const terminosVigentes = readFileSync(new URL("../public/terminos.html", import.meta.url), "utf8");
-  const { text } = compuesto("purchase");
+  const { text, html } = compuesto("purchase");
   if (TERMS_RETRACTO.trim()) {
     assert.ok(text.includes(TERMS_RETRACTO.trim()));
     assert.ok(terminosVigentes.includes(TERMS_RETRACTO.trim()), "el párrafo es copia literal de los Términos");
@@ -361,40 +430,76 @@ test("el correo repite lo que dicen los Términos y no inventa política: el ret
     // Hoy los Términos no dicen nada de retracto (LEGAL-PENDIENTE.md, punto 2): si lo agregan, hay que pegarlo en TERMS_RETRACTO.
     assert.doesNotMatch(terminosVigentes, /retracto|devoluci/i, "los Términos ya hablan de retracto: copia su párrafo en TERMS_RETRACTO");
     assert.doesNotMatch(text, /retracto|devoluci/i);
+    assert.doesNotMatch(html, /retracto|devoluci/i, "ni el subtítulo ni un marcador");
   }
   // Lo demás que afirma el correo está en los Términos tal cual.
   assert.ok(terminosVigentes.includes("Si cancelas durante la prueba, no se cobra nada y Basic termina el día en que terminaba la prueba."));
   assert.ok(terminosVigentes.includes("Lo que no usas no pasa al siguiente."));
   assert.ok(terminosVigentes.includes("Basic incluye 6.000.000 unidades de IA por período (1.500.000 durante la prueba)"));
+  assert.ok(terminosVigentes.includes("se pagan con tarjeta a través de Flow, que registra la tarjeta en su propio sitio: pteron no la recibe."));
+  assert.ok(terminosVigentes.includes("Después, pteron vuelve al núcleo gratuito sin borrar tu trabajo local."));
+  assert.ok(terminosVigentes.includes("La prueba es una por persona"), "el correo de cancelación dice que al volver no hay prueba");
 });
 
-test("los datos del vendedor se escapan en el HTML y no se alteran en el texto", () => {
-  const raro = { nombre: 'Marco & <b>Hijos</b> "SpA"', rut: "1-9", domicilio: "Calle <script>alert(1)</script>", correo: "a@b.test" };
+test("los datos del vendedor y del destinatario se escapan en el HTML y no se alteran en el texto", () => {
+  const raro = { nombre: 'Marco & <b>Hijos</b> "SpA"', rut: "1-9", domicilio: "Calle <script>alert(1)</script>", correo: "a@b.test", representante: "<i>Rep</i>" };
   for (const tipo of ["purchase", "trial_ending", "cancellation"]) {
-    const { html, text } = compuesto(tipo, { vendedor: raro });
-    assert.doesNotMatch(html, /<b>Hijos<\/b>|<script>/);
+    const { html, text } = compuesto(tipo, { vendedor: raro, destinatario: "o'neil+<x>@escuela.cl" });
+    assert.doesNotMatch(html, /<b>Hijos<\/b>|<script>|<i>Rep|<x>/);
     assert.ok(html.includes("Marco &amp; &lt;b&gt;Hijos&lt;/b&gt; &quot;SpA&quot;"), tipo);
+    assert.ok(html.includes("o&#39;neil+&lt;x&gt;@escuela.cl"), tipo);
     assert.ok(text.includes('Marco & <b>Hijos</b> "SpA"'), tipo);
+    assert.ok(text.includes("o'neil+<x>@escuela.cl"), tipo);
   }
   assert.equal(escapar(`<a href="x">'&'</a>`), "&lt;a href=&quot;x&quot;&gt;&#39;&amp;&#39;&lt;/a&gt;");
 });
 
 test("aviso de fin de prueba: la fecha en hora de Chile, el cobro de $2.990 y el enlace para cancelar", () => {
   const { subject, text, html } = compuesto("trial_ending");
-  assert.equal(subject, "Tu prueba de Basic termina el 20 de octubre de 2026");
-  assert.ok(text.includes("Tu prueba de Basic termina el 20 de octubre de 2026. Ese día se cobran $2.990, salvo que canceles antes en https://pteron.patagua.dev/cuenta."));
+  assert.equal(subject, "Tu prueba de pteron Basic termina el 20 de octubre de 2026");
+  assert.ok(text.includes("AVISO DE FIN DE PRUEBA\nTu prueba de Basic termina el 20 de octubre de 2026"));
+  assert.ok(text.includes("Ese día se cobran $2.990, IVA incluido, salvo que canceles antes en https://pteron.patagua.dev/cuenta."));
+  assert.ok(text.includes("Fin de la prueba: 20 de octubre de 2026\nCobro: $2.990 el 20 de octubre de 2026; luego cada mes, hasta que canceles"));
+  assert.ok(text.includes("Ver mi plan: https://pteron.patagua.dev/cuenta"));
   assert.ok(text.includes("Si cancelas durante la prueba, no se cobra nada"));
+  assert.ok(text.includes("Recibiste este correo porque tienes una prueba de pteron Basic con profe@escuela.cl."));
   assert.ok(html.includes('href="https://pteron.patagua.dev/cuenta"'));
+  assert.match(html, fila("Fin de la prueba", "20 de octubre de 2026"));
   assert.ok(text.includes(VENDEDOR_TEXTO.rut), "también dice quién vende");
+  const sinFecha = compuesto("trial_ending", { suscripcion: enPrueba({ trial_ends_at: null, current_period_end: null }) });
+  assert.equal(sinFecha.subject, "Tu prueba de pteron Basic está por terminar");
+  assert.doesNotMatch(sinFecha.text, /Fin de la prueba|Ese día| el $/m);
 });
 
 test("confirmación de cancelación: en la prueba no se cobra nada; pagado, el plan sigue hasta el fin del período y no se cobra más", () => {
-  const prueba = compuesto("cancellation", { suscripcion: enPrueba({ cancel_at_period_end: true }) }).text;
-  assert.ok(prueba.includes("Cancelaste Basic durante la prueba: no se cobra nada y Basic termina el 20 de octubre de 2026."));
+  const prueba = compuesto("cancellation", { suscripcion: enPrueba({ cancel_at_period_end: true }) });
+  assert.ok(prueba.text.includes("Cancelaste Basic durante la prueba: no se cobra nada y Basic termina el 20 de octubre de 2026."));
+  assert.ok(prueba.text.includes("Prueba hasta: 20 de octubre de 2026\nCobros: Ninguno"));
+  assert.doesNotMatch(prueba.text, /fin del período pagado/);
   const pagado = compuesto("cancellation", { suscripcion: enPrueba({ status: "active", cancel_at_period_end: true, current_period_end: "2026-11-20T03:00:00.000Z" }), enPrueba: false });
-  assert.equal(pagado.subject, "Cancelaste la renovación de Basic");
+  assert.equal(pagado.subject, "Cancelaste la renovación de pteron Basic");
+  assert.ok(pagado.text.includes("RENOVACIÓN CANCELADA\nTu plan Basic sigue activo hasta el 20 de noviembre de 2026"));
   assert.ok(pagado.text.includes("Tu plan sigue hasta el 20 de noviembre de 2026, el fin del período pagado, y no se cobra nada más."));
   assert.ok(pagado.text.includes("Después, pteron vuelve al núcleo gratuito sin borrar tu trabajo local."));
+  assert.ok(pagado.text.includes("Activo hasta: 20 de noviembre de 2026\nCobros: No se renueva; no se cobra nada más"));
+  assert.ok(pagado.text.includes("SI QUIERES VOLVER\nCuando termine el plan, entra a tu cuenta y elige Basic de nuevo. Esta vez el cobro se hace al contratar, sin prueba."));
+  assert.ok(pagado.text.includes("escríbenos a ana@vendedor.test."));
+  assert.ok(pagado.text.includes("Recibiste este correo porque se canceló la renovación de pteron Basic en la cuenta profe@escuela.cl."));
+  assert.match(pagado.html, fila("Activo hasta", "20 de noviembre de 2026"));
+});
+
+test("confirmación de cancelación con el cobro pendiente: no dice «activo hasta» ni promete que no se cobra nada más", () => {
+  // past_due: current_period_end es el fin del último período pagado, que ya pasó.
+  const pendiente = compuesto("cancellation", { suscripcion: sinPrueba({ status: "past_due", cancel_at_period_end: true, current_period_end: "2026-10-11T02:59:59Z" }), enPrueba: false });
+  assert.equal(pendiente.subject, "Cancelaste la renovación de pteron Basic");
+  assert.ok(pendiente.text.includes("RENOVACIÓN CANCELADA\nCancelaste la renovación de Basic\n"));
+  assert.ok(pendiente.text.includes("Cancelaste la renovación de Basic: no se renueva. El último cobro no se pudo hacer y tu cuenta lo muestra como «Pago pendiente»; ahí ves su estado."));
+  assert.ok(pendiente.text.includes("Período pagado hasta: 10 de octubre de 2026\nCobros: No se renueva; el cobro pendiente se ve en tu cuenta"));
+  assert.match(pendiente.html, fila("Período pagado hasta", "10 de octubre de 2026"));
+  assert.doesNotMatch(pendiente.text + pendiente.html, /activo hasta|no se cobra nada más|sigue hasta/i);
+  assert.ok(pendiente.html.includes("El último cobro quedó pendiente"), "el preheader");
+  const sinFecha = compuesto("cancellation", { suscripcion: sinPrueba({ status: "past_due", cancel_at_period_end: true, current_period_end: null }), enPrueba: false });
+  assert.doesNotMatch(sinFecha.text, /Período pagado hasta|activo hasta|no se cobra nada más/i);
 });
 
 test("la copia fija de los Términos existe, es la versión vigente y no cambia su texto", () => {
@@ -411,12 +516,14 @@ test("faltantesCorreo nombra lo que falta, también con espacios en blanco, y nu
   assert.deepEqual(faltantesCorreo(CORREO_CONFIGURADO), []);
   assert.deepEqual(faltantesCorreo({}), ["RESEND_API_KEY", "EMAIL_FROM", "SELLER_NAME", "SELLER_RUT", "SELLER_ADDRESS", "SELLER_EMAIL"]);
   assert.deepEqual(faltantesCorreo({ ...CORREO_CONFIGURADO, SELLER_RUT: "  ", RESEND_API_KEY: "" }), ["RESEND_API_KEY", "SELLER_RUT"]);
+  // El representante legal es opcional (una persona natural no tiene): no detiene el envío.
+  assert.deepEqual(faltantesCorreo({ ...CORREO_CONFIGURADO, SELLER_REPRESENTATIVE: "" }), []);
 });
 
 test("wrangler.jsonc declara el remitente de Supabase Auth y los datos del vendedor vacíos; la clave de Resend no está en el archivo", () => {
   const texto = readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8");
   assert.match(texto, /"EMAIL_FROM": "pteron <no-reply@patagua\.dev>"/);
-  for (const nombre of ["SELLER_NAME", "SELLER_RUT", "SELLER_ADDRESS", "SELLER_EMAIL"]) assert.match(texto, new RegExp(`"${nombre}": ""`));
+  for (const nombre of ["SELLER_NAME", "SELLER_RUT", "SELLER_ADDRESS", "SELLER_EMAIL", "SELLER_REPRESENTATIVE"]) assert.match(texto, new RegExp(`"${nombre}": ""`));
   assert.doesNotMatch(texto, /"RESEND_API_KEY"/);
 });
 
@@ -488,8 +595,9 @@ test("la confirmación de compra lleva el correo de la cuenta (Auth admin), la c
   const cuerpo = cuerpoDe(llamada);
   assert.deepEqual(cuerpo.to, [USER.email]);
   assert.equal(cuerpo.reply_to, VENDEDOR.SELLER_EMAIL);
-  assert.equal(cuerpo.subject, "Tu plan Basic de pteron");
-  assert.ok(cuerpo.text.includes("También va adjunta a este correo."));
+  assert.equal(cuerpo.subject, "Confirmación de compra: pteron Basic");
+  assert.ok(cuerpo.text.includes(`contrataste pteron Basic con ${USER.email}.`), "el pie nombra la cuenta que recibe");
+  assert.ok(cuerpo.text.includes("copia fija, también adjunta a este correo"));
   assert.ok(cuerpo.html.includes("Marco &amp; Hijos &lt;SpA&gt; &quot;pteron&quot;"));
   assert.equal(cuerpo.attachments.length, 1);
   assert.equal(cuerpo.attachments[0].filename, `terminos-pteron-${TERMS_VERSION}.html`);
@@ -498,6 +606,16 @@ test("la confirmación de compra lleva el correo de la cuenta (Auth admin), la c
   assert.ok(copia.includes('href="https://pteron.test/cuenta"'), "los enlaces del adjunto son absolutos");
   assert.doesNotMatch(copia, /<script|href="\//);
   assert.deepEqual(env.ASSETS.calls, [`/terminos/${TERMS_VERSION}`]);
+  assert.doesNotMatch(cuerpo.text, /Representante/, "sin SELLER_REPRESENTATIVE no hay representante");
+});
+
+test("con SELLER_REPRESENTATIVE el correo enviado nombra al representante legal del vendedor", async () => {
+  const w = mundo({ subs: [enPrueba()] });
+  const env = envCorreo({ SELLER_REPRESENTATIVE: "  Ana <Rep>  " });
+  await withFetch(w.network.fetch, () => createCorreo(env, testServices(env).supabase).entregar("purchase", { id: "sub-1" }));
+  const cuerpo = cuerpoDe(w.aResend()[0]);
+  assert.ok(cuerpo.text.includes("Representante legal: Ana <Rep>") && cuerpo.text.includes("representante legal Ana <Rep>."));
+  assert.ok(cuerpo.html.includes("Ana &lt;Rep&gt;") && !cuerpo.html.includes("<Rep>"));
 });
 
 test("si la copia de los Términos no se puede leer, el correo sale igual, sólo con el enlace", async () => {
@@ -508,7 +626,7 @@ test("si la copia de los Términos no se puede leer, el correo sale igual, sólo
     await withFetch(w.network.fetch, async () => assert.equal((await createCorreo(env, testServices(env).supabase).entregar("purchase", { id: "sub-1" })).estado, "enviado"));
     const cuerpo = cuerpoDe(w.aResend().at(-1));
     assert.equal(cuerpo.attachments, undefined);
-    assert.doesNotMatch(cuerpo.text, /También va adjunta/);
+    assert.doesNotMatch(cuerpo.text, /adjunta/);
     assert.ok(cuerpo.text.includes(`https://pteron.test/terminos/${TERMS_VERSION}`), "el enlace siempre va");
   }
 });
@@ -649,7 +767,7 @@ test("cancel: responde como siempre y envía la confirmación de cancelación un
   });
   assert.equal(w.aResend().length, 1, "pedir cancelar dos veces no manda dos correos");
   const cuerpo = cuerpoDe(w.aResend()[0]);
-  assert.equal(cuerpo.subject, "Cancelaste la renovación de Basic");
+  assert.equal(cuerpo.subject, "Cancelaste la renovación de pteron Basic");
   assert.ok(cuerpo.text.includes("no se cobra nada y Basic termina el 20 de octubre de 2026."));
   assert.equal(w.evento("email:cancellation:sub-1").status, "processed");
 });
@@ -685,7 +803,7 @@ test("conciliar un checkout incierto que Flow sí creó envía también la confi
     assert.deepEqual(await reconcilePendingCheckouts(services, { now: new Date() }), { conciliados: 0, sinSuscripcion: 0, pendientes: 0 });
   });
   assert.equal(w.aResend().length, 1);
-  assert.equal(cuerpoDe(w.aResend()[0]).subject, "Tu plan Basic de pteron");
+  assert.equal(cuerpoDe(w.aResend()[0]).subject, "Confirmación de compra: pteron Basic");
   assert.equal(w.evento(`email:purchase:${w.filas[0].id}`).status, "processed");
 });
 
@@ -725,7 +843,7 @@ test("el Cron avisa sólo a quien termina su prueba dentro de 48 horas y no canc
   assert.ok(consulta.includes(`trial_ends_at=gt.${AHORA.toISOString()}`) && consulta.includes(`trial_ends_at=lte.${en(48)}`), "ventana de 48 horas exactas");
   assert.match(consulta, /provider=eq\.flow&status=eq\.trialing&cancel_at_period_end=is\.false/);
   const aviso = cuerpoDe(w.aResend()[0]);
-  assert.equal(aviso.subject, "Tu prueba de Basic termina el 20 de octubre de 2026");
+  assert.equal(aviso.subject, "Tu prueba de pteron Basic termina el 20 de octubre de 2026");
 });
 
 test("el Cron sin correo configurado deja el evento omitido de cada aviso y no llama a Resend", async () => {

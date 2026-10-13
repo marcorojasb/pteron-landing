@@ -10,14 +10,15 @@ contador está en `LEGAL-PENDIENTE.md`.
 
 ## Estado al 13 de octubre de 2026
 
-- El Worker está desplegado desde `main`, con todos sus secretos salvo `RESEND_API_KEY` (los correos al cliente
-  están apagados hasta cargarla, ver 1b).
-- `supabase/esquema.sql` está aplicado y `/api/health` responde `{"ok":true}`.
+- Verificado: el Worker está desplegado desde `main`, con todos sus secretos cargados salvo `RESEND_API_KEY` (los
+  correos al cliente están apagados hasta cargarla, ver 1b).
+- `supabase/esquema.sql` está aplicado y `/api/health` responde `{"ok":true}` (en verde).
 - Supabase Auth tiene Site URL `https://pteron.patagua.dev/cuenta`, Redirect URLs y SMTP propio por Resend desde
-  `no-reply@patagua.dev`, con su propia clave de Resend.
-- Probado con una cortesía propia: un pedido real a la IA incluida funcionó de punta a punta.
-- Falta: la clave de Resend del Worker, los datos del vendedor (`SELLER_*`) y lo de `LEGAL-PENDIENTE.md`. La venta
-  sigue cerrada.
+  `no-reply@patagua.dev`, con su propia clave de Resend; el dominio `patagua.dev` está verificado en Resend.
+- Probado con la cortesía `tester` propia: un pedido real a la IA incluida funcionó de punta a punta y quedó
+  registrado (16.962 unidades, modelo `claude-haiku-5-5`).
+- Falta: la clave de Resend del Worker, los datos del vendedor (`SELLER_*`, y `SELLER_REPRESENTATIVE` si vende una
+  persona jurídica) y lo de `LEGAL-PENDIENTE.md`. Publicar la app 0.8.0 (sección 7). La venta sigue cerrada.
 
 Los pasos de abajo son genéricos, para un proyecto nuevo o para rehacer algo; lo ya hecho se salta.
 
@@ -96,7 +97,8 @@ y el dominio `patagua.dev` verificado ya existen.
 2. El plan gratis de Resend da unos 3.000 correos al mes y 100 al día (confirma en resend.com/pricing). Los
    enlaces de acceso y los correos de compra comparten ese tope: si se acerca, pasa a un plan de pago.
 3. Llena en `wrangler.jsonc` `SELLER_NAME`, `SELLER_RUT`, `SELLER_ADDRESS` y `SELLER_EMAIL` con lo que fije el
-   abogado (`LEGAL-PENDIENTE.md`, punto 1) y despliega. Sin la clave o sin cualquiera de los cuatro no sale
+   abogado (`LEGAL-PENDIENTE.md`, punto 1) y, si vende una persona jurídica, `SELLER_REPRESENTATIVE` (opcional:
+   su representante legal), y despliega. Sin la clave o sin cualquiera de los cuatro no sale
    ningún correo del Worker y cada intento queda como evento `<tipo>_email_skipped`: se configura **antes**
    de abrir la venta, porque esas suscripciones no recibirían después ese correo.
 4. Scripts (en `scripts/`; sirven desde una sesión de Claude o desde tu equipo). Los tokens se leen sólo del
@@ -144,7 +146,7 @@ y el dominio `patagua.dev` verificado ya existen.
    - `RESEND_API_KEY`: la del Worker (sección 1b); sin ella no salen los correos al cliente
 
    Las variables de texto ya están en `wrangler.jsonc` (`PUBLIC_SITE_URL`, `SUPABASE_URL`,
-   `LICENSE_KID`, `GATEWAY_MODEL_ID`, `FLOW_BASE_URL`, `FLOW_BASIC_PLAN_ID`, `FLOW_PRO_PLAN_ID`, `EMAIL_FROM` y los cuatro `SELLER_*`): no
+   `LICENSE_KID`, `GATEWAY_MODEL_ID`, `FLOW_BASE_URL`, `FLOW_BASIC_PLAN_ID`, `FLOW_PRO_PLAN_ID`, `EMAIL_FROM`, los cuatro `SELLER_*` y, opcional, `SELLER_REPRESENTATIVE`): no
    las repitas en el panel, porque cada despliegue borra las de tipo Text. Opcionales que no hay que
    poner: `GATEWAY_MAX_IN_FLIGHT` (por defecto 3), `ANTHROPIC_BASE_URL` (en producción sólo la oficial)
    y `FLOW_ALLOW_SANDBOX`, que nunca va en producción.
@@ -217,7 +219,7 @@ curl -sS -X POST https://pteron.patagua.dev/api/ai/v1/messages -H 'content-type:
 
 1. Entra una vez a https://pteron.patagua.dev/cuenta con tu correo; luego, en `/admin`, concédete la
    cortesía `tester` (el esquema borró las cortesías anteriores).
-2. En pteron 0.7.2 (el build de desarrollo sirve), Configuración › Perfil › «Activar este equipo»: la
+2. En pteron 0.8.0 (el build de desarrollo sirve), Configuración › Perfil › «Activar este equipo»: la
    app espera sola a que autorices en el navegador.
 3. Modelo de IA › IA incluida › Guardar: el aviso dice que lo enviado va a Anthropic.
 4. Haz un pedido largo con varias vueltas de herramientas. En `/admin` › Consumo debe aparecer en
@@ -225,23 +227,23 @@ curl -sS -X POST https://pteron.patagua.dev/api/ai/v1/messages -H 'content-type:
 5. Mide cuántas unidades usa cada material (los casos C01–C08 de `EVALUACION.md` de la app). Con eso
    se publica la equivalencia en materiales.
 
-## 7. Publicar 0.7.2
+## 7. Publicar 0.8.0
 
-1. En la app (`marcorojasb/pteron`), con la versión en 0.7.2, empuja la etiqueta `v0.7.2`:
+1. En la app (`marcorojasb/pteron`), con la versión en 0.8.0, empuja la etiqueta `v0.8.0`:
    `release.yml` arma los instaladores y deja un borrador en `marcorojasb/pteron-beta`. Publícalo
-   ahí. 0.7.2 trae Basic a $2.990 con IVA, sólo la clave k2 y la activación que espera sola a la
+   ahí. 0.8.0 trae Basic a $2.990 con IVA, sólo la clave k2 y la activación que espera sola a la
    cuenta; la 0.7.1 publicada todavía muestra $1.990.
 2. `sync-pteron-releases.yml` hace un commit en `main` de esta web con
-   `public/docs/data/releases.json` en 0.7.2 y la despliega (corre cada 15 minutos, o a mano desde
-   Actions). Comprueba que https://pteron.patagua.dev/descargar ofrece 0.7.2.
+   `public/docs/data/releases.json` en 0.8.0 y la despliega (corre cada 15 minutos, o a mano desde
+   Actions). Comprueba que https://pteron.patagua.dev/descargar ofrece 0.8.0.
 
 ## 8. Abrir la venta
 
-Sólo con 0.7.2 publicada (sección 7).
+Sólo con 0.8.0 publicada (sección 7).
 
 1. Resuelve `LEGAL-PENDIENTE.md`: quién vende (con RUT y domicilio), retracto y devoluciones,
    confirmación escrita, boleta por cada cobro y encargo de datos. Los borradores están en
-   `BORRADORES-LEGALES.md`. Llena los `SELLER_*` (1b).
+   `BORRADORES-LEGALES.md`. Llena los `SELLER_*` (1b; `SELLER_REPRESENTATIVE` es opcional).
 2. `/admin` › Planes: abre la venta de Basic, y la de Pro si corresponde.
 3. Primera compra real con tu tarjeta:
    - la suscripción queda en prueba;

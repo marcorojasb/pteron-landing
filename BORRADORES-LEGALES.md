@@ -131,8 +131,8 @@ un lugar visible», antes del contrato y del pago, con la forma de ejercerlo.
 
 ### Opción A: mantener el retracto
 
-Ojo: `LEGAL-PENDIENTE.md` §2 usa las letras al revés en sus borradores (allí A es excluir y B mantener). Para
-no confundirlas, al decidir hay que nombrar la opción («mantener» o «excluir») y no sólo la letra.
+`LEGAL-PENDIENTE.md` §2 usa las mismas letras (A, mantener; B, excluir). Al decidir, conviene nombrar igual la
+opción («mantener» o «excluir») y no sólo la letra.
 
 Términos, nueva sección «Derecho a retracto y devoluciones»:
 

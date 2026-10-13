@@ -298,7 +298,7 @@ El Worker envía tres correos al cliente por la API HTTP de Resend
 
 Apagados hasta configurar todo: si falta el secreto `RESEND_API_KEY` o cualquiera
 de `EMAIL_FROM`, `SELLER_NAME`, `SELLER_RUT`, `SELLER_ADDRESS` y `SELLER_EMAIL`
-(variables de `wrangler.jsonc`), no se lee nada ni se llama a Resend, y queda un
+(variables de `wrangler.jsonc`; `SELLER_REPRESENTATIVE`, el representante legal de una persona jurídica, es opcional), no se lee nada ni se llama a Resend, y queda un
 evento `<tipo>_email_skipped` con los nombres que faltan. Esas suscripciones no
 recibirán después ese correo. El retracto sólo aparece cuando `TERMS_RETRACTO`
 (`src/lib/terms.js`) tiene texto, es decir, cuando los Términos lo dicen.
@@ -367,9 +367,10 @@ texto puesta en el panel de Cloudflare se borra en el siguiente despliegue.
   plan, así que un precio nuevo es un id nuevo. El Worker crea el plan en el
   primer checkout con los valores de `plan_catalog` (Basic $2.990 al mes, IVA
   incluido, con 7 días de prueba; Pro $9.990, sin prueba).
-- `EMAIL_FROM` y `SELLER_NAME`, `SELLER_RUT`, `SELLER_ADDRESS`, `SELLER_EMAIL`:
-  remitente y datos del vendedor de los correos (ver «Correos»). Los `SELLER_*`
-  quedan vacíos hasta que los fije el abogado.
+- `EMAIL_FROM` y `SELLER_NAME`, `SELLER_RUT`, `SELLER_ADDRESS`, `SELLER_EMAIL`
+  (más `SELLER_REPRESENTATIVE`, opcional: el representante legal si vende una
+  persona jurídica): remitente y datos del vendedor de los correos (ver
+  «Correos»). Los `SELLER_*` quedan vacíos hasta que los fije el abogado.
 
 Los secretos se cargan con `npx wrangler secret put <NOMBRE>` o desde el panel
 del Worker, nunca en el repositorio ni en la interfaz del navegador:

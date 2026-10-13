@@ -207,11 +207,15 @@
       rows.push(["IA incluida", `${number.format(limit)} unidades por período${during}. Se renueva con tu cobro.`]);
     }
     rows.push(["Cancelar", "Desde esta página, cuando quieras."]);
+    // Ley 19.496, art. 12 A: antes de pagar se le dice dónde llegará la confirmación escrita. Sin correo conocido se
+    // nombra «el correo de tu cuenta» en lugar de inventar uno.
+    const email = String(account.user?.email || "").trim();
     return {
       plan: planId,
       name: planName(planId),
       price: `${pesos(price)} al mes, IVA incluido`,
       rows,
+      confirmation: `Te enviaremos la confirmación de la compra y una copia de los Términos ${email ? `a ${email}` : "al correo de tu cuenta"}.`,
       trialDays,
       termsVersion: TERMS_VERSION.test(String(account.termsVersion || "")) ? account.termsVersion : null,
     };
@@ -736,6 +740,7 @@
       row.append(element("dt", label), element("dd", text));
       return row;
     }));
+    summaryPanel.querySelector("[data-summary-confirmation]").textContent = summary.confirmation;
     summaryPanel.querySelector("[data-terms-version]").textContent = summary.termsVersion || "vigente";
     termsAccept.checked = false;
     termsAccept.removeAttribute("aria-invalid");
