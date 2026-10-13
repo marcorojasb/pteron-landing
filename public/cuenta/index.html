@@ -105,8 +105,8 @@ SOFTWARE.
           </div>
         </form>
         <dl class="acceso-hechos">
-          <div><dt>7 días gratis en Basic</dt><dd>Flow registra tu tarjeta, sin cobro durante la prueba.</dd></div>
-          <div><dt>Licencia firmada</dt><dd>pteron la guarda y la verifica en tu equipo, sin depender de internet cada vez.</dd></div>
+          <div><dt>7 días gratis en Basic</dt><dd>Registras tu tarjeta en Flow y no se cobra nada durante la prueba. Si no cancelas antes, se cobran $1.990 al terminar los 7 días y luego cada mes, hasta que canceles.</dd></div>
+          <div><dt>Licencia firmada</dt><dd>Se guarda en tu equipo, se verifica ahí y se renueva sola mientras tu plan siga vigente.</dd></div>
         </dl>
       </div>
 
@@ -139,7 +139,8 @@ SOFTWARE.
           </div>
           <div class="activar-estado" data-activation-pending hidden>
             <p class="activar-titulo">Este equipo espera tu autorización.</p>
-            <p class="nota">Autorizarlo habilita la licencia de tu plan actual.</p>
+            <p class="nota" data-activation-has-plan>Autorizarlo habilita la licencia de tu plan actual.</p>
+            <p class="nota" data-activation-needs-plan hidden>La licencia sale de tu plan: elige uno en «Planes» y después autoriza el equipo.</p>
             <button class="boton boton-principal" type="button" data-confirm-activation>Autorizar equipo</button>
           </div>
           <div class="activar-estado" data-activation-idle>
@@ -164,20 +165,44 @@ SOFTWARE.
               <div data-subscription-summary hidden></div>
               <button class="boton boton-papel" type="button" data-cancel-subscription hidden>Cancelar renovación</button>
             </article>
+            <!-- Los botones parten cerrados: cuenta.js sólo abre los planes que el catálogo pone a la venta -->
             <article class="hoja-panel plan-opcion" data-plan-card="basic">
               <h3>Basic</h3>
-              <p class="plan-precio"><span data-plan-price>$2.999</span> <small>CLP al mes</small></p>
-              <p class="nota"><span class="destacado" data-plan-trial>7 días gratis</span> Tarjeta requerida, sin cobro durante la prueba.</p>
-              <button class="boton boton-tinta" type="button" data-checkout-plan="basic">Elegir Basic</button>
+              <p class="plan-precio"><span data-plan-price>$1.990</span> <small>CLP al mes, IVA incluido</small></p>
+              <p class="nota" data-plan-trial><span class="destacado">7 días gratis.</span> Luego $1.990 al mes, hasta que canceles.</p>
+              <p class="nota" data-plan-quota>IA incluida: 6.000.000 unidades por período (1.500.000 durante la prueba).</p>
+              <button class="boton boton-tinta" type="button" data-checkout-plan="basic" disabled>Disponible pronto</button>
             </article>
             <article class="hoja-panel plan-opcion" data-plan-card="pro">
               <h3>Pro</h3>
-              <p class="plan-precio"><span data-plan-price>$9.990</span> <small>CLP al mes</small></p>
-              <p class="nota">Cobro mensual. Cancelas cuando quieras.</p>
-              <button class="boton boton-papel" type="button" data-checkout-plan="pro">Elegir Pro</button>
+              <p class="plan-precio"><span data-plan-price>$9.990</span> <small>CLP al mes, IVA incluido</small></p>
+              <p class="nota">Sin prueba. Cobro mensual; cancelas cuando quieras.</p>
+              <p class="nota" data-plan-quota>IA incluida: 30.000.000 unidades por período.</p>
+              <button class="boton boton-papel" type="button" data-checkout-plan="pro" disabled>Disponible pronto</button>
             </article>
           </div>
-          <p class="nota planes-cuenta-pie">Al confirmar Basic, Flow registra tu tarjeta y el primer cobro llega al terminar los 7 días si no cancelas antes. Puedes cancelar cuando quieras. En <a href="/planes">Planes</a> ves qué incluye cada uno.</p>
+          <p class="nota planes-cuenta-aviso" data-plan-busy hidden>Ya tienes un plan en curso y no se puede contratar otro a la vez. Para cambiarlo, escríbenos a <a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a>.</p>
+
+          <!-- Antes de ir a Flow: qué se contrata, cuánto y cuándo se cobra, y la aceptación de los Términos vigentes -->
+          <section class="hoja-panel resumen" data-checkout-summary aria-labelledby="resumen-titulo" hidden>
+            <p class="rotulo">Antes de registrar tu tarjeta</p>
+            <h3 id="resumen-titulo" tabindex="-1" data-summary-title>Basic</h3>
+            <p class="resumen-precio" data-summary-price>$1.990 al mes, IVA incluido</p>
+            <dl class="resumen-filas" data-summary-rows></dl>
+            <form class="resumen-form" data-summary-form novalidate>
+              <label class="casilla">
+                <input type="checkbox" data-terms-accept aria-describedby="resumen-error">
+                <span>Leí y acepto los <a href="/terminos" target="_blank" rel="noopener">Términos<span class="sr-only"> (se abren en otra pestaña)</span></a> (versión <span data-terms-version>2026-10-13</span>) y la <a href="/privacidad" target="_blank" rel="noopener">Política de privacidad<span class="sr-only"> (se abre en otra pestaña)</span></a></span>
+              </label>
+              <p class="acceso-error" id="resumen-error" data-summary-error role="alert"></p>
+              <div class="resumen-acciones">
+                <button class="boton boton-tinta" type="submit" data-checkout-confirm>Registrar tarjeta en Flow</button>
+                <button class="boton boton-papel" type="button" data-checkout-back>Volver</button>
+              </div>
+              <p class="nota">Flow registra tu tarjeta en su propio sitio; esta web no la recibe.</p>
+            </form>
+          </section>
+          <p class="nota planes-cuenta-pie">Antes de ir a Flow ves el precio, las fechas de cobro y los Términos. Cancelas aquí mismo cuando quieras. En <a href="/planes">Planes</a> está qué incluye cada uno y cómo se cuenta la IA incluida.</p>
         </section>
 
         <section class="hoja-panel licencias" id="licencias" data-capitulo="Activaciones" aria-labelledby="licencias-titulo">
@@ -185,7 +210,7 @@ SOFTWARE.
           <div data-license-list>
             <p class="account-muted">Todavía no hay licencias emitidas.</p>
           </div>
-          <p class="nota">Si cancelas, pteron vuelve al núcleo gratuito sin borrar tu trabajo local.</p>
+          <p class="nota">La licencia se renueva sola, una vez al día, mientras tu plan siga vigente. Si el plan termina, pteron vuelve al núcleo gratuito sin borrar tu trabajo local.</p>
         </section>
       </div>
 

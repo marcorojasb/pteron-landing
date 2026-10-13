@@ -6,7 +6,8 @@
 .plan h2{font-size:clamp(1.5rem,1.2rem + 1vw,2rem);font-stretch:110%}
 .plan-precio{font-size:clamp(2.2rem,1.6rem + 2vw,3.2rem);font-weight:780;font-stretch:112%;letter-spacing:-.025em;line-height:1;color:var(--tinta);
   font-variant-numeric:tabular-nums}
-.plan-precio small{font-size:.9375rem;font-weight:550;font-stretch:100%;letter-spacing:0;color:var(--grafito)}
+/* «CLP al mes, IVA incluido» va entero bajo la cifra: partido junto a una letra tan grande, el IVA quedaba suelto */
+.plan-precio small{display:block;margin-top:10px;font-size:.9375rem;font-weight:550;font-stretch:100%;letter-spacing:0;line-height:1.3;color:var(--grafito)}
 .plan-condicion{min-height:3em;color:var(--grafito);font-size:var(--t-chico)}
 .plan-condicion .destacado{margin-right:4px}
 .plan-accion{align-self:flex-start}
@@ -16,7 +17,16 @@
   transform:rotate(-45deg)}
 .plan-nota{margin-top:auto;padding-top:10px;font-size:.875rem;color:var(--suave)}
 .tarifa-pie{max-width:76ch;margin-top:18px;font-size:.875rem;color:var(--grafito)}
-sup{font-size:.7em;line-height:0}
+
+/* La IA incluida: la cuota, cuándo se renueva, qué cuenta y adónde viaja lo que se pide, como las preguntas: el título
+   a la izquierda y los datos en renglones */
+.ia-incluida{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr);gap:clamp(24px,5vw,72px);padding-top:clamp(72px,10vw,128px)}
+.ia-incluida-cabeza{display:grid;gap:16px;align-content:start}
+.ia-incluida-datos{display:grid}
+.ia-incluida-datos div{display:grid;grid-template-columns:minmax(0,10rem) minmax(0,1fr);gap:4px 24px;padding:14px 2px;border-top:var(--borde) solid var(--linea)}
+.ia-incluida-datos div:last-child{border-bottom:var(--borde) solid var(--linea)}
+.ia-incluida-datos dt{font-weight:650;color:var(--tinta)}
+.ia-incluida-datos dd{max-width:62ch;margin:0;color:var(--grafito)}
 
 .preguntas{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr);gap:clamp(24px,5vw,72px);padding-block:clamp(72px,10vw,128px) clamp(56px,8vw,96px)}
 .preguntas-cabeza{display:grid;gap:16px;align-content:start}
@@ -34,5 +44,8 @@ sup{font-size:.7em;line-height:0}
   .tarifa{grid-template-columns:minmax(0,1fr)}
   .plan+.plan{border-left:0;border-top:var(--borde) solid var(--regla)}
   .plan-condicion{min-height:0}
-  .preguntas{grid-template-columns:minmax(0,1fr)}
+  .preguntas,.ia-incluida{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:560px){
+  .ia-incluida-datos div{grid-template-columns:minmax(0,1fr)}
 }

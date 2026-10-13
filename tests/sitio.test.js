@@ -94,6 +94,52 @@ test("los capítulos de cada página tienen ancla y nombre; los del inicio sigue
   assert.deepEqual(home, ["Portada", "Cuatro hojas", "Cómo se pide", "La hoja", "En tu computador", "macOS, Windows y Linux"]);
   assert.match(read("index.html"), /id="hojas" data-mesa data-capitulo="Cuatro hojas" data-capitulo-avance="0\.9"/, "las hojas son un momento de la escena");
   const legal = (page) => [...read(page).matchAll(/<section id="([^"]+)" data-capitulo/g)].map((m) => m[1]);
-  assert.deepEqual(legal("terminos.html"), ["naturaleza", "disponibilidad", "precio", "responsabilidad", "propiedad", "contacto"]);
-  assert.deepEqual(legal("privacidad.html"), ["minimizacion", "trabajo-local", "originales", "estudiantes", "cuenta", "sitio-web", "consultas"]);
+  assert.deepEqual(legal("terminos.html"), ["naturaleza", "disponibilidad", "precio", "prueba", "renovacion", "cobros", "cuota", "ia-incluida", "uso", "responsabilidad", "propiedad", "contacto"]);
+  assert.deepEqual(legal("privacidad.html"), ["minimizacion", "trabajo-local", "originales", "estudiantes", "cuenta", "ia-incluida", "proveedores", "sitio-web", "consultas"]);
+  // El índice al costado de cada página legal nombra y numera sus secciones en el mismo orden
+  for (const page of ["terminos.html", "privacidad.html"]) {
+    const html = read(page);
+    const indice = [...html.match(/<nav class="legal-indice"[\s\S]*?<\/nav>/)[0].matchAll(/<a href="#([^"]+)">/g)].map((m) => m[1]).filter((id) => id !== "creditos");
+    assert.deepEqual(indice, legal(page), `${page}: el índice sigue las secciones`);
+  }
+});
+
+// Lo que se cobra y cómo, dicho igual en todo el sitio (contrato R9 §11). Una cifra o una condición que cambie en una
+// página y no en otra es justo lo que no puede pasar con un precio.
+test("precio, prueba y cuota de los planes: los mismos en el inicio, /planes, /cuenta y los Términos", () => {
+  const PRUEBA = "Registras tu tarjeta en Flow y no se cobra nada durante la prueba. Si no cancelas antes, se cobran $1.990 al terminar los 7 días y luego cada mes, hasta que canceles.";
+  for (const page of ALL.filter((page) => !page.startsWith("admin/"))) {
+    assert.doesNotMatch(read(page), /\$\s?2\.999/, `${page}: no queda el precio anterior`);
+    assert.doesNotMatch(read(page), /hoy no tiene tope|por definir/, `${page}: la cuota ya está publicada`);
+  }
+  const planes = read("planes/index.html");
+  assert.match(planes, /\$1\.990 <small>CLP al mes, IVA incluido<\/small>/);
+  assert.match(planes, /\$9\.990 <small>CLP al mes, IVA incluido<\/small>/);
+  assert.ok(planes.includes(`<span class="destacado">7 días gratis.</span> ${PRUEBA}`), "/planes: la prueba y la renovación juntas");
+  assert.match(planes, /Una prueba por persona\./);
+  assert.match(planes, /6\.000\.000 unidades de IA por período \(1\.500\.000 durante la prueba\)\. Se renueva con tu cobro\./);
+  assert.match(planes, /30\.000\.000 unidades de IA por período, cinco veces Basic/);
+  assert.match(planes, /En preparación: memoria pedagógica avanzada y elección del modelo\./);
+  assert.match(planes, /Lo publicaremos cuando lo midamos con docentes\./, "la equivalencia en materiales no se inventa");
+  assert.doesNotMatch(planes, /Conexión prioritaria/);
+  assert.match(read("index.html"), /parten en \$1\.990 al mes, IVA incluido\./);
+  assert.ok(read("terminos.html").includes(`7 días gratis. ${PRUEBA}`), "Términos: la prueba con las mismas palabras");
+  assert.ok(read("cuenta/index.html").includes(PRUEBA), "/cuenta, antes de entrar: la prueba con las mismas palabras");
+});
+
+test("/cuenta parte con la venta cerrada y pide aceptar los Términos vigentes antes de Flow", () => {
+  const cuenta = read("cuenta/index.html");
+  for (const plan of ["basic", "pro"]) {
+    assert.match(cuenta, new RegExp(`data-checkout-plan="${plan}" disabled>Disponible pronto</button>`), `${plan}: sin catálogo no se vende`);
+  }
+  const resumen = cuenta.match(/<section class="hoja-panel resumen"[\s\S]*?<\/section>/)[0];
+  assert.match(resumen, /data-checkout-summary/);
+  assert.match(resumen, /<input type="checkbox" data-terms-accept/);
+  const casilla = resumen.match(/<label class="casilla">([\s\S]*?)<\/label>/)[1].replace(/<span class="sr-only">[^<]*<\/span>/g, "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+  assert.equal(casilla, "Leí y acepto los Términos (versión 2026-10-13) y la Política de privacidad");
+  assert.match(resumen, /<a href="\/terminos"/);
+  assert.match(resumen, /<a href="\/privacidad"/);
+  // La versión que muestra la casilla es la que publica la página de los Términos
+  assert.match(read("terminos.html"), /<p class="legal-fecha">Versión 2026-10-13<\/p>/);
+  assert.match(read("privacidad.html"), /<p class="legal-fecha">Versión 2026-10-13<\/p>/);
 });

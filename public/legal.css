@@ -24,6 +24,7 @@
   letter-spacing:-.01em;color:var(--azul)}
 .legal-n{font-size:.8em;font-weight:650;color:var(--suave);font-variant-numeric:tabular-nums}
 .legal-hoja p{grid-column:2;max-width:62ch;color:var(--tinta)}
+.legal-lista{grid-column:2;display:grid;gap:8px;max-width:62ch;margin:0;padding-left:1.2em;color:var(--tinta)}
 
 /* Sigue leyendo */
 .legal-sigue{display:grid;gap:10px}

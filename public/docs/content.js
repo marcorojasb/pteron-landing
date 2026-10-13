@@ -107,8 +107,8 @@ window.PTERON_DOCS = {
         <section><h2 id="macos">macOS</h2><ul><li>Mac con chip Apple M1 o posterior. No funciona en Mac con procesador Intel.</li><li>Una versión reciente y compatible de macOS.</li><li>Espacio disponible para la aplicación, tus documentos y el modelo local que elijas.</li></ul></section>
         <section><h2 id="windows">Windows 11</h2><ul><li>Windows 11 en un equipo de 64 bits.</li><li>Permiso para instalar aplicaciones descargadas desde la web.</li><li>Espacio disponible para documentos y modelos locales.</li></ul><div class="notice"><strong>Beta sin firma digital</strong><p>El instalador de Windows todavía no está firmado. SmartScreen puede mostrar una advertencia y pedir confirmación antes de continuar.</p></div></section>
         <section><h2 id="linux">Linux</h2><ul><li>Sistema x86_64.</li><li>Permiso para instalar un paquete o ejecutar una AppImage.</li><li>Espacio disponible para la aplicación, tus documentos y el modelo local que elijas.</li></ul><div class="notice"><strong>Archivos firmados</strong><p>Los archivos para Linux incluyen una firma GPG separada que puedes verificar con la clave pública de pteron.</p></div></section>
-        <section><h2 id="modelo">Modelo</h2><p>pteron viene preparado para usar un modelo local con Ollama. También puedes conectar un proveedor externo —⁠como OpenAI, Anthropic o Google Gemini⁠— o un perfil personalizado, pegando tu propia clave. Ninguna de las dos opciones es obligatoria para instalar: la eliges en el primer inicio y puedes cambiarla después en <strong>Configuración › Modelo de IA</strong>.</p></section>
-        <section><h2 id="conexion">Conexión</h2><p>El trabajo con tus archivos es local. Descargar actualizaciones y usar un proveedor en la nube necesitan conexión, y pteron lo indica antes de usarlos.</p></section>`
+        <section><h2 id="modelo">Modelo</h2><p>pteron viene preparado para usar un modelo local con Ollama. También puedes conectar un proveedor externo —⁠como OpenAI, Anthropic o Google Gemini⁠— o un perfil personalizado, pegando tu propia clave, o usar la IA incluida de un plan Basic o Pro, que no pide clave. Ninguna de esas opciones es obligatoria para instalar: la eliges en el primer inicio o después, en <strong>Configuración › Modelo de IA</strong>.</p></section>
+        <section><h2 id="conexion">Conexión</h2><p>El trabajo con tus archivos es local. Descargar actualizaciones, usar la IA incluida y usar un proveedor en la nube necesitan conexión, y pteron lo indica antes de usarlos.</p></section>`
     },
     "instalar-macos": {
       eyebrow: "Empezar / Instalar",
@@ -156,7 +156,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
         </section>
         <section>
           <h2 id="modelo">2. Elige quién prepara el material</h2>
-          <p>Abre <strong>Configuración › Modelo de IA</strong>. Puedes quedarte con el modelo local de <strong>En este equipo</strong> (Ollama), que no envía tus documentos a ningún servidor, o elegir un proveedor externo —⁠por ejemplo OpenAI, Anthropic o Google Gemini, u otro perfil que agregues⁠— y pegar tu propia clave. Elige un proveedor en la lista: a la derecha pegas su clave y eliges el modelo.</p>
+          <p>Abre <strong>Configuración › Modelo de IA</strong>. Tienes tres caminos: quedarte con el modelo local de <strong>En este equipo</strong> (Ollama), que no envía tus documentos a ningún servidor; elegir un proveedor externo —⁠por ejemplo OpenAI, Anthropic o Google Gemini, u otro perfil que agregues⁠— y pegar tu propia clave; o, con un plan Basic o Pro, usar la <strong>IA incluida</strong>, que no pide clave y funciona con la licencia que activas en <strong>Configuración › Perfil</strong>. Para un proveedor externo, elígelo en la lista: a la derecha pegas su clave y eliges el modelo.</p>
           <p>Si no configuras nada, pteron queda con el modelo local. Los cambios no se aplican hasta pulsar <strong>Guardar cambios</strong>.</p>
         </section>
         <section>
@@ -596,9 +596,9 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
       lead: "Tus documentos quedan en tu equipo salvo que elijas un modelo en la nube: desde que lo guardas, lo que le pides y adjuntas viaja a ese proveedor.",
       html: `
         <section><h2 id="limite">Límite de acceso</h2><p>pteron trabaja dentro de la carpeta que tú eliges. No incluye terminal ni herramientas generales de programación, y la interfaz no tiene acceso directo al sistema y sólo puede hacer una lista cerrada de tareas docentes.</p></section>
-        <section><h2 id="nube">Uso de nube</h2><p>Antes de usar un modelo en la nube, pteron te pide consentimiento una vez, al guardar el proveedor, su clave o su dirección. Las búsquedas en el Currículum Nacional y en la web envían sólo el texto de la búsqueda. Las fuentes web se limitan a HTTPS, y lo que se recupera de ellas se trata como dato no confiable.</p></section>
+        <section><h2 id="nube">Uso de nube</h2><p>Antes de usar un modelo en la nube —también la IA incluida—, pteron te pide consentimiento una vez, al guardar el proveedor, su clave o su dirección. Las búsquedas en el Currículum Nacional y en la web envían sólo el texto de la búsqueda. Las fuentes web se limitan a HTTPS, y lo que se recupera de ellas se trata como dato no confiable.</p></section>
         <section><h2 id="iphone">Acceso desde el iPhone</h2><p>Existe un acceso complementario desde el iPhone y viene <strong>apagado de fábrica</strong>. El escritorio conserva sesiones, carpeta y materiales, y el teléfono se empareja contra él. El acceso se enciende sólo desde <strong>Configuración › Labs</strong>, y ahí mismo cambias su clave o lo cortas.</p></section>
-        <section><h2 id="licencia">Licencia</h2><p>El núcleo local funciona sin licencia y no requiere plan. La licencia habilita capacidad de IA incluida; se activa desde <strong>Configuración › Perfil</strong> y se verifica en tu equipo, sin consultar a un servidor.</p></section>`
+        <section><h2 id="licencia">Licencia</h2><p>El núcleo local funciona sin licencia y no requiere plan. Un plan Basic o Pro habilita la IA incluida con una licencia firmada, que se activa en <strong>Configuración › Perfil</strong> y se verifica en tu equipo.</p><p>La licencia se renueva sola mientras tu plan siga vigente: una vez al día y, cuando le quedan menos de 72 horas, cada hora, al volver de la suspensión y antes de usar la IA incluida. Si el plan termina, la licencia deja de renovarse y sigues con el núcleo local.</p></section>`
     },
     "datos-estudiantes": {
       eyebrow: "Privacidad y control",
@@ -627,12 +627,18 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
       html: `
         <section>
           <h2 id="configuracion">Dónde se configura</h2>
-          <p>En <strong>Configuración › Modelo de IA</strong>. Elige entre el modelo local de <strong>En este equipo</strong> y los proveedores externos —⁠OpenAI, Anthropic, Google Gemini u otros, o un perfil personalizado⁠—. Elige un proveedor en la lista: a la derecha pegas su clave y pteron muestra los modelos que esa clave habilita. Nada se aplica hasta pulsar <strong>Guardar cambios</strong>.</p>
+          <p>En <strong>Configuración › Modelo de IA</strong>. Elige entre la <strong>IA incluida</strong> de tu plan, el modelo local de <strong>En este equipo</strong> y los proveedores externos —⁠OpenAI, Anthropic, Google Gemini u otros, o un perfil personalizado⁠—. Para un proveedor externo, elígelo en la lista: a la derecha pegas su clave y pteron muestra los modelos que esa clave habilita. Nada se aplica hasta pulsar <strong>Guardar cambios</strong>.</p>
           <figure class="product-shot"><img src="/assets/app/09-modelo-de-ia-marco.webp?v=2026-10-12.8" srcset="/assets/app/09-modelo-de-ia-marco.webp?v=2026-10-12.8 1440w, /assets/app/09-modelo-de-ia-marco-2x.webp?v=2026-10-12.8 2880w" sizes="(max-width: 760px) 100vw, 720px" width="1440" height="880" loading="lazy" decoding="async" alt="Configuración › Modelo de IA de pteron 0.7: el selector de modelos de OpenAI con un buscador, el modelo Recomendado 0.7.0, dos Probado 0.3.0 y sus precios por millón de tokens"><figcaption>Configuración › Modelo de IA: el selector de modelos de OpenAI con «Recomendado 0.7.0» y «Probado 0.3.0».</figcaption></figure>
         </section>
         <section>
           <h2 id="local">Modelo local</h2>
           <p>La opción <strong>En este equipo</strong> usa Ollama y permite trabajar sin enviar tus documentos a ningún proveedor. Es la base disponible y no necesita clave ni licencia.</p>
+        </section>
+        <section>
+          <h2 id="ia-incluida">IA incluida</h2>
+          <p>Con un plan Basic o Pro, la IA incluida responde sin que pegues una clave: en <strong>Configuración › Modelo de IA › IA incluida</strong> eliges <strong>Usar la IA incluida</strong>, y funciona mientras tu licencia esté vigente. Responde con un modelo de Anthropic que elige y actualiza pteron.</p>
+          <p>Lo que le pides —tu pedido, la conversación y lo que adjuntas— pasa por el servidor de pteron hacia Anthropic, en Estados Unidos, que genera la respuesta. pteron registra cuánto usas, no el contenido. Anthropic no entrena sus modelos con ese contenido y, por defecto, no lo guarda, salvo lo que sus sistemas de seguridad marquen. Como con cualquier modelo en la nube, pteron pide tu consentimiento al guardarla y avisa antes de enviar un dato identificable de un estudiante.</p>
+          <p>Cada plan trae una cuota por período, que se renueva con tu cobro: la ves en tu <a href="/cuenta">cuenta</a>, y en <a href="/planes#ia-incluida">Planes</a> está cómo se cuenta.</p>
         </section>
         <section>
           <h2 id="claves">Tus claves</h2>
@@ -680,11 +686,12 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
     "preguntas": {
       eyebrow: "Ayuda",
       title: "Preguntas frecuentes",
-      lead: "Respuestas breves sobre instalación, archivos y disponibilidad.",
+      lead: "Respuestas breves sobre instalación, archivos, planes y disponibilidad.",
       html: `
-        <section><h2 id="internet">¿Necesito internet?</h2><p>No para trabajar con un modelo local. Sí para descargar actualizaciones o usar un proveedor en la nube.</p></section>
+        <section><h2 id="internet">¿Necesito internet?</h2><p>No para trabajar con un modelo local. Sí para descargar actualizaciones, usar la IA incluida o usar un proveedor en la nube.</p></section>
         <section><h2 id="originales">¿pteron modifica mis originales?</h2><p>No. Cada resultado se guarda como un archivo nuevo mediante una acción que tú ejecutas. Tampoco hay guardado automático.</p></section>
         <section><h2 id="gratis">¿Seguirá siendo gratis?</h2><p>Sí. El núcleo local es gratis para siempre y no requiere plan ni licencia; los planes sólo agregan IA incluida. Ver <a href="/planes">Planes</a>.</p></section>
+        <section><h2 id="ia-incluida">¿Qué es la IA incluida?</h2><p>La IA de los planes Basic y Pro: responde sin claves ni configuración técnica, con un modelo de Anthropic que elige pteron, y trae una cuota por período que se renueva con tu cobro. Lo que le pides pasa por el servidor de pteron hacia Anthropic. Ver <a href="/docs?pagina=modelos-permisos#ia-incluida">Modelos y permisos</a> y <a href="/planes#ia-incluida">Planes</a>.</p></section>
         <section><h2 id="pptx">¿Puedo abrir mis PPTX?</h2><p>No. pteron crea y exporta presentaciones en PPTX, pero no importa ni convierte archivos PPTX externos.</p></section>
         <section><h2 id="windows">¿pteron funciona en Windows?</h2><p>Sí, durante la beta en Windows 11. El instalador todavía no está firmado y SmartScreen puede pedir confirmación.</p></section>
         <section><h2 id="linux">¿Linux está disponible?</h2><p>Sí, como beta para equipos x86_64. AppImage es el formato principal y también se publican paquetes <code>.deb</code>, <code>.rpm</code> y <code>.tar.gz</code>.</p></section>
@@ -697,6 +704,7 @@ gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;
       html: `
         <section><h2 id="no-abre">pteron no abre</h2><p>Reinicia el equipo, verifica que uses una plataforma compatible y vuelve a descargar el instalador desde el sitio oficial.</p></section>
         <section><h2 id="modelo">El modelo no responde</h2><p>Abre <strong>Configuración › Modelo de IA</strong> y revisa el estado de la tarjeta. Si usas el modelo local, comprueba que Ollama esté iniciado; si usas un proveedor externo, que la clave siga siendo válida y haya conexión.</p></section>
+        <section><h2 id="ia-incluida">La IA incluida no responde</h2><p>pteron te dice la causa y te ofrece seguir con el modelo local o con tu propia clave, sin cambiar de motor por su cuenta. Son tres:</p><ul><li><strong>Licencia no vigente.</strong> El plan terminó, tiene un pago pendiente o este equipo no está activado. Revisa tu plan en tu <a href="/cuenta">cuenta</a> y, si hace falta, elige «Activar este equipo» en <strong>Configuración › Perfil</strong>.</li><li><strong>Cuota del período agotada.</strong> Vuelve con tu próximo cobro; mientras tanto, sigue con el modelo local o con tu clave. En tu cuenta ves cuándo se renueva.</li><li><strong>Servicio no disponible.</strong> El servicio de la IA incluida no puede responder en este momento. Vuelve a intentarlo más tarde.</li></ul></section>
         <section><h2 id="exportar">La exportación falla</h2><p>pteron prefiere avisar antes que entregarte una copia incompleta. El mensaje indica qué parte del material no pudo convertirse; suele tratarse de una estructura no soportada.</p><figure class="product-shot"><img src="/assets/docs/app-error-exportar-0-6-0.webp" width="1760" height="1076" loading="lazy" alt="Aviso de error de exportación en pteron sobre el material abierto"><figcaption>Un fallo de exportación se declara y no deja un archivo a medias.</figcaption></figure></section>
         <section><h2 id="archivos">No aparece un archivo</h2><p>Confirma que esté dentro de la carpeta de trabajo actual y en un formato compatible. Puedes revisar o cambiar la carpeta en <strong>Configuración › Perfil</strong>.</p></section>
         <section><h2 id="actualizacion">La actualización no se aplicó</h2><p>En Windows, si el instalador silencioso queda bloqueado, pteron lo abre a la vista. Al volver a abrirse compara la versión real con la intentada y avisa si no cambió.</p></section>

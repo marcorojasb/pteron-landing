@@ -33,7 +33,7 @@
 .acceso-error:empty{display:none}
 .acceso-error{padding:10px 14px;border-radius:10px;background:var(--error-papel);color:var(--error);font-size:var(--t-chico)}
 .acceso-enviar{justify-self:start}
-.acceso-enviar:disabled,[data-checkout-plan]:disabled,[data-confirm-activation]:disabled,[data-cancel-subscription]:disabled{opacity:.7;cursor:default}
+.acceso-enviar:disabled,[data-checkout-plan]:disabled,[data-checkout-confirm]:disabled,[data-confirm-activation]:disabled,[data-cancel-subscription]:disabled{opacity:.7;cursor:default}
 .acceso-enviado{display:grid;gap:4px;padding:14px 16px;border-radius:10px;background:var(--ok-papel);color:var(--ok)}
 .acceso-enviado p{font-size:var(--t-chico)}
 .acceso:has([data-link-sent]:not([hidden])) .acceso-enviar{background:var(--hoja);color:var(--azul);box-shadow:0 0 0 1px var(--linea)}
@@ -70,23 +70,41 @@
 .plan-actual,.plan-opcion{display:grid;gap:12px;align-content:start}
 .plan-actual h3,.plan-opcion h3{font-size:1.25rem}
 .plan-precio{font-size:2.2rem;font-weight:780;font-stretch:112%;letter-spacing:-.02em;line-height:1;color:var(--tinta);font-variant-numeric:tabular-nums}
-.plan-precio small{font-size:.875rem;font-weight:550;font-stretch:100%;letter-spacing:0;color:var(--grafito)}
+.plan-precio small{display:block;margin-top:8px;font-size:.875rem;font-weight:550;font-stretch:100%;letter-spacing:0;line-height:1.3;color:var(--grafito)}
 .nota .destacado{margin-right:4px}
-.plan-opcion .boton{justify-self:start}
+.plan-opcion .boton,.plan-actual>.boton{justify-self:start}
 .plan-opcion[data-current="true"]{box-shadow:0 0 0 2px var(--azul),0 24px 48px -32px rgb(var(--sombra)/.4)}
 .subscription-plan{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 12px}
 .subscription-plan strong{font-size:1.375rem;font-weight:750;color:var(--tinta)}
 .subscription-plan span{padding:2px 10px;border-radius:999px;background:var(--mesa);font-size:.8125rem;font-weight:650;color:var(--azul)}
-[data-subscription-summary] dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:12px 0 0;font-size:var(--t-chico)}
-[data-subscription-summary] dt{color:var(--grafito)}
-[data-subscription-summary] dd{margin:0;color:var(--tinta);font-weight:560}
-.planes-cuenta-pie{max-width:80ch}
+/* El plan actual: el estado en una frase, el pago pendiente y el uso de la IA incluida del período */
+[data-subscription-summary]{display:grid;gap:12px;justify-items:start}
+.subscription-estado{font-size:var(--t-chico);color:var(--tinta)}
+.subscription-uso{display:grid;gap:2px;justify-self:stretch;padding-top:12px;border-top:var(--borde) solid var(--regla);font-size:var(--t-chico);
+  color:var(--tinta);font-variant-numeric:tabular-nums}
+.planes-cuenta-pie,.planes-cuenta-aviso{max-width:80ch}
+
+/* El resumen antes de ir a Flow: lo que se contrata, cuánto y cuándo, y la casilla de los Términos */
+.resumen{display:grid;gap:12px;max-width:760px;scroll-margin-top:24px}
+.resumen h3{font-size:1.5rem}
+.resumen-precio{font-size:1.125rem;font-weight:650;color:var(--tinta)}
+.resumen-filas{display:grid;margin-top:4px}
+.resumen-filas div{display:grid;grid-template-columns:minmax(0,9rem) minmax(0,1fr);gap:2px 16px;padding:10px 0;border-top:var(--borde) solid var(--regla)}
+.resumen-filas div:last-child{border-bottom:var(--borde) solid var(--regla)}
+.resumen-filas dt{font-weight:650;font-size:var(--t-chico);color:var(--grafito)}
+.resumen-filas dd{margin:0;font-size:var(--t-chico);color:var(--tinta)}
+.resumen-form{display:grid;gap:14px;margin-top:6px}
+.casilla{display:flex;gap:12px;align-items:flex-start;padding:4px 0;font-weight:500;font-size:1rem;line-height:1.45;color:var(--tinta);cursor:pointer}
+.casilla input{flex:none;width:22px;height:22px;margin:1px 0 0;accent-color:var(--azul);cursor:pointer}
+.casilla input[aria-invalid="true"]{outline:2px solid var(--error);outline-offset:2px}
+.resumen-acciones{display:flex;flex-wrap:wrap;gap:12px}
 .licencias{display:grid;gap:14px}
 .licencias h2{font-size:clamp(1.4rem,1.15rem + .8vw,1.9rem)}
 .license-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 16px;padding:12px 0;border-top:var(--borde) solid var(--regla)}
 .license-row div{display:grid;gap:2px}
 .license-row span{font-size:var(--t-chico);color:var(--grafito)}
 .license-row-status{padding:2px 10px;border-radius:999px;background:var(--ok-papel);color:var(--ok)!important;font-weight:650}
+.license-row-status[data-estado="off"]{background:var(--mesa);color:var(--grafito)!important}
 .account-muted{color:var(--grafito)}
 .ayuda{display:grid;gap:8px;max-width:62ch;margin-block:clamp(48px,7vw,88px) clamp(56px,8vw,96px);padding-top:18px;border-top:2px solid var(--azul)}
 .ayuda h2{font-size:1.25rem}
@@ -94,6 +112,9 @@
 
 @media (max-width:900px){
   .acceso,.activar,.planes-cuenta-rejilla{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:560px){
+  .resumen-filas div{grid-template-columns:minmax(0,1fr)}
 }
 /* Sin JavaScript el enlace no se puede pedir: el campo no lleva name, para que el correo nunca quede en la URL, y el
    formulario cede su lugar a la nota */

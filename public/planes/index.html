@@ -70,29 +70,45 @@
         </article>
         <article class="plan" aria-labelledby="plan-basic">
           <h2 id="plan-basic">Basic</h2>
-          <p class="plan-precio">$2.999 <small>CLP al mes</small></p>
-          <p class="plan-condicion"><span class="destacado">7 días gratis</span> Tarjeta registrada en Flow, sin cobro durante la prueba.</p>
+          <p class="plan-precio">$1.990 <small>CLP al mes, IVA incluido</small></p>
+          <p class="plan-condicion"><span class="destacado">7 días gratis.</span> Registras tu tarjeta en Flow y no se cobra nada durante la prueba. Si no cancelas antes, se cobran $1.990 al terminar los 7 días y luego cada mes, hasta que canceles.</p>
           <a class="boton boton-tinta plan-accion" href="/cuenta?plan=basic">Elegir Basic</a>
           <ul class="plan-incluye" role="list">
             <li>Todo el núcleo local</li>
-            <li>IA incluida, sin claves ni configuración técnica<sup>*</sup></li>
+            <li>IA incluida, sin claves ni configuración técnica</li>
+            <li>6.000.000 unidades de IA por período (1.500.000 durante la prueba). Se renueva con tu cobro.</li>
             <li>El modelo lo elige y lo actualiza pteron</li>
           </ul>
-          <p class="plan-nota">Cuota de IA: por definir.</p>
+          <p class="plan-nota">Una prueba por persona.</p>
         </article>
         <article class="plan" aria-labelledby="plan-pro">
           <h2 id="plan-pro">Pro</h2>
-          <p class="plan-precio">$9.990 <small>CLP al mes</small></p>
-          <p class="plan-condicion">Cobro mensual. Cancelas cuando quieras.</p>
+          <p class="plan-precio">$9.990 <small>CLP al mes, IVA incluido</small></p>
+          <p class="plan-condicion">Sin prueba: el primer cobro es al contratar y luego cada mes, hasta que canceles.</p>
           <a class="boton boton-papel plan-accion" href="/cuenta?plan=pro">Elegir Pro</a>
           <ul class="plan-incluye" role="list">
             <li>Todo lo de Basic</li>
-            <li>Más capacidad de IA incluida, cuando se definan las cuotas<sup>*</sup></li>
+            <li>30.000.000 unidades de IA por período, cinco veces Basic</li>
           </ul>
-          <p class="plan-nota">Cuota de IA: por definir. En preparación: memoria pedagógica avanzada y elección del modelo.</p>
+          <p class="plan-nota">En preparación: memoria pedagógica avanzada y elección del modelo.</p>
         </article>
       </div>
-      <p class="tarifa-pie"><sup>*</sup> La cuota de IA incluida todavía no está definida y hoy no tiene tope. La publicaremos aquí antes de aplicarla. Tus archivos y tu trabajo local siguen en tu equipo.</p>
+      <p class="tarifa-pie">Pagas con tarjeta a través de Flow y cancelas desde tu cuenta cuando quieras. Tus archivos y tu trabajo local siguen en tu equipo.</p>
+    </section>
+
+    <section class="contenedor ia-incluida" id="ia-incluida" data-capitulo="La IA incluida" aria-labelledby="ia-incluida-titulo">
+      <div class="ia-incluida-cabeza">
+        <h2 id="ia-incluida-titulo">La IA incluida</h2>
+        <p class="texto">Responde con un modelo de Anthropic que elige pteron. Lo que envías pasa por el servidor de pteron hacia Anthropic, en Estados Unidos; pteron registra cuánto usas, no el contenido.</p>
+      </div>
+      <dl class="ia-incluida-datos">
+        <div><dt>Cuota</dt><dd>Basic: 6.000.000 unidades de IA por período (1.500.000 durante la prueba). Pro: 30.000.000 unidades por período, cinco veces Basic.</dd></div>
+        <div><dt>Período</dt><dd>Se renueva con tu cobro: cada mes pagado es un período, y la prueba tiene el suyo. Lo que no usas no pasa al siguiente.</dd></div>
+        <div><dt>Qué cuenta</dt><dd>Lo que envías —tu pedido, la conversación, el material y lo que adjuntas— y lo que el modelo responde, ponderado por su costo.</dd></div>
+        <div><dt>Cuántos materiales</dt><dd>Lo publicaremos cuando lo midamos con docentes.</dd></div>
+        <div><dt>Si se agota</dt><dd>La IA incluida se detiene hasta tu siguiente cobro y pteron te lo dice. Sigues con el modelo local o con tu propia clave, sin cobros extra.</dd></div>
+        <div><dt>Tu uso</dt><dd>En tu <a href="/cuenta">cuenta</a> ves cuánto llevas en el período y cuándo se renueva.</dd></div>
+      </dl>
     </section>
 
     <section class="contenedor preguntas" id="preguntas" data-capitulo="Preguntas frecuentes" aria-labelledby="preguntas-titulo">
@@ -104,9 +120,11 @@
         <details open><summary>¿El núcleo local será realmente gratis para siempre?</summary><p>Sí. El núcleo local no depende de un plan de pago. Los planes agregan la IA incluida, pero no ponen detrás de una suscripción tu trabajo local.</p></details>
         <details><summary>¿Necesito internet para usar pteron?</summary><p>Para crear materiales sin internet necesitas un modelo local con Ollama. Los modelos en la nube, la IA incluida, la consulta al Currículum Nacional, la búsqueda web y las actualizaciones necesitan conexión. Tus archivos quedan siempre en tu equipo.</p></details>
         <details><summary>¿Mis archivos o planificaciones se envían a la nube?</summary><p>La cuenta web guarda tu correo, tu plan y tus activaciones, no tus archivos. Activar una licencia no sube tus documentos. Si eliges la IA incluida o un modelo en la nube, pteron te pide consentimiento al guardarlo; desde entonces, lo que le pides y adjuntas viaja a ese modelo.</p></details>
-        <details><summary>¿Cómo activo un plan en mi computador?</summary><p>En pteron, abre Configuración › Perfil › Plan y licencia y elige «Activar este equipo». Se abre tu cuenta web: ahí eliges «Autorizar equipo» y pteron guarda una licencia firmada que comprueba en tu equipo, sin consultar a un servidor cada vez.</p></details>
-        <details><summary>¿Qué pasa si cancelo un plan?</summary><p>La renovación se detiene y conservas el plan hasta el final del período que pagaste. Después, pteron vuelve al núcleo gratuito sin borrar ni bloquear tu trabajo local.</p></details>
-        <details><summary>¿Qué ocurre al llegar al límite de IA?</summary><p>Hoy no hay límite. Cuando definamos la cuota de cada plan, la publicaremos aquí antes de aplicarla; si se agota, puedes seguir con tus propias claves o con un modelo local.</p></details>
+        <details><summary>¿Adónde viaja lo que le pido a la IA incluida?</summary><p>Tu pedido, la conversación y lo que adjuntas pasan por el servidor de pteron hacia Anthropic, en Estados Unidos, que genera la respuesta. pteron registra cuánto usas, no el contenido. Anthropic no entrena sus modelos con ese contenido y, por defecto, no lo guarda, salvo lo que sus sistemas de seguridad marquen. Los detalles están en <a href="/privacidad#ia-incluida">Privacidad</a>.</p></details>
+        <details><summary>¿Cómo activo un plan en mi computador?</summary><p>En pteron, abre Configuración › Perfil › Plan y licencia y elige «Activar este equipo». Se abre tu cuenta web: ahí eliges «Autorizar equipo» y pteron guarda una licencia firmada que comprueba en tu equipo. Mientras tu plan siga vigente, la licencia se renueva sola una vez al día.</p></details>
+        <details><summary>¿Qué ocurre si se agota la IA incluida?</summary><p>Se detiene hasta tu siguiente cobro y pteron te dice que se agotó la cuota del período. Mientras tanto, sigues con el modelo local o con tu propia clave. No hay cobros extra, y en tu cuenta ves cuánto llevas usado.</p></details>
+        <details><summary>¿Cómo cancelo y qué pasa después?</summary><p>En tu cuenta, con «Cancelar renovación». Si cancelas durante la prueba, no se cobra nada y Basic termina el día en que terminaba la prueba. Si ya pagaste, el plan sigue hasta el fin del período pagado y no se renueva. Después, pteron vuelve al núcleo gratuito sin borrar ni bloquear tu trabajo local.</p></details>
+        <details><summary>¿Qué pasa si falla un cobro?</summary><p>Tu cuenta muestra «Pago pendiente» y, cuando Flow lo entrega, el enlace para pagar. La IA incluida sigue hasta 72 horas después del fin del período pagado; si el pago no llega, se detiene hasta que pagues. Tu trabajo local no cambia.</p></details>
         <details><summary>¿Puedo usar mis propias claves?</summary><p>Sí. Usar tus propios proveedores o modelos seguirá siendo una opción gratuita y bajo tu decisión.</p></details>
       </div>
     </section>
