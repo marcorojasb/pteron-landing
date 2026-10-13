@@ -54,6 +54,7 @@ test("account devuelve perfil, catálogo, suscripciones y licencias con valores 
     { match: matches.supabase("plan_catalog"), respond: { body: [{ id: "basic", display_name: "Basic" }] } },
     { match: matches.supabase("subscriptions"), respond: { body: null } },
     { match: matches.supabase("licenses"), respond: { body: [] } },
+    { match: matches.supabase("usage_periods"), respond: { body: [] } },
   ]);
   await withFetch(network.fetch, async () => {
     const res = await run(new Request("https://pteron.test/api/account", { headers: { authorization: "Bearer sesion" } }));
@@ -64,6 +65,9 @@ test("account devuelve perfil, catálogo, suscripciones y licencias con valores 
       plans: [{ id: "basic", display_name: "Basic" }],
       subscriptions: [],
       licenses: [],
+      trialEligible: true,
+      termsVersion: "2026-10-13",
+      usage: null,
     });
     const reads = network.calls.filter((call) => call.url.includes("/rest/v1/"));
     assert.ok(reads.every((call) => call.headers.Authorization === "Bearer sesion"), "las lecturas van con la sesión del profesor");

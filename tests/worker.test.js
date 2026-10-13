@@ -4,6 +4,7 @@ import worker, { createServices, matchApi } from "../src/worker.js";
 import { createLicenseService } from "../src/lib/license.js";
 import { messages, models } from "../src/routes/ai.js";
 import { fakeAssets, fakeAssetsWithEtags, fakeExecution, fakeSupabase, jsonRequest, testEnv, testKeyPair, testServices, withFetch } from "./helpers/fakes.js";
+import { fakeNetwork, matches } from "./helpers/fakes.js";
 
 const env = testEnv();
 
@@ -328,4 +329,147 @@ test("las respuestas del Worker llevan las mismas cabeceras de seguridad que los
   const redirect = await worker.fetch(new Request("https://pteron.test/docs/x/"), { ...env, ASSETS: fakeAssets({}) }, fakeExecution());
   assert.equal(redirect.status, 308);
   assert.equal(redirect.headers.get("x-frame-options"), "DENY");
+});
+
+test("la guarda de host responde 421 en las rutas con secretos fuera de PUBLIC_SITE_URL, sin tocar la red", async () => {
+  await withFetch(async () => { throw new Error("no debe llamar a la red"); }, async () => {
+    const paths = ["/api/ai/v1/messages", "/api/ai/v1/models", "/api/billing/checkout", "/api/billing/flow-callback", "/api/license/renew", "/api/activation/start", "/api/auth/request-magic-link", "/api/admin", "/api/admin/resumen", "/api/account", "/api/account/"];
+    for (const host of ["https://pteron-landing.marco.workers.dev", "https://3f2a1b.pteron-landing.marco.workers.dev"]) {
+      for (const path of paths) {
+        const res = await worker.fetch(new Request(`${host}${path}`, { method: "POST" }), env, fakeExecution());
+        assert.equal(res.status, 421, `${host}${path}`);
+        assert.deepEqual(await res.json(), { error: "misdirected_request", message: "Esta dirección no atiende la cuenta, el cobro ni la IA incluida de pteron." });
+      }
+    }
+    const unknown = await worker.fetch(new Request("https://pteron-landing.marco.workers.dev/api/nada"), env, fakeExecution());
+    assert.equal(unknown.status, 404, "lo que no usa secretos no se guarda");
+    const same = await worker.fetch(new Request("https://pteron.test/api/account"), env, fakeExecution());
+    assert.equal(same.status, 401, "en el sitio publicado sigue de largo");
+  });
+});
+
+test("la guarda deja pasar el equipo local y no rige sin PUBLIC_SITE_URL; uno ilegible no deja pasar a nadie", async () => {
+  await withFetch(async () => { throw new Error("no debe llamar a la red"); }, async () => {
+    for (const origin of ["http://localhost:8787", "http://127.0.0.1:8787"]) {
+      const local = await worker.fetch(new Request(`${origin}/api/account`), { ...env, PUBLIC_SITE_URL: "https://pteron.patagua.dev" }, fakeExecution());
+      assert.equal(local.status, 401, origin);
+    }
+    const unset = await worker.fetch(new Request("https://pteron-landing.marco.workers.dev/api/account"), { ...env, PUBLIC_SITE_URL: "" }, fakeExecution());
+    assert.equal(unset.status, 401);
+    const unreadable = await worker.fetch(new Request("https://pteron.test/api/account"), { ...env, PUBLIC_SITE_URL: "pteron sin esquema" }, fakeExecution());
+    assert.equal(unreadable.status, 421);
+  });
+});
+
+function healthFixture(overrides = {}) {
+  const keys = testKeyPair();
+  const healthEnv = testEnv({
+    LICENSE_KID: "k2",
+    LICENSE_PRIVATE_KEY_PEM: keys.privatePem,
+    FLOW_API_KEY: "flow-api",
+    FLOW_SECRET_KEY: "flow-secret",
+    FLOW_BASE_URL: "https://www.flow.cl/api",
+    ANTHROPIC_API_KEY: "anthropic-key",
+    GATEWAY_MODEL_ID: "claude-haiku-5-5",
+    ...overrides,
+  });
+  const services = testServices(healthEnv, { k2: keys.publicPem });
+  const call = (init) => {
+    const request = new Request("https://pteron.test/api/health", init);
+    return matchApi("/api/health")({ request, env: healthEnv, url: new URL(request.url), execution: fakeExecution(), services });
+  };
+  return { healthEnv, call };
+}
+
+const settingsOnly = () => fakeNetwork([{ match: matches.supabase("app_settings"), respond: { body: [{ value: false }] } }]);
+
+test("/api/health responde 200 {ok: true} con lo esencial en orden y no llama a Flow ni a Anthropic", async () => {
+  const { call } = healthFixture();
+  const network = settingsOnly();
+  await withFetch(network.fetch, async () => {
+    const res = await call();
+    assert.equal(res.status, 200);
+    assert.deepEqual(await res.json(), { ok: true });
+    assert.equal(res.headers.get("cache-control"), "no-store");
+    assert.ok(network.calls.every((call) => call.url.startsWith("https://fake.supabase.co/rest/v1/app_settings")), "sólo Supabase");
+    assert.equal(network.calls[0].headers.Authorization, "Bearer service-role-fake");
+    await assert.rejects(call({ method: "POST" }), { status: 405 });
+  });
+});
+
+test("/api/health responde 503 {ok: false} sin nombrar lo que falta", async () => {
+  const cases = [
+    { ANTHROPIC_API_KEY: "" },
+    { GATEWAY_MODEL_ID: "modelo-sin-precio" },
+    { FLOW_SECRET_KEY: "" },
+    { LICENSE_PRIVATE_KEY_PEM: "" },
+    { LICENSE_KID: "k1" },
+    { SUPABASE_PUBLISHABLE_KEY: "" },
+  ];
+  const logged = [];
+  const originalError = console.error;
+  console.error = (...args) => logged.push(args);
+  try {
+    for (const overrides of cases) {
+      const { call } = healthFixture(overrides);
+      const res = await withFetch(settingsOnly().fetch, () => call());
+      assert.equal(res.status, 503, JSON.stringify(overrides));
+      assert.deepEqual(await res.json(), { ok: false });
+    }
+    const { call } = healthFixture();
+    const down = await withFetch(fakeNetwork([{ match: matches.supabase("app_settings"), respond: { status: 500, body: { message: "caído" } } }]).fetch, () => call());
+    assert.equal(down.status, 503, "Supabase no responde");
+  } finally {
+    console.error = originalError;
+  }
+  assert.ok(logged.every(([label, checks]) => label === "pteron health" && Object.values(checks).every((value) => typeof value === "boolean")), "el log sólo lleva booleanos");
+  assert.equal(matchApi("/api/health"), matchApi("/api/health/"));
+});
+
+test("account informa trialEligible, termsVersion y el uso del período que contiene ahora o, si no hay, el más reciente", async () => {
+  const day = 86400000;
+  const base = Date.now();
+  const at = (days) => new Date(base + days * day).toISOString();
+  let flowRows = [];
+  let periods = [];
+  const network = fakeNetwork([
+    { match: matches.auth("user"), respond: { body: { id: "user-1", email: "profe@escuela.cl", created_at: "2026-01-01T00:00:00.000Z" } } },
+    { match: matches.supabase("profiles"), respond: { body: [{ display_name: "Profe" }] } },
+    { match: matches.supabase("plan_catalog"), respond: { body: [{ id: "basic", for_sale: false, trial_ai_units_limit: 1500000 }] } },
+    { match: (url) => url.includes("/rest/v1/subscriptions") && url.includes("provider=eq.flow"), respond: () => ({ body: flowRows }) },
+    { match: matches.supabase("subscriptions"), respond: { body: [{ id: "s1", plan_id: "basic", provider: "flow", status: "active", next_invoice_at: at(20), morose: 0, payment_link: null }] } },
+    { match: matches.supabase("licenses"), respond: { body: [] } },
+    { match: matches.supabase("usage_periods"), respond: () => ({ body: periods }) },
+  ]);
+  const read = async () => {
+    const res = await worker.fetch(new Request("https://pteron.test/api/account", { headers: { authorization: "Bearer sesion" } }), env, fakeExecution());
+    assert.equal(res.status, 200);
+    return res.json();
+  };
+  await withFetch(network.fetch, async () => {
+    const fresh = await read();
+    assert.equal(fresh.trialEligible, true);
+    assert.equal(fresh.termsVersion, "2026-10-13");
+    assert.equal(fresh.usage, null);
+    assert.equal(fresh.plans[0].trial_ai_units_limit, 1500000);
+    assert.equal(fresh.subscriptions[0].next_invoice_at, at(20));
+
+    flowRows = [{ id: "vieja" }];
+    periods = [
+      { period_start: at(-3), period_end: at(27), ai_units_used: 1200, ai_units_limit: 6000000 },
+      { period_start: at(-33), period_end: at(-3), ai_units_used: 5900000, ai_units_limit: 6000000 },
+    ];
+    const current = await read();
+    assert.equal(current.trialEligible, false, "la prueba es una por persona");
+    assert.deepEqual(current.usage, { periodStart: at(-3), periodEnd: at(27), unitsUsed: 1200, unitsLimit: 6000000 });
+
+    periods = [{ period_start: at(-31), period_end: at(-1), ai_units_used: "5900000", ai_units_limit: null }];
+    const grace = await read();
+    assert.deepEqual(grace.usage, { periodStart: at(-31), periodEnd: at(-1), unitsUsed: 5900000, unitsLimit: null }, "en la gracia del cobro, el último período");
+  });
+  const query = (fragment) => network.calls.find((call) => call.url.includes(fragment)).url;
+  assert.match(query("/rest/v1/plan_catalog"), /trial_ai_units_limit,for_sale/);
+  assert.match(query("/rest/v1/subscriptions?user_id=eq.user-1&select="), /cancel_at_period_end,canceled_at,next_invoice_at,morose,payment_link/);
+  assert.match(query("/rest/v1/usage_periods"), /user_id=eq\.user-1&period_start=lte\.[^&]+&select=period_start,period_end,ai_units_used,ai_units_limit&order=period_start\.desc/);
+  assert.ok(network.calls.filter((call) => call.url.includes("/rest/v1/")).every((call) => call.headers.Authorization === "Bearer sesion"), "todo con la sesión del profesor");
 });

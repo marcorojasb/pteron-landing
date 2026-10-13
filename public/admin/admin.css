@@ -1,6 +1,6 @@
 /* pteron · /admin (2026-10-12.12). Panel interno sobre la mesa: las tablas y los indicadores son hojas blancas.
    admin.js genera .stat, .bar, .panel, .panel-head, .panel-row, .account-grid, .toolbar, .field, .button(-outline, -small,
-   -link), .muted, .small, .eyebrow, .help y .actions; aquí viven todos. */
+   -link, -peligro), .muted, .small, .eyebrow, .help, .actions, .resultado, .cuota, .equivalente y .venta; aquí viven todos. */
 
 .admin{--mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
   padding-bottom:clamp(64px,8vw,104px)}
@@ -33,6 +33,9 @@
 .button-link{padding:0;border:0;background:none;color:var(--azul);font-weight:600;text-align:left;text-decoration:underline;text-underline-offset:.22em;
   text-decoration-thickness:var(--borde)}
 .button-link:hover{text-decoration-thickness:2px}
+/* Lo que no se deshace (Terminar ahora) va en el rojo de error: 7,5 : 1 con el blanco */
+.button-peligro{background:var(--error)}
+.button-peligro:hover{background:color-mix(in srgb,var(--error) 82%,black)}
 .muted{color:var(--grafito)}
 .small{font-size:.875rem}
 .eyebrow{font-size:var(--t-rotulo);font-weight:650;color:var(--grafito)}
@@ -58,8 +61,9 @@
 .toolbar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px}
 .field{display:grid;gap:6px;flex:1 1 180px;min-width:0}
 
-/* Tablas */
-.table-wrap{overflow-x:auto}
+/* Tablas. El relative contiene al .sr-only de los encabezados sin texto: absoluto y sin un ancestro posicionado,
+   escapaba del desplazamiento de la tabla y ensanchaba la página entera en el teléfono. */
+.table-wrap{position:relative;overflow-x:auto}
 .panel>.table-wrap{margin:0 calc(-1 * var(--pp)) calc(-1 * var(--pp));border-top:var(--borde) solid var(--regla)}
 .table{width:100%;border-collapse:collapse;font-size:.9375rem;font-variant-numeric:tabular-nums}
 .table th{padding:10px 14px;background:var(--mesa);color:var(--grafito);font-size:var(--t-rotulo);font-weight:650;text-align:left;white-space:nowrap}
@@ -79,7 +83,6 @@
 .stats{--n:4;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:1px;overflow:hidden;border-radius:6px;background:var(--regla);
   box-shadow:0 1px 2px rgb(var(--sombra)/.08),0 24px 48px -34px rgb(var(--sombra)/.45)}
 .stats-3{--n:3}
-.stats-6{--n:6}
 .stats:empty{display:none}
 .stat{display:grid;gap:4px;align-content:start;padding:18px 20px 20px;background:var(--hoja)}
 .stat span{font-size:var(--t-rotulo);font-weight:650;color:var(--grafito)}
@@ -94,6 +97,25 @@
 .bar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tinta)}
 .bar i{grid-area:1 / 2;display:block;height:8px;min-width:3px;border-radius:999px;background:var(--azul)}
 .bar b{font:500 .8125rem/1 var(--mono);text-align:right;color:var(--tinta)}
+
+/* Resultados de los chequeos: el texto dice el resultado y el color sólo lo acompaña */
+.resultado{display:inline-flex;align-items:center;min-height:26px;padding:0 .7em;border:var(--borde) solid var(--regla);border-radius:999px;background:var(--mesa);
+  color:var(--grafito);font-size:.8125rem;font-weight:650;white-space:nowrap}
+.resultado-si{border-color:var(--ok-borde);background:var(--ok-papel);color:var(--ok)}
+.resultado-no{border-color:var(--error-borde);background:var(--error-papel);color:var(--error)}
+.table-salud td{white-space:normal}
+/* Los nombres de secretos caben en el teléfono: el mínimo de 300 px es para el JSON de los eventos de cobro */
+.table-salud td:has(>code){min-width:0}
+
+/* Planes: la cuota en unidades con su equivalente en US$ debajo, y la venta con su botón */
+.cuota{display:grid;gap:4px;min-width:10rem}
+.equivalente{font-size:.8125rem;color:var(--grafito)}
+.venta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.admin-aviso{padding:12px 16px;border:var(--borde) solid var(--aviso-borde);border-radius:10px;background:var(--aviso-papel);color:var(--tinta);font-size:var(--t-chico)}
+
+/* Salud: el interruptor de la IA incluida */
+.admin-ia{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px}
+.admin-ia-estado{font-weight:650}
 
 /* Consumo: el mes y sus indicadores */
 .admin-period{display:grid;grid-template-columns:minmax(240px,.8fr) minmax(0,2.2fr);gap:16px;align-items:stretch}
@@ -112,11 +134,12 @@
 .admin-detail>.panel-row h2{margin-top:8px;font-size:clamp(1.6rem,1.2rem + 1.4vw,2.4rem);overflow-wrap:anywhere}
 .admin-detail>.panel-row .small{margin-top:8px;overflow-wrap:anywhere}
 .admin-detail .actions{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px}
+/* El motivo de Terminar ahora queda en el registro de cobros: un campo que se lee entero */
+.admin-terminar{flex:1 1 30rem;max-width:44rem}
 .admin-detail .help{display:flex;gap:8px;align-items:flex-start;color:var(--error);font-size:var(--t-chico)}
 .admin-detail .help::before{content:"!";flex:none;display:grid;place-items:center;width:18px;height:18px;margin-top:1px;border-radius:50%;background:var(--error);color:#fff;
   font-weight:700;font-size:.75rem}
 
-@media (max-width:1100px){.stats-6{--n:3}}
 @media (max-width:980px){
   .admin-period,.account-grid{grid-template-columns:minmax(0,1fr)}
 }

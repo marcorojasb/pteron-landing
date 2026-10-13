@@ -1,4 +1,4 @@
-import { SECURITY_HEADERS, handleError, json } from "./lib/http.js";
+import { SECURITY_HEADERS, handleError, json, requireSiteHost } from "./lib/http.js";
 import { createSupabase } from "./lib/supabase.js";
 import { createFlow } from "./lib/flow.js";
 import { syncDueSubscriptions } from "./lib/flow-sync.js";
@@ -11,6 +11,7 @@ import { ACTIONS as license } from "./routes/license.js";
 import { account } from "./routes/account.js";
 import { chatCompletions, messages, models } from "./routes/ai.js";
 import { admin } from "./routes/admin.js";
+import { health } from "./routes/health.js";
 
 /**
  * Worker de pteron-landing. La web estática la sirve Cloudflare como assets
@@ -21,6 +22,7 @@ const ACTION_ROUTES = { auth, billing, activation, license };
 
 const EXACT_ROUTES = {
   "/api/account": account,
+  "/api/health": health,
   "/api/ai/v1/models": models,
   "/api/ai/v1/messages": messages,
   "/api/ai/v1/chat/completions": chatCompletions,
@@ -47,11 +49,16 @@ export function matchApi(pathname) {
   return Object.hasOwn(actions, match[2]) ? actions[match[2]] : null;
 }
 
+// Lo que cobra, firma licencias, gasta IA o lee cuentas usa los secretos de
+// producción: fuera del host de PUBLIC_SITE_URL responde 421. /api/health no.
+const SITE_ONLY = /^\/api\/(?:(?:ai|billing|license|activation|auth|account)(?:\/|$)|admin)/;
+
 async function handleApi(request, env, execution) {
   const url = new URL(request.url);
-  const route = matchApi(url.pathname);
-  if (!route) return json(404, { error: "not_found", message: "Ruta no encontrada." });
   try {
+    if (SITE_ONLY.test(url.pathname)) requireSiteHost(env, url);
+    const route = matchApi(url.pathname);
+    if (!route) return json(404, { error: "not_found", message: "Ruta no encontrada." });
     return await route({ request, env, url, execution, services: createServices(env) });
   } catch (error) {
     return handleError(error);

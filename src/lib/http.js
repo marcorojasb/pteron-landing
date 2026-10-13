@@ -63,6 +63,32 @@ export function siteUrl(env, request) {
   return new URL(request.url).origin;
 }
 
+// `wrangler dev` y la prueba de humo corren en el equipo, con el
+// PUBLIC_SITE_URL de producción que trae wrangler.jsonc.
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1"]);
+
+/**
+ * Guarda de host. El mismo Worker, con sus secretos, también responde en
+ * *.workers.dev y en las URLs de cada versión: sin esto, una rama empujada
+ * podría cobrar, firmar licencias o gastar IA con las claves de producción
+ * desde una dirección que nadie revisa. Con PUBLIC_SITE_URL fijado, sólo ese
+ * host (o el equipo local) pasa; un valor que no se puede leer no deja pasar
+ * a nadie más.
+ */
+export function requireSiteHost(env, url) {
+  const configured = String(env?.PUBLIC_SITE_URL || "").trim();
+  if (!configured || LOCAL_HOSTS.has(url.hostname)) return;
+  let expected = null;
+  try {
+    expected = new URL(configured).host;
+  } catch {
+    expected = null;
+  }
+  if (url.host !== expected) {
+    throw new HttpError(421, "misdirected_request", "Esta dirección no atiende la cuenta, el cobro ni la IA incluida de pteron.");
+  }
+}
+
 /**
  * Lee el cuerpo como texto con un tope de bytes. Corta la lectura en cuanto se
  * supera el límite en vez de acumular primero y comprobar después.

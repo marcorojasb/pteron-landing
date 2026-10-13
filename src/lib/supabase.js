@@ -54,6 +54,13 @@ export function createSupabase(env) {
       }
     }
     if (!response.ok) {
+      // Con la service role, un 401 o un 403 no es la sesión del profesor: es
+      // la clave del servidor, vencida, revocada o de otro proyecto. Pasarlo
+      // como 401 haría que la cuenta web le pidiera entrar de nuevo, en vano.
+      if (admin && (response.status === 401 || response.status === 403)) {
+        console.error("pteron supabase service role", { status: response.status });
+        throw new HttpError(503, "server_misconfigured", "El servidor no está bien configurado. Inténtalo más tarde.");
+      }
       const message = typeof data?.message === "string"
         ? data.message
         : typeof data?.msg === "string"

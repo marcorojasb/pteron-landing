@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Administración · pteron</title>
-  <meta name="description" content="Panel interno de pteron: cuentas, cortesías, consumo de la IA incluida y catálogo de planes. Sólo para correos autorizados.">
+  <meta name="description" content="Panel interno de pteron: cuentas, cortesías, consumo de la IA incluida, venta de planes y salud del servicio. Sólo para correos autorizados.">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#E9EDF1">
   <meta name="color-scheme" content="light">
@@ -34,7 +34,7 @@
       <header class="admin-cabeza">
         <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-12.12#pteron"/></svg></a>
         <h1>Administración</h1>
-        <p class="texto">Quién paga, quién tiene cortesía, cuánta IA incluida se usa y con qué modelo. Sólo para los correos autorizados.</p>
+        <p class="texto">Quién paga, quién tiene cortesía, cuánta IA incluida se usa, qué está a la venta y si el servicio está en orden. Sólo para los correos autorizados.</p>
       </header>
 
       <p class="admin-notice" data-admin-notice role="status" aria-live="polite" hidden></p>
@@ -54,13 +54,14 @@
             <button type="button" role="tab" id="tab-cuentas" aria-controls="vista-cuentas" aria-selected="false" data-tab="cuentas">Cuentas</button>
             <button type="button" role="tab" id="tab-consumo" aria-controls="vista-consumo" aria-selected="false" data-tab="consumo">Consumo</button>
             <button type="button" role="tab" id="tab-planes" aria-controls="vista-planes" aria-selected="false" data-tab="planes">Planes</button>
+            <button type="button" role="tab" id="tab-salud" aria-controls="vista-salud" aria-selected="false" data-tab="salud">Salud</button>
           </div>
           <p class="admin-session">Sesión de <strong data-admin-email></strong></p>
         </div>
 
         <!-- Resumen -->
         <section class="admin-view" id="vista-resumen" role="tabpanel" aria-labelledby="tab-resumen" data-view="resumen">
-          <div class="stats stats-6" data-resumen-stats></div>
+          <div class="stats" data-resumen-stats></div>
           <div class="panel">
             <div class="panel-head"><h2>Últimas altas</h2></div>
             <div class="table-wrap"><table class="table" data-resumen-recientes><thead><tr><th>Correo</th><th>Alta</th><th>Plan</th><th>Estado</th></tr></thead><tbody></tbody></table></div>
@@ -78,7 +79,7 @@
               <button class="button button-outline" type="submit">Buscar</button>
               <p class="muted small admin-total" data-cuentas-total></p>
             </form>
-            <div class="table-wrap"><table class="table" data-cuentas-tabla><thead><tr><th>Correo</th><th>Alta</th><th>Plan</th><th>Estado</th><th>Vence</th><th>Licencia</th><th class="num">Tokens del mes</th><th><span class="sr-only">Detalle</span></th></tr></thead><tbody></tbody></table></div>
+            <div class="table-wrap"><table class="table" data-cuentas-tabla><thead><tr><th>Correo</th><th>Alta</th><th>Plan</th><th>Estado</th><th>Vence</th><th>Licencia</th><th class="num">IA del período (unidades)</th><th><span class="sr-only">Detalle</span></th></tr></thead><tbody></tbody></table></div>
           </div>
           <div class="admin-detail" data-cuenta-detalle hidden></div>
         </section>
@@ -93,20 +94,51 @@
             <div class="stats stats-3" data-consumo-stats></div>
           </div>
           <div class="panel">
-            <div class="panel-head"><h2>Por modelo</h2></div>
+            <div class="panel-head"><h2>Por modelo</h2><p>Unidades a precio de lista: 10.000.000 unidades = US$1.</p></div>
             <div class="bars" data-consumo-modelos></div>
           </div>
           <div class="panel">
             <div class="panel-head"><h2>Por cuenta</h2></div>
-            <div class="table-wrap"><table class="table" data-consumo-tabla><thead><tr><th>Correo</th><th>Plan</th><th class="num">Peticiones</th><th class="num">Tokens</th><th class="num">Límite</th></tr></thead><tbody></tbody></table></div>
+            <div class="table-wrap"><table class="table" data-consumo-tabla><thead><tr><th>Correo</th><th>Plan vigente</th><th class="num">Peticiones</th><th class="num">Unidades</th><th class="num">US$</th></tr></thead><tbody></tbody></table></div>
           </div>
         </section>
 
-        <!-- Planes: catálogo editable -->
+        <!-- Planes: catálogo editable, venta y cuotas -->
         <section class="admin-view" id="vista-planes" role="tabpanel" aria-labelledby="tab-planes" data-view="planes" hidden>
           <div class="panel">
-            <div class="panel-head"><h2>Catálogo y cuota de IA</h2><p>El límite es en tokens por mes y por cuenta. Vacío significa sin tope, el estado de hoy.</p></div>
-            <div class="table-wrap"><table class="table" data-planes-tabla><thead><tr><th>Plan</th><th class="num">CLP / mes</th><th class="num">Prueba</th><th>Licencia</th><th>Visible</th><th class="num">Límite de tokens</th><th><span class="sr-only">Guardar</span></th></tr></thead><tbody></tbody></table></div>
+            <div class="panel-head">
+              <h2>Catálogo, venta y cuota de IA</h2>
+              <p>Las cuotas son unidades por período de cada cuenta: una unidad vale US$0,0000001 a precio de lista, así que 10.000.000 unidades son US$1. Una cuota nueva rige desde el período siguiente; el período en curso conserva la que tenía al empezar. Sin cuota de prueba, la prueba recibe un cuarto de la cuota.</p>
+            </div>
+            <p class="admin-aviso">Abrir la venta exige un plan visible, con precio, cuota y licencia. Antes de abrirla, revisa en Salud que su plan de Flow cobre lo mismo.</p>
+            <div class="table-wrap"><table class="table" data-planes-tabla><thead><tr><th>Plan</th><th class="num">CLP / mes</th><th class="num">Prueba</th><th>Licencia</th><th>Visible</th><th>Venta</th><th>Cuota por período</th><th>Cuota de prueba</th><th><span class="sr-only">Guardar</span></th></tr></thead><tbody></tbody></table></div>
+          </div>
+        </section>
+
+        <!-- Salud: el interruptor de la IA incluida y los chequeos de configuración -->
+        <section class="admin-view" id="vista-salud" role="tabpanel" aria-labelledby="tab-salud" data-view="salud" hidden>
+          <div class="panel">
+            <div class="panel-head"><h2>IA incluida</h2><p>En pausa, el gateway responde «no disponible» a todas las cuentas sin tocar la clave de Anthropic ni las cuotas. Cada docente sigue con el motor local o con su propia clave.</p></div>
+            <div class="actions admin-ia">
+              <p class="admin-ia-estado" data-ia-estado role="status">Revisando…</p>
+              <button class="button button-outline" type="button" data-ia-boton hidden></button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Chequeos</h2>
+              <button class="button button-small button-outline" type="button" data-salud-revisar>Revisar de nuevo</button>
+            </div>
+            <p class="muted small" data-salud-cuando></p>
+            <div class="table-wrap"><table class="table table-salud" data-salud-tabla><thead><tr><th>Chequeo</th><th>Resultado</th></tr></thead><tbody></tbody></table></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Planes y Flow</h2><p>Los planes de pago se comparan con su plan de Flow aunque no estén a la venta: monto, CLP, mensual, activo y aviso de pago a este sitio.</p></div>
+            <div class="table-wrap"><table class="table table-salud" data-salud-planes><thead><tr><th>Plan</th><th>A la venta</th><th>Visible</th><th>Precio</th><th>Cuota</th><th>Licencia</th><th>Plan de Flow</th></tr></thead><tbody></tbody></table></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Secretos y variables</h2><p>Sólo si están cargados; sus valores nunca salen del Worker.</p></div>
+            <div class="table-wrap"><table class="table table-salud" data-salud-secretos><thead><tr><th>Nombre</th><th>Cargado</th></tr></thead><tbody></tbody></table></div>
           </div>
         </section>
       </div>
