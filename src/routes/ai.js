@@ -1,275 +1,338 @@
-import { HttpError, SECURITY_HEADERS, json, method, parseJsonObject, readText } from "../lib/http.js";
+import { SECURITY_HEADERS, json, method } from "../lib/http.js";
 import {
+  GatewayError,
   authenticateGateway,
-  createMessagesTracker,
-  createSseTracker,
-  totalTokensFromAnthropicUsage,
-  totalTokensFromUsage,
+  createUsageTracker,
+  currentUsagePeriod,
+  gatewayErrorResponse,
+  includedAiSubscription,
+  includedAiUnavailable,
 } from "../lib/gateway.js";
+import { allowedBetas, clientInfo, opaqueUserId, readMessagesBody, sanitizeMessagesRequest } from "../lib/gateway-request.js";
+import { estimatedOutputTokens, hasKnownPrice, reservationEstimate, unitsFromUsage } from "../lib/units.js";
 
 const ANTHROPIC_VERSION = "2023-06-01";
+const OFFICIAL_BASE_URL = "https://api.anthropic.com";
+const PRODUCTION_SITE = "https://pteron.patagua.dev";
+const DEFAULT_MAX_IN_FLIGHT = 3;
+const CONCURRENCY_RETRY_SECONDS = 5;
+// Si el período ya terminó y el cobro todavía no se sincroniza, la cuota se
+// renueva cuando llegue: se pide volver en un minuto, no en 0 segundos.
+const MIN_QUOTA_RETRY_SECONDS = 60;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const QUOTA_EXCEEDED =
+  "Se agotó la capacidad de IA incluida de este período. Se renueva con tu próximo cobro. Puedes seguir con el motor local o con tu propia clave.";
+// Errores de la cuenta de pteron en Anthropic (sin crédito, tope de gasto propio
+// o del workspace): reintentar no los arregla y no son culpa del docente.
+const ACCOUNT_LIMIT_MESSAGE = /credit balance|specified API usage limits|workspace API usage limits|anthropic-workspace-id/i;
 
 /**
- * El proveedor detrás del plan es Anthropic; el modelo lo decide el servidor
+ * El proveedor detrás del plan es Anthropic y el modelo lo decide el servidor
  * (ADR-056): el cliente sólo pide "pteron-managed". La clave de Anthropic es
- * de pteron, nunca del profesor (ADR-055).
+ * de pteron, nunca del profesor (ADR-055). El modelo debe tener precio conocido
+ * (sin precio no hay cuota que valga), y en producción la clave sólo viaja a
+ * Anthropic: una ANTHROPIC_BASE_URL olvidada de las pruebas la entregaría a otro.
  */
-function upstreamConfig(env) {
-  const baseUrl = String(env?.ANTHROPIC_BASE_URL || "https://api.anthropic.com").trim().replace(/\/$/, "");
+function gatewayConfig(env) {
   const apiKey = String(env?.ANTHROPIC_API_KEY || "").trim();
-  const modelId = String(env?.GATEWAY_MODEL_ID || "claude-haiku-5-5").trim();
-  if (!apiKey) throw new HttpError(503, "gateway_not_configured", "El motor incluido todavía no está configurado.");
-  return { baseUrl, apiKey, modelId };
+  const modelId = String(env?.GATEWAY_MODEL_ID || "").trim();
+  const signingKey = String(env?.LICENSE_PRIVATE_KEY_PEM || "").trim();
+  const baseUrl = String(env?.ANTHROPIC_BASE_URL || OFFICIAL_BASE_URL).trim().replace(/\/+$/, "");
+  const production = String(env?.PUBLIC_SITE_URL || "").trim().replace(/\/+$/, "") === PRODUCTION_SITE;
+  const invalid = [];
+  if (!apiKey) invalid.push("ANTHROPIC_API_KEY");
+  if (!hasKnownPrice(modelId)) invalid.push("GATEWAY_MODEL_ID");
+  if (!signingKey) invalid.push("LICENSE_PRIVATE_KEY_PEM");
+  if (production && baseUrl !== OFFICIAL_BASE_URL) invalid.push("ANTHROPIC_BASE_URL");
+  if (invalid.length) {
+    console.error("pteron gateway config", { invalid });
+    throw includedAiUnavailable("not_configured");
+  }
+  const maxInFlight = Number(env?.GATEWAY_MAX_IN_FLIGHT);
+  return {
+    apiKey,
+    modelId,
+    signingKey,
+    baseUrl,
+    maxInFlight: Number.isInteger(maxInFlight) && maxInFlight >= 1 ? maxInFlight : DEFAULT_MAX_IN_FLIGHT,
+  };
 }
 
-// Deliberadamente más grande que el límite de 64 KB de lib/http: una
-// conversación larga con las herramientas del agente no cabe en ese tope.
-async function readJsonBody(request, maxBytes = 4_000_000) {
-  const raw = await readText(request, maxBytes);
-  if (!raw.trim()) throw new HttpError(400, "invalid_json", "Falta el cuerpo de la solicitud.");
-  return parseJsonObject(raw);
+/** Un GatewayError se responde con la forma del contrato; cualquier otra cosa sigue a handleError. */
+function gatewayFailure(error) {
+  if (error instanceof GatewayError) return gatewayErrorResponse(error);
+  throw error;
 }
 
-// route_model queda en event_metadata (jsonb, sin contenido) precisamente
-// para que "qué modelo usó" siga siendo respondible (ADR-056) aunque el
-// cliente sólo haya pedido el id virtual "pteron-managed".
-async function recordUsage(gateway, verified, totalTokens, model) {
-  if (totalTokens <= 0) return;
+/** Si la base no responde, la IA incluida no atiende: sin contabilidad no hay cuota que aplicar. */
+function accountingUnavailable(step, error) {
+  console.error("pteron gateway accounting", { step, error: error instanceof Error ? error.message : String(error) });
+  return includedAiUnavailable("accounting_unavailable");
+}
+
+function licenseRevoked() {
+  return new GatewayError(401, "license_revoked", "La licencia ya no corresponde a un plan vigente.");
+}
+
+function admissionDenied(decision, period, now) {
+  if (decision?.reason === "paused") return includedAiUnavailable("paused");
+  if (decision?.reason === "concurrency_limited") {
+    return new GatewayError(
+      429,
+      "concurrency_limited",
+      "Ya hay varias peticiones a la IA incluida en curso con esta cuenta. Inténtalo en unos segundos.",
+      {},
+      { "retry-after": String(CONCURRENCY_RETRY_SECONDS) },
+    );
+  }
+  if (decision?.reason === "quota_exceeded") {
+    const resetsAt = Date.parse(decision.period_end ?? period.end);
+    return new GatewayError(
+      429,
+      "quota_exceeded",
+      QUOTA_EXCEEDED,
+      { resets_at: new Date(resetsAt).toISOString(), used: decision.units_used ?? null, limit: decision.units_limit ?? null },
+      {
+        "retry-after": String(Math.max(MIN_QUOTA_RETRY_SECONDS, Math.ceil((resetsAt - now.getTime()) / 1000))),
+        // La espera es de días: el SDK no debe dormir hasta entonces.
+        "x-should-retry": "false",
+      },
+    );
+  }
+  // Una respuesta que no se entiende niega: la cuota no se abre por defecto.
+  console.error("pteron gateway accounting", { step: "begin", reason: decision?.reason ?? null });
+  return includedAiUnavailable("accounting_unavailable");
+}
+
+/**
+ * Admisión: suscripción vigente, período y límite (con el plan de la
+ * suscripción) y la reserva en begin_ai_request, que decide pausa, peticiones
+ * en vuelo y cuota en una sola transacción. Devuelve el id de la reserva.
+ */
+async function admit(gateway, { sub, now, estimate, maxInFlight }) {
+  // Un sub que no es un uuid no puede ser una cuenta.
+  if (!UUID.test(sub)) throw licenseRevoked();
+  let subscription;
   try {
-    const metadata = model ? { route_model: model } : {};
-    const result = await gateway.reserveAiUsage(verified.sub, verified.plan, totalTokens, metadata);
-    // La función de la base rechaza el registro que cruza el tope y no anota
-    // nada. Sin esto el período nunca se llenaba y el 429 era inalcanzable:
-    // se anota lo que cabe, el período queda lleno y la próxima petición se
-    // detiene en el chequeo previo. El excedente real queda en el log.
-    if (!result.allowed && result.limit !== null) {
-      const remaining = Math.max(0, result.limit - (Number(result.unitsUsed) || 0));
-      console.error("pteron gateway quota crossed", { requested: totalTokens, recorded: remaining });
-      if (remaining > 0) await gateway.reserveAiUsage(verified.sub, verified.plan, remaining, metadata);
-    }
+    subscription = await gateway.currentSubscription(sub);
   } catch (error) {
-    console.error("pteron gateway usage accounting failed", error instanceof Error ? error.message : error);
+    throw accountingUnavailable("subscription", error);
+  }
+  if (!includedAiSubscription(subscription, now)) throw licenseRevoked();
+  const period = currentUsagePeriod(subscription, subscription.plan_catalog, now);
+  const requestId = crypto.randomUUID();
+  let decision;
+  try {
+    decision = await gateway.beginAiRequest({ userId: sub, requestId, planId: subscription.plan_id, period, estimate, maxInFlight });
+  } catch (error) {
+    throw accountingUnavailable("begin", error);
+  }
+  if (decision?.allowed === true && decision.reason === "ok") return requestId;
+  throw admissionDenied(decision, period, now);
+}
+
+function relayHeaders(upstreamResponse, fallbackContentType) {
+  const headers = {
+    "Content-Type": upstreamResponse.headers.get("content-type") || fallbackContentType,
+    "Cache-Control": "no-store",
+    ...SECURITY_HEADERS,
+  };
+  // retry-after y x-should-retry guían los reintentos del SDK; request-id sirve para pedir ayuda a Anthropic.
+  for (const name of ["retry-after", "x-should-retry", "request-id"]) {
+    const value = upstreamResponse.headers.get(name);
+    if (value) headers[name] = value;
+  }
+  return headers;
+}
+
+function parseJson(text) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
   }
 }
 
 /**
- * Copia el cuerpo del proveedor hacia el cliente byte a byte mientras observa
- * el texto para contabilizar tokens. Si el cliente corta la conexión, se
- * registra lo visto hasta entonces: el Worker sigue vivo gracias a waitUntil.
+ * Un error del proveedor que es cosa de la petición (400, 429, 529, 5xx) pasa
+ * al cliente con su estado y cuerpo: pi-ai sabe reintentar una sobrecarga.
+ * Uno de la cuenta de pteron en Anthropic (clave, crédito, tope de gasto,
+ * modelo no disponible) no es del docente: se traduce a 503 provider_paused y
+ * queda en el log para Marco.
  */
-async function relay(upstreamBody, writable, observe) {
-  const reader = upstreamBody.getReader();
+async function providerFailure(upstreamResponse) {
+  const raw = await upstreamResponse.text().catch(() => "");
+  const error = parseJson(raw)?.error;
+  const status = upstreamResponse.status;
+  const type = typeof error?.type === "string" ? error.type : null;
+  const account =
+    status === 401 ||
+    status === 402 ||
+    status === 403 ||
+    status === 404 ||
+    (status === 400 && ACCOUNT_LIMIT_MESSAGE.test(String(error?.message ?? ""))) ||
+    (status === 429 && error?.details?.error_code === "enforced_spend_limit_reached");
+  if (account) {
+    console.error("pteron gateway account", { status, type });
+    return gatewayErrorResponse(includedAiUnavailable("provider_paused"));
+  }
+  console.error("pteron gateway upstream error", { status, type });
+  return new Response(raw, { status, headers: relayHeaders(upstreamResponse, "application/json") });
+}
+
+/**
+ * Copia el cuerpo del proveedor hacia el cliente byte a byte mientras el
+ * rastreador lo observa. Si el cliente corta, se deja de leer al proveedor (que
+ * deja de generar) y se anota lo visto: el Worker sigue vivo gracias a waitUntil.
+ */
+async function relay(upstreamBody, writable, tracker) {
   const writer = writable.getWriter();
+  let reader = null;
   try {
+    reader = upstreamBody.getReader();
+    const decoder = new TextDecoder();
     for (;;) {
       const { done, value } = await reader.read();
       if (done) break;
-      observe(value);
+      tracker.push(decoder.decode(value, { stream: true }));
       await writer.write(value);
     }
+    tracker.push(decoder.decode());
     await writer.close();
   } catch (error) {
     console.error("pteron gateway streaming failed", error instanceof Error ? error.message : error);
     await writer.abort(error).catch(() => undefined);
-    await reader.cancel().catch(() => undefined);
+    await reader?.cancel().catch(() => undefined);
   }
 }
 
 /**
- * Todo lo que puede fallar antes del primer byte (configuración, licencia,
- * cuota) se resuelve acá; después la respuesta ya es 200 y cualquier falla se
- * registra y corta la transmisión, nunca se convierte en un JSON de error.
+ * Lo que se anota al cerrar la reserva. Sin message_delta (el cliente cortó
+ * antes, o el stream se cayó) la salida se estima por lo reenviado: Anthropic
+ * la cobra igual.
  */
-async function prepare({ request, env, services }) {
-  const upstream = upstreamConfig(env);
-  const verified = await authenticateGateway(request, services.publicKeys);
-  const precheck = await services.gateway.reserveAiUsage(verified.sub, verified.plan, 0);
-  // Con 0 unidades la base siempre permite; el tope se aplica acá comparando lo usado.
-  const exhausted = precheck.limit !== null && (Number(precheck.unitsUsed) || 0) >= precheck.limit;
-  if (!precheck.allowed || exhausted) {
-    return {
-      denied: json(429, {
-        error: "quota_exceeded",
-        message: "Se agotó la capacidad de IA incluida de este mes. Puedes seguir trabajando con el motor local o con tu propia clave.",
-      }),
-    };
-  }
-  return { upstream, verified, input: await readJsonBody(request) };
+function streamOutcome(seen) {
+  if (seen.sawMessageDelta) return { status: "ok", usage: seen.usage, model: seen.model };
+  const usage = { ...(seen.usage || {}) };
+  usage.output_tokens = Math.max(Number(usage.output_tokens) || 0, estimatedOutputTokens(seen.forwardedChars));
+  return { status: "client_abort", usage, model: seen.model };
 }
 
-/**
- * Un error del proveedor pasa al cliente con su estado y cuerpo cuando son
- * cosa de la petición (400, 429, 529…): pi-ai sabe reintentar una sobrecarga.
- * Un 401/403 es un problema de la clave de pteron, no de la licencia del
- * profesor, y se traduce para no confundir a la app.
- */
-function upstreamFailure(upstreamResponse) {
-  console.error("pteron gateway upstream error", upstreamResponse.status);
-  if (upstreamResponse.status === 401 || upstreamResponse.status === 403 || !upstreamResponse.body) {
-    return json(502, {
-      error: "gateway_upstream_error",
-      message: "El motor incluido no respondió. Puedes seguir con el motor local.",
-    });
+function bufferedOutcome(text) {
+  const parsed = parseJson(text);
+  if (parsed?.usage && typeof parsed.usage === "object") {
+    return { status: "ok", usage: parsed.usage, model: typeof parsed.model === "string" ? parsed.model : null };
   }
-  return new Response(upstreamResponse.body, {
-    status: upstreamResponse.status,
-    headers: {
-      "Content-Type": upstreamResponse.headers.get("content-type") || "application/json",
-      "Cache-Control": "no-store",
-      ...SECURITY_HEADERS,
-    },
-  });
-}
-
-function streamBack({ execution, services, verified, upstreamResponse, observe, summarize, fallbackContentType }) {
-  const { readable, writable } = new TransformStream();
-  execution.waitUntil(
-    relay(upstreamResponse.body, writable, observe).then(() => {
-      const { totalTokens, model } = summarize();
-      return recordUsage(services.gateway, verified, totalTokens, model);
-    }),
-  );
-  return new Response(readable, {
-    status: 200,
-    headers: {
-      "Content-Type": upstreamResponse.headers.get("content-type") || fallbackContentType,
-      "Cache-Control": "no-store",
-      ...SECURITY_HEADERS,
-    },
-  });
+  return { status: "client_abort", usage: { output_tokens: estimatedOutputTokens(text.length) }, model: null };
 }
 
 /**
  * Un único modelo virtual: el profesor nunca ve el proveedor real detrás del
- * plan (ADR-056), y el gateway queda libre de cambiarlo sin que el cliente
- * tenga que hacer nada. Exige licencia igual que el chat: una licencia vencida
- * no debería poder ni siquiera listar el modelo.
+ * plan (ADR-056). Exige la misma configuración que el chat y respeta la pausa,
+ * para que la salud de la app no muestre conectada una IA que no responde.
  */
-export async function models({ request, services }) {
+export async function models({ request, env, services }) {
   method(request, "GET");
-  await authenticateGateway(request, services.publicKeys);
-  return json(200, { object: "list", data: [{ id: "pteron-managed", object: "model", owned_by: "pteron" }] });
+  try {
+    gatewayConfig(env);
+    await authenticateGateway(request, services.publicKeys);
+    let paused;
+    try {
+      paused = await services.gateway.includedAiPaused();
+    } catch (error) {
+      throw accountingUnavailable("pause", error);
+    }
+    if (paused) throw includedAiUnavailable("paused");
+    return json(200, { object: "list", data: [{ id: "pteron-managed", object: "model", owned_by: "pteron" }] });
+  } catch (error) {
+    return gatewayFailure(error);
+  }
 }
 
 /**
- * POST /api/ai/v1/messages: la API Messages de Anthropic tal cual, con la
- * licencia como credencial y el modelo decidido acá. La app de escritorio
- * (pi-ai sobre el SDK oficial) envía la licencia en `x-api-key` y sus betas en
- * `anthropic-beta`; ambas se respetan, la clave real se añade sólo aquí.
+ * POST /api/ai/v1/messages: la API Messages de Anthropic con la licencia como
+ * credencial. Orden: configuración, licencia, cuerpo con tope, saneamiento,
+ * suscripción vigente con su período y límite, reserva, proveedor y relay. La
+ * reserva se cierra siempre, en `finally` y dentro de waitUntil, con el gasto
+ * real (0 si el proveedor respondió con error).
  */
-export async function messages(ctx) {
-  const { request, env, execution, services } = ctx;
+export async function messages({ request, env, execution, services }) {
   method(request, "POST");
-  const prepared = await prepare(ctx);
-  if (prepared.denied) return prepared.denied;
-  const { upstream, verified, input } = prepared;
-  const stream = Boolean(input.stream);
-  const headers = {
-    "content-type": "application/json",
-    "x-api-key": upstream.apiKey,
-    "anthropic-version": ANTHROPIC_VERSION,
-  };
-  const betas = request.headers.get("anthropic-beta");
-  if (betas) headers["anthropic-beta"] = betas;
+  try {
+    const config = gatewayConfig(env);
+    const verified = await authenticateGateway(request, services.publicKeys);
+    const { input, bytes } = await readMessagesBody(request);
+    const body = sanitizeMessagesRequest(input, { userId: await opaqueUserId(config.signingKey, verified.sub), model: config.modelId });
+    const betas = allowedBetas(request.headers.get("anthropic-beta"));
+    const client = clientInfo(request.headers);
+    const requestId = await admit(services.gateway, {
+      sub: verified.sub,
+      now: new Date(),
+      estimate: reservationEstimate(bytes, body.max_tokens),
+      maxInFlight: config.maxInFlight,
+    });
 
-  const upstreamResponse = await fetch(`${upstream.baseUrl}/v1/messages`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({ ...input, model: upstream.modelId }),
-  });
-  if (!upstreamResponse.ok || !upstreamResponse.body) return upstreamFailure(upstreamResponse);
-
-  const decoder = new TextDecoder();
-  const tracker = createMessagesTracker();
-  let buffered = "";
-  return streamBack({
-    execution,
-    services,
-    verified,
-    upstreamResponse,
-    fallbackContentType: stream ? "text/event-stream" : "application/json",
-    observe: (chunk) => {
-      const text = decoder.decode(chunk, { stream: true });
-      if (stream) tracker.push(text);
-      else buffered += text;
-    },
-    summarize: () => {
-      if (stream) {
-        const { usage, model } = tracker.flush();
-        return { totalTokens: totalTokensFromAnthropicUsage(usage), model };
-      }
+    let outcome = { status: "gateway_error", usage: null, model: null };
+    let providerRequestId = null;
+    let relaying = null;
+    try {
+      let upstreamResponse;
       try {
-        const parsed = JSON.parse(buffered);
-        return {
-          totalTokens: totalTokensFromAnthropicUsage(parsed?.usage),
-          model: typeof parsed?.model === "string" ? parsed.model : null,
-        };
-      } catch {
-        return { totalTokens: 0, model: null };
+        upstreamResponse = await fetch(`${config.baseUrl}/v1/messages`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "x-api-key": config.apiKey,
+            "anthropic-version": ANTHROPIC_VERSION,
+            ...(betas ? { "anthropic-beta": betas } : {}),
+          },
+          body: JSON.stringify(body),
+        });
+      } catch (error) {
+        console.error("pteron gateway upstream unreachable", error instanceof Error ? error.message : error);
+        outcome = { ...outcome, status: "provider_unreachable" };
+        throw includedAiUnavailable("provider_unreachable");
       }
-    },
-  });
+      providerRequestId = upstreamResponse.headers.get("request-id");
+      if (upstreamResponse.status !== 200) {
+        outcome = { ...outcome, status: "provider_error" };
+        return await providerFailure(upstreamResponse);
+      }
+      if (!body.stream || !upstreamResponse.body) {
+        const text = await upstreamResponse.text();
+        outcome = bufferedOutcome(text);
+        return new Response(text, { status: 200, headers: relayHeaders(upstreamResponse, "application/json") });
+      }
+      const tracker = createUsageTracker();
+      const { readable, writable } = new TransformStream();
+      relaying = relay(upstreamResponse.body, writable, tracker).then(() => {
+        outcome = streamOutcome(tracker.finish());
+      });
+      return new Response(readable, { status: 200, headers: relayHeaders(upstreamResponse, "text/event-stream") });
+    } finally {
+      execution.waitUntil(
+        Promise.resolve(relaying).then(() => {
+          // Con error del proveedor o del gateway no hubo gasto: usage queda en null y se anota 0.
+          const breakdown = unitsFromUsage(outcome.usage ?? {}, config.modelId);
+          return services.gateway.finishAiRequest(requestId, breakdown.units, {
+            route_model: outcome.model || config.modelId,
+            ...breakdown,
+            status: outcome.status,
+            ...client,
+            request_id: providerRequestId,
+          });
+        }),
+      );
+    }
+  } catch (error) {
+    return gatewayFailure(error);
+  }
 }
 
 /**
- * POST /api/ai/v1/chat/completions: puente transitorio para la app 0.6.0, que
- * todavía habla el formato de chat completions. Va por la capa compatible con
- * OpenAI de Anthropic, que ésta documenta como apta para pruebas y no como
- * solución de largo plazo; la ruta nativa es /v1/messages y la app 0.7.0 la usa.
- * Se retira cuando ya no queden instalaciones 0.6.0 activas.
+ * POST /api/ai/v1/chat/completions: el puente de la app 0.6.0, que sólo
+ * verifica licencias k1 y ya no puede renovar. Se retira: responde 410.
  */
-export async function chatCompletions(ctx) {
-  const { request, execution, services } = ctx;
-  method(request, "POST");
-  const prepared = await prepare(ctx);
-  if (prepared.denied) return prepared.denied;
-  const { upstream, verified, input } = prepared;
-  const stream = Boolean(input.stream);
-  // Haiku 5.5 rechaza temperature y top_p distintos del valor por defecto; el
-  // cliente 0.6.0 no los necesita y la capa compatible recomienda omitirlos.
-  const { temperature: _temperature, top_p: _topP, ...rest } = input;
-  const upstreamBody = {
-    ...rest,
-    model: upstream.modelId,
-    stream,
-    ...(stream ? { stream_options: { include_usage: true } } : {}),
-  };
-
-  const upstreamResponse = await fetch(`${upstream.baseUrl}/v1/chat/completions`, {
-    method: "POST",
-    headers: { "content-type": "application/json", authorization: `Bearer ${upstream.apiKey}` },
-    body: JSON.stringify(upstreamBody),
-  });
-  if (!upstreamResponse.ok || !upstreamResponse.body) return upstreamFailure(upstreamResponse);
-
-  const decoder = new TextDecoder();
-  const tracker = createSseTracker();
-  let buffered = "";
-  return streamBack({
-    execution,
-    services,
-    verified,
-    upstreamResponse,
-    fallbackContentType: stream ? "text/event-stream" : "application/json",
-    observe: (chunk) => {
-      const text = decoder.decode(chunk, { stream: true });
-      if (stream) tracker.push(text);
-      else buffered += text;
-    },
-    summarize: () => {
-      if (stream) {
-        const { usage, model } = tracker.flush();
-        return { totalTokens: totalTokensFromUsage(usage), model };
-      }
-      try {
-        const parsed = JSON.parse(buffered);
-        return {
-          totalTokens: totalTokensFromUsage(parsed?.usage),
-          model: typeof parsed?.model === "string" ? parsed.model : null,
-        };
-      } catch {
-        return { totalTokens: 0, model: null };
-      }
-    },
-  });
+export async function chatCompletions() {
+  return gatewayErrorResponse(new GatewayError(410, "gone", "Actualiza pteron para usar la IA incluida."));
 }

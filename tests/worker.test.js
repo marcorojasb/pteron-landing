@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import worker, { createServices, matchApi } from "../src/worker.js";
 import { createLicenseService } from "../src/lib/license.js";
-import { chatCompletions, messages, models } from "../src/routes/ai.js";
+import { messages, models } from "../src/routes/ai.js";
 import { fakeAssets, fakeAssetsWithEtags, fakeExecution, fakeSupabase, jsonRequest, testEnv, testKeyPair, testServices, withFetch } from "./helpers/fakes.js";
 
 const env = testEnv();
@@ -86,7 +86,7 @@ test("los assets se sirven tal cual y /docs/:slug cae a la página de documentac
 
 function gatewayFixture() {
   const keys = testKeyPair();
-  const gatewayEnv = testEnv({ LICENSE_PRIVATE_KEY_PEM: keys.privatePem, ANTHROPIC_API_KEY: "upstream-key", ANTHROPIC_BASE_URL: "https://upstream.test", GATEWAY_MODEL_ID: "modelo-real" });
+  const gatewayEnv = testEnv({ LICENSE_PRIVATE_KEY_PEM: keys.privatePem, ANTHROPIC_API_KEY: "upstream-key", ANTHROPIC_BASE_URL: "https://upstream.test", GATEWAY_MODEL_ID: "claude-haiku-5-5" });
   const services = testServices(gatewayEnv, { k1: keys.publicPem });
   const sign = (overrides = {}) => createLicenseService(gatewayEnv, null).signLicense({ subject: "profe-1", plan: "pro", expiresAt: new Date(Date.now() + 60_000).toISOString(), ...overrides });
   return { keys, gatewayEnv, services, sign };
@@ -94,111 +94,40 @@ function gatewayFixture() {
 
 test("models exige licencia y devuelve el único modelo virtual", async () => {
   const { gatewayEnv, services, sign } = gatewayFixture();
-  // Las rutas lanzan HttpError; es handleApi quien lo convierte en respuesta.
-  await assert.rejects(models({ request: new Request("https://pteron.test/api/ai/v1/models"), env: gatewayEnv, services }), { status: 401, code: "not_authenticated" });
+  // El gateway responde sus errores con la forma del contrato, sin pasar por handleError.
+  const missing = await models({ request: new Request("https://pteron.test/api/ai/v1/models"), env: gatewayEnv, services });
+  assert.equal(missing.status, 401);
+  assert.deepEqual(await missing.json(), { error: "not_authenticated", message: "not_authenticated: Falta la licencia." });
   const token = await sign();
-  const ok = await models({ request: new Request("https://pteron.test/api/ai/v1/models", { headers: { authorization: `Bearer ${token}` } }), env: gatewayEnv, services });
-  assert.equal(ok.status, 200);
-  assert.deepEqual(await ok.json(), { object: "list", data: [{ id: "pteron-managed", object: "model", owned_by: "pteron" }] });
-});
-
-test("chat/completions retransmite el stream byte a byte y contabiliza los tokens al terminar", async () => {
-  const { gatewayEnv, services, sign } = gatewayFixture();
-  const token = await sign();
-  const sse = [
-    'data: {"model":"modelo-real","choices":[{"delta":{"content":"ho',
-    'la"}}]}\n\ndata: {"model":"modelo-real","choices":[],"usage":{"prompt_tokens":10,"completion_tokens":5,"total_tokens":15}}\n\n',
-    "data: [DONE]\n\n",
-  ];
-  const calls = [];
-  const fetchImpl = async (url, init = {}) => {
-    const target = String(url);
-    calls.push({ url: target, body: init.body ? JSON.parse(init.body) : null, headers: init.headers || {} });
-    if (target.includes("/rest/v1/plan_catalog")) return Response.json([{ ai_units_limit: null }]);
-    if (target.includes("/rest/v1/rpc/reserve_ai_usage")) return Response.json([{ allowed: true, units_used: 0 }]);
-    if (target === "https://upstream.test/v1/chat/completions") {
-      const encoder = new TextEncoder();
-      const stream = new ReadableStream({
-        start(controller) {
-          for (const chunk of sse) controller.enqueue(encoder.encode(chunk));
-          controller.close();
-        },
-      });
-      return new Response(stream, { status: 200, headers: { "content-type": "text/event-stream" } });
-    }
-    throw new Error(`Sin mock para ${target}`);
-  };
-  await withFetch(fetchImpl, async () => {
-    const execution = fakeExecution();
-    const request = jsonRequest("https://pteron.test/api/ai/v1/chat/completions", { model: "pteron-managed", stream: true, temperature: 0.2, messages: [{ role: "user", content: "hola" }] }, { headers: { authorization: `Bearer ${token}` } });
-    const res = await chatCompletions({ request, env: gatewayEnv, execution, services });
-    assert.equal(res.status, 200);
-    assert.equal(res.headers.get("content-type"), "text/event-stream");
-    assert.equal(res.headers.get("x-frame-options"), "DENY");
-    assert.equal(await res.text(), sse.join(""));
-    await execution.settle();
-
-    const upstream = calls.find((call) => call.url.endsWith("/chat/completions"));
-    assert.equal(upstream.body.model, "modelo-real", "el cliente nunca elige el modelo real");
-    assert.equal("temperature" in upstream.body, false, "Haiku 5.5 rechaza temperature; el puente la omite");
-    assert.equal(upstream.headers.authorization, "Bearer upstream-key");
-    assert.deepEqual(upstream.body.stream_options, { include_usage: true });
-    const reservations = calls.filter((call) => call.url.includes("reserve_ai_usage")).map((call) => call.body);
-    assert.equal(reservations.length, 2, "chequeo previo con 0 y registro final con el gasto real");
-    assert.equal(reservations[0].p_units, 0);
-    assert.equal(reservations[1].p_units, 15);
-    assert.deepEqual(reservations[1].p_metadata, { route_model: "modelo-real" });
-    assert.equal(reservations[1].p_user_id, "profe-1");
+  const settings = fakeSupabase([{ table: "app_settings", method: "GET", respond: { body: [{ value: false }] } }]);
+  await withFetch(settings.fetch, async () => {
+    const ok = await models({ request: new Request("https://pteron.test/api/ai/v1/models", { headers: { authorization: `Bearer ${token}` } }), env: gatewayEnv, services });
+    assert.equal(ok.status, 200);
+    assert.deepEqual(await ok.json(), { object: "list", data: [{ id: "pteron-managed", object: "model", owned_by: "pteron" }] });
   });
 });
 
-test("chat/completions sin stream devuelve el JSON del proveedor y contabiliza desde él", async () => {
-  const { gatewayEnv, services, sign } = gatewayFixture();
-  const token = await sign({ plan: "basic" });
-  const calls = [];
-  const fetchImpl = async (url, init = {}) => {
-    const target = String(url);
-    calls.push({ url: target, body: init.body ? JSON.parse(init.body) : null });
-    if (target.includes("/rest/v1/plan_catalog")) return Response.json([{ ai_units_limit: 1000 }]);
-    if (target.includes("/rest/v1/rpc/reserve_ai_usage")) return Response.json([{ allowed: true, units_used: 7 }]);
-    if (target.endsWith("/chat/completions")) return Response.json({ id: "x", model: "modelo-real", choices: [], usage: { prompt_tokens: 4, completion_tokens: 3 } });
-    throw new Error(`Sin mock para ${target}`);
-  };
-  await withFetch(fetchImpl, async () => {
-    const execution = fakeExecution();
-    const request = jsonRequest("https://pteron.test/api/ai/v1/chat/completions", { messages: [] }, { headers: { authorization: `Bearer ${token}` } });
-    const res = await chatCompletions({ request, env: gatewayEnv, execution, services });
-    assert.equal(res.status, 200);
-    assert.equal((await res.json()).model, "modelo-real");
-    await execution.settle();
-    const final = calls.filter((call) => call.url.includes("reserve_ai_usage")).at(-1).body;
-    assert.equal(final.p_units, 7);
-    assert.equal(final.p_limit, 1000);
-    assert.equal(final.p_plan_id, "basic");
+test("chat/completions, el puente de 0.6.0, responde 410 aunque falten la clave del proveedor y la licencia", async () => {
+  await withFetch(async () => { throw new Error("no debe llamar a la red"); }, async () => {
+    const res = await worker.fetch(jsonRequest("https://pteron.test/api/ai/v1/chat/completions", { messages: [] }), env, fakeExecution());
+    assert.equal(res.status, 410);
+    assert.deepEqual(await res.json(), { error: "gone", message: "gone: Actualiza pteron para usar la IA incluida." });
   });
 });
 
-test("chat/completions corta con 429 cuando la cuota ya se agotó, sin llamar al proveedor", async () => {
-  const { gatewayEnv, services, sign } = gatewayFixture();
-  const token = await sign();
-  const fetchImpl = async (url) => {
-    const target = String(url);
-    if (target.includes("/rest/v1/plan_catalog")) return Response.json([{ ai_units_limit: 10 }]);
-    if (target.includes("/rest/v1/rpc/reserve_ai_usage")) return Response.json([{ allowed: false, units_used: 10 }]);
-    throw new Error(`No debe llamar a ${target}`);
-  };
-  await withFetch(fetchImpl, async () => {
-    const request = jsonRequest("https://pteron.test/api/ai/v1/chat/completions", { messages: [] }, { headers: { authorization: `Bearer ${token}` } });
-    const res = await chatCompletions({ request, env: gatewayEnv, execution: fakeExecution(), services });
-    assert.equal(res.status, 429);
-    assert.equal((await res.json()).error, "quota_exceeded");
-  });
-});
-
-test("chat/completions sin clave del proveedor responde 503 antes de validar la licencia", async () => {
-  const res = await worker.fetch(jsonRequest("https://pteron.test/api/ai/v1/chat/completions", { messages: [] }), env, fakeExecution());
-  assert.equal(res.status, 503);
-  assert.equal((await res.json()).error, "gateway_not_configured");
+test("messages sin clave del proveedor responde 503 not_configured antes de validar la licencia", async () => {
+  const originalError = console.error;
+  const logged = [];
+  console.error = (...args) => logged.push(args);
+  try {
+    const res = await worker.fetch(jsonRequest("https://pteron.test/api/ai/v1/messages", { messages: [] }), env, fakeExecution());
+    assert.equal(res.status, 503);
+    assert.deepEqual(await res.json(), { error: "included_ai_unavailable", message: "included_ai_unavailable: La IA incluida no está disponible ahora.", reason: "not_configured" });
+  } finally {
+    console.error = originalError;
+  }
+  // El log nombra lo que falta, nunca un valor.
+  assert.deepEqual(logged, [["pteron gateway config", { invalid: ["ANTHROPIC_API_KEY", "GATEWAY_MODEL_ID", "LICENSE_PRIVATE_KEY_PEM"] }]]);
 });
 
 test("license/renew reemite a partir de una licencia firmada aunque esté vencida", async () => {
@@ -227,38 +156,57 @@ test("createServices expone las claves públicas reales para verificar licencias
   assert.match(services.publicKeys.k1, /BEGIN PUBLIC KEY/);
 });
 
+const PROFE = "8a6e0804-2bd0-4672-b79d-d97027f9071a";
+
 function messagesFixture() {
   const { gatewayEnv, services, sign } = gatewayFixture();
   const sse = [
-    'event: message_start\ndata: {"type":"message_start","message":{"id":"msg_1","model":"modelo-real","usage":{"input_tokens":100,"cache_creation_input_tokens":20,"cache_read_input_tokens":30,"output_tokens":1}}}\n\n',
+    'event: message_start\ndata: {"type":"message_start","message":{"id":"msg_1","model":"claude-haiku-5-5","usage":{"input_tokens":100,"cache_creation_input_tokens":20,"cache_read_input_tokens":30,"output_tokens":1}}}\n\n',
     'event: content_block_delta\ndata: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"ho',
     'la"}}\n\nevent: message_delta\ndata: {"type":"message_delta","delta":{"stop_reason":"end_turn"},"usage":{"output_tokens":50}}\n\n',
     "event: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
   ];
-  return { gatewayEnv, services, sign, sse };
+  const subscription = {
+    plan_id: "pro",
+    provider: "flow",
+    status: "active",
+    current_period_start: new Date(Date.now() - 86400000).toISOString(),
+    current_period_end: new Date(Date.now() + 29 * 86400000).toISOString(),
+    cancel_at_period_end: false,
+    plan_catalog: { ai_units_limit: 30_000_000, trial_ai_units_limit: null, license_plan: "pro" },
+  };
+  return { gatewayEnv, services, sign: (overrides = {}) => sign({ subject: PROFE, ...overrides }), sse, subscription };
 }
 
-test("messages retransmite la API Messages de Anthropic con la licencia en x-api-key y suma todos los tokens", async () => {
-  const { gatewayEnv, services, sign, sse } = messagesFixture();
-  const token = await sign();
+/** Supabase (suscripción y reservas) y Anthropic simulados para la ruta de mensajes. */
+function messagesFetch(subscription, upstream, begin = { allowed: true, reason: "ok", units_used: 0, units_reserved: 1, units_limit: 30_000_000 }) {
   const calls = [];
   const fetchImpl = async (url, init = {}) => {
     const target = String(url);
     calls.push({ url: target, body: init.body ? JSON.parse(init.body) : null, headers: init.headers || {} });
-    if (target.includes("/rest/v1/plan_catalog")) return Response.json([{ ai_units_limit: null }]);
-    if (target.includes("/rest/v1/rpc/reserve_ai_usage")) return Response.json([{ allowed: true, units_used: 0 }]);
-    if (target === "https://upstream.test/v1/messages") {
-      const encoder = new TextEncoder();
-      const stream = new ReadableStream({
-        start(controller) {
-          for (const chunk of sse) controller.enqueue(encoder.encode(chunk));
-          controller.close();
-        },
-      });
-      return new Response(stream, { status: 200, headers: { "content-type": "text/event-stream; charset=utf-8" } });
-    }
+    if (target.includes("/rest/v1/subscriptions")) return Response.json([subscription]);
+    if (target.includes("/rest/v1/rpc/begin_ai_request")) return Response.json([{ period_end: subscription.current_period_end, ...begin }]);
+    if (target.includes("/rest/v1/rpc/finish_ai_request")) return Response.json([{ units_used: 1 }]);
+    if (target === "https://upstream.test/v1/messages") return upstream();
     throw new Error(`Sin mock para ${target}`);
   };
+  return { calls, fetchImpl, finishes: () => calls.filter((call) => call.url.includes("finish_ai_request")).map((call) => call.body) };
+}
+
+test("messages retransmite la API Messages de Anthropic con la licencia en x-api-key y anota unidades, no tokens brutos", async () => {
+  const { gatewayEnv, services, sign, sse, subscription } = messagesFixture();
+  const token = await sign();
+  const upstream = () => {
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      start(controller) {
+        for (const chunk of sse) controller.enqueue(encoder.encode(chunk));
+        controller.close();
+      },
+    });
+    return new Response(stream, { status: 200, headers: { "content-type": "text/event-stream; charset=utf-8" } });
+  };
+  const { calls, fetchImpl, finishes } = messagesFetch(subscription, upstream);
   await withFetch(fetchImpl, async () => {
     const execution = fakeExecution();
     const request = jsonRequest("https://pteron.test/api/ai/v1/messages", { model: "pteron-managed", stream: true, max_tokens: 1000, messages: [{ role: "user", content: "hola" }] }, {
@@ -270,104 +218,89 @@ test("messages retransmite la API Messages de Anthropic con la licencia en x-api
     assert.equal(await res.text(), sse.join(""));
     await execution.settle();
 
-    const upstream = calls.find((call) => call.url === "https://upstream.test/v1/messages");
-    assert.equal(upstream.body.model, "modelo-real");
-    assert.equal(upstream.body.max_tokens, 1000);
-    assert.equal(upstream.headers["x-api-key"], "upstream-key", "la clave real sólo la pone el Worker");
-    assert.equal(upstream.headers["anthropic-version"], "2023-06-01");
-    assert.equal(upstream.headers["anthropic-beta"], "fine-grained-tool-streaming-2025-05-14", "las betas del cliente se reenvían");
-    assert.equal("authorization" in upstream.headers, false);
+    const upstreamCall = calls.find((call) => call.url === "https://upstream.test/v1/messages");
+    assert.equal(upstreamCall.body.model, "claude-haiku-5-5", "el cliente nunca elige el modelo real");
+    assert.equal(upstreamCall.body.max_tokens, 1000);
+    assert.deepEqual(upstreamCall.body.output_config, { effort: "low" }, "esfuerzo bajo forzado (ADR-169)");
+    assert.equal(upstreamCall.headers["x-api-key"], "upstream-key", "la clave real sólo la pone el Worker");
+    assert.equal(upstreamCall.headers["anthropic-version"], "2023-06-01");
+    assert.equal("anthropic-beta" in upstreamCall.headers, false, "una beta fuera de la lista blanca no se reenvía");
+    assert.equal("authorization" in upstreamCall.headers, false);
 
-    const reservations = calls.filter((call) => call.url.includes("reserve_ai_usage")).map((call) => call.body);
-    assert.equal(reservations.length, 2);
-    assert.equal(reservations[1].p_units, 200, "entrada 100 + caché 20 + 30 + salida 50");
-    assert.deepEqual(reservations[1].p_metadata, { route_model: "modelo-real" });
+    const [finish] = finishes();
+    // Entrada 100 + caché escrita 20 ×1,25 + leída 30 ×0,1 + salida 50 ×5 = 378 unidades.
+    assert.equal(finish.p_units, 378);
+    assert.equal(finish.p_metadata.route_model, "claude-haiku-5-5");
+    assert.equal(finish.p_metadata.status, "ok");
   });
 });
 
 test("messages sin stream contabiliza desde el JSON de la respuesta", async () => {
-  const { gatewayEnv, services, sign } = messagesFixture();
+  const { gatewayEnv, services, sign, subscription } = messagesFixture();
   const token = await sign();
-  const calls = [];
-  const fetchImpl = async (url, init = {}) => {
-    const target = String(url);
-    calls.push({ url: target, body: init.body ? JSON.parse(init.body) : null });
-    if (target.includes("/rest/v1/plan_catalog")) return Response.json([{ ai_units_limit: null }]);
-    if (target.includes("/rest/v1/rpc/reserve_ai_usage")) return Response.json([{ allowed: true, units_used: 0 }]);
-    if (target.endsWith("/v1/messages")) return Response.json({ id: "msg", model: "modelo-real", content: [], usage: { input_tokens: 10, output_tokens: 5 } });
-    throw new Error(`Sin mock para ${target}`);
-  };
+  const { fetchImpl, finishes } = messagesFetch(subscription, () => Response.json({ id: "msg", model: "claude-haiku-5-5", content: [], usage: { input_tokens: 10, output_tokens: 5 } }));
   await withFetch(fetchImpl, async () => {
     const execution = fakeExecution();
-    const request = jsonRequest("https://pteron.test/api/ai/v1/messages", { messages: [], max_tokens: 10 }, { headers: { authorization: `Bearer ${token}` } });
+    const request = jsonRequest("https://pteron.test/api/ai/v1/messages", { messages: [{ role: "user", content: "hola" }], max_tokens: 10 }, { headers: { authorization: `Bearer ${token}` } });
     const res = await messages({ request, env: gatewayEnv, execution, services });
     assert.equal(res.status, 200);
-    assert.equal((await res.json()).model, "modelo-real");
+    assert.equal((await res.json()).model, "claude-haiku-5-5");
     await execution.settle();
-    assert.equal(calls.filter((call) => call.url.includes("reserve_ai_usage")).at(-1).body.p_units, 15);
+    assert.equal(finishes()[0].p_units, 35, "10 de entrada + 5 de salida ×5");
   });
 });
 
-test("messages pasa al cliente un 429 del proveedor con su cuerpo y traduce un 401 de la clave propia a 502", async () => {
-  const { gatewayEnv, services, sign } = messagesFixture();
+test("messages pasa al cliente un 429 del proveedor con su cuerpo y traduce un 401 de la clave propia a 503 provider_paused", async () => {
+  const { gatewayEnv, services, sign, subscription } = messagesFixture();
   const token = await sign();
   let upstreamStatus = 429;
-  const fetchImpl = async (url) => {
-    const target = String(url);
-    if (target.includes("/rest/v1/plan_catalog")) return Response.json([{ ai_units_limit: null }]);
-    if (target.includes("/rest/v1/rpc/reserve_ai_usage")) return Response.json([{ allowed: true, units_used: 0 }]);
-    if (target.endsWith("/v1/messages")) return Response.json({ type: "error", error: { type: "rate_limit_error", message: "slow down" } }, { status: upstreamStatus });
-    throw new Error(`Sin mock para ${target}`);
-  };
-  await withFetch(fetchImpl, async () => {
-    const rateLimited = await messages({ request: jsonRequest("https://pteron.test/api/ai/v1/messages", { messages: [] }, { headers: { authorization: `Bearer ${token}` } }), env: gatewayEnv, execution: fakeExecution(), services });
-    assert.equal(rateLimited.status, 429);
-    assert.equal((await rateLimited.json()).error.type, "rate_limit_error");
-    upstreamStatus = 401;
-    const badKey = await messages({ request: jsonRequest("https://pteron.test/api/ai/v1/messages", { messages: [] }, { headers: { authorization: `Bearer ${token}` } }), env: gatewayEnv, execution: fakeExecution(), services });
-    assert.equal(badKey.status, 502);
-    assert.equal((await badKey.json()).error, "gateway_upstream_error");
-  });
+  const { fetchImpl } = messagesFetch(subscription, () =>
+    Response.json({ type: "error", error: { type: upstreamStatus === 429 ? "rate_limit_error" : "authentication_error", message: "x" } }, { status: upstreamStatus, headers: { "retry-after": "3", "request-id": "req_9" } }),
+  );
+  const originalError = console.error;
+  console.error = () => {};
+  try {
+    await withFetch(fetchImpl, async () => {
+      const send = async () => {
+        const execution = fakeExecution();
+        const res = await messages({ request: jsonRequest("https://pteron.test/api/ai/v1/messages", { messages: [{ role: "user", content: "hola" }] }, { headers: { authorization: `Bearer ${token}` } }), env: gatewayEnv, execution, services });
+        await execution.settle();
+        return res;
+      };
+      const rateLimited = await send();
+      assert.equal(rateLimited.status, 429);
+      assert.equal(rateLimited.headers.get("retry-after"), "3");
+      assert.equal(rateLimited.headers.get("request-id"), "req_9");
+      assert.equal((await rateLimited.json()).error.type, "rate_limit_error");
+      upstreamStatus = 401;
+      const badKey = await send();
+      assert.equal(badKey.status, 503);
+      assert.deepEqual(await badKey.json(), { error: "included_ai_unavailable", message: "included_ai_unavailable: La IA incluida no está disponible ahora.", reason: "provider_paused" });
+    });
+  } finally {
+    console.error = originalError;
+  }
 });
 
-test("la cuota se aplica en el chequeo previo cuando el período ya está lleno y el cruce registra lo que cabe", async () => {
-  const { gatewayEnv, services, sign } = messagesFixture();
+test("la cuota se reserva antes de llamar al proveedor y el gasto que cruza el tope se anota completo", async () => {
+  const { gatewayEnv, services, sign, subscription } = messagesFixture();
   const token = await sign();
-  const reservations = [];
-  let unitsUsed = 1000;
-  const fetchImpl = async (url, init = {}) => {
-    const target = String(url);
-    if (target.includes("/rest/v1/plan_catalog")) return Response.json([{ ai_units_limit: 1000 }]);
-    if (target.includes("/rest/v1/rpc/reserve_ai_usage")) {
-      const body = JSON.parse(init.body);
-      reservations.push(body.p_units);
-      const allowed = unitsUsed + body.p_units <= 1000;
-      if (allowed) unitsUsed += body.p_units;
-      return Response.json([{ allowed, units_used: unitsUsed }]);
-    }
-    if (target.endsWith("/v1/messages")) return Response.json({ id: "msg", model: "modelo-real", content: [], usage: { input_tokens: 400, output_tokens: 100 } });
-    throw new Error(`Sin mock para ${target}`);
-  };
+  const { calls, fetchImpl, finishes } = messagesFetch(
+    subscription,
+    () => Response.json({ id: "msg", model: "claude-haiku-5-5", content: [], usage: { input_tokens: 400, output_tokens: 100 } }),
+    // Quedan 300 unidades: basta que quede algo libre para entrar.
+    { allowed: true, reason: "ok", units_used: 29_999_700, units_reserved: 6000, units_limit: 30_000_000 },
+  );
   await withFetch(fetchImpl, async () => {
-    const full = await messages({ request: jsonRequest("https://pteron.test/api/ai/v1/messages", { messages: [] }, { headers: { authorization: `Bearer ${token}` } }), env: gatewayEnv, execution: fakeExecution(), services });
-    assert.equal(full.status, 429, "con lo usado igual al tope no se llama al proveedor");
-
-    unitsUsed = 700;
-    reservations.length = 0;
     const execution = fakeExecution();
-    const originalError = console.error;
-    console.error = () => {};
-    try {
-      const crossing = await messages({ request: jsonRequest("https://pteron.test/api/ai/v1/messages", { messages: [] }, { headers: { authorization: `Bearer ${token}` } }), env: gatewayEnv, execution, services });
-      assert.equal(crossing.status, 200);
-      await crossing.text();
-      await execution.settle();
-    } finally {
-      console.error = originalError;
-    }
-    assert.deepEqual(reservations, [0, 500, 300], "500 no cabe; se anotan los 300 restantes y el período queda lleno");
-    assert.equal(unitsUsed, 1000);
+    const crossing = await messages({ request: jsonRequest("https://pteron.test/api/ai/v1/messages", { messages: [{ role: "user", content: "hola" }], max_tokens: 1000 }, { headers: { authorization: `Bearer ${token}` } }), env: gatewayEnv, execution, services });
+    assert.equal(crossing.status, 200);
+    await crossing.text();
+    await execution.settle();
   });
+  const order = calls.map((call) => (call.url.includes("rpc/") ? call.url.split("rpc/")[1] : call.url.includes("upstream") ? "anthropic" : "subscriptions"));
+  assert.deepEqual(order, ["subscriptions", "begin_ai_request", "anthropic", "finish_ai_request"]);
+  assert.equal(finishes()[0].p_units, 900, "400 de entrada + 100 ×5: el gasto real completo, aunque pase el tope");
 });
 
 test("la sonda de /docs/:slug ignora una 404 cacheada y la página de docs sí acepta 304 y HEAD", async () => {
