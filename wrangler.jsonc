@@ -3,8 +3,8 @@
   "name": "pteron-landing",
   "main": "src/worker.js",
   "compatibility_date": "2026-09-15",
-  "workers_dev": true,
-  "preview_urls": true,
+  "workers_dev": false,
+  "preview_urls": false,
   "upload_source_maps": true,
   "observability": { "enabled": true },
   // La web estática se sirve como assets; el Worker sólo atiende /api/* y el
@@ -24,7 +24,7 @@
   },
   // Variables públicas. Los secretos (SUPABASE_PUBLISHABLE_KEY,
   // SUPABASE_SERVICE_ROLE_KEY, FLOW_API_KEY, FLOW_SECRET_KEY,
-  // LICENSE_PRIVATE_KEY_PEM, ANTHROPIC_API_KEY) se cargan con
+  // LICENSE_PRIVATE_KEY_PEM, ANTHROPIC_API_KEY, ADMIN_EMAILS) se cargan con
   // `wrangler secret put` o desde el panel; nunca en este archivo.
   "vars": {
     "PUBLIC_SITE_URL": "https://pteron.patagua.dev",
@@ -38,8 +38,8 @@
     // Flow fija el monto al crear un plan y no deja cambiarlo con suscriptores:
     // cada precio tiene su id. El checkout compara monto, moneda, intervalo y
     // urlCallback con plan_catalog y detiene la venta si algo no calza.
-    "FLOW_BASIC_PLAN_ID": "pteron-basic-1990-mensual",
-    "FLOW_PRO_PLAN_ID": "pteron-pro-monthly"
+    "FLOW_BASIC_PLAN_ID": "pteron-basic-2990-mensual",
+    "FLOW_PRO_PLAN_ID": "pteron-pro-9990-mensual"
   },
   // Cron diario a las 12:17 UTC (09:17 en el verano de Chile, 08:17 en
   // invierno): sincroniza con Flow las suscripciones cerca del fin de lo pagado

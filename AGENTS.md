@@ -76,8 +76,9 @@ Cada una de esas acciones requiere autorización específica.
 - Un cambio en `src/` o en `public/*.js` incluye pruebas proporcionales y pasa
   `npm run verify` antes de cerrarse.
 - Producción se despliega desde `main` por la integración Git de Cloudflare;
-  una rama produce una URL de previsualización. Nada se despliega a mano desde
-  una sesión sin autorización específica.
+  no hay URLs de previsualización (`workers_dev` y `preview_urls` están
+  apagados). Nada se despliega a mano desde una sesión sin autorización
+  específica.
 - Los secretos viven en el Worker, nunca en el repositorio ni en `wrangler.jsonc`.
 
 ## Calidad

@@ -110,25 +110,19 @@ async function ensureFlowPlan(flow, catalogo, callbackUrl) {
 }
 
 /**
- * Un cliente de Flow por cuenta. Se guarda apenas Flow lo crea: si algo falla
- * después, el siguiente checkout lo reutiliza en vez de crear otro con el
- * mismo externalId. Los clientes de antes de billing_customers sólo quedaron
- * en los checkouts: se recuperan de ahí.
+ * Un cliente de Flow por cuenta, guardado en billing_customers apenas Flow lo
+ * crea: si algo falla después, el siguiente checkout lo reutiliza en vez de
+ * crear otro con el mismo externalId.
  */
 async function flowCustomer({ supabase, flow }, user) {
   const userId = encodeURIComponent(user.id);
   const [guardado] = (await supabase.select("billing_customers", `user_id=eq.${userId}&select=provider_customer_id&limit=1`, { admin: true })) || [];
   if (guardado?.provider_customer_id) return guardado.provider_customer_id;
-  const [previo] = (await supabase.select(
-    "billing_checkout_intents",
-    `user_id=eq.${userId}&provider_customer_id=not.is.null&select=provider_customer_id&order=created_at.desc&limit=1`,
-    { admin: true },
-  )) || [];
-  const customerId = previo?.provider_customer_id || (await flow.createCustomer({
+  const { customerId } = await flow.createCustomer({
     name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split("@")[0] || "pteron",
     email: user.email,
     externalId: user.id,
-  })).customerId;
+  });
   await supabase.insert("billing_customers", { user_id: user.id, provider: "flow", provider_customer_id: customerId }, { admin: true });
   return customerId;
 }

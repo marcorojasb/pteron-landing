@@ -6,7 +6,7 @@ import { verifyLicense } from "../src/lib/license.js";
 import { fakeExecution, fakeSupabase, jsonRequest, testEnv, testKeyPair, testServices, withFetch } from "./helpers/fakes.js";
 
 const keys = testKeyPair();
-const testKeys = { k1: keys.publicPem };
+const testKeys = { k2: keys.publicPem };
 const env = testEnv({ LICENSE_PRIVATE_KEY_PEM: keys.privatePem });
 
 /**
@@ -57,7 +57,7 @@ test("exchange devuelve una licencia válida y el estado del plan cuando el inte
     const payload = await res.json();
     assert.equal(payload.ok, true);
     assert.equal(payload.plan, "pro");
-    assert.equal(payload.keyId, "k1");
+    assert.equal(payload.keyId, "k2");
     assert.equal((await verifyLicense(payload.token, testKeys))?.sub, "user-1");
     // Tope de 7 días aunque el período pagado dure 30.
     const exp = Date.parse(payload.expiresAt);

@@ -28,11 +28,11 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <!-- has-session: con una sesión guardada (o recién llegada en el enlace) la página espera a /api/account con un esqueleto -->
   <script>document.documentElement.classList.replace("no-js","js");try{var s=JSON.parse(localStorage.getItem("pteron-account-session")||"null");if((s&&s.access_token&&s.refresh_token)||/(^|[#&])access_token=/.test(location.hash))document.documentElement.classList.add("has-session")}catch(e){}</script>
-  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-13.1" crossorigin>
-  <link rel="stylesheet" href="/styles.css?v=2026-10-13.1">
-  <link rel="stylesheet" href="/cuenta/cuenta.css?v=2026-10-13.1">
-  <script src="/script.js?v=2026-10-13.1" defer></script>
-  <script src="/cuenta/cuenta.js?v=2026-10-13.1" defer></script>
+  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-13.2" crossorigin>
+  <link rel="stylesheet" href="/styles.css?v=2026-10-13.2">
+  <link rel="stylesheet" href="/cuenta/cuenta.css?v=2026-10-13.2">
+  <script src="/script.js?v=2026-10-13.2" defer></script>
+  <script src="/cuenta/cuenta.js?v=2026-10-13.2" defer></script>
 </head>
 <body class="cuenta">
   <a class="saltar" href="#contenido">Saltar al contenido</a>
@@ -51,10 +51,10 @@
     </div>
 
     <header class="pagina-cabeza pagina-cabeza--pieza contenedor">
-      <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-13.1#pteron"/></svg></a>
+      <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-13.2#pteron"/></svg></a>
       <h1>Cuenta</h1>
       <p class="texto-grande">Tu plan, el pago con Flow y la activación de pteron en tu equipo.</p>
-      <!-- pieza:inicio --><div class="pieza" data-pieza aria-hidden="true" style="--giro:2deg"><div class="pieza-cuerpo"><div class="pieza-cara"><img src="/assets/atlas/historia-portulano-600.webp?v=2026-10-13.1" srcset="/assets/atlas/historia-portulano-300.webp?v=2026-10-13.1 300w, /assets/atlas/historia-portulano-600.webp?v=2026-10-13.1 600w" sizes="(max-width: 760px) 120px, 240px" width="600" height="600" alt="" decoding="async" draggable="false"></div><div class="pieza-reverso" style="clip-path:polygon(0% 0%,100% 0%,100% 100%,0% 100%);grid-template:repeat(1,1fr)/repeat(1,1fr)"><div class="reverso-figura" style="grid-area:1/1/2/2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 267" role="img" aria-labelledby="pieza-historia-portulano--titulo pieza-historia-portulano--descripcion" data-kit-version="6.0.0" data-kit-letra="grande" data-kit-motor="mapa" class="pteron-figura" focusable="false">
+      <!-- pieza:inicio --><div class="pieza" data-pieza aria-hidden="true" style="--giro:2deg"><div class="pieza-cuerpo"><div class="pieza-cara"><img src="/assets/atlas/historia-portulano-600.webp?v=2026-10-13.2" srcset="/assets/atlas/historia-portulano-300.webp?v=2026-10-13.2 300w, /assets/atlas/historia-portulano-600.webp?v=2026-10-13.2 600w" sizes="(max-width: 760px) 120px, 240px" width="600" height="600" alt="" decoding="async" draggable="false"></div><div class="pieza-reverso" style="clip-path:polygon(0% 0%,100% 0%,100% 100%,0% 100%);grid-template:repeat(1,1fr)/repeat(1,1fr)"><div class="reverso-figura" style="grid-area:1/1/2/2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 267" role="img" aria-labelledby="pieza-historia-portulano--titulo pieza-historia-portulano--descripcion" data-kit-version="6.0.0" data-kit-letra="grande" data-kit-motor="mapa" class="pteron-figura" focusable="false">
 <!--
 MIT License
 
@@ -105,7 +105,7 @@ SOFTWARE.
           </div>
         </form>
         <dl class="acceso-hechos">
-          <div><dt>7 días gratis en Basic</dt><dd>Registras tu tarjeta en Flow y no se cobra nada durante la prueba. Si no cancelas antes, se cobran $1.990 al terminar los 7 días y luego cada mes, hasta que canceles.</dd></div>
+          <div><dt>7 días gratis en Basic</dt><dd>Registras tu tarjeta en Flow y no se cobra nada durante la prueba. Si no cancelas antes, se cobran $2.990 al terminar los 7 días y luego cada mes, hasta que canceles.</dd></div>
           <div><dt>Licencia firmada</dt><dd>Se guarda en tu equipo, se verifica ahí y se renueva sola mientras tu plan siga vigente.</dd></div>
         </dl>
       </div>
@@ -168,8 +168,8 @@ SOFTWARE.
             <!-- Los botones parten cerrados: cuenta.js sólo abre los planes que el catálogo pone a la venta -->
             <article class="hoja-panel plan-opcion" data-plan-card="basic">
               <h3>Basic</h3>
-              <p class="plan-precio"><span data-plan-price>$1.990</span> <small>CLP al mes, IVA incluido</small></p>
-              <p class="nota" data-plan-trial><span class="destacado">7 días gratis.</span> Luego $1.990 al mes, hasta que canceles.</p>
+              <p class="plan-precio"><span data-plan-price>$2.990</span> <small>CLP al mes, IVA incluido</small></p>
+              <p class="nota" data-plan-trial><span class="destacado">7 días gratis.</span> Luego $2.990 al mes, hasta que canceles.</p>
               <p class="nota" data-plan-quota>IA incluida: 6.000.000 unidades por período (1.500.000 durante la prueba).</p>
               <button class="boton boton-tinta" type="button" data-checkout-plan="basic" disabled>Disponible pronto</button>
             </article>
@@ -187,7 +187,7 @@ SOFTWARE.
           <section class="hoja-panel resumen" data-checkout-summary aria-labelledby="resumen-titulo" hidden>
             <p class="rotulo">Antes de registrar tu tarjeta</p>
             <h3 id="resumen-titulo" tabindex="-1" data-summary-title>Basic</h3>
-            <p class="resumen-precio" data-summary-price>$1.990 al mes, IVA incluido</p>
+            <p class="resumen-precio" data-summary-price>$2.990 al mes, IVA incluido</p>
             <dl class="resumen-filas" data-summary-rows></dl>
             <form class="resumen-form" data-summary-form novalidate>
               <label class="casilla">
@@ -226,7 +226,7 @@ SOFTWARE.
     <div class="contenedor">
       <div class="colofon-rejilla">
         <div>
-          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-13.1#pteron"/></svg></a>
+          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-13.2#pteron"/></svg></a>
           <p class="colofon-lema">Construido por profes, para profes.</p>
           <p class="colofon-lugar">Hecho en Chile.</p>
         </div>

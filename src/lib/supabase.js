@@ -13,7 +13,7 @@ export function createSupabase(env) {
   }
 
   function publicKey() {
-    const value = String(env?.SUPABASE_PUBLISHABLE_KEY || env?.SUPABASE_ANON_KEY || "").trim();
+    const value = String(env?.SUPABASE_PUBLISHABLE_KEY || "").trim();
     if (!value) throw new HttpError(503, "supabase_not_configured", "La cuenta todavía no está configurada.");
     return value;
   }

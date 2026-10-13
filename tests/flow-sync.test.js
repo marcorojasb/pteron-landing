@@ -130,7 +130,7 @@ test("prueba de 7 días: la fila queda en prueba hasta la medianoche de Chile de
     morose: 0,
     next_invoice_at: "2026-10-20T03:00:00.000Z",
     payment_link: null,
-    provider_plan_id: "pteron-basic-1990-mensual",
+    provider_plan_id: "pteron-basic-2990-mensual",
     last_synced_at: "2026-10-13T18:30:00.000Z",
   });
 });
@@ -323,7 +323,7 @@ test("la base de Flow no tiene valor por defecto y el sitio de producción sólo
     assert.throws(() => base({ PUBLIC_SITE_URL: "https://pteron.test", FLOW_BASE_URL: "https://flow.example/api" }), { code: "billing_misconfigured" });
     // Sin id de plan configurado no se cobra: un id por defecto podría ser un plan viejo con otro monto.
     assert.throws(() => createFlow({}).planId("basic"), { code: "billing_misconfigured" });
-    assert.equal(createFlow({ FLOW_BASIC_PLAN_ID: " pteron-basic-1990-mensual " }).planId("basic"), "pteron-basic-1990-mensual");
+    assert.equal(createFlow({ FLOW_BASIC_PLAN_ID: " pteron-basic-2990-mensual " }).planId("basic"), "pteron-basic-2990-mensual");
     assert.throws(() => createFlow({ FLOW_BASIC_PLAN_ID: "x" }).planId("tester"), { code: "billing_misconfigured" });
   } finally {
     console.error = consoleError;
@@ -371,7 +371,7 @@ test("un vencimiento de Flow rechaza el fetch como una red caída: no es un rech
   await withFetch(vencido, async () => {
     const lecturas = [
       flow.getSubscription("sus_basic01"),
-      flow.createSubscription({ planId: "pteron-basic-1990-mensual", customerId: "cus_1", trialPeriodDays: 0 }),
+      flow.createSubscription({ planId: "pteron-basic-2990-mensual", customerId: "cus_1", trialPeriodDays: 0 }),
     ];
     for (const lectura of lecturas) {
       const error = await lectura.then(() => null, (falla) => falla);
@@ -395,8 +395,8 @@ test("customerSubscriptions pide la primera página firmada y lee data como arre
       assert.equal(lista.total, 2);
       assert.equal(lista.hasMore, true);
       assert.deepEqual(lista.data.map((s) => [s.subscriptionId, s.planId, s.status, s.created]), [
-        ["sus_basic01", "pteron-basic-1990-mensual", 2, "2026-10-13 15:20:00"],
-        ["sus_otra", "pteron-basic-1990-mensual", 1, "2026-10-13 15:20:00"],
+        ["sus_basic01", "pteron-basic-2990-mensual", 2, "2026-10-13 15:20:00"],
+        ["sus_otra", "pteron-basic-2990-mensual", 1, "2026-10-13 15:20:00"],
       ]);
     });
     const [llamada] = network.calls;

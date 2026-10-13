@@ -15,8 +15,8 @@ function load() {
 const plain = (value) => JSON.parse(JSON.stringify(value));
 const cuenta = load();
 
-// El catálogo como lo entrega /api/account tras la migración del 2026-10-13, con la venta ya abierta
-const BASIC = { id: "basic", monthly_price_clp: 1990, trial_period_days: 7, ai_units_limit: 6000000, trial_ai_units_limit: 1500000, for_sale: true };
+// El catálogo como lo entrega /api/account con la venta ya abierta
+const BASIC = { id: "basic", monthly_price_clp: 2990, trial_period_days: 7, ai_units_limit: 6000000, trial_ai_units_limit: 1500000, for_sale: true };
 const PRO = { id: "pro", monthly_price_clp: 9990, trial_period_days: 0, ai_units_limit: 30000000, trial_ai_units_limit: null, for_sale: true };
 const account = (overrides = {}) => ({ plans: [BASIC, PRO], subscriptions: [], trialEligible: true, termsVersion: "2026-10-13", usage: null, ...overrides });
 // 13 de octubre de 2026 a mediodía en Chile (UTC-3: horario de verano)
@@ -26,11 +26,11 @@ const DAY = 24 * 60 * 60 * 1000;
 test("el resumen antes de Flow: precio con IVA, hoy no se cobra y el día del primer cobro; el checkout lleva los Términos", () => {
   const summary = cuenta.checkoutSummary("basic", account(), NOW);
   assert.equal(summary.name, "Basic");
-  assert.equal(summary.price, "$1.990 al mes, IVA incluido");
+  assert.equal(summary.price, "$2.990 al mes, IVA incluido");
   assert.equal(summary.trialDays, 7);
   assert.deepEqual(plain(summary.rows), [
     ["Hoy", "No se cobra nada. Empiezan 7 días de prueba."],
-    ["Primer cobro", "$1.990 el 20 de octubre de 2026, si no cancelas antes; luego cada mes, hasta que canceles."],
+    ["Primer cobro", "$2.990 el 20 de octubre de 2026, si no cancelas antes; luego cada mes, hasta que canceles."],
     ["IA incluida", "6.000.000 unidades por período (1.500.000 durante la prueba). Se renueva con tu cobro."],
     ["Cancelar", "Desde esta página, cuando quieras."],
   ]);
@@ -51,7 +51,7 @@ test("sin prueba: quien ya la usó, Pro y una cuenta que no informa si le corres
   const used = plain(cuenta.checkoutSummary("basic", account({ trialEligible: false }), NOW));
   assert.equal(used.trialDays, 0);
   assert.deepEqual(used.rows.slice(0, 2), [
-    ["Primer cobro", "$1.990 al contratar; luego cada mes, hasta que canceles."],
+    ["Primer cobro", "$2.990 al contratar; luego cada mes, hasta que canceles."],
     ["Prueba", "Ya usaste la prueba gratis: es una por persona."],
   ]);
   assert.equal(used.rows[2][1], "6.000.000 unidades por período. Se renueva con tu cobro.");
@@ -81,7 +81,7 @@ test("el estado del plan: en prueba, próximo cobro, termina, pago pendiente y c
   const state = (subscription, plan = BASIC) => plain(cuenta.subscriptionState(subscription, plan));
   assert.deepEqual(state({ status: "trialing", trial_ends_at: "2026-10-20T03:00:00.000Z", current_period_end: "2026-10-20T03:00:00.000Z" }), {
     label: "En prueba",
-    text: "En prueba hasta el 20 de octubre de 2026; ese día se cobran $1.990.",
+    text: "En prueba hasta el 20 de octubre de 2026; ese día se cobran $2.990.",
     pay: "",
   });
   assert.equal(state({ status: "trialing", trial_ends_at: "2026-10-20T03:00:00.000Z" }, null).text, "En prueba hasta el 20 de octubre de 2026; ese día se hace el primer cobro.");
@@ -182,7 +182,7 @@ function fakeStorage({ broken = false } = {}) {
   };
 }
 
-test("lo guardado con vencimiento: vigente se lee, vencido o en el formato anterior se borra, sin almacenamiento no falla", () => {
+test("lo guardado con vencimiento: vigente se lee, vencido o sin vencimiento se borra, sin almacenamiento no falla", () => {
   const storage = fakeStorage();
   cuenta.remember(storage, "k", "valor", 1000, NOW);
   assert.equal(cuenta.recall(storage, "k", NOW + 999).value, "valor");

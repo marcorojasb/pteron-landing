@@ -57,7 +57,7 @@ mismo lugar o momento en que se informa el precio, con una advertencia destacada
 información respecto del precio» y con la expresión «derecho a retracto».
 
 - **Opción A, excluirlo** (la que recomienda la auditoría). Junto al precio en /planes y en el resumen antes de Flow,
-  en letra no menor que «$1.990»; repetido en los Términos y en la confirmación:
+  en letra no menor que «$2.990»; repetido en los Términos y en la confirmación:
   > Basic no tiene derecho a retracto. Lo pruebas gratis 7 días y lo cancelas cuando quieras desde tu cuenta.
 - **Opción B, mantenerlo:**
   > Derecho a retracto: puedes retractarte dentro de 10 días desde que contratas, escribiendo a pteron@patagua.dev o
@@ -93,8 +93,8 @@ Borrador del correo, que sale cuando `card-callback` crea la suscripción:
 
 > Asunto: Tu plan {Basic} de pteron
 >
-> {Quién vende, punto 1.} Contrataste {Basic} a $1.990 al mes, IVA incluido. {Si hay prueba:} Tu prueba termina el
-> {fecha}; ese día se cobran $1.990, y luego cada mes, hasta que canceles. {Si no:} El primer cobro se hizo el {fecha}.
+> {Quién vende, punto 1.} Contrataste {Basic} a $2.990 al mes, IVA incluido. {Si hay prueba:} Tu prueba termina el
+> {fecha}; ese día se cobran $2.990, y luego cada mes, hasta que canceles. {Si no:} El primer cobro se hizo el {fecha}.
 > Cancelas cuando quieras en https://pteron.patagua.dev/cuenta. {Retracto y devoluciones, punto 2.} Tu cuota de IA
 > incluida: {6.000.000} unidades por período ({1.500.000} durante la prueba). Aceptaste los Términos versión
 > {2026-10-13}: {enlace a esa versión y texto íntegro o PDF}.
@@ -111,9 +111,9 @@ Fuente: https://www.suseso.gob.cl/612/w3-propertyvalue-119539.html
 
 ## 4. Boleta electrónica e IVA
 
-Cada cobro de $1.990 a un consumidor requiere boleta electrónica (Ley 21.210) con el IVA desglosado, y desde el
+Cada cobro de $2.990 a un consumidor requiere boleta electrónica (Ley 21.210) con el IVA desglosado, y desde el
 1-1-2023 los servicios están afectos a IVA (Ley 21.420). Flow no emite boletas y el Worker tampoco. Los precios ya se
-publican con IVA incluido ($1.990 = $1.672,27 neto + $317,73 de IVA, según el informe).
+publican con IVA incluido ($2.990 = $2.512,61 neto + $477,39 de IVA, según el informe).
 
 - **Opción A.** El sistema gratuito del SII, una boleta por cobro, a mano. Sirve con poco volumen.
 - **Opción B.** Un proveedor con API, disparado cuando la sincronización con Flow ve una factura pagada.
@@ -225,7 +225,7 @@ Fuentes: https://web.flow.cl/manual-suscripciones-flowpagos.pdf · https://web.f
 No lo exige una norma que se haya encontrado, pero el SERNAC fiscaliza las conversiones poco claras de prueba a pago y
 las barreras de salida. Recomendado: un correo 2 o 3 días antes del primer cobro (necesita el correo del punto 3).
 
-> Tu prueba de Basic termina el {fecha}. Ese día se cobran $1.990, salvo que canceles antes en
+> Tu prueba de Basic termina el {fecha}. Ese día se cobran $2.990, salvo que canceles antes en
 > https://pteron.patagua.dev/cuenta.
 
 Fuentes: https://www.sernac.cl/portal/604/w3-article-85909.html ·

@@ -176,8 +176,8 @@ async function cuenta({ services }, id) {
 }
 
 /**
- * Cortesía: igual que admin.dar_plan en la base, pero desde el Worker. Sólo
- * reemplaza a otra cortesía. Si la cuenta paga en Flow se niega: cancelar sólo
+ * Cortesía: un plan sin cobro que se da desde /admin. Sólo reemplaza a otra
+ * cortesía. Si la cuenta paga en Flow se niega: cancelar sólo
  * la fila local dejaría a la persona pagando un plan que ya no tiene.
  */
 async function darCortesia({ request, services }, id) {

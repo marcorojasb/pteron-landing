@@ -69,7 +69,7 @@ export function accessUntil(subscription) {
 /**
  * La licencia es portable hasta su `exp` (a lo más 7 días): la suscripción
  * vigente se revisa en cada petición, así una cortesía retirada, un plan que
- * dejó de pagarse o una licencia vieja de 12 meses dejan de gastar al tiro. El
+ * dejó de pagarse o una licencia que todavía no vence dejan de gastar al tiro. El
  * plan debe emitir licencia: uno sin `license_plan` no incluye la IA.
  */
 export function includedAiSubscription(subscription, now = new Date()) {

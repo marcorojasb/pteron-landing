@@ -66,11 +66,13 @@ Worker, desde este repositorio en GitHub.
   - `/api/*` y `/docs/*` entran siempre por el Worker (`run_worker_first`):
     sin eso, una navegación del navegador a una ruta sin asset la respondería
     la página 404 y el retorno de Flow nunca llegaría.
-- `supabase/migrations/`: esquema de perfiles, suscripciones, licencias,
-  activaciones, eventos de cobro y uso; la de `20261013120000` agrega precios,
-  cuotas, venta cerrada, reservas de IA y lo que se sincroniza con Flow.
-- `LANZAR-BASIC.md`: la guía, en orden, para configurar y abrir la venta de
-  Basic con IA incluida (Anthropic, Cloudflare, Supabase y Flow).
+- `supabase/esquema.sql`: el esquema completo de la base, en un solo archivo:
+  catálogo de planes con precios y cuotas, perfiles, suscripciones, licencias,
+  activaciones, eventos de cobro, uso, reservas de IA y sus funciones. No hay
+  migraciones ni historial.
+- `LANZAR-BASIC.md`: lo que falta hacer a mano, en orden, para que funcione y
+  abrir la venta de Basic con IA incluida (Supabase, Cloudflare, Anthropic y
+  Flow).
 - `LEGAL-PENDIENTE.md`: lo que se decide con abogado o contador antes de vender
   (quién vende, retracto, confirmación escrita, boleta), con borradores.
 - `tests/`: pruebas con `node --test`, sin red: Supabase, Flow y el proveedor
@@ -158,20 +160,21 @@ permanecen en el equipo del profesor. Flow gestiona el registro de tarjeta y los
 cobros. La aplicación `pteron` recibe un enlace de un solo uso y guarda
 localmente una licencia firmada con protección del sistema operativo.
 
-Las URLs públicas de la API no cambiaron con la migración desde Vercel: la
-cuenta web, Flow y la aplicación de escritorio siguen llamando a
-`/api/auth/*`, `/api/billing/*`, `/api/activation/*`, `/api/license/*`,
-`/api/account` y `/api/ai/v1/*`. Las licencias conservan su formato: la firma
-Ed25519 que produce Web Crypto es la misma que verifica `node:crypto` en la
-aplicación, y una prueba lo comprueba en cada corrida. Las claves públicas
-admitidas viven en `src/lib/license.js` (`PUBLIC_KEYS`, por `kid`); la privada
-que firma es el secreto `LICENSE_PRIVATE_KEY_PEM` y `LICENSE_KID` dice con cuál
-(sin `LICENSE_KID` no se firma; cada firma se verifica con su clave pública
-antes de entregarla).
+La cuenta web, Flow y la aplicación de escritorio llaman a `/api/auth/*`,
+`/api/billing/*`, `/api/activation/*`, `/api/license/*`, `/api/account` y
+`/api/ai/v1/*`. La firma Ed25519 de las licencias la produce Web Crypto y la
+verifica `node:crypto` en la aplicación; una prueba lo comprueba en cada
+corrida. La única clave pública admitida es k2 y vive en `src/lib/license.js`
+(`PUBLIC_KEYS`); la privada que firma es el secreto `LICENSE_PRIVATE_KEY_PEM` y
+`LICENSE_KID` (`k2`) dice con cuál (sin `LICENSE_KID` no se firma; cada firma se
+verifica con su clave pública antes de entregarla). Una licencia con otro `kid`
+no se acepta.
 
-Fuera del dominio de `PUBLIC_SITE_URL` (una URL de versión o `*.workers.dev`),
-las rutas de cuenta, cobro, licencia, activación, IA y admin responden 421: una
-vista previa no cobra, no firma ni gasta IA con los secretos de producción.
+Las vistas previas están apagadas (`workers_dev` y `preview_urls` en `false` en
+`wrangler.jsonc`): el Worker sólo responde en `pteron.patagua.dev`. Como
+defensa adicional, fuera del host de `PUBLIC_SITE_URL` las rutas de cuenta,
+cobro, licencia, activación, IA y admin responden 421, así que ninguna otra
+dirección cobra, firma ni gasta IA con los secretos de producción.
 
 ### Cobro y licencia
 
@@ -219,8 +222,6 @@ su licencia (ADR-054/055/056 y ADR-177 de pteron).
   cruce el tope.
 - `GET /api/ai/v1/models`: el único modelo virtual; responde 503 si falta la
   configuración o la IA incluida está en pausa.
-- `POST /api/ai/v1/chat/completions`: 410. Era el puente de 0.6.0, que ya no
-  puede renovar su licencia.
 
 La cuota se cuenta en unidades por costo: equivalentes de token de entrada a
 precio de lista (10.000.000 = US$1; la salida pesa 5, la escritura de caché
@@ -245,8 +246,19 @@ Proyecto Supabase configurado:
 https://swzqblyllbudwbmbcthr.supabase.co
 ```
 
-Las migraciones ya aplicadas deben conservarse en `supabase/migrations/` y
-aplicarse en orden si se prepara otro entorno.
+### Base de datos
+
+El esquema es un solo archivo, `supabase/esquema.sql`. Se pega entero en
+Supabase › SQL Editor y corre en una sola transacción: borra lo que pteron
+creó (todas sus tablas, funciones y datos; `auth.users` no se toca) y lo crea
+de nuevo, así que sirve igual en un proyecto nuevo, en uno con una versión
+anterior y para volver a empezar. Sólo conserva qué cliente de Flow es de cada
+cuenta, porque Flow no deja crear otro con la misma. Antes y después se siguen
+los pasos de la sección 1 de `LANZAR-BASIC.md`.
+
+Un cambio de esquema se hace editando ese archivo, no agregando migraciones, y
+mientras no haya usuarios reales se aplica corriéndolo de nuevo. Si algún día
+hay datos que conservar, ese día se decide cómo cambiarlos sin borrarlos.
 
 ## Administración
 
@@ -291,9 +303,11 @@ texto puesta en el panel de Cloudflare se borra en el siguiente despliegue.
 - `GATEWAY_MODEL_ID=claude-haiku-5-5`
 - `FLOW_BASE_URL=https://www.flow.cl/api`: en el sitio de producción no se
   acepta otra (salvo `FLOW_ALLOW_SANDBOX=1`, sólo para desarrollo).
-- `FLOW_BASIC_PLAN_ID=pteron-basic-1990-mensual` y
-  `FLOW_PRO_PLAN_ID=pteron-pro-monthly`: Flow fija el monto al crear un plan,
-  así que un precio nuevo es un id nuevo.
+- `FLOW_BASIC_PLAN_ID=pteron-basic-2990-mensual` y
+  `FLOW_PRO_PLAN_ID=pteron-pro-9990-mensual`: Flow fija el monto al crear un
+  plan, así que un precio nuevo es un id nuevo. El Worker crea el plan en el
+  primer checkout con los valores de `plan_catalog` (Basic $2.990 al mes, IVA
+  incluido, con 7 días de prueba; Pro $9.990, sin prueba).
 
 Los secretos se cargan con `npx wrangler secret put <NOMBRE>` o desde el panel
 del Worker, nunca en el repositorio ni en la interfaz del navegador:
@@ -311,7 +325,8 @@ del Worker, nunca en el repositorio ni en la interfaz del navegador:
   por comas. Sin esta variable, la administración responde 503.
 
 Opcionales: `GATEWAY_MAX_IN_FLIGHT` (peticiones de IA en vuelo por cuenta, por
-defecto 3) y `ANTHROPIC_BASE_URL` (en producción sólo la oficial).
+defecto 3) y `ANTHROPIC_BASE_URL` (en producción sólo la oficial). Sólo para
+desarrollo: `FLOW_ALLOW_SANDBOX`.
 
 `/api/health` responde `{ok}` (200 o 503) y `/api/admin/salud` dice qué falta,
 sin mostrar valores.
@@ -321,38 +336,28 @@ está ignorado por Git.
 
 ## Despliegue
 
-Para lanzar Basic con IA incluida, sigue `LANZAR-BASIC.md`: el orden importa
-(la migración antes que el Worker, y la clave de Anthropic al final).
-
 El Worker se despliega desde GitHub con la integración Git de Cloudflare
-(Workers Builds): cada push a `main` publica producción y cada rama recibe una
-URL de previsualización. Configuración del proyecto en el panel:
+(Workers Builds): cada push a `main` publica producción, con el sitio, la API
+y el Cron, en `pteron.patagua.dev`. No hay URLs de previsualización por rama
+(`workers_dev` y `preview_urls` están en `false`): lo que se quiera ver antes se
+prueba con `npm run dev` o con el sandbox de Flow en local. Configuración del
+proyecto en el panel:
 
 1. Crear el Worker desde el repositorio `marcorojasb/pteron-landing`, rama de
    producción `main`, comando de build vacío y comando de deploy
    `npx wrangler deploy`.
-2. Cargar los secretos listados arriba.
-3. En Supabase Auth, mantener como Site URL `https://pteron.patagua.dev/cuenta`
-   y permitir ese destino como URL de redirección. Las URLs de previsualización
-   no sirven para el enlace mágico salvo que se añadan ahí.
-4. En Flow, probar primero con sandbox en un entorno aparte (las URLs de
-   versión usan los secretos de producción): registro de tarjeta, prueba,
-   primer cobro y que la licencia se extienda, cobro rechazado y cancelación.
-5. Al momento del corte, asignar el dominio `pteron.patagua.dev` al Worker
-   desde Custom Domains; Cloudflare reemplaza el CNAME anterior. Hasta
-   entonces el despliegue anterior sigue respondiendo.
-6. Antes de cobrar, cargar las credenciales de producción de Flow, aplicar la
-   migración y resolver `LEGAL-PENDIENTE.md`. La venta nace cerrada y se abre
-   desde `/admin`.
+2. El dominio `pteron.patagua.dev` lo asigna `wrangler.jsonc` como Custom
+   Domain; Cloudflare mantiene el registro DNS y el certificado.
+3. Cargar los secretos listados arriba y aplicar `supabase/esquema.sql`.
+4. En Supabase Auth, Site URL `https://pteron.patagua.dev/cuenta` y ese mismo
+   destino como URL de redirección del enlace mágico.
+
+Lo que queda por configurar a mano antes de cobrar (secretos, SMTP, Anthropic,
+Flow, lo legal) está, en orden, en `LANZAR-BASIC.md`. La venta nace cerrada y se
+abre desde `/admin`.
 
 El gateway de IA retransmite respuestas largas del proveedor; el plan Workers
 Paid evita el tope de CPU del plan gratuito en esas peticiones.
-
-Después del corte conviene revisar `workers_dev` y `preview_urls` en
-`wrangler.jsonc`: ambos publican el mismo Worker, con sus secretos, en
-`*.workers.dev` y en URLs por versión, fuera de las reglas de WAF o límite de
-tasa que tenga el dominio. Sirven para probar antes del corte; luego pueden
-apagarse o protegerse con Cloudflare Access.
 
 Despliegue manual desde una máquina autenticada:
 

@@ -68,7 +68,7 @@ test("resumen cuenta pagos, cortesías, pruebas, ingreso recurrente, IA del mes 
     ] } },
     { match: matches.supabase("plan_catalog"), respond: { body: [
       { id: "tester", display_name: "Tester", monthly_price_clp: 0, for_sale: false },
-      { id: "basic", display_name: "Basic", monthly_price_clp: 1990, for_sale: true },
+      { id: "basic", display_name: "Basic", monthly_price_clp: 2990, for_sale: true },
       { id: "pro", display_name: "Pro", monthly_price_clp: 9990, for_sale: false },
     ] } },
     { match: matches.rpc("admin_usage_by_account"), respond: { body: [{ user_id: profe.id, requests: 3, units: 1500 }, { user_id: "u2", requests: 1, units: 0 }] } },
@@ -118,7 +118,7 @@ test("cuentas cruza usuarios con plan vigente, última licencia y el período de
   const network = fakeNetwork([
     meRoute(admin), usersRoute,
     { match: matches.supabase("subscriptions"), respond: { body: [{ user_id: profe.id, plan_id: "basic", provider: "flow", status: "trialing", trial_ends_at: "2026-10-18T00:00:00.000Z" }] } },
-    { match: matches.supabase("licenses"), respond: { body: [{ user_id: profe.id, plan_id: "basic", status: "active", expires_at: "2026-11-01T00:00:00.000Z", key_id: "k2", issued_at: "2026-10-11T00:00:00.000Z" }, { user_id: profe.id, plan_id: "basic", status: "active", expires_at: "2026-10-01T00:00:00.000Z", key_id: "k1", issued_at: "2026-09-11T00:00:00.000Z" }] } },
+    { match: matches.supabase("licenses"), respond: { body: [{ user_id: profe.id, plan_id: "basic", status: "active", expires_at: "2026-11-01T00:00:00.000Z", key_id: "k2", issued_at: "2026-10-11T00:00:00.000Z" }, { user_id: profe.id, plan_id: "basic", status: "active", expires_at: "2026-10-01T00:00:00.000Z", key_id: "k2", issued_at: "2026-09-11T00:00:00.000Z" }] } },
     { match: matches.supabase("usage_periods"), respond: { body: [
       { user_id: profe.id, period_start: "2026-10-11T03:00:00.000Z", period_end: "2026-10-18T03:00:00.000Z", ai_units_used: 420, ai_units_limit: 1500000 },
       { user_id: profe.id, period_start: "2026-10-01T03:00:00.000Z", period_end: "2026-11-01T03:00:00.000Z", ai_units_used: 9, ai_units_limit: 6000000 },
@@ -132,7 +132,7 @@ test("cuentas cruza usuarios con plan vigente, última licencia y el período de
     const row = data.cuentas[0];
     assert.equal(row.email, "profe@escuela.cl");
     assert.equal(row.suscripcion.status, "trialing");
-    assert.equal(row.licencia.key_id, "k2", "la licencia más reciente");
+    assert.equal(row.licencia.issued_at, "2026-10-11T00:00:00.000Z", "la licencia más reciente");
     assert.equal(row.consumo_periodo.ai_units_used, 420, "el período que empezó último");
     const periods = network.calls.find((call) => call.url.includes("/rest/v1/usage_periods"));
     assert.match(periods.url, /period_start=lte\.[^&]+&period_end=gt\./);
@@ -351,7 +351,7 @@ test("consumo agrega en la base unidades y peticiones por cuenta y por modelo de
 test("planes se listan y las cuotas de período y de prueba se actualizan con validación", async () => {
   const network = fakeNetwork([
     meRoute(admin),
-    { match: matches.supabase("plan_catalog", "GET"), respond: { body: [{ id: "basic", active: true, listed: true, for_sale: false, monthly_price_clp: 1990, ai_units_limit: null, license_plan: "basic" }] } },
+    { match: matches.supabase("plan_catalog", "GET"), respond: { body: [{ id: "basic", active: true, listed: true, for_sale: false, monthly_price_clp: 2990, ai_units_limit: null, license_plan: "basic" }] } },
     { match: matches.supabase("plan_catalog", "PATCH"), respond: (call) => ({ body: [{ id: "basic", ...call.body }] }) },
   ]);
   await withFetch(network.fetch, async () => {
@@ -374,7 +374,7 @@ test("planes se listan y las cuotas de período y de prueba se actualizan con va
 });
 
 test("la venta se abre sólo con un plan completo y un plan a la venta no puede quedar sin cuota", async () => {
-  let row = { id: "basic", active: true, listed: true, for_sale: false, monthly_price_clp: 1990, ai_units_limit: null, license_plan: "basic" };
+  let row = { id: "basic", active: true, listed: true, for_sale: false, monthly_price_clp: 2990, ai_units_limit: null, license_plan: "basic" };
   const network = fakeNetwork([
     meRoute(admin),
     { match: matches.supabase("plan_catalog", "GET"), respond: () => ({ body: [row] }) },
@@ -446,8 +446,8 @@ function saludFixture(overrides = {}) {
     FLOW_API_KEY: "flow-api",
     FLOW_SECRET_KEY: "flow-secreta",
     FLOW_BASE_URL: "https://www.flow.cl/api",
-    FLOW_BASIC_PLAN_ID: "pteron-basic-1990-mensual",
-    FLOW_PRO_PLAN_ID: "pteron-pro-monthly",
+    FLOW_BASIC_PLAN_ID: "pteron-basic-2990-mensual",
+    FLOW_PRO_PLAN_ID: "pteron-pro-9990-mensual",
     ...overrides,
   };
   return { keys, saludEnv, services: testServices(saludEnv, { k2: keys.publicPem }) };
@@ -456,12 +456,12 @@ function saludFixture(overrides = {}) {
 const catalogo = [
   { id: "free", display_name: "Gratis", active: true, listed: true, for_sale: false, monthly_price_clp: 0, ai_units_limit: null, license_plan: null },
   { id: "tester", display_name: "Tester", active: true, listed: false, for_sale: false, monthly_price_clp: 0, ai_units_limit: 6000000, license_plan: "basic" },
-  { id: "basic", display_name: "Basic", active: true, listed: true, for_sale: true, monthly_price_clp: 1990, ai_units_limit: 6000000, license_plan: "basic" },
+  { id: "basic", display_name: "Basic", active: true, listed: true, for_sale: true, monthly_price_clp: 2990, ai_units_limit: 6000000, license_plan: "basic" },
   { id: "pro", display_name: "Pro", active: true, listed: true, for_sale: false, monthly_price_clp: 9990, ai_units_limit: 30000000, license_plan: "pro" },
 ];
-const flowPlan = (planId, overrides = {}) => ({ planId, currency: "CLP", amount: 1990, interval: 3, interval_count: 1, status: 1, urlCallback: "https://pteron.test/api/billing/flow-callback", ...overrides });
+const flowPlan = (planId, overrides = {}) => ({ planId, currency: "CLP", amount: 2990, interval: 3, interval_count: 1, status: 1, urlCallback: "https://pteron.test/api/billing/flow-callback", ...overrides });
 
-function saludNetwork({ anthropicStatus = 200, basicPlan = flowPlan("pteron-basic-1990-mensual"), settings = [{ value: false }], atascados = { body: [] } } = {}) {
+function saludNetwork({ anthropicStatus = 200, basicPlan = flowPlan("pteron-basic-2990-mensual"), settings = [{ value: false }], atascados = { body: [] } } = {}) {
   return fakeNetwork([
     meRoute(admin),
     { match: matches.supabase("app_settings"), respond: { body: settings } },
@@ -471,7 +471,7 @@ function saludNetwork({ anthropicStatus = 200, basicPlan = flowPlan("pteron-basi
     { match: matches.flow("/plans/get"), respond: (call) => {
       const planId = new URL(call.url).searchParams.get("planId");
       // Pro existe en Flow con otro aviso de pago: no coincide.
-      return { body: planId === "pteron-basic-1990-mensual" ? basicPlan : flowPlan(planId, { amount: "9990", urlCallback: "https://otro.test/api/billing/flow-callback" }) };
+      return { body: planId === "pteron-basic-2990-mensual" ? basicPlan : flowPlan(planId, { amount: "9990", urlCallback: "https://otro.test/api/billing/flow-callback" }) };
     } },
   ]);
 }
@@ -525,7 +525,7 @@ test("salud responde con booleanos por chequeo, compara con Flow cada plan de pa
 
 test("salud dice qué falla: firma sin clave, Anthropic que rechaza la clave, plan de Flow con otro monto y Flow de pruebas", async () => {
   const { saludEnv, services } = saludFixture({ LICENSE_PRIVATE_KEY_PEM: "", FLOW_BASE_URL: "https://sandbox.flow.cl/api", ANTHROPIC_BASE_URL: "https://upstream.test" });
-  const network = saludNetwork({ anthropicStatus: 401, basicPlan: flowPlan("pteron-basic-1990-mensual", { amount: 2999 }), settings: [] });
+  const network = saludNetwork({ anthropicStatus: 401, basicPlan: flowPlan("pteron-basic-2990-mensual", { amount: 2999 }), settings: [] });
   await withFetch(network.fetch, async () => {
     const data = await (await salud(saludEnv, services)).json();
     assert.equal(data.esencial, false);

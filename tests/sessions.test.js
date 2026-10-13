@@ -116,13 +116,13 @@ test("license/refresh reemite desde la sesión web y firma con el kid configurad
   await withFetch(network.fetch, async () => {
     // La firma recién hecha se comprueba con la clave pública del kid: aquí, la del par de pruebas.
     const request = jsonRequest("https://pteron.test/api/license/refresh", {}, { headers: { authorization: "Bearer sesion" } });
-    const res = await matchApi("/api/license/refresh")({ request, env, url: new URL(request.url), execution: fakeExecution(), services: testServices(env, { k1: keys.publicPem }) });
+    const res = await matchApi("/api/license/refresh")({ request, env, url: new URL(request.url), execution: fakeExecution(), services: testServices(env, { k2: keys.publicPem }) });
     assert.equal(res.status, 200);
     const payload = await res.json();
     assert.equal(payload.plan, "basic");
-    assert.equal(payload.keyId, "k1");
+    assert.equal(payload.keyId, "k2");
     const [segment] = payload.token.split(".");
-    assert.equal(JSON.parse(Buffer.from(segment, "base64url").toString("utf8")).kid, "k1");
+    assert.equal(JSON.parse(Buffer.from(segment, "base64url").toString("utf8")).kid, "k2");
   });
 });
 

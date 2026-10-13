@@ -18,7 +18,7 @@ export function testEnv(overrides = {}) {
     SUPABASE_URL: "https://fake.supabase.co",
     SUPABASE_SERVICE_ROLE_KEY: "service-role-fake",
     SUPABASE_PUBLISHABLE_KEY: "publishable-fake",
-    LICENSE_KID: "k1",
+    LICENSE_KID: "k2",
     ...overrides,
   };
 }

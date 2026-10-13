@@ -178,7 +178,7 @@ export const cliente = (cambios) => conCampos(CUSTOMER, cambios);
 export function basicEnPrueba(cambios = {}) {
   return suscripcion({
     subscriptionId: "sus_basic01",
-    planId: "pteron-basic-1990-mensual",
+    planId: "pteron-basic-2990-mensual",
     plan_name: "pteron Basic",
     customerId: "cus_1",
     created: "2026-10-13 15:20:00",
@@ -200,7 +200,7 @@ export function basicEnPrueba(cambios = {}) {
   });
 }
 
-/** Un importe mensual de $1.990 de esa suscripción: pagado, o rechazado con su link de pago. */
+/** Un importe mensual de $2.990 de esa suscripción: pagado, o rechazado con su link de pago. */
 export function cobroMensual({ id, desde, hasta, pagado, flowOrder }) {
   const subject = `pteron Basic - período ${desde} / ${hasta}`;
   // Vence a los 3 días de generado (days_until_due).
@@ -211,7 +211,7 @@ export function cobroMensual({ id, desde, hasta, pagado, flowOrder }) {
     customerId: "cus_1",
     created: `${desde} 00:05:00`,
     subject,
-    amount: 1990,
+    amount: 2990,
     period_start: `${desde} 00:00:00`,
     period_end: `${hasta} 00:00:00`,
     attemp_count: 1,
@@ -221,8 +221,8 @@ export function cobroMensual({ id, desde, hasta, pagado, flowOrder }) {
     error: pagado ? 0 : 1,
     errorDate: pagado ? null : `${desde} 00:05:00`,
     errorDescription: pagado ? null : "Tarjeta rechazada",
-    items: [{ id, subject, type: 1, currency: "CLP", amount: 1990 }],
-    payment: pago({ flowOrder, commerceOrder: String(id), requestDate: `${desde} 00:05:00`, status: pagado ? 2 : 3, subject, amount: 1990, payer: "profe@escuela.cl", pending_info: null, paymentData: null, merchantId: null }),
+    items: [{ id, subject, type: 1, currency: "CLP", amount: 2990 }],
+    payment: pago({ flowOrder, commerceOrder: String(id), requestDate: `${desde} 00:05:00`, status: pagado ? 2 : 3, subject, amount: 2990, payer: "profe@escuela.cl", pending_info: null, paymentData: null, merchantId: null }),
     outsidePayment: null,
     paymentLink: pagado ? null : `https://www.flow.cl/app/web/pay.php?token=PAGO${id}`,
     chargeAttemps: [],

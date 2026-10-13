@@ -1,174 +1,180 @@
-# Lanzar Basic con IA incluida
+# Qué falta para que funcione
 
-Guía para configurar y abrir la venta de Basic con IA incluida (ADR-177 de pteron). Cada paso
-dice qué hacer, dónde y cómo comprobarlo sin exponer secretos. El orden importa:
+Lista, en orden, de lo que se hace a mano para abrir la venta de Basic con IA incluida (ADR-177 de
+pteron). Todo lo demás se publica solo: al llegar a `main`, Workers Builds despliega el Worker, el
+sitio y el Cron en https://pteron.patagua.dev. No hay usuarios reales, migraciones ni Worker viejo:
+la base se arma con un solo archivo y la venta nace cerrada (`for_sale = false`).
 
-1. Inventario, sin cambiar nada.
-2. Anthropic, Cloudflare y Supabase preparados.
-3. Migración y Worker nuevo, juntos.
-4. La clave de Anthropic, al final del servidor.
-5. Prueba con una cortesía, sin cobrar.
-6. 0.7.2 publicada.
-7. Lo legal resuelto, la web nueva y la venta abierta.
+Cada paso dice dónde y cómo comprobarlo, sin exponer secretos. Lo que se decide con abogado o
+contador está en `LEGAL-PENDIENTE.md`.
 
-Cargar la clave de Anthropic antes de desplegar el Worker nuevo abriría un proxy sin cuota ni
-filtros. Lo que se decide con abogado o contador está en `LEGAL-PENDIENTE.md`.
-
-## 0. Inventario (sólo lecturas)
-
-Supabase › SQL Editor:
-
-```sql
--- Precio, prueba y cuota que tiene hoy el catálogo
-select id, monthly_price_clp, trial_period_days, ai_units_limit, license_plan, active, listed
-from public.plan_catalog order by monthly_price_clp, id;
-
--- ¿Hay suscripciones de Flow? (precio viejo, pruebas en curso, filas atascadas)
-select plan_id, provider, status, count(*), min(current_period_end), max(current_period_end)
-from public.subscriptions group by 1, 2, 3 order by 1, 2, 3;
-
--- ¿Algún checkout creó ya un plan en Flow?
-select provider_plan_id, status, count(*) from public.billing_checkout_intents group by 1, 2;
-
--- Licencias vigentes por clave (¿quedan k1?)
-select key_id, status, count(*) from public.licenses where expires_at > now() group by 1, 2;
-```
-
-Cloudflare, en el panel del Worker `pteron-landing`:
-- Workers & Pages › Plans: ¿Free o Paid?
-- Settings › Variables and Secrets: ¿hay variables de tipo **Text**? Se borran en cada despliegue;
-  las que importan ya están en `wrangler.jsonc`.
-- `npx wrangler secret list` (desde esta carpeta) muestra sólo los nombres.
-- Settings › Build: el *Preview command*.
-- Zona patagua.dev › Security › Bots: ¿Bot Fight Mode activo?
-
-Flow, en el panel de producción:
-- ¿Existe el plan `pteron-basic-monthly`? ¿Con qué monto y cuántos suscriptores?
-- ¿La cuenta tiene **Cargo automático**? Sin él, Flow no cobra la tarjeta registrada: manda un enlace
-  de pago cada mes y el flujo de la web no sirve tal cual. Confírmalo con Flow antes de seguir.
-
-Anthropic, en la consola: tier de la organización, fecha de creación, crédito y recarga automática.
-
-Sonda del sitio vivo (sin efectos):
+Empieza cuando `main` ya esté desplegado. Esto debe imprimir 404; otro número significa que todavía
+responde el Worker anterior, que usaría la clave de Anthropic sin cuota ni filtros:
 
 ```bash
-curl -sS -X POST https://pteron.patagua.dev/api/billing/flow-callback -d 'token=sonda'
-# 503 billing_not_configured: producción no tiene llaves de Flow, nadie puede comprar hoy.
-# 502 flow_error: hay llaves y la venta vieja está abierta; ver el paso 3.
+curl -sS -o /dev/null -w '%{http_code}\n' -X POST https://pteron.patagua.dev/api/ai/v1/chat/completions
 ```
 
-## 1. Anthropic
+## 1. Supabase
+
+1. Antes de correr el esquema (y antes de cada vez que lo vuelvas a correr), en SQL Editor, sólo
+   lectura:
+
+   ```sql
+   select user_id, provider_subscription_id, status
+   from public.subscriptions
+   where provider = 'flow' and status in ('incomplete', 'trialing', 'active', 'past_due', 'paused');
+   ```
+
+   Cada fila es una suscripción que Flow sigue cobrando: cancélala en el panel de Flow antes de
+   seguir, porque después del esquema nada la encuentra para cancelarla. En un proyecto nuevo la
+   tabla no existe y no hay nada que revisar.
+2. SQL Editor: pega entero `supabase/esquema.sql` y ejecútalo. **Borra todos los datos de pteron**
+   (no toca `auth.users`) y deja el esquema de cero; puede correrse de nuevo. Sólo conserva qué
+   cliente de Flow es de cada cuenta (`billing_customers`): Flow no deja crear otro con la misma
+   cuenta. Comprueba:
+
+   ```sql
+   select id, monthly_price_clp, trial_period_days, ai_units_limit, trial_ai_units_limit, for_sale
+   from public.plan_catalog order by id;
+   -- free 0 / 0 / null / null / false · basic 2990 / 7 / 6000000 / 1500000 / false
+   -- pro 9990 / 0 / 30000000 / null / false · tester 0 / 0 / 6000000 / null / false
+   select key, value from public.app_settings;   -- included_ai_paused = false
+   select tablename from pg_tables where schemaname = 'public' and not rowsecurity;   -- 0 filas
+   select (select count(*) from auth.users) as cuentas, (select count(*) from public.profiles) as perfiles;   -- iguales
+   ```
+
+   Si el disparador de `auth.users` hubo que rehacerlo, debe correr el archivo quien sea dueño de esa
+   tabla (el esquema sólo lo crea si falta o difiere). Si alguna vez aplicaste migraciones con la CLI
+   (`supabase db push`), no la vuelvas a usar para la base: este archivo la reemplaza.
+3. Authentication › Emails › SMTP Settings: SMTP propio con tu dominio (SPF y DKIM). Sin él,
+   Supabase sólo envía el enlace mágico a miembros del equipo del proyecto. Prueba con un correo
+   externo.
+4. Authentication › URL Configuration: Site URL `https://pteron.patagua.dev/cuenta` y la misma en
+   Redirect URLs.
+5. Antes de abrir la venta, plan Pro (US$25 al mes): el gratis pausa proyectos inactivos y no da
+   respaldos descargables, y esta base guarda quién pagó.
+
+## 2. Cloudflare
+
+1. Workers Paid (US$5 al mes). El plan gratis da 10 ms de CPU y corta las respuestas largas de la IA.
+2. Secretos del Worker `pteron-landing`, de tipo **Secret** (`npx wrangler secret put NOMBRE` desde
+   esta carpeta, o Settings › Variables and Secrets). `npx wrangler secret list` muestra sólo los
+   nombres. El código lee estos siete:
+   - `SUPABASE_PUBLISHABLE_KEY` y `SUPABASE_SERVICE_ROLE_KEY` (el nombre viejo `SUPABASE_ANON_KEY`
+     ya no se lee: si la tenías así, créala con el nombre nuevo)
+   - `FLOW_API_KEY` y `FLOW_SECRET_KEY`, **de producción**
+   - `LICENSE_PRIVATE_KEY_PEM`: la privada k2 (PKCS8)
+   - `ANTHROPIC_API_KEY`: se carga en la sección 3
+   - `ADMIN_EMAILS`: tus correos, separados por comas; sin él, `/admin` responde 503
+
+   Las variables de texto ya están en `wrangler.jsonc` (`PUBLIC_SITE_URL`, `SUPABASE_URL`,
+   `LICENSE_KID`, `GATEWAY_MODEL_ID`, `FLOW_BASE_URL`, `FLOW_BASIC_PLAN_ID`, `FLOW_PRO_PLAN_ID`): no
+   las repitas en el panel, porque cada despliegue borra las de tipo Text. Opcionales que no hay que
+   poner: `GATEWAY_MAX_IN_FLIGHT` (por defecto 3), `ANTHROPIC_BASE_URL` (en producción sólo la oficial)
+   y `FLOW_ALLOW_SANDBOX`, que nunca va en producción.
+3. Comprueba la privada k2 en tu equipo: `openssl pkey -in k2.pem -pubout` debe imprimir la misma
+   clave pública que `PUBLIC_KEYS.k2` de `src/lib/license.js`, es decir
+   `MCowBQYDK2VwAyEAIWGm5jH/yZJ2b5hsQ3UusUn+HIxC5dGiqc1gwOqvrrY=`.
+4. Zona patagua.dev › Security › Bots: apaga Bot Fight Mode, o usa Super Bot Fight Mode con una regla
+   *Skip* para `/api/billing/*` y `/api/ai/*`. Si no, desafía los avisos de Flow y a la app de
+   escritorio.
+5. Las vistas previas están apagadas (`workers_dev` y `preview_urls` en `false`): el Worker sólo
+   responde en `pteron.patagua.dev`. En Settings › Domains & Routes no debe quedar ninguna otra
+   dirección activa.
+
+## 3. Anthropic
 
 1. Settings › Workspaces › Create: `pteron-produccion`. No uses el Default, que no admite límites.
 2. Settings › Service accounts: `pteron-gateway`, agregada a ese workspace.
 3. API keys › Create: vinculada a esa cuenta de servicio y limitada a ese único workspace. Una
-   clave sin workspace fijo hace fallar cada petición. Guárdala para el paso 4.
+   clave sin workspace fijo hace fallar cada petición.
 4. El workspace › Spend limits: tope mensual de 1,5 × (Basic × US$0,60 + Pro × US$3,00), mínimo
    US$20, con alertas al 50 % y al 80 %. Es el techo duro si algo más falla.
 5. El workspace › Rate limits › Claude Haiku 5.5: la mitad de los de la organización.
 6. https://platform.claude.com/settings/capabilities: apaga la búsqueda web y la obtención web.
    pteron no las usa y el Worker ya las filtra; esto es una segunda barrera.
 7. Billing: crédito y recarga automática.
+8. `npx wrangler secret put ANTHROPIC_API_KEY` con esa clave.
 
-## 2. Cloudflare y Supabase
+## 4. Flow
 
-Cloudflare:
-1. Workers Paid (US$5 al mes). El plan gratis da 10 ms de CPU y corta las respuestas largas.
-2. Bot Fight Mode: apágalo, o usa Super Bot Fight Mode con una regla *Skip* para `/api/billing/*`
-   y `/api/ai/*`. Si no, desafía los avisos de Flow y a la app de escritorio.
-3. Secretos (tipo **Secret**; `npx wrangler secret put NOMBRE` o el panel):
-   `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `FLOW_API_KEY` y `FLOW_SECRET_KEY` **de
-   producción**, `LICENSE_PRIVATE_KEY_PEM` (k2) y `ADMIN_EMAILS`. `ANTHROPIC_API_KEY`, en el paso 4.
-4. Comprueba la privada k2 en tu equipo:
-   `openssl pkey -in k2.pem -pubout` debe imprimir
-   `MCowBQYDK2VwAyEAIWGm5jH/yZJ2b5hsQ3UusUn+HIxC5dGiqc1gwOqvrrY=`.
-5. Las vistas previas (`*.workers.dev` y URLs de versión) corren con los secretos de producción.
-   El Worker nuevo responde 421 en sus rutas de cuenta, cobro, licencia e IA, pero protégelas con
-   Cloudflare Access o apágalas (`workers_dev` y `preview_urls` en `wrangler.jsonc`) cuando ya no
-   revises la web nueva ahí.
+1. Cuenta de producción: `FLOW_API_KEY` y `FLOW_SECRET_KEY` cargadas como secretos (sección 2).
+2. Confirma con Flow que la cuenta tiene **Cargo automático**. Sin él, Flow no cobra la tarjeta
+   registrada: manda un enlace de pago cada mes y el flujo de la web no sirve tal cual (ver
+   `LEGAL-PENDIENTE.md`, punto 1).
+3. Los planes `pteron-basic-2990-mensual` y `pteron-pro-9990-mensual` los crea el Worker en el primer
+   checkout, con los valores del catálogo, y los valida con `plans/get` antes de cada cobro. Si
+   prefieres crearlos a mano, deben calzar exactamente:
 
-Supabase:
-1. Authentication › Emails › SMTP Settings: SMTP propio con tu dominio (SPF y DKIM). Sin él,
-   Supabase sólo envía el enlace mágico a miembros del equipo del proyecto. Prueba con un correo
-   externo.
-2. Authentication › URL Configuration: Site URL `https://pteron.patagua.dev/cuenta` y la misma en
-   Redirect URLs.
-3. Antes de abrir la venta, plan Pro (US$25 al mes). El gratis pausa proyectos inactivos y no da
-   respaldos descargables, y esta base guarda quién pagó.
+   | | `pteron-basic-2990-mensual` | `pteron-pro-9990-mensual` |
+   |---|---|---|
+   | Nombre | pteron Basic | pteron Pro |
+   | Monto y moneda | 2990 CLP | 9990 CLP |
+   | Intervalo | mensual (cada 1 mes) | mensual (cada 1 mes) |
+   | Días de prueba | 7 | 0 |
+   | Días para pagar | 3 | 3 |
+   | Reintentos de cobro | 3 | 3 |
+   | Número de períodos | sin límite (0) | sin límite (0) |
+   | `urlCallback` | `https://pteron.patagua.dev/api/billing/flow-callback` | el mismo |
 
-## 3. Migración y Worker nuevo, juntos
+4. Los planes viejos (`pteron-basic-monthly`, `pteron-pro-monthly` y cualquier otro de pteron) ya no
+   los usa el Worker. Antes de borrar uno, revisa en el panel de Flow que no tenga suscriptores:
+   borrar el plan no cancela sus suscripciones. Si tiene, cancélalas primero.
 
-La migración deja el catálogo en $1.990 y con la venta cerrada. El Worker viejo cobra $2.999 e
-ignora ese cierre. Por eso:
-- si la sonda del paso 0 dio `billing_not_configured`, el orden no tiene riesgo;
-- si dio `flow_error`, aplica la migración y despliega el Worker nuevo en el mismo rato, o cierra
-  antes la venta quitando `FLOW_API_KEY`.
+## 5. Comprobar el sitio vivo
 
-1. Aplica `supabase/migrations/20261013120000_basic_ia_incluida.sql` (SQL Editor, o
-   `supabase db push`). Comprueba:
+Con todo en `main` y los secretos cargados:
 
-   ```sql
-   select id, monthly_price_clp, trial_period_days, ai_units_limit, trial_ai_units_limit, for_sale
-   from public.plan_catalog order by id;
-   -- basic 1990 / 7 / 6000000 / 1500000 / false · pro 9990 / 0 / 30000000 / null / false
-   -- tester 6000000 / false
-   select key, value from public.app_settings;   -- included_ai_paused = false
-   ```
+```bash
+curl -sS https://pteron.patagua.dev/api/health
+# {"ok":true} con 200; {"ok":false} con 503 si falta algo (nunca más que eso).
+curl -sS -X POST https://pteron.patagua.dev/api/ai/v1/messages -H 'content-type: application/json' -d '{}'
+# 401 not_authenticated: la IA pide licencia. 503 si falta la clave de Anthropic.
+```
 
-2. Despliega el Worker nuevo, es decir, lleva a `main` los commits del servidor. Workers Builds
-   publica en cada push a `main`. Comprueba:
+- `/admin` › Salud: todos los secretos presentes, Flow en producción, la firma k2 verificada y la clave
+  de Anthropic válida. Los planes de Flow se revisan sólo cuando están a la venta (sección 8).
+- Cloudflare › Workers › `pteron-landing` › Settings › Triggers: el Cron `17 12 * * *` (UTC). Desde el
+  primer día, `subscriptions.last_synced_at` avanza en las filas de Flow.
 
-   ```bash
-   curl -sS https://pteron.patagua.dev/api/health
-   # {"ok":false} con 503 mientras falte la clave de Anthropic; nunca más que eso.
-   ```
+## 6. Probar con una cortesía, sin cobrar
 
-   En `/admin` › Salud, todo en verde salvo la clave de Anthropic. Flow debe decir producción.
-
-3. El Cron diario (12:17 UTC) aparece en Workers › Triggers › Cron Events. Desde el primer día,
-   `subscriptions.last_synced_at` avanza en las filas de Flow.
-
-## 4. La clave de Anthropic
-
-1. `npx wrangler secret put ANTHROPIC_API_KEY` con la clave del paso 1.
-2. Sonda sin licencia: `curl -sS -X POST https://pteron.patagua.dev/api/ai/v1/messages -H
-   'content-type: application/json' -d '{}'` debe pasar de 503 a **401** `not_authenticated`.
-3. `/admin` › Salud: clave de Anthropic válida y `/api/health` en `{"ok":true}`.
-
-## 5. Probar con una cortesía, sin cobrar
-
-1. Entra una vez a https://pteron.patagua.dev/cuenta con tu correo; luego, en `/admin`, concédete
-   la cortesía `tester`.
-2. En pteron 0.7.2 (el build de desarrollo sirve), Configuración › Perfil › «Activar este equipo»:
-   la app espera sola a que autorices en el navegador.
+1. Entra una vez a https://pteron.patagua.dev/cuenta con tu correo; luego, en `/admin`, concédete la
+   cortesía `tester` (el esquema borró las cortesías anteriores).
+2. En pteron 0.7.2 (el build de desarrollo sirve), Configuración › Perfil › «Activar este equipo»: la
+   app espera sola a que autorices en el navegador.
 3. Modelo de IA › IA incluida › Guardar: el aviso dice que lo enviado va a Anthropic.
 4. Haz un pedido largo con varias vueltas de herramientas. En `/admin` › Consumo debe aparecer en
    unidades, con el modelo `claude-haiku-5-5`, sin contenido.
-5. Mide cuántas unidades usa cada material (los casos C01–C08 de `EVALUACION.md` de la app). Con
-   eso se publica la equivalencia en materiales.
+5. Mide cuántas unidades usa cada material (los casos C01–C08 de `EVALUACION.md` de la app). Con eso
+   se publica la equivalencia en materiales.
 
-## 6. Publicar 0.7.2
+## 7. Publicar 0.7.2
 
-Publicar la versión hace un commit en `main` de esta web (`sync-pteron-releases.yml`) y la
-despliega. Con el servidor ya en `main` no cambia nada del cobro ni de la IA.
+1. En la app (`marcorojasb/pteron`), con la versión en 0.7.2, empuja la etiqueta `v0.7.2`:
+   `release.yml` arma los instaladores y deja un borrador en `marcorojasb/pteron-beta`. Publícalo
+   ahí. 0.7.2 trae Basic a $2.990 con IVA, sólo la clave k2 y la activación que espera sola a la
+   cuenta; la 0.7.1 publicada todavía muestra $1.990.
+2. `sync-pteron-releases.yml` hace un commit en `main` de esta web con
+   `public/docs/data/releases.json` en 0.7.2 y la despliega (corre cada 15 minutos, o a mano desde
+   Actions). Comprueba que https://pteron.patagua.dev/descargar ofrece 0.7.2.
 
-## 7. Abrir la venta
+## 8. Abrir la venta
+
+Sólo con 0.7.2 publicada (sección 7).
 
 1. Resuelve `LEGAL-PENDIENTE.md`: quién vende (con RUT y domicilio), retracto y devoluciones,
    confirmación escrita, boleta por cada cobro y encargo de datos.
-2. Mergea la web nueva (precios con IVA, cuota publicada, casilla de Términos, Privacidad con
-   Anthropic).
-3. Flow: el Worker crea `pteron-basic-1990-mensual` con los valores del catálogo en el primer
-   checkout y lo valida con `plans/get` antes de cada cobro. Si prefieres crearlo a mano, usa esos
-   valores: 1990 CLP, mensual, 7 días de prueba, 3 días para pagar, 3 reintentos y `urlCallback`
-   `https://pteron.patagua.dev/api/billing/flow-callback`. Si `pteron-basic-monthly` tiene
-   suscriptores a $2.999, decide si los pasas al plan nuevo (`subscription/changePlan`).
-4. `/admin` › Planes: abre la venta de Basic, y la de Pro si corresponde.
-5. Primera compra real con tu tarjeta:
+2. `/admin` › Planes: abre la venta de Basic, y la de Pro si corresponde.
+3. Primera compra real con tu tarjeta:
    - la suscripción queda en prueba;
    - al séptimo día, Flow cobra y la licencia se extiende sola;
    - cancelas y el plan termina al cierre.
    Revisa la boleta y el correo de confirmación.
+4. `/admin` › Salud: el plan de Flow de cada plan a la venta debe calzar con el catálogo. Si abriste
+   Pro antes de que alguien lo comprara, dirá que no calza hasta que el primer checkout cree el plan
+   (o lo crees a mano con los valores de la sección 4).
 
 ## Después
 

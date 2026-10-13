@@ -12,14 +12,14 @@ const env = testEnv({
   FLOW_API_KEY: "flow-api",
   FLOW_SECRET_KEY: "flow-secret",
   FLOW_BASE_URL: "https://sandbox.flow.cl/api",
-  FLOW_BASIC_PLAN_ID: "pteron-basic-1990-mensual",
-  FLOW_PRO_PLAN_ID: "pteron-pro-monthly",
+  FLOW_BASIC_PLAN_ID: "pteron-basic-2990-mensual",
+  FLOW_PRO_PLAN_ID: "pteron-pro-9990-mensual",
 });
 const user = { id: "11111111-1111-4111-8111-111111111111", email: "profe@escuela.cl", user_metadata: { full_name: "Profe Uno" } };
 const INTENT = "22222222-2222-4222-8222-222222222222";
 const CALLBACK = "https://pteron.test/api/billing/flow-callback";
-const BASIC = { id: "basic", display_name: "Basic", monthly_price_clp: 1990, trial_period_days: 7, license_plan: "basic" };
-const PLAN_BASIC = planFlow({ planId: "pteron-basic-1990-mensual", name: "pteron Basic", amount: 1990, created: "2026-10-13 10:00:00", trial_period_days: 7, periods_number: 0, urlCallback: CALLBACK });
+const BASIC = { id: "basic", display_name: "Basic", monthly_price_clp: 2990, trial_period_days: 7, license_plan: "basic" };
+const PLAN_BASIC = planFlow({ planId: "pteron-basic-2990-mensual", name: "pteron Basic", amount: 2990, created: "2026-10-13 10:00:00", trial_period_days: 7, periods_number: 0, urlCallback: CALLBACK });
 
 function run(request, runEnv = env) {
   return worker.fetch(request, runEnv, fakeExecution());
@@ -89,7 +89,7 @@ test("checkout vende el plan del catálogo: valida el plan de Flow, guarda el cl
     assert.match(catalogo.url, /id=eq\.basic&active=eq\.true&listed=eq\.true&for_sale=eq\.true/);
     const lectura = network.calls.find((call) => call.url.includes("/plans/get"));
     assert.equal(lectura.method, "GET");
-    assert.match(lectura.url, /[?&]planId=pteron-basic-1990-mensual(&|$)/);
+    assert.match(lectura.url, /[?&]planId=pteron-basic-2990-mensual(&|$)/);
     assert.match(lectura.url, /[?&]s=[0-9a-f]{64}(&|$)/, "toda petición a Flow va firmada");
     assert.equal(network.calls.some((call) => call.url.includes("/plans/create")), false, "el plan ya existía con el monto correcto");
 
@@ -106,7 +106,7 @@ test("checkout vende el plan del catálogo: valida el plan de Flow, guarda el cl
       user_id: user.id,
       plan_id: "basic",
       provider_customer_id: "cus_1",
-      provider_plan_id: "pteron-basic-1990-mensual",
+      provider_plan_id: "pteron-basic-2990-mensual",
       status: "card_registration_pending",
       expires_at: payload.expiresAt,
       trial_days: 7,
@@ -127,7 +127,7 @@ test("si el plan no existe en Flow se crea con los valores del catálogo y se vu
     const creado = network.calls.find((call) => call.url.includes("/plans/create"));
     assert.deepEqual(
       { planId: creado.body.planId, name: creado.body.name, currency: creado.body.currency, amount: creado.body.amount, interval: creado.body.interval, interval_count: creado.body.interval_count, trial_period_days: creado.body.trial_period_days, days_until_due: creado.body.days_until_due, urlCallback: creado.body.urlCallback },
-      { planId: "pteron-basic-1990-mensual", name: "pteron Basic", currency: "CLP", amount: "1990", interval: "3", interval_count: "1", trial_period_days: "7", days_until_due: "3", urlCallback: CALLBACK },
+      { planId: "pteron-basic-2990-mensual", name: "pteron Basic", currency: "CLP", amount: "2990", interval: "3", interval_count: "1", trial_period_days: "7", days_until_due: "3", urlCallback: CALLBACK },
     );
     assert.equal(network.calls.filter((call) => call.url.includes("/plans/get")).length, 2);
   });
@@ -208,17 +208,17 @@ test("la prueba es una por persona: quien ya tuvo una suscripción Flow parte si
   assert.equal(intent.body.trial_days, 0);
 });
 
-test("reutiliza el cliente de Flow de la cuenta, también el que sólo quedó en un checkout anterior", async () => {
+test("reutiliza el cliente de Flow guardado en billing_customers; los checkouts anteriores no son fuente de clientes", async () => {
   const guardado = checkoutNetwork({ guardado: [{ provider_customer_id: "cus_9" }] });
   await withFetch(guardado.fetch, async () => assert.equal((await pedirCheckout(conTerminos("basic"))).status, 200));
   assert.equal(guardado.calls.some((call) => call.url.includes("/customer/create")), false);
   assert.equal(guardado.calls.some((call) => call.url.includes("billing_customers") && call.method === "POST"), false);
   assert.equal(guardado.calls.find((call) => call.url.includes("billing_checkout_intents") && call.method === "POST").body.provider_customer_id, "cus_9");
 
-  const heredado = checkoutNetwork({ intentosPrevios: [{ provider_customer_id: "cus_8" }] });
-  await withFetch(heredado.fetch, async () => assert.equal((await pedirCheckout(conTerminos("basic"))).status, 200));
-  assert.equal(heredado.calls.some((call) => call.url.includes("/customer/create")), false);
-  assert.deepEqual(heredado.calls.find((call) => call.url.includes("billing_customers") && call.method === "POST").body, { user_id: user.id, provider: "flow", provider_customer_id: "cus_8" });
+  const sinGuardar = checkoutNetwork({ intentosPrevios: [{ provider_customer_id: "cus_8" }] });
+  await withFetch(sinGuardar.fetch, async () => assert.equal((await pedirCheckout(conTerminos("basic"))).status, 200));
+  assert.equal(sinGuardar.calls.some((call) => call.url.includes("/customer/create")), true);
+  assert.deepEqual(sinGuardar.calls.find((call) => call.url.includes("billing_customers") && call.method === "POST").body, { user_id: user.id, provider: "flow", provider_customer_id: "cus_1" });
 });
 
 test("recompra tras cancelar al cierre: la fila que ya no da acceso se sincroniza, queda cancelada y la compra sigue sin prueba", async () => {
@@ -267,7 +267,7 @@ function intentoPendiente(cambios = {}) {
     user_id: user.id,
     plan_id: "basic",
     provider_customer_id: "cus_1",
-    provider_plan_id: "pteron-basic-1990-mensual",
+    provider_plan_id: "pteron-basic-2990-mensual",
     status: "card_registration_pending",
     expires_at: new Date(Date.now() + 60 * 60_000).toISOString(),
     trial_days: 7,
@@ -336,7 +336,7 @@ test("card-callback reclama el intento, crea la suscripción con la prueba del i
   assert.match(consulta.url, /[?&]token=tok_1(&|$)/);
   assert.match(consulta.url, /[?&]s=[0-9a-f]{64}(&|$)/);
   const creacion = network.calls.find((call) => call.url.includes("/subscription/create"));
-  assert.deepEqual([creacion.body.planId, creacion.body.customerId, creacion.body.trial_period_days], ["pteron-basic-1990-mensual", "cus_1", "7"]);
+  assert.deepEqual([creacion.body.planId, creacion.body.customerId, creacion.body.trial_period_days], ["pteron-basic-2990-mensual", "cus_1", "7"]);
 
   const guardaId = network.calls.findIndex((call) => call.url.includes("billing_checkout_intents") && call.body?.provider_subscription_id === "sus_basic01");
   const insert = network.calls.findIndex((call) => call.url.includes("/rest/v1/subscriptions") && call.method === "POST");
@@ -345,7 +345,7 @@ test("card-callback reclama el intento, crea la suscripción con la prueba del i
   assert.equal(fila.status, "trialing");
   assert.equal(fila.provider, "flow");
   assert.equal(fila.provider_subscription_id, "sus_basic01");
-  assert.equal(fila.provider_plan_id, "pteron-basic-1990-mensual");
+  assert.equal(fila.provider_plan_id, "pteron-basic-2990-mensual");
   assert.equal(fila.trial_ends_at, "2026-10-20T03:00:00.000Z");
   assert.equal(fila.current_period_end, "2026-10-20T03:00:00.000Z");
   assert.equal(fila.terms_version, TERMS_VERSION);
@@ -476,7 +476,7 @@ test("un subscription/create sin respuesta (error 5xx o vencimiento) anota subsc
       external_event_id: `flow:intent:${INTENT}:subscription_create_uncertain`,
       event_type: "subscription_create_uncertain",
       status: "received",
-      event_metadata: { intentId: INTENT, customerId: "cus_1", planId: "pteron-basic-1990-mensual" },
+      event_metadata: { intentId: INTENT, customerId: "cus_1", planId: "pteron-basic-2990-mensual" },
     });
     assert.equal(network.calls.some((call) => call.url.includes("/rest/v1/subscriptions") && call.method === "POST"), false);
   }
@@ -583,7 +583,7 @@ const intentoIncierto = (minutos = 15, cambios = {}) => intentoPendiente({ statu
 
 test("conciliar adopta la suscripción de Flow que la base no conoce: fila con la primera sincronización, intento completado y evento", async () => {
   const canceladaAntes = basicEnPrueba({ subscriptionId: "sus_vieja", status: 4, created: "2026-09-01 10:00:00" });
-  const deOtroPlan = basicEnPrueba({ subscriptionId: "sus_otroplan", planId: "pteron-pro-monthly", created: "2026-10-13 16:00:00" });
+  const deOtroPlan = basicEnPrueba({ subscriptionId: "sus_otroplan", planId: "pteron-pro-9990-mensual", created: "2026-10-13 16:00:00" });
   const yaAnotada = basicEnPrueba({ subscriptionId: "sus_anotada", created: "2026-10-01 10:00:00" });
   const world = conciliacionNetwork({
     intentos: [intentoIncierto()],
@@ -610,7 +610,7 @@ test("conciliar adopta la suscripción de Flow que la base no conoce: fila con l
     external_event_id: `flow:intent:${INTENT}:subscription_reconciled`,
     event_type: "subscription_reconciled",
     status: "processed",
-    event_metadata: { intentId: INTENT, subscriptionId: "sus_huerfana", customerId: "cus_1", planId: "pteron-basic-1990-mensual" },
+    event_metadata: { intentId: INTENT, subscriptionId: "sus_huerfana", customerId: "cus_1", planId: "pteron-basic-2990-mensual" },
   }]);
   const seleccion = decodeURIComponent(world.network.calls[0].url);
   assert.match(seleccion, /status=eq\.subscription_pending&updated_at=lt\./);
@@ -635,7 +635,7 @@ test("conciliar elige la suscripción más nueva y deja constancia cuando hay m�
 test("conciliar sin ninguna suscripción de Flow para ese plan falla el intento y deja el evento, para que la persona pueda comprar de nuevo", async () => {
   const world = conciliacionNetwork({
     intentos: [intentoIncierto()],
-    enFlow: [basicEnPrueba({ subscriptionId: "sus_vieja", status: 4 }), basicEnPrueba({ subscriptionId: "sus_otroplan", planId: "pteron-pro-monthly" })],
+    enFlow: [basicEnPrueba({ subscriptionId: "sus_vieja", status: 4 }), basicEnPrueba({ subscriptionId: "sus_otroplan", planId: "pteron-pro-9990-mensual" })],
   });
   await withFetch(world.network.fetch, async () => {
     assert.deepEqual(await reconcilePendingCheckouts(testServices(env), { now: new Date() }), { conciliados: 0, sinSuscripcion: 1, pendientes: 0 });
@@ -647,7 +647,7 @@ test("conciliar sin ninguna suscripción de Flow para ese plan falla el intento 
     external_event_id: `flow:intent:${INTENT}:subscription_create_not_found`,
     event_type: "subscription_create_not_found",
     status: "processed",
-    event_metadata: { intentId: INTENT, customerId: "cus_1", planId: "pteron-basic-1990-mensual" },
+    event_metadata: { intentId: INTENT, customerId: "cus_1", planId: "pteron-basic-2990-mensual" },
   }]);
 });
 
@@ -791,7 +791,7 @@ test("el Cron concilia los checkouts inciertos y suma sus cuentas al resumen", a
 
 function avisoNetwork({ previo = [], filas = [{ id: "fila-1", user_id: user.id, provider_subscription_id: "sus_basic01", canceled_at: null }], flowGet = { body: basicEnPrueba({ status: 1, invoices: [cobroMensual({ id: 2001, desde: "2026-10-20", hasta: "2026-11-19", pagado: true, flowOrder: 9000001 })] }) } } = {}) {
   return fakeNetwork([
-    { match: matches.flow("/payment/getStatus"), respond: { body: pago({ flowOrder: 9000001, commerceOrder: "2001", requestDate: "2026-10-20 00:05:00", status: 2, subject: "pteron Basic - período 2026-10-20 / 2026-11-19", amount: 1990, payer: "Profe@Escuela.cl" }) } },
+    { match: matches.flow("/payment/getStatus"), respond: { body: pago({ flowOrder: 9000001, commerceOrder: "2001", requestDate: "2026-10-20 00:05:00", status: 2, subject: "pteron Basic - período 2026-10-20 / 2026-11-19", amount: 2990, payer: "Profe@Escuela.cl" }) } },
     { match: matches.supabase("billing_events", "GET"), respond: { body: previo } },
     { match: matches.supabase("subscriptions", "GET"), respond: { body: filas } },
     { match: matches.flow("/subscription/get"), respond: flowGet },
@@ -824,7 +824,7 @@ test("flow-callback lee el pago con los campos oficiales, sincroniza las suscrip
     flowOrder: 9000001,
     commerceOrder: "2001",
     status: 2,
-    amount: 1990,
+    amount: 2990,
     payerHash: await sha256Hex("profe@escuela.cl"),
     synced: 1,
     failed: 0,
@@ -867,7 +867,7 @@ test("cancel pide a Flow cancelar al cierre, lo anota y sincroniza la fila", asy
   const alCierre = basicEnPrueba({ cancel_at_period_end: 1 });
   const network = fakeNetwork([
     { match: matches.auth("user"), respond: { body: user } },
-    { match: matches.supabase("subscriptions", "GET"), respond: { body: [{ id: "fila-1", provider_subscription_id: "sus_basic01", provider_plan_id: "pteron-basic-1990-mensual", canceled_at: null, current_period_end: "2026-10-20T03:00:00.000Z" }] } },
+    { match: matches.supabase("subscriptions", "GET"), respond: { body: [{ id: "fila-1", provider_subscription_id: "sus_basic01", provider_plan_id: "pteron-basic-2990-mensual", canceled_at: null, current_period_end: "2026-10-20T03:00:00.000Z" }] } },
     { match: matches.flow("/subscription/cancel"), respond: { body: alCierre } },
     { match: matches.supabase("subscriptions", "PATCH"), respond: { body: [{ id: "fila-1" }] } },
     { match: matches.flow("/subscription/get"), respond: { body: alCierre } },

@@ -183,8 +183,8 @@ export function createFlow(env) {
   // La cuenta de Flow es compartida con otros productos de Patagua: el prefijo
   // pteron- evita confundir un plan propio con uno ajeno. Flow fija el monto al
   // crear el plan y no deja cambiarlo si tiene suscriptores, así que cada precio
-  // tiene su id (pteron-basic-1990-mensual) en wrangler.jsonc. Sin id no hay
-  // cobro: un id por defecto podría apuntar a un plan viejo con otro monto.
+  // tiene su id (pteron-basic-2990-mensual) en wrangler.jsonc. Sin id no hay
+  // cobro: un id por defecto podría apuntar a un plan con otro monto.
   function planId(plan) {
     const configured = plan === "basic" ? env?.FLOW_BASIC_PLAN_ID : plan === "pro" ? env?.FLOW_PRO_PLAN_ID : null;
     const id = String(configured || "").trim();

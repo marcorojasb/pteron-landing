@@ -9,8 +9,8 @@ import { basicEnPrueba, cobroMensual } from "./helpers/flow-fixtures.js";
 // Par de pruebas, nunca la clave real: verifyLicense acepta un mapa de claves
 // propio para no depender de PUBLIC_KEYS ni de variables reales.
 const keys = testKeyPair();
-const testKeys = { k1: keys.publicPem };
-const env = { LICENSE_PRIVATE_KEY_PEM: keys.privatePem, LICENSE_KID: "k1" };
+const testKeys = { k2: keys.publicPem };
+const env = { LICENSE_PRIVATE_KEY_PEM: keys.privatePem, LICENSE_KID: "k2" };
 
 function firmar(overrides = {}, customEnv = env) {
   return createLicenseService(customEnv, null).signLicense({
@@ -26,7 +26,7 @@ test("signLicense + verifyLicense: mismo contrato de bytes que el cliente", asyn
   const verificado = await verifyLicense(token, testKeys);
   assert.equal(verificado?.sub, "sub-opaco-1");
   assert.equal(verificado?.plan, "pro");
-  assert.equal(verificado?.kid, "k1");
+  assert.equal(verificado?.kid, "k2");
 });
 
 test("la firma Web Crypto la verifica node:crypto, que es lo que usa la aplicación de escritorio", async () => {
@@ -58,7 +58,7 @@ test("verifyLicense rechaza una licencia alterada en un solo byte", async () => 
 
 test("verifyLicense rechaza una licencia firmada por otra clave", async () => {
   const otra = testKeyPair();
-  const token = await firmar({ subject: "sub-opaco-2" }, { LICENSE_PRIVATE_KEY_PEM: otra.privatePem, LICENSE_KID: "k1" });
+  const token = await firmar({ subject: "sub-opaco-2" }, { LICENSE_PRIVATE_KEY_PEM: otra.privatePem, LICENSE_KID: "k2" });
   assert.equal(await verifyLicense(token, testKeys), null);
 });
 
@@ -81,7 +81,7 @@ test("verifyLicense rechaza una versión que no entiende", async () => {
     plan: "pro",
     iat: new Date().toISOString(),
     exp: new Date(Date.now() + 1000).toISOString(),
-    kid: "k1",
+    kid: "k2",
   };
   const segmento = Buffer.from(JSON.stringify(payload), "utf8").toString("base64url");
   assert.equal(await verifyLicense(`${segmento}.firma-cualquiera`, testKeys), null);
@@ -91,26 +91,25 @@ test("signLicense acepta un PEM aplastado o con saltos literales, como llega des
   const unaLinea = keys.privatePem.replace(/\n/g, "");
   const literales = keys.privatePem.replace(/\n/g, "\\n");
   for (const pem of [unaLinea, literales]) {
-    const token = await firmar({}, { LICENSE_PRIVATE_KEY_PEM: pem, LICENSE_KID: "k1" });
+    const token = await firmar({}, { LICENSE_PRIVATE_KEY_PEM: pem, LICENSE_KID: "k2" });
     assert.equal((await verifyLicense(token, testKeys))?.sub, "sub-opaco-1");
   }
   assert.match(normalizePem(unaLinea), /^-----BEGIN PRIVATE KEY-----\n[\s\S]+\n-----END PRIVATE KEY-----\n$/);
 });
 
 test("sin clave configurada, sin LICENSE_KID o con una clave inválida responde 503 con un código distinto", async () => {
-  await assert.rejects(firmar({}, { LICENSE_KID: "k1" }), { status: 503, code: "license_not_configured" });
+  await assert.rejects(firmar({}, { LICENSE_KID: "k2" }), { status: 503, code: "license_not_configured" });
   // Sin kid no hay valor por defecto: firmar con una clave y rotular otra deja licencias que nadie acepta.
   await assert.rejects(firmar({}, { LICENSE_PRIVATE_KEY_PEM: keys.privatePem }), { status: 503, code: "license_not_configured" });
-  await assert.rejects(firmar({}, { LICENSE_PRIVATE_KEY_PEM: "-----BEGIN PRIVATE KEY-----\nAAAA\n-----END PRIVATE KEY-----\n", LICENSE_KID: "k1" }), { status: 503, code: "license_key_invalid" });
+  await assert.rejects(firmar({}, { LICENSE_PRIVATE_KEY_PEM: "-----BEGIN PRIVATE KEY-----\nAAAA\n-----END PRIVATE KEY-----\n", LICENSE_KID: "k2" }), { status: 503, code: "license_key_invalid" });
 });
 
-test("las claves públicas de producción son Ed25519 válidas y k2 es la vigente", async () => {
-  assert.deepEqual(Object.keys(PUBLIC_KEYS), ["k1", "k2"]);
+test("la clave pública de producción es Ed25519 válida y k2 es la única", async () => {
+  assert.deepEqual(Object.keys(PUBLIC_KEYS), ["k2"]);
   for (const pem of Object.values(PUBLIC_KEYS)) {
     const key = await importEd25519PublicKey(pem);
     assert.equal(key.algorithm.name, "Ed25519");
   }
-  assert.notEqual(PUBLIC_KEYS.k1, PUBLIC_KEYS.k2);
 });
 
 // ── Emisión: acceso hasta, tope de 7 días y sincronización con Flow ────────
@@ -128,7 +127,7 @@ function filaFlow(cambios = {}) {
     provider: "flow",
     provider_customer_id: "cus_1",
     provider_subscription_id: "sus_basic01",
-    provider_plan_id: "pteron-basic-1990-mensual",
+    provider_plan_id: "pteron-basic-2990-mensual",
     status: "active",
     trial_starts_at: null,
     trial_ends_at: null,
@@ -138,7 +137,7 @@ function filaFlow(cambios = {}) {
     canceled_at: null,
     next_invoice_at: null,
     last_synced_at: null,
-    plan_catalog: { license_plan: "basic", monthly_price_clp: 1990 },
+    plan_catalog: { license_plan: "basic", monthly_price_clp: 2990 },
     ...cambios,
   };
 }
@@ -186,12 +185,12 @@ test("la licencia vale a lo más 7 días aunque lo pagado dure más, y trae el e
     trialEndsAt: "2026-10-20T03:00:00.000Z",
     nextChargeAt: "2026-11-20T03:00:00.000Z",
     cancelAtPeriodEnd: false,
-    priceClp: 1990,
+    priceClp: 2990,
   });
   assert.equal(network.calls.some((call) => call.url.includes("flow.cl")), false, "lejos del fin de lo pagado no se consulta Flow");
   const licencia = network.calls.find((call) => call.url.includes("/rest/v1/licenses"));
   assert.equal(licencia.body.expires_at, "2026-10-28T12:00:00.000Z");
-  assert.equal(licencia.body.key_id, "k1");
+  assert.equal(licencia.body.key_id, "k2");
   const consulta = decodeURIComponent(network.calls[0].url);
   assert.match(consulta, /status=in\.\(incomplete,trialing,active,past_due\)/);
   assert.match(consulta, /plan_catalog\(license_plan,monthly_price_clp\)/);
@@ -318,7 +317,7 @@ test("si la clave privada no es la del kid publicado responde 503 license_key_mi
   const consoleError = console.error;
   console.error = () => {};
   try {
-    for (const publicKeys of [{ k1: otra.publicPem }, {}]) {
+    for (const publicKeys of [{ k2: otra.publicPem }, {}]) {
       const services = testServices(envEmision, publicKeys);
       await assert.rejects(
         withFetch(network.fetch, () => services.license.issueLicense("user-1", { ...services, now })),

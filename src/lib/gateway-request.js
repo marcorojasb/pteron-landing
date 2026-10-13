@@ -11,8 +11,8 @@ import { GatewayError } from "./gateway.js";
  */
 
 // ~300K tokens: un tope contra el abuso, no contra conversaciones largas. Sobre
-// 100K tokens se cobra el tramo largo en unidades, porque 0.7.0 y 0.7.1 no
-// compactan por tokens y un rechazo cortaría sus sesiones.
+// 100K tokens se cobra el tramo largo en unidades: una conversación larga es
+// legítima y rechazarla cortaría la sesión de quien la tiene abierta.
 export const MAX_BODY_BYTES = 1_200_000;
 // La app pide 32.768 y, si la respuesta se corta por longitud, reintenta con 65.536.
 export const MAX_OUTPUT_TOKENS = 65_536;
@@ -175,7 +175,7 @@ function clientHeader(headers, name) {
   return String(headers.get(name) ?? "").trim().slice(0, CLIENT_HEADER_LENGTH) || null;
 }
 
-/** Versión y plataforma de la app (0.7.2 en adelante), para medir la adopción. Nada más de la petición se guarda. */
+/** Versión y plataforma de la app, para medir la adopción. Nada más de la petición se guarda. */
 export function clientInfo(headers) {
   return { client_version: clientHeader(headers, "x-pteron-version"), platform: clientHeader(headers, "x-pteron-platform") };
 }

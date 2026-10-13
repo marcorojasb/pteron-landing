@@ -95,7 +95,7 @@ try {
   });
   await expect("api con cabeceras de seguridad", { path: "/api/nada" }, (res) => (res.headers.get("x-frame-options") === "DENY" && res.headers.get("cache-control") === "no-store" ? null : "faltan cabeceras"));
   await expect("fuente no publicada", { path: "/wrangler.jsonc" }, status(404));
-  await expect("migraciones no publicadas", { path: "/supabase/migrations/20260803120000_initial_billing_and_activation.sql" }, status(404));
+  await expect("esquema no publicado", { path: "/supabase/esquema.sql" }, status(404));
 } catch (error) {
   failures.push(error instanceof Error ? error.message : String(error));
 } finally {

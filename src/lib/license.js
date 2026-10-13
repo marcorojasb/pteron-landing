@@ -19,10 +19,8 @@ import { syncFlowSubscription } from "./flow-sync.js";
  * renovar una licencia que el cliente ya tenía guardada.
  */
 export const PUBLIC_KEYS = {
-  // k1: la privada se perdió con el proyecto de Vercel. Sigue verificando las
-  // licencias ya emitidas hasta que venzan; no firma ninguna nueva.
-  k1: "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAIiyVbE5TARxOvkmsybhjZimWX0D9DMulrhT6ToBw4PY=\n-----END PUBLIC KEY-----\n",
-  // k2: clave vigente desde 2026-10-11; la app 0.7.0 la incorpora.
+  // k2: la única clave; su privada es LICENSE_PRIVATE_KEY_PEM. Una licencia con
+  // otro kid no se acepta.
   k2: "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAIWGm5jH/yZJ2b5hsQ3UusUn+HIxC5dGiqc1gwOqvrrY=\n-----END PUBLIC KEY-----\n",
 };
 
@@ -64,7 +62,7 @@ export async function tokenHash(token) {
 /**
  * Verifica un token ya emitido, sin importar si venció: quien decide si se
  * renueva es la suscripción vigente en `subscriptions`, no el `exp` del token
- * viejo — así un profesor que abrió la app después de semanas sin conexión no
+ * presentado — así un profesor que abrió la app después de semanas sin conexión no
  * queda bloqueado por un reloj. Nunca lanza; null ante cualquier problema.
  */
 export async function verifyLicense(token, keys = PUBLIC_KEYS) {

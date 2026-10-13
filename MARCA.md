@@ -1,6 +1,6 @@
 # Marca de pteron · propuesta de actualización (octubre de 2026)
 
-Estado: aplicada en la web (rama `claude/lucid-galileo-p8x5t3`, vista previa tetris-r2); en la app, lista para
+Estado: aplicada en la web (en `main`); en la app, lista para
 aplicar con los parches del kit completo (ADR-169 y ADR-170 de la app). La página pública es `/marca`; la
 especificación entera, con cada medida, es `kit/LENGUAJE.md`, y sus archivos salen de `node scripts/kit.mjs`. Este
 archivo registra la decisión y cómo se tomó.

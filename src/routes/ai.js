@@ -341,11 +341,3 @@ export async function messages({ request, env, execution, services }) {
     return gatewayFailure(error);
   }
 }
-
-/**
- * POST /api/ai/v1/chat/completions: el puente de la app 0.6.0, que sólo
- * verifica licencias k1 y ya no puede renovar. Se retira: responde 410.
- */
-export async function chatCompletions() {
-  return gatewayErrorResponse(new GatewayError(410, "gone", "Actualiza pteron para usar la IA incluida."));
-}

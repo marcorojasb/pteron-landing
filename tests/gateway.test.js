@@ -11,12 +11,12 @@ import {
 } from "../src/lib/gateway.js";
 import { opaqueUserId } from "../src/lib/gateway-request.js";
 import { reservationEstimate } from "../src/lib/units.js";
-import { chatCompletions, messages, models } from "../src/routes/ai.js";
+import { messages, models } from "../src/routes/ai.js";
 import { fakeExecution, fakeNetwork, jsonRequest, matches, testEnv, testKeyPair, testServices, withFetch } from "./helpers/fakes.js";
 
 const keys = testKeyPair();
-const env = { LICENSE_PRIVATE_KEY_PEM: keys.privatePem, LICENSE_KID: "k1" };
-const testKeys = { k1: keys.publicPem };
+const env = { LICENSE_PRIVATE_KEY_PEM: keys.privatePem, LICENSE_KID: "k2" };
+const testKeys = { k2: keys.publicPem };
 
 function reqWithToken(token) {
   return new Request("https://pteron.test/api/ai/v1/models", { headers: token ? { authorization: `Bearer ${token}` } : {} });
@@ -45,7 +45,7 @@ test("authenticateGateway exige la licencia en Authorization Bearer o x-api-key"
 
 test("authenticateGateway rechaza una firma que no verifica", async () => {
   const otra = testKeyPair();
-  const token = await firmar({ subject: "sub-x" }, { LICENSE_PRIVATE_KEY_PEM: otra.privatePem, LICENSE_KID: "k1" });
+  const token = await firmar({ subject: "sub-x" }, { LICENSE_PRIVATE_KEY_PEM: otra.privatePem, LICENSE_KID: "k2" });
   await assert.rejects(authenticateGateway(reqWithToken(token), testKeys), { status: 401, code: "invalid_license", message: /^invalid_license: / });
 });
 
@@ -271,7 +271,7 @@ function setup(envOverrides = {}) {
     GATEWAY_MODEL_ID: MODEL,
     ...envOverrides,
   });
-  const services = testServices(gatewayEnv, { k1: pair.publicPem });
+  const services = testServices(gatewayEnv, { k2: pair.publicPem });
   services.gateway = createGateway(services.supabase, { finishRetryDelaysMs: [0, 0] });
   const license = (claims = {}) =>
     createLicenseService(gatewayEnv, null).signLicense({ subject: PROFE, plan: "basic", expiresAt: new Date(Date.now() + HOUR).toISOString(), ...claims });
@@ -619,7 +619,7 @@ test("cuota agotada: 429 quota_exceeded con resets_at, used y limit, sin llamar 
   const payload = errorBody(result);
   assert.equal(payload.error, "quota_exceeded");
   assert.match(payload.message, /^quota_exceeded: /);
-  assert.match(payload.message, /capacidad de IA incluida/, "0.7.1 reconoce la cuota por este texto");
+  assert.match(payload.message, /capacidad de IA incluida/, "la app reconoce la cuota por este texto");
   assert.equal(payload.message, "quota_exceeded: Se agotó la capacidad de IA incluida de este período. Se renueva con tu próximo cobro. Puedes seguir con el motor local o con tu propia clave.");
   assert.deepEqual([payload.resets_at, payload.used, payload.limit], [periodEnd, 6_000_120, 6_000_000]);
   const retryAfter = Number(result.response.headers.get("retry-after"));
@@ -743,10 +743,4 @@ test("models exige configuración y licencia, y respeta la pausa para que la sal
   const ok = await run(world(), token);
   assert.equal(ok.result.status, 200);
   assert.deepEqual(await ok.result.json(), { object: "list", data: [{ id: "pteron-managed", object: "model", owned_by: "pteron" }] });
-});
-
-test("chat/completions, el puente de 0.6.0, responde 410 gone sin mirar licencia ni configuración", async () => {
-  const response = await chatCompletions({ request: new Request("https://pteron.test/api/ai/v1/chat/completions", { method: "POST" }) });
-  assert.equal(response.status, 410);
-  assert.deepEqual(await response.json(), { error: "gone", message: "gone: Actualiza pteron para usar la IA incluida." });
 });

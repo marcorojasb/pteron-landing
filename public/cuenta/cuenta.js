@@ -271,7 +271,7 @@
     }
   }
 
-  /** Un valor guardado y vigente; lo vencido o ilegible (también el formato anterior, sin vencimiento) se borra. */
+  /** Un valor guardado y vigente; lo vencido, ilegible o sin vencimiento se borra. */
   function recall(storage, key, now) {
     let saved = null;
     try {
@@ -503,8 +503,8 @@
   }
 
   // El precio, la prueba y la cuota viven en `plan_catalog`. El HTML trae los valores publicados como respaldo: si el
-  // catálogo no responde o trae un valor que no es un número válido, la tarjeta se queda con lo que ya mostraba antes
-  // que enseñar un precio en blanco o inventado.
+  // catálogo no responde o trae un valor que no es un número válido, la tarjeta se queda con lo que ya mostraba en
+  // lugar de enseñar un precio en blanco o inventado.
   function renderPlanCatalog(data, current) {
     document.querySelectorAll("[data-plan-card]").forEach((card) => {
       const plan = catalogPlan(data, card.dataset.planCard);

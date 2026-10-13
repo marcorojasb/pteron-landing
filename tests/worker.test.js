@@ -16,7 +16,8 @@ test("matchApi resuelve las rutas públicas y rechaza nombres heredados del prot
   assert.equal(typeof matchApi("/api/license/renew"), "function");
   assert.equal(typeof matchApi("/api/account"), "function");
   assert.equal(typeof matchApi("/api/ai/v1/models"), "function");
-  assert.equal(typeof matchApi("/api/ai/v1/chat/completions"), "function");
+  assert.equal(typeof matchApi("/api/ai/v1/messages"), "function");
+  assert.equal(matchApi("/api/ai/v1/chat/completions"), null);
   assert.equal(matchApi("/api/auth/constructor"), null);
   assert.equal(matchApi("/api/auth/__proto__"), null);
   assert.equal(matchApi("/api/nada"), null);
@@ -88,7 +89,7 @@ test("los assets se sirven tal cual y /docs/:slug cae a la página de documentac
 function gatewayFixture() {
   const keys = testKeyPair();
   const gatewayEnv = testEnv({ LICENSE_PRIVATE_KEY_PEM: keys.privatePem, ANTHROPIC_API_KEY: "upstream-key", ANTHROPIC_BASE_URL: "https://upstream.test", GATEWAY_MODEL_ID: "claude-haiku-5-5" });
-  const services = testServices(gatewayEnv, { k1: keys.publicPem });
+  const services = testServices(gatewayEnv, { k2: keys.publicPem });
   const sign = (overrides = {}) => createLicenseService(gatewayEnv, null).signLicense({ subject: "profe-1", plan: "pro", expiresAt: new Date(Date.now() + 60_000).toISOString(), ...overrides });
   return { keys, gatewayEnv, services, sign };
 }
@@ -108,11 +109,11 @@ test("models exige licencia y devuelve el único modelo virtual", async () => {
   });
 });
 
-test("chat/completions, el puente de 0.6.0, responde 410 aunque falten la clave del proveedor y la licencia", async () => {
+test("el puente chat/completions ya no existe: responde 404 not_found como cualquier ruta /api desconocida", async () => {
   await withFetch(async () => { throw new Error("no debe llamar a la red"); }, async () => {
     const res = await worker.fetch(jsonRequest("https://pteron.test/api/ai/v1/chat/completions", { messages: [] }), env, fakeExecution());
-    assert.equal(res.status, 410);
-    assert.deepEqual(await res.json(), { error: "gone", message: "gone: Actualiza pteron para usar la IA incluida." });
+    assert.equal(res.status, 404);
+    assert.deepEqual(await res.json(), { error: "not_found", message: "Ruta no encontrada." });
   });
 });
 
@@ -153,8 +154,8 @@ test("license/renew reemite a partir de una licencia firmada aunque esté vencid
 
 test("createServices expone las claves públicas reales para verificar licencias", () => {
   const services = createServices(env);
-  assert.equal(typeof services.publicKeys.k1, "string");
-  assert.match(services.publicKeys.k1, /BEGIN PUBLIC KEY/);
+  assert.equal(typeof services.publicKeys.k2, "string");
+  assert.match(services.publicKeys.k2, /BEGIN PUBLIC KEY/);
 });
 
 const PROFE = "8a6e0804-2bd0-4672-b79d-d97027f9071a";
@@ -403,7 +404,7 @@ test("/api/health responde 503 {ok: false} sin nombrar lo que falta", async () =
     { GATEWAY_MODEL_ID: "modelo-sin-precio" },
     { FLOW_SECRET_KEY: "" },
     { LICENSE_PRIVATE_KEY_PEM: "" },
-    { LICENSE_KID: "k1" },
+    { LICENSE_KID: "k9" },
     { SUPABASE_PUBLISHABLE_KEY: "" },
   ];
   const logged = [];

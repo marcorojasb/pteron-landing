@@ -33,9 +33,7 @@ const SECRETOS = [
 const VARIABLES = ["PUBLIC_SITE_URL", "SUPABASE_URL", "LICENSE_KID", "GATEWAY_MODEL_ID", "FLOW_BASE_URL", "FLOW_BASIC_PLAN_ID", "FLOW_PRO_PLAN_ID"];
 
 function presente(env, name) {
-  if (String(env?.[name] ?? "").trim()) return true;
-  // El cliente de Supabase también acepta la clave pública con su nombre anterior.
-  return name === "SUPABASE_PUBLISHABLE_KEY" && presente(env, "SUPABASE_ANON_KEY");
+  return Boolean(String(env?.[name] ?? "").trim());
 }
 
 function modeloDelGateway(env) {
@@ -95,8 +93,8 @@ async function firmaAutoverificada(services) {
 
 /**
  * El interruptor de la IA incluida, leído con la service role: de paso prueba
- * que Supabase responde, que la clave del servidor vale y que la migración
- * está aplicada. Pausada salvo que la fila diga exactamente false, como lo lee
+ * que Supabase responde, que la clave del servidor vale y que el esquema
+ * está aplicado. Pausada salvo que la fila diga exactamente false, como lo lee
  * begin_ai_request.
  */
 async function leerAjustes(services) {

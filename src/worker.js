@@ -9,7 +9,7 @@ import { ACTIONS as billing } from "./routes/billing.js";
 import { ACTIONS as activation } from "./routes/activation.js";
 import { ACTIONS as license } from "./routes/license.js";
 import { account } from "./routes/account.js";
-import { chatCompletions, messages, models } from "./routes/ai.js";
+import { messages, models } from "./routes/ai.js";
 import { admin } from "./routes/admin.js";
 import { health } from "./routes/health.js";
 
@@ -25,7 +25,6 @@ const EXACT_ROUTES = {
   "/api/health": health,
   "/api/ai/v1/models": models,
   "/api/ai/v1/messages": messages,
-  "/api/ai/v1/chat/completions": chatCompletions,
 };
 
 export function createServices(env) {

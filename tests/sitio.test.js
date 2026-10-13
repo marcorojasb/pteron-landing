@@ -107,13 +107,13 @@ test("los capítulos de cada página tienen ancla y nombre; los del inicio sigue
 // Lo que se cobra y cómo, dicho igual en todo el sitio (contrato R9 §11). Una cifra o una condición que cambie en una
 // página y no en otra es justo lo que no puede pasar con un precio.
 test("precio, prueba y cuota de los planes: los mismos en el inicio, /planes, /cuenta y los Términos", () => {
-  const PRUEBA = "Registras tu tarjeta en Flow y no se cobra nada durante la prueba. Si no cancelas antes, se cobran $1.990 al terminar los 7 días y luego cada mes, hasta que canceles.";
+  const PRUEBA = "Registras tu tarjeta en Flow y no se cobra nada durante la prueba. Si no cancelas antes, se cobran $2.990 al terminar los 7 días y luego cada mes, hasta que canceles.";
   for (const page of ALL.filter((page) => !page.startsWith("admin/"))) {
     assert.doesNotMatch(read(page), /\$\s?2\.999/, `${page}: no queda el precio anterior`);
     assert.doesNotMatch(read(page), /hoy no tiene tope|por definir/, `${page}: la cuota ya está publicada`);
   }
   const planes = read("planes/index.html");
-  assert.match(planes, /\$1\.990 <small>CLP al mes, IVA incluido<\/small>/);
+  assert.match(planes, /\$2\.990 <small>CLP al mes, IVA incluido<\/small>/);
   assert.match(planes, /\$9\.990 <small>CLP al mes, IVA incluido<\/small>/);
   assert.ok(planes.includes(`<span class="destacado">7 días gratis.</span> ${PRUEBA}`), "/planes: la prueba y la renovación juntas");
   assert.match(planes, /Una prueba por persona\./);
@@ -122,7 +122,7 @@ test("precio, prueba y cuota de los planes: los mismos en el inicio, /planes, /c
   assert.match(planes, /En preparación: memoria pedagógica avanzada y elección del modelo\./);
   assert.match(planes, /Lo publicaremos cuando lo midamos con docentes\./, "la equivalencia en materiales no se inventa");
   assert.doesNotMatch(planes, /Conexión prioritaria/);
-  assert.match(read("index.html"), /parten en \$1\.990 al mes, IVA incluido\./);
+  assert.match(read("index.html"), /parten en \$2\.990 al mes, IVA incluido\./);
   assert.ok(read("terminos.html").includes(`7 días gratis. ${PRUEBA}`), "Términos: la prueba con las mismas palabras");
   assert.ok(read("cuenta/index.html").includes(PRUEBA), "/cuenta, antes de entrar: la prueba con las mismas palabras");
 });
