@@ -6,9 +6,10 @@
    1. El motor: tablero de 10 × 20, bolsa de siete, giros con las patadas de SRS, espera en el suelo, guardar, líneas,
       puntaje y niveles. Es puro (no toca el documento) y se prueba sin navegador: window.pteronRecreo.motor. Cada pieza
       lleva un número de serie; la vista le da la lámina que le toca.
-   2. La vista: un <dialog> con la hoja, un canvas para el tablero y otro, encima de todo, para el vuelo de las láminas.
+   2. La vista: un <dialog> sin hoja detrás (la cuadrícula va suelta sobre la mesa), un canvas para el tablero y otro,
+      encima de todo, para el vuelo de las láminas.
       Teclado: ← → mover, ↑ o X girar, Z girar al revés, ↓ bajar, Espacio soltar, C guardar, P pausa y Esc salir; en
-      pantallas táctiles, botones bajo el tablero. Con movimiento reducido no hay vuelo ni animaciones de adorno: la hoja
+      pantallas táctiles, botones bajo el tablero. Con movimiento reducido no hay vuelo ni animaciones de adorno: el juego
       aparece de una vez, con las piezas ya recortadas, y el destacador no barre. */
 (() => {
   "use strict";
@@ -345,7 +346,7 @@
   // Si no hay láminas, cada pieza va en el color con que pteron rellena sus figuras y el trazo de tinta, como en ellas
   const COLORES = { I: "#1E3F94", O: "#F0C060", T: "#6B4C9A", S: "#2F8A5B", Z: "#C0492F", J: "#7F9BD6", L: "#B7791F" };
   const TINTA = "#1F2A3D";
-  const REGLA = "#DCE3EE";
+  const LINEA = "#C9D3E1";
   const GRAFITO = "#5B6B82";
   const LAPIZ = "#F0C060";
   const CLAVE = "pteron:recreo:record";
@@ -1223,19 +1224,20 @@
     const ancho = c * COLUMNAS;
     const alto = c * FILAS;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(0, 0, ancho, alto);
-    // La cuadrícula del cuaderno
-    ctx.strokeStyle = REGLA;
+    ctx.clearRect(0, 0, ancho, alto);
+    // La cuadrícula, sola sobre la mesa: sus bordes son las paredes
+    ctx.strokeStyle = LINEA;
     ctx.lineWidth = 1;
     ctx.beginPath();
-    for (let x = 1; x < COLUMNAS; x += 1) {
-      ctx.moveTo(x * c + 0.5, 0);
-      ctx.lineTo(x * c + 0.5, alto);
+    for (let x = 0; x <= COLUMNAS; x += 1) {
+      const px = Math.min(ancho - 0.5, x * c + 0.5);
+      ctx.moveTo(px, 0);
+      ctx.lineTo(px, alto);
     }
-    for (let y = 1; y < FILAS; y += 1) {
-      ctx.moveTo(0, y * c + 0.5);
-      ctx.lineTo(ancho, y * c + 0.5);
+    for (let y = 0; y <= FILAS; y += 1) {
+      const py = Math.min(alto - 0.5, y * c + 0.5);
+      ctx.moveTo(0, py);
+      ctx.lineTo(ancho, py);
     }
     ctx.stroke();
     ctx.imageSmoothingQuality = "high";
@@ -1256,7 +1258,9 @@
       pintarFondo();
       vista.fondoDe = clave;
     }
+    // Sin hoja detrás el canvas es transparente: se borra el cuadro anterior antes de poner la cuadrícula
     ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, vista.lienzo.width, vista.lienzo.height);
     ctx.drawImage(vista.fondo, 0, 0);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.imageSmoothingQuality = "high";

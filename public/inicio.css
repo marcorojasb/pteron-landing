@@ -157,9 +157,10 @@ html.no-js .aviso{display:none}
 .titular-palabra{white-space:nowrap}
 .titular-letra{display:inline-block}
 
-/* ——— El recreo (recreo.js): dos clics seguidos en una lámina y las láminas caen; queda una hoja cuadriculada con un juego
-   de piezas. --c es el lado de una casilla: lo que deja la pantalla para veinte filas y diez columnas, descontado lo
-   demás de la hoja (cabeza, marcador, ayuda o botones). recreo.js lo redondea a píxeles enteros. ——— */
+/* ——— El recreo (recreo.js): dos clics seguidos en una lámina y las láminas se vuelven piezas. El juego va suelto sobre la
+   mesa, sin hoja detrás: la cuadrícula, el marcador y los botones. --c es el lado de una casilla: lo que deja la
+   pantalla para veinte filas y diez columnas, descontado lo demás (cabeza, marcador, ayuda o botones). recreo.js lo
+   redondea a píxeles enteros. ——— */
 html.con-recreo{overflow:hidden}
 html.con-recreo body{padding-right:var(--barra,0px)}
 .recreo{--c:clamp(12px,min((100vh - 190px) / 20,(100vw - 240px) / 10),34px);--c:clamp(12px,min((100dvh - 190px) / 20,(100vw - 240px) / 10),34px);
@@ -167,19 +168,18 @@ html.con-recreo body{padding-right:var(--barra,0px)}
   padding:max(12px,env(safe-area-inset-top,0px)) 12px max(12px,env(safe-area-inset-bottom,0px));border:0;background:transparent;color:var(--tinta);
   overflow:auto;overscroll-behavior:contain;touch-action:manipulation}
 .recreo[open]{display:grid;place-items:center}
-/* Quieta, la página queda detrás de la mesa; con el vuelo no hace falta: las letras ya se fueron y las láminas son las
-   piezas */
+/* La página queda detrás de la mesa. Con el vuelo, la mesa llega cuando las letras ya cayeron: mientras tanto se ven
+   pasar por detrás de la cuadrícula */
 .recreo::backdrop{background:color-mix(in srgb,var(--mesa) 92%,transparent)}
-.recreo[data-transforma]::backdrop{background:transparent}
 .recreo-vuelo{position:fixed;inset:0;pointer-events:none}
-.recreo-hoja{display:flex;flex-direction:column;gap:16px;padding:20px 24px 18px;border-radius:6px;background:var(--hoja);
-  box-shadow:0 2px 3px rgb(var(--sombra)/.08),0 40px 80px -36px rgb(var(--sombra)/.5)}
+.recreo-hoja{display:flex;flex-direction:column;gap:16px;padding:20px 24px 18px}
 .recreo[open] .recreo-hoja{animation:recreo-sube .5s var(--curva) backwards}
 .recreo[open]::backdrop{animation:recreo-fondo .3s ease backwards}
+.recreo[open][data-transforma]::backdrop{animation:recreo-fondo .6s ease 1.4s backwards}
 .recreo.is-cerrando .recreo-hoja{animation:recreo-baja .26s cubic-bezier(.5,0,.75,0) forwards}
 .recreo.is-cerrando::backdrop{animation:recreo-fondo .26s ease reverse forwards}
-@keyframes recreo-sube{from{opacity:0;transform:translateY(56px) rotate(-1.5deg)}}
-@keyframes recreo-baja{to{opacity:0;transform:translateY(40px) rotate(1deg)}}
+@keyframes recreo-sube{from{opacity:0;transform:translateY(24px)}}
+@keyframes recreo-baja{to{opacity:0;transform:translateY(24px)}}
 @keyframes recreo-fondo{from{opacity:0}}
 .recreo-cabeza{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
 .recreo-titulo{font-size:1.625rem;font-stretch:118%;letter-spacing:-.02em;line-height:1}
@@ -190,10 +190,10 @@ html.con-recreo body{padding-right:var(--barra,0px)}
 .recreo-boton:disabled{color:var(--grafito);opacity:.6;cursor:default}
 .recreo-cuerpo{display:flex;align-items:flex-start;gap:24px}
 .recreo-tablero{position:relative;flex:none;display:grid;place-items:center;width:calc(var(--c) * 10);height:calc(var(--c) * 20)}
-.recreo-lienzo{border-radius:2px;box-shadow:0 0 0 var(--borde) var(--linea)}
 .recreo-aviso{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:10px;padding:16px;text-align:center;
-  background:rgb(255 255 255/.88);transition:opacity .4s var(--curva)}
-/* Antes de empezar la hoja está vacía: el aviso va sin velo, bajo la primera pieza. Mientras vuelan las láminas no se ve */
+  background:color-mix(in srgb,var(--mesa) 90%,transparent);transition:opacity .4s var(--curva)}
+/* Antes de empezar la cuadrícula está vacía: el aviso va sin velo, bajo la primera pieza. Mientras vuelan las láminas no
+   se ve */
 .recreo-aviso[data-estado="listo"]{background:none}
 .recreo-hoja[data-vuelo] .recreo-aviso{opacity:0;pointer-events:none}
 .recreo-aviso-titulo{color:var(--azul);font-size:1.375rem;font-weight:740;font-stretch:112%;letter-spacing:-.015em;line-height:1.1;text-wrap:balance}
@@ -211,7 +211,7 @@ html.con-recreo body{padding-right:var(--barra,0px)}
 .recreo-ayuda span{white-space:nowrap}
 .recreo-ayuda kbd{padding:1px 6px;border:var(--borde) solid var(--linea);border-radius:5px;background:var(--mesa);color:var(--tinta);font:inherit;font-weight:650}
 .recreo-controles{display:none}
-.recreo-control{display:grid;place-items:center;min-height:56px;padding:0;border:var(--borde) solid var(--linea);border-radius:12px;background:var(--mesa);color:var(--azul);
+.recreo-control{display:grid;place-items:center;min-height:56px;padding:0;border:var(--borde) solid var(--linea);border-radius:12px;background:var(--hoja);color:var(--azul);
   touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .recreo-control:active{background:var(--mesa-honda);border-color:color-mix(in srgb,var(--azul) 45%,var(--linea))}
 .recreo-control svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
