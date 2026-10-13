@@ -16,8 +16,9 @@ Verificado en Chromium (Playwright) con un servidor estático de `public/`, a 14
   pieza ocupa la lámina entera.
 - Vuelo y llegada: la primera pieza llega a donde nace en el tablero; las tres siguientes, a «Siguiente»; las demás se
   apilan detrás y se desvanecen. Al terminar no queda nada del vuelo encima de la hoja.
-- Juego: piezas con su trozo de lámina y contorno de tinta; fantasma a lápiz; pausa, fin del recreo y récord; teclado
-  en escritorio y botones táctiles en el teléfono.
+- Juego: suelto sobre la mesa, sin hoja detrás; lo que rodea la cuadrícula (cabeza, marcador, ayuda) va chico. En el
+  aire cada lámina se da vuelta y llega como figura de pteron: color plano, divisiones apenas marcadas y contorno de
+  tinta. Fantasma a lápiz; pausa, fin del recreo y récord; teclado en escritorio y botones táctiles en el teléfono.
 - Cierre: la hoja baja, las láminas suben a su lugar desde abajo y las letras vuelven; el titular queda idéntico al
   original y no quedan animaciones colgando.
 - Movimiento reducido: el juego se abre de una vez, con las piezas recortadas de las láminas y la página detrás de la

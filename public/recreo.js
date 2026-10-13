@@ -1,8 +1,9 @@
 /* pteron · recreo (2026-10-13.6)
    El huevo de pascua del inicio. Dos clics (o dos toques) seguidos en una lámina: las letras de la portada se van, las
    láminas se quedan quietas e inicio.js carga este archivo, que las toma donde están y las recorta en piezas. Cada
-   lámina deja caer el sobrante de su recorte y vuela a la hoja cuadriculada: la del doble clic es la primera pieza, las
-   tres que siguen esperan al costado y las demás se apilan detrás. En el juego cada pieza conserva su trozo de la obra.
+   lámina deja caer el sobrante de su recorte, vuela a la cuadrícula y en el aire se da vuelta, como las láminas de la
+   portada: detrás está su figura, la pieza del juego. La del doble clic es la primera pieza, las tres que siguen
+   esperan al costado y las demás se apilan detrás.
    1. El motor: tablero de 10 × 20, bolsa de siete, giros con las patadas de SRS, espera en el suelo, guardar, líneas,
       puntaje y niveles. Es puro (no toca el documento) y se prueba sin navegador: window.pteronRecreo.motor. Cada pieza
       lleva un número de serie; la vista le da la lámina que le toca.
@@ -343,7 +344,7 @@
 
 
   /* ——— 2. Vista ——— */
-  // Si no hay láminas, cada pieza va en el color con que pteron rellena sus figuras y el trazo de tinta, como en ellas
+  // Cada pieza es una figura de pteron: el color con que rellena sus figuras y el trazo de tinta, como en ellas
   const COLORES = { I: "#1E3F94", O: "#F0C060", T: "#6B4C9A", S: "#2F8A5B", Z: "#C0492F", J: "#7F9BD6", L: "#B7791F" };
   const TINTA = "#1F2A3D";
   const LINEA = "#C9D3E1";
@@ -499,17 +500,18 @@
     return { lienzo, mapa: mapaOpaco(l), recortes: {} };
   }
 
-  /** Casillas de piezas, dadas en casillas como [x, y, tipo, n, k, giro]: cada una con su trozo de lámina (o su color) y,
-      encima, el trazo de tinta sólo donde termina su pieza. Una pieza se ve recortada entera, no en cuadritos, y dos
-      piezas vecinas quedan separadas por sus dos bordes. */
-  function dibujarCasillas(ctx, lista, t, ox = 0, oy = 0, trazo = 1) {
+  /** Casillas de piezas, dadas en casillas como [x, y, tipo, n, k, giro]. En el juego son figuras de pteron: el color
+      plano de su pieza, las divisiones apenas marcadas y el contorno a tinta sólo donde termina la pieza (dos piezas
+      vecinas quedan separadas por sus dos bordes). Con conArte, la lámina recién recortada que todavía no se da vuelta,
+      cada casilla lleva su trozo de la obra, que gira con ella. */
+  function dibujarCasillas(ctx, lista, t, ox = 0, oy = 0, trazo = 1, conArte = false) {
     const de = new Map(lista.map(([x, y, , n]) => [`${x},${y}`, n]));
+    // Las casillas se montan un poco sobre sus vecinas: entre las de una misma pieza no queda costura
+    const monta = 0.4;
     for (const [x, y, tipo, n, k, giro] of lista) {
       const px = ox + x * t;
       const py = oy + y * t;
-      const arte = arteDe(n);
-      // Las casillas se montan un poco sobre sus vecinas: entre las de una misma pieza no queda costura
-      const monta = 0.4;
+      const arte = conArte && arteDe(n);
       if (arte) {
         const r = recorte(arte, tipo);
         const [cx, cy] = PIEZAS[tipo].celdas[k];
@@ -524,31 +526,51 @@
       }
     }
     if (trazo <= 0) return;
-    const ancho = Math.max(1, t / 24);
+    const ancho = Math.max(1.25, t / 24);
     const a = ancho / 2;
+    const misma = (x, y, n) => de.get(`${x},${y}`) === n;
     ctx.save();
     ctx.globalAlpha *= trazo;
-    ctx.strokeStyle = vista.artes.length ? "rgba(31,42,61,.72)" : TINTA;
-    ctx.lineWidth = ancho;
     ctx.lineCap = "square";
+    // Las divisiones entre casillas de una misma pieza, apenas marcadas
+    if (!conArte) {
+      ctx.strokeStyle = "rgba(31,42,61,.2)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (const [x, y, , n] of lista) {
+        const px = ox + x * t;
+        const py = oy + y * t;
+        if (misma(x + 1, y, n)) {
+          ctx.moveTo(px + t, py + ancho);
+          ctx.lineTo(px + t, py + t - ancho);
+        }
+        if (misma(x, y + 1, n)) {
+          ctx.moveTo(px + ancho, py + t);
+          ctx.lineTo(px + t - ancho, py + t);
+        }
+      }
+      ctx.stroke();
+    }
+    // El contorno, a tinta
+    ctx.strokeStyle = TINTA;
+    ctx.lineWidth = ancho;
     ctx.beginPath();
     for (const [x, y, , n] of lista) {
       const px = ox + x * t;
       const py = oy + y * t;
-      const otra = (dx, dy) => de.get(`${x + dx},${y + dy}`) !== n;
-      if (otra(0, -1)) {
+      if (!misma(x, y - 1, n)) {
         ctx.moveTo(px + a, py + a);
         ctx.lineTo(px + t - a, py + a);
       }
-      if (otra(1, 0)) {
+      if (!misma(x + 1, y, n)) {
         ctx.moveTo(px + t - a, py + a);
         ctx.lineTo(px + t - a, py + t - a);
       }
-      if (otra(0, 1)) {
+      if (!misma(x, y + 1, n)) {
         ctx.moveTo(px + a, py + t - a);
         ctx.lineTo(px + t - a, py + t - a);
       }
-      if (otra(-1, 0)) {
+      if (!misma(x - 1, y, n)) {
         ctx.moveTo(px + a, py + a);
         ctx.lineTo(px + a, py + t - a);
       }
@@ -745,14 +767,16 @@
   }
 
   /** Abre el recreo con las láminas de la página: { img, recorte, x, y, lado, filtro, sombra } de cada una; la primera
-      es la del doble clic. Con transformar, las toma donde están y las recorta en piezas; si no, la hoja aparece de una vez.
-      alCerrar se llama al cerrarse, por el botón, Escape o el navegador. */
+      es la del doble clic. Con transformar, las toma donde están, las recorta en piezas y en el aire se dan vuelta a su
+      figura; si no, el juego aparece de una vez. alCerrar se llama al cerrarse, por el botón, Escape o el navegador. */
   function abrir({ laminas = [], transformar = false, alCerrar = null } = {}) {
     if (!vista) vista = armar();
     if (vista.dialogo.open) return;
     vista.alCerrar = alCerrar;
-    vista.artes = laminas.filter((l) => l.img?.naturalWidth > 0).map(arte);
-    const conVuelo = transformar && vista.artes.length > 0 && !vista.quieto.matches;
+    const tomadas = laminas.filter((l) => l.img?.naturalWidth > 0);
+    const conVuelo = transformar && tomadas.length > 0 && !vista.quieto.matches;
+    // La obra de cada lámina sólo hace falta para el vuelo: en el juego las piezas son figuras
+    vista.artes = conVuelo ? tomadas.map(arte) : [];
     nuevoJuego();
     const raiz = document.documentElement;
     // Sin la barra de desplazamiento la página no se corre: el ancho que deja libre se devuelve como relleno
@@ -764,7 +788,7 @@
     vista.dialogo.showModal();
     medir();
     vista.vuelo = null;
-    if (conVuelo) prepararVuelo(laminas.filter((l) => l.img?.naturalWidth > 0));
+    if (conVuelo) prepararVuelo(tomadas);
     vista.hoja.toggleAttribute("data-vuelo", Boolean(vista.vuelo));
     actualizar();
     vista.seguir.focus();
@@ -923,7 +947,7 @@
     const { clientWidth: ancho, clientHeight: alto } = vista.tablero;
     const c = Math.max(8, Math.floor(Math.min(ancho / COLUMNAS, alto / FILAS)));
     const dpr = Math.min(3, window.devicePixelRatio || 1);
-    const m = Math.max(8, Math.round(c * 0.56));
+    const m = Math.max(8, Math.round(c * 0.46));
     const lienzo = (canvas, w, h) => {
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
@@ -1161,14 +1185,17 @@
       const k = ts / p.t0;
       const x = lerp(p.x0, dx, e);
       const y = lerp(p.y0, dy, e) - Math.sin(Math.PI * e) * Math.min(140, H * 0.14);
-      const aterriza = smooth(span(e, 0.78, 1));
       const alto = 1 - e + Math.sin(Math.PI * e) * 0.7; // altura sobre la mesa: aleja la sombra
+      // En el aire la lámina se da vuelta, como las de la portada: detrás está su figura, la pieza del juego
+      const vuelta = span(e, 0.12, 0.52);
+      const cara = vuelta < 0.5;
       ctx.save();
       ctx.globalAlpha = alfa;
       const mx = x + (r.w * ts) / 2;
       const my = y + (r.h * ts) / 2;
       ctx.translate(mx, my);
       ctx.rotate((Math.sin(Math.PI * e) * p.giro * Math.PI) / 180);
+      ctx.scale(Math.max(0.02, Math.abs(Math.cos(Math.PI * vuelta))), 1);
       ctx.translate(-mx, -my);
       if (alto > 0.02) {
         ctx.save();
@@ -1178,14 +1205,9 @@
         ctx.drawImage(p.sombraPieza, x + sx - borde * k, y + sy - borde * k, (r.w * p.t0 + 2 * borde) * k, (r.h * p.t0 + 2 * borde) * k);
         ctx.restore();
       }
-      dibujarCasillas(ctx, casillasDe(entrada), ts, x, y, aterriza);
-      // Las láminas del fondo vienen con su filtro: se lo sacan en el aire
-      if (p.filtrada && e < 0.6) {
-        ctx.save();
-        ctx.globalAlpha = alfa * (1 - smooth(span(e, 0, 0.6)));
-        ctx.drawImage(p.filtrada, x, y, r.w * ts, r.h * ts);
-        ctx.restore();
-      }
+      dibujarCasillas(ctx, casillasDe(entrada), ts, x, y, cara ? 0 : 1, cara);
+      // Las láminas del fondo llevan su filtro hasta darse vuelta
+      if (p.filtrada && cara) ctx.drawImage(p.filtrada, x, y, r.w * ts, r.h * ts);
       // La línea del recorte, a tinta, que se dibuja de una vez alrededor de la pieza y se borra al partir
       const tinta = 1 - smooth(span(e, 0, 0.35));
       if (corte > 0 && tinta > 0) {

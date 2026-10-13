@@ -157,9 +157,10 @@ terminadas.
 El recreo (huevo de pascua): dos clics o dos toques seguidos en una lámina de
 la portada. Las letras del titular caen una a una, las láminas se quedan
 quietas y `recreo.js` las recorta en piezas de un juego de piezas que caen: cada
-lámina deja caer su sobrante y vuela a la hoja cuadriculada (la del doble clic
-es la primera pieza; las tres siguientes esperan al costado). En el juego cada
-pieza conserva su trozo de la obra. Al cerrar, las láminas suben a su lugar y
+lámina deja caer su sobrante, vuela a la cuadrícula y en el aire se da vuelta,
+como las de la portada; detrás está su figura, la pieza del juego (la del doble
+clic es la primera; las tres siguientes esperan al costado). El juego va suelto
+sobre la mesa, sin hoja detrás. Al cerrar, las láminas suben a su lugar y
 las letras vuelven. Con movimiento reducido el juego se abre de una vez; si el
 archivo no carga, la portada vuelve como estaba. El motor del juego es puro y
 se prueba en `tests/recreo.test.js`.

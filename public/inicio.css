@@ -163,8 +163,8 @@ html.no-js .aviso{display:none}
    redondea a píxeles enteros. ——— */
 html.con-recreo{overflow:hidden}
 html.con-recreo body{padding-right:var(--barra,0px)}
-.recreo{--c:clamp(12px,min((100vh - 190px) / 20,(100vw - 240px) / 10),34px);--c:clamp(12px,min((100dvh - 190px) / 20,(100vw - 240px) / 10),34px);
-  --lado:8.5rem;position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;
+.recreo{--c:clamp(12px,min((100vh - 150px) / 20,(100vw - 200px) / 10),36px);--c:clamp(12px,min((100dvh - 150px) / 20,(100vw - 200px) / 10),36px);
+  --lado:6.75rem;position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;
   padding:max(12px,env(safe-area-inset-top,0px)) 12px max(12px,env(safe-area-inset-bottom,0px));border:0;background:transparent;color:var(--tinta);
   overflow:auto;overscroll-behavior:contain;touch-action:manipulation}
 .recreo[open]{display:grid;place-items:center}
@@ -172,7 +172,8 @@ html.con-recreo body{padding-right:var(--barra,0px)}
    pasar por detrás de la cuadrícula */
 .recreo::backdrop{background:color-mix(in srgb,var(--mesa) 92%,transparent)}
 .recreo-vuelo{position:fixed;inset:0;pointer-events:none}
-.recreo-hoja{display:flex;flex-direction:column;gap:16px;padding:20px 24px 18px}
+/* Lo que rodea la cuadrícula va chico: el juego es la cuadrícula */
+.recreo-hoja{display:flex;flex-direction:column;gap:12px;padding:12px 16px}
 .recreo[open] .recreo-hoja{animation:recreo-sube .5s var(--curva) backwards}
 .recreo[open]::backdrop{animation:recreo-fondo .3s ease backwards}
 .recreo[open][data-transforma]::backdrop{animation:recreo-fondo .6s ease 1.4s backwards}
@@ -181,58 +182,60 @@ html.con-recreo body{padding-right:var(--barra,0px)}
 @keyframes recreo-sube{from{opacity:0;transform:translateY(24px)}}
 @keyframes recreo-baja{to{opacity:0;transform:translateY(24px)}}
 @keyframes recreo-fondo{from{opacity:0}}
-.recreo-cabeza{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
-.recreo-titulo{font-size:1.625rem;font-stretch:118%;letter-spacing:-.02em;line-height:1}
-.recreo-acciones{display:flex;gap:8px}
-.recreo-boton{min-height:44px;padding:0 16px;border:var(--borde) solid var(--linea);border-radius:999px;background:var(--hoja);color:var(--azul);
-  font-weight:620;font-size:.9375rem;transition:border-color .2s}
+.recreo-cabeza{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:36px}
+.recreo-titulo{font-size:1.125rem;font-stretch:116%;letter-spacing:-.015em;line-height:1}
+.recreo-acciones{display:flex;gap:6px}
+/* Botones chicos; su área táctil igual llega a 44 px de alto */
+.recreo-boton{position:relative;min-height:36px;padding:0 14px;border:var(--borde) solid var(--linea);border-radius:999px;background:var(--hoja);color:var(--azul);
+  font-weight:620;font-size:.8125rem;transition:border-color .2s}
+.recreo-boton::after{content:"";position:absolute;inset:-4px -2px}
 .recreo-boton:hover{border-color:color-mix(in srgb,var(--azul) 45%,var(--linea))}
 .recreo-boton:disabled{color:var(--grafito);opacity:.6;cursor:default}
-.recreo-cuerpo{display:flex;align-items:flex-start;gap:24px}
+.recreo-cuerpo{display:flex;align-items:flex-start;gap:20px}
 .recreo-tablero{position:relative;flex:none;display:grid;place-items:center;width:calc(var(--c) * 10);height:calc(var(--c) * 20)}
-.recreo-aviso{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:10px;padding:16px;text-align:center;
+.recreo-aviso{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:8px;padding:16px;text-align:center;
   background:color-mix(in srgb,var(--mesa) 90%,transparent);transition:opacity .4s var(--curva)}
 /* Antes de empezar la cuadrícula está vacía: el aviso va sin velo, bajo la primera pieza. Mientras vuelan las láminas no
    se ve */
 .recreo-aviso[data-estado="listo"]{background:none}
 .recreo-hoja[data-vuelo] .recreo-aviso{opacity:0;pointer-events:none}
-.recreo-aviso-titulo{color:var(--azul);font-size:1.375rem;font-weight:740;font-stretch:112%;letter-spacing:-.015em;line-height:1.1;text-wrap:balance}
-.recreo-aviso-texto{max-width:22ch;color:var(--grafito);font-size:var(--t-chico);line-height:1.4}
-.recreo-aviso .boton{margin-top:8px}
-.recreo-lado{display:grid;align-content:start;gap:18px;width:max(var(--lado),var(--recreo-mini,0px))}
-.recreo-rotulo,.recreo-datos dt{font-size:var(--t-rotulo);font-weight:650;font-stretch:94%;color:var(--azul)}
-.recreo-rotulo{margin-bottom:8px}
-.recreo-datos{display:grid;gap:10px}
-.recreo-datos div{padding-top:8px;border-top:var(--borde) solid var(--regla)}
-.recreo-datos dd{margin:0;font-size:1.25rem;font-weight:680;font-stretch:104%;font-variant-numeric:tabular-nums;line-height:1.3;color:var(--tinta)}
-/* La ayuda y los botones toman el ancho de la hoja sin agrandarla */
+.recreo-aviso-titulo{color:var(--azul);font-size:1.125rem;font-weight:720;font-stretch:110%;letter-spacing:-.01em;line-height:1.15;text-wrap:balance}
+.recreo-aviso-texto{max-width:24ch;color:var(--grafito);font-size:.8125rem;line-height:1.4}
+.recreo-aviso .boton{min-height:40px;margin-top:4px;padding:.5em 1.15em;font-size:.9375rem}
+.recreo-lado{display:grid;align-content:start;gap:14px;width:max(var(--lado),var(--recreo-mini,0px))}
+.recreo-rotulo,.recreo-datos dt{font-size:.75rem;font-weight:620;font-stretch:94%;color:var(--azul)}
+.recreo-rotulo{margin-bottom:6px}
+.recreo-datos{display:grid;gap:8px}
+.recreo-datos div{padding-top:6px;border-top:var(--borde) solid var(--linea)}
+.recreo-datos dd{margin:0;font-size:1rem;font-weight:650;font-stretch:104%;font-variant-numeric:tabular-nums;line-height:1.3;color:var(--tinta)}
+/* La ayuda y los botones toman el ancho del juego sin agrandarlo */
 .recreo-ayuda,.recreo-controles{width:0;min-width:100%}
-.recreo-ayuda{font-size:var(--t-rotulo);line-height:1.9;color:var(--grafito);text-align:center;text-wrap:balance}
+.recreo-ayuda{font-size:.75rem;line-height:1.8;color:var(--grafito);text-align:center;text-wrap:balance}
 .recreo-ayuda span{white-space:nowrap}
-.recreo-ayuda kbd{padding:1px 6px;border:var(--borde) solid var(--linea);border-radius:5px;background:var(--mesa);color:var(--tinta);font:inherit;font-weight:650}
+.recreo-ayuda kbd{padding:0 4px;border:var(--borde) solid var(--linea);border-radius:4px;background:var(--hoja);color:var(--tinta);font:inherit;font-weight:620}
 .recreo-controles{display:none}
-.recreo-control{display:grid;place-items:center;min-height:56px;padding:0;border:var(--borde) solid var(--linea);border-radius:12px;background:var(--hoja);color:var(--azul);
+.recreo-control{display:grid;place-items:center;min-height:48px;padding:0;border:var(--borde) solid var(--linea);border-radius:10px;background:var(--hoja);color:var(--azul);
   touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .recreo-control:active{background:var(--mesa-honda);border-color:color-mix(in srgb,var(--azul) 45%,var(--linea))}
-.recreo-control svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.recreo-control svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 /* En pantallas táctiles, botones bajo el tablero en vez de la ayuda del teclado: las flechas a la izquierda, girar y
    soltar a la derecha */
 @media (hover:none) and (pointer:coarse){
-  .recreo{--lado:5.25rem;--c:clamp(12px,min((100vh - 190px) / 20,(100vw - 160px) / 10),34px);--c:clamp(12px,min((100dvh - 190px) / 20,(100vw - 160px) / 10),34px)}
-  .recreo-hoja{gap:12px;padding:16px 16px 14px}
+  .recreo{--lado:4.75rem;--c:clamp(12px,min((100vh - 165px) / 20,(100vw - 140px) / 10),36px);--c:clamp(12px,min((100dvh - 165px) / 20,(100vw - 140px) / 10),36px)}
+  .recreo-hoja{gap:10px;padding:10px 12px}
   .recreo-cuerpo{gap:12px}
-  .recreo-titulo{font-size:1.375rem}
-  .recreo-datos dd{font-size:1.125rem}
-  .recreo-controles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+  .recreo-titulo{font-size:1rem}
+  .recreo-datos dd{font-size:.9375rem}
+  .recreo-controles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
   .recreo-ayuda{display:none}
 }
 /* Un teléfono acostado: los botones van al costado, en dos columnas */
 @media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:540px){
-  .recreo{--c:clamp(10px,(100vh - 116px) / 20,34px);--c:clamp(10px,(100dvh - 116px) / 20,34px)}
+  .recreo{--c:clamp(10px,(100vh - 96px) / 20,36px);--c:clamp(10px,(100dvh - 96px) / 20,36px)}
   .recreo-hoja{display:grid;grid-template-columns:auto auto;grid-template-areas:"cabeza cabeza" "cuerpo controles";align-items:start;column-gap:20px}
   .recreo-cabeza{grid-area:cabeza}
   .recreo-cuerpo{grid-area:cuerpo}
-  .recreo-controles{grid-area:controles;width:auto;min-width:0;grid-template-columns:repeat(2,64px);align-self:end}
+  .recreo-controles{grid-area:controles;width:auto;min-width:0;grid-template-columns:repeat(2,56px);align-self:end}
 }
 
 /* ——— Anchos ——— */
