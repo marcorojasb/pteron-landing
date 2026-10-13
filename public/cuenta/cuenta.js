@@ -8,9 +8,10 @@
   const PENDING_ACTIVATION_KEY = "pteron-pending-activation";
   const REQUESTED_PLAN_KEY = "pteron-requested-plan";
   const DAY = 24 * 60 * 60 * 1000;
-  // La activación que pide la app vence a los 10 minutos (src/routes/activation.js); el plan elegido en /planes se
-  // recuerda una hora, lo que tarda en llegar y abrirse el enlace mágico.
-  const ACTIVATION_TTL = 10 * 60 * 1000;
+  // La activación que pide la app vence a los 60 minutos (src/routes/activation.js), lo que puede tardar el enlace
+  // mágico más el viaje a Flow; el plan elegido en /planes se recuerda una hora, lo que tarda en llegar y abrirse
+  // el enlace mágico.
+  const ACTIVATION_TTL = 60 * 60 * 1000;
   const REQUESTED_PLAN_TTL = 60 * 60 * 1000;
   // Los estados con que el checkout responde «Ya tienes un plan en curso» (src/routes/billing.js)
   const CURRENT_STATUSES = ["incomplete", "trialing", "active", "past_due", "paused"];

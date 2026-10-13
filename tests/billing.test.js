@@ -23,8 +23,10 @@ function run(request, runEnv = env) {
   return worker.fetch(request, runEnv, fakeExecution());
 }
 
-function pedirCheckout(payload, runEnv) {
-  return run(jsonRequest("https://pteron.test/api/billing/checkout", payload, { headers: { authorization: "Bearer sesion" } }), runEnv);
+// Se pide al mismo sitio que PUBLIC_SITE_URL: desde otro host la guarda responde 421.
+function pedirCheckout(payload, runEnv = env) {
+  const sitio = runEnv.PUBLIC_SITE_URL || "https://pteron.test";
+  return run(jsonRequest(`${sitio}/api/billing/checkout`, payload, { headers: { authorization: "Bearer sesion" } }), runEnv);
 }
 
 const conTerminos = (plan) => ({ plan, acceptedTerms: true, termsVersion: TERMS_VERSION });

@@ -197,17 +197,17 @@ test("lo guardado con vencimiento: vigente se lee, vencido o en el formato anter
   assert.equal(cuenta.recall(null, "k", NOW), null);
 });
 
-test("la activación pedida desde la app pasa el enlace mágico y el viaje a Flow, pero vence a los 10 minutos", () => {
+test("la activación pedida desde la app pasa el enlace mágico y el viaje a Flow, pero vence a los 60 minutos, como en el servidor", () => {
   const storage = fakeStorage();
   const code = "a1".repeat(32);
   const opened = cuenta.pendingActivationFrom(new URL(`https://pteron.patagua.dev/cuenta?activate=${code}`), storage, NOW);
-  assert.deepEqual(plain(opened), { code, expiresAt: NOW + 10 * 60 * 1000 });
+  assert.deepEqual(plain(opened), { code, expiresAt: NOW + 60 * 60 * 1000 });
   // De vuelta del enlace mágico o de Flow la URL ya no lo trae: sale de lo guardado
   const back = new URL("https://pteron.patagua.dev/cuenta?billing=success");
-  assert.equal(cuenta.pendingActivationFrom(back, storage, NOW + 9 * 60 * 1000).code, code);
+  assert.equal(cuenta.pendingActivationFrom(back, storage, NOW + 59 * 60 * 1000).code, code);
   // Volver a abrir el mismo enlace no alarga el plazo
-  assert.equal(cuenta.pendingActivationFrom(new URL(`https://pteron.patagua.dev/cuenta?activate=${code}`), storage, NOW + 5 * 60 * 1000).expiresAt, NOW + 10 * 60 * 1000);
-  assert.equal(cuenta.pendingActivationFrom(back, storage, NOW + 10 * 60 * 1000), null);
+  assert.equal(cuenta.pendingActivationFrom(new URL(`https://pteron.patagua.dev/cuenta?activate=${code}`), storage, NOW + 5 * 60 * 1000).expiresAt, NOW + 60 * 60 * 1000);
+  assert.equal(cuenta.pendingActivationFrom(back, storage, NOW + 60 * 60 * 1000), null);
   // Un código que no tiene la forma de los que entrega la app no se guarda
   assert.equal(cuenta.pendingActivationFrom(new URL("https://pteron.patagua.dev/cuenta?activate=hola"), storage, NOW), null);
   assert.equal(storage.data.size, 0);

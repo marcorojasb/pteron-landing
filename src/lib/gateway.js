@@ -1,5 +1,5 @@
 import { HttpError, bearerToken, json } from "./http.js";
-import { verifyLicense } from "./license.js";
+import { accesoHasta, verifyLicense } from "./license.js";
 
 /**
  * Error del gateway con la forma que la app sabe leer: el SDK de Anthropic arma
@@ -54,17 +54,16 @@ export async function authenticateGateway(request, keys) {
 }
 
 const HOUR = 3_600_000;
-// Tras el fin de lo pagado, los 3 días que Flow da para pagar el cobro del mes
-// siguiente; sin gracia si la persona canceló al cierre.
-const FLOW_GRACE_MS = 72 * HOUR;
 // Los estados que emiten licencia; canceled, incomplete, expired y paused no.
 const INCLUDED_STATUSES = new Set(["trialing", "active", "past_due"]);
 
-/** Hasta cuándo da acceso una suscripción, en milisegundos; null sin fecha de término (falla cerrado). */
+/**
+ * Hasta cuándo da acceso una suscripción, en milisegundos; null sin fecha de término (falla
+ * cerrado). Es la misma regla con que se firma la licencia: lo pagado más 72 h en Flow, sin
+ * gracia si la persona canceló al cierre ni en una cortesía.
+ */
 export function accessUntil(subscription) {
-  const end = Date.parse(subscription?.current_period_end ?? "");
-  if (!Number.isFinite(end)) return null;
-  return end + (subscription.provider === "flow" && !subscription.cancel_at_period_end ? FLOW_GRACE_MS : 0);
+  return accesoHasta(subscription)?.getTime() ?? null;
 }
 
 /**

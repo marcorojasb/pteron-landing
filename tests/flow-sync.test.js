@@ -211,7 +211,7 @@ test("syncFlowSubscription rechaza una respuesta de otra suscripción en vez de 
   });
 });
 
-test("el Cron sincroniza las filas cerca del fin de lo pagado, sigue si una falla y vence los checkouts abandonados", async () => {
+test("el Cron sincroniza las filas cerca del fin de lo pagado, sigue si una falla y vence los checkouts abandonados y las cortesías terminadas", async () => {
   const filas = [
     { id: "fila-1", user_id: "u1", provider_subscription_id: "sus_basic01", status: "trialing", canceled_at: null },
     { id: "fila-2", user_id: "u2", provider_subscription_id: "sus_caida", status: "active", canceled_at: null },
@@ -220,6 +220,7 @@ test("el Cron sincroniza las filas cerca del fin de lo pagado, sigue si una fall
     { match: matches.supabase("subscriptions", "GET"), respond: { body: filas } },
     { match: (url) => url.includes("/subscription/get") && url.includes("sus_caida"), respond: { status: 500, body: { message: "caído" } } },
     { match: matches.flow("/subscription/get"), respond: { body: basicCobrada() } },
+    { match: (url, m) => matches.supabase("subscriptions", "PATCH")(url, m) && url.includes("provider=eq.comp"), respond: { body: [{ id: "cortesia-1" }] } },
     { match: matches.supabase("subscriptions", "PATCH"), respond: { body: [{ id: "fila-1" }] } },
     { match: matches.supabase("billing_checkout_intents", "PATCH"), respond: { body: [{ id: "i1" }, { id: "i2" }] } },
   ]);
@@ -229,7 +230,7 @@ test("el Cron sincroniza las filas cerca del fin de lo pagado, sigue si una fall
   console.error = (...args) => errores.push(args);
   try {
     await withFetch(network.fetch, async () => {
-      assert.deepEqual(await syncDueSubscriptions(testServices(env), ahora), { sincronizadas: 1, fallidas: 1, checkoutsVencidos: 2 });
+      assert.deepEqual(await syncDueSubscriptions(testServices(env), ahora), { sincronizadas: 1, fallidas: 1, checkoutsVencidos: 2, cortesiasVencidas: 1 });
     });
   } finally {
     console.error = consoleError;
@@ -241,7 +242,11 @@ test("el Cron sincroniza las filas cerca del fin de lo pagado, sigue si una fall
   assert.match(seleccion, /cancel_at_period_end\.is\.true/);
   assert.match(seleccion, /last_synced_at\.lt\."2026-10-13T12:17:00\.000Z"/);
   assert.match(seleccion, /order=last_synced_at\.asc\.nullsfirst&limit=100/);
-  assert.equal(network.calls.filter((call) => call.url.includes("/rest/v1/subscriptions") && call.method === "PATCH").length, 1);
+  const parches = network.calls.filter((call) => call.url.includes("/rest/v1/subscriptions") && call.method === "PATCH");
+  assert.equal(parches.length, 2, "la fila sincronizada y las cortesías terminadas");
+  const cortesias = parches.find((call) => call.url.includes("provider=eq.comp"));
+  assert.match(decodeURIComponent(cortesias.url), /status=in\.\(trialing,active,past_due\)&current_period_end=lt\.2026-10-20T12:17:00\.000Z/);
+  assert.deepEqual(cortesias.body, { status: "expired" });
   const vencidos = network.calls.find((call) => call.url.includes("billing_checkout_intents"));
   assert.match(decodeURIComponent(vencidos.url), /status=eq\.card_registration_pending&expires_at=lt\.2026-10-20T12:17:00\.000Z/);
   assert.deepEqual(vencidos.body, { status: "expired" });
@@ -269,13 +274,14 @@ test("el handler scheduled del Worker corre la sincronización del Cron dentro d
   const network = fakeNetwork([
     { match: matches.supabase("subscriptions", "GET"), respond: { body: [] } },
     { match: matches.supabase("billing_checkout_intents", "PATCH"), respond: { body: [] } },
+    { match: matches.supabase("subscriptions", "PATCH"), respond: { body: [] } },
   ]);
   await withFetch(network.fetch, async () => {
     const ctx = fakeExecution();
     await worker.scheduled({ cron: "17 12 * * *", scheduledTime: Date.now() }, env, ctx);
     assert.equal(ctx.promises.length, 1);
-    assert.deepEqual(await ctx.promises[0], { sincronizadas: 0, fallidas: 0, checkoutsVencidos: 0 });
-    assert.deepEqual(network.calls.map((call) => call.method), ["GET", "PATCH"]);
+    assert.deepEqual(await ctx.promises[0], { sincronizadas: 0, fallidas: 0, checkoutsVencidos: 0, cortesiasVencidas: 0 });
+    assert.deepEqual(network.calls.map((call) => call.method), ["GET", "PATCH", "PATCH"]);
   });
 });
 

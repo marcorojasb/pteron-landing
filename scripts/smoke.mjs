@@ -88,6 +88,11 @@ try {
     return res.status === 303 && location.endsWith("/cuenta?billing=expired") ? null : `esperaba 303 a /cuenta?billing=expired, llegó ${res.status} ${location}`;
   });
   await expect("api sin sesión", { path: "/api/account" }, jsonError("not_authenticated", 401));
+  // Sin .dev.vars responde 503; con la configuración completa, 200. Nunca más que un booleano.
+  await expect("salud pública sin detalles", { path: "/api/health" }, (res, body) => {
+    if (res.status !== 200 && res.status !== 503) return `status ${res.status}`;
+    return /^\{"ok":(true|false)\}$/.test(body.trim()) ? null : `cuerpo ${body}`;
+  });
   await expect("api con cabeceras de seguridad", { path: "/api/nada" }, (res) => (res.headers.get("x-frame-options") === "DENY" && res.headers.get("cache-control") === "no-store" ? null : "faltan cabeceras"));
   await expect("fuente no publicada", { path: "/wrangler.jsonc" }, status(404));
   await expect("migraciones no publicadas", { path: "/supabase/migrations/20260803120000_initial_billing_and_activation.sql" }, status(404));

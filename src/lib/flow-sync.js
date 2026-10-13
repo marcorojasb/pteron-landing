@@ -279,5 +279,19 @@ export async function syncDueSubscriptions(services, now = new Date()) {
     { status: "expired" },
     { admin: true },
   );
-  return { sincronizadas: resultado.sincronizadas, fallidas: resultado.fallidas, checkoutsVencidos: vencidos.length };
+  // Una cortesía no tiene a quién preguntarle: vence sola al terminar su período. Si
+  // no, queda vigente para siempre y el índice de una suscripción vigente por cuenta
+  // impide comprar un plan. La licencia ya no se emitía; esto ordena la fila.
+  const cortesias = await supabase.update(
+    "subscriptions",
+    `provider=eq.comp&status=in.(trialing,active,past_due)&current_period_end=lt.${encodeURIComponent(now.toISOString())}&select=id`,
+    { status: "expired" },
+    { admin: true },
+  );
+  return {
+    sincronizadas: resultado.sincronizadas,
+    fallidas: resultado.fallidas,
+    checkoutsVencidos: vencidos.length,
+    cortesiasVencidas: cortesias.length,
+  };
 }
