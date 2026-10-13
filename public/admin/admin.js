@@ -460,6 +460,65 @@
     correosDePrueba(),
   ]);
 
+  // Lo que el gateway anota cuando Anthropic rechaza a la cuenta de pteron (src/routes/ai.js), y dónde se arregla.
+  const RECHAZOS = {
+    tope: ["se alcanzó el tope de gasto del workspace o de la organización", "Claude Console › el workspace › Spend limits: sube el tope o espera a que se renueve (o Settings › Billing › Spend limits, si el tope es de la organización)."],
+    tope_nivel: ["se alcanzó el gasto mensual máximo del nivel de uso de Anthropic", "Claude Console › Limits › Request tier increase sube el nivel; si no, el acceso vuelve el día 1 del mes siguiente a las 00:00 UTC."],
+    credito: ["sin crédito o con un problema de pago", "Claude Console › Billing: carga crédito o revisa el medio de pago."],
+    clave: ["Anthropic no aceptó la clave (inválida o revocada)", "Claude Console › el workspace › API keys: crea otra y cárgala como ANTHROPIC_API_KEY."],
+    permiso: ["la clave no tenía acceso al workspace o a la organización", "Claude Console › el workspace: revisa que la clave y su cuenta de servicio estén en él."],
+    modelo: ["el modelo del gateway no estaba disponible para la organización", "Claude Console: revisa que la organización tenga acceso al modelo, o cambia GATEWAY_MODEL_ID."],
+  };
+  const hace = (value) => {
+    const ms = Date.now() - Date.parse(value ?? "");
+    if (!Number.isFinite(ms)) return "en fecha desconocida";
+    const minutos = Math.max(0, Math.round(ms / 60_000));
+    if (minutos < 60) return minutos <= 1 ? "hace un minuto" : `hace ${minutos} minutos`;
+    const horas = Math.round(minutos / 60);
+    if (horas < 24) return horas === 1 ? "hace una hora" : `hace ${horas} horas`;
+    const dias = Math.round(horas / 24);
+    return dias === 1 ? "hace un día" : `hace ${dias} días`;
+  };
+  const noSePudoLeer = () => el("span", { class: "resultado resultado-na", text: "No se pudo leer" });
+
+  // La clave puede responder por el modelo y aun así cada petición rebotar en el tope de gasto: esto lo dice.
+  // Rojo sólo mientras no haya una petición aceptada después del último rechazo.
+  const rechazos = (value) => {
+    if (!value || typeof value.dias !== "number") return noSePudoLeer();
+    if (!value.ultimo) return result(true, `Sí, sin rechazos en ${value.dias} días`);
+    const [motivo, arreglo] = RECHAZOS[value.ultimo.motivo] || ["Anthropic rechazó a la cuenta de pteron", "Claude Console › el workspace › Spend limits, o Billing."];
+    const fecha = `${fmtDateTime(value.ultimo.cuando)}${value.ultimo.estado ? ` (HTTP ${value.ultimo.estado})` : ""}`;
+    if (value.ultimo_ok) {
+      return el("div", { class: "admin-detalle" }, [
+        result(true, `Sí: hubo peticiones aceptadas después del último rechazo, la más reciente ${hace(value.ultimo_ok)}`),
+        el("p", { class: "small", text: `Último rechazo: ${motivo}, ${fecha}.` }),
+      ]);
+    }
+    return el("div", { class: "admin-detalle" }, [
+      result(false, "", `No: ${motivo}, ${hace(value.ultimo.cuando)}, y ninguna petición funcionó después`),
+      el("p", { class: "small", text: `Último rechazo: ${fecha}. Los docentes ven «La IA incluida no está disponible ahora».` }),
+      el("p", { class: "small", text: `${arreglo} Si ya lo arreglaste, se apaga con la próxima petición que funcione.` }),
+    ]);
+  };
+
+  const usdEntero = new Intl.NumberFormat("es-CL", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+  const nCuentas = (n) => `${num.format(n)} cuenta${n === 1 ? "" : "s"}`;
+  // 1,5 × la cuota mensual de las cuentas que hoy usan la IA incluida, mínimo US$20 (LANZAR-BASIC.md, sección 3).
+  const topeSugerido = (value) => {
+    if (!value || typeof value.usd !== "number" || !Array.isArray(value.planes)) return noSePudoLeer();
+    const detalle = value.planes.map((plan) => el("li", {
+      text: `${plan.nombre}: ${nCuentas(plan.cuentas)}${plan.cortesias ? ` (${num.format(plan.cortesias)} de cortesía)` : ""}, ${plan.sin_tope ? "sin tope de IA" : `${usd(plan.unidades_mes)} al mes`}`,
+    }));
+    // Cuando 1,5 × las cuotas queda bajo el mínimo, el tope es el mínimo: se dice.
+    const esMinimo = Math.ceil((Number(value.unidades_mes) || 0) * 1.5 / UNITS_PER_USD) < value.minimo_usd;
+    return el("div", { class: "admin-detalle" }, [
+      el("strong", { text: `${usdEntero.format(value.usd)} al mes${esMinimo ? " (el mínimo)" : ""}` }),
+      detalle.length ? el("ul", { class: "admin-detalle-lista" }, detalle) : el("p", { class: "small", text: "Ninguna cuenta usa hoy la IA incluida." }),
+      el("p", { class: "small", text: `1,5 × ${usd(value.unidades_mes)} de cuotas, redondeado hacia arriba; nunca menos de ${usdEntero.format(value.minimo_usd)}. Se fija en Claude Console › el workspace › Spend limits.` }),
+      value.sin_tope ? result(false, "", `${nCuentas(value.sin_tope)} en un plan sin tope de IA: este cálculo no ${value.sin_tope === 1 ? "la" : "las"} cubre`) : null,
+    ]);
+  };
+
   const CHEQUEOS = [
     ["esencial", "Lo esencial: lo mismo que mira /api/health"],
     ["supabase", "Supabase responde con la clave del servidor"],
@@ -469,6 +528,8 @@
     ["modelo_con_precio", "El modelo del gateway tiene precio conocido"],
     ["anthropic", "La clave de Anthropic responde por ese modelo"],
     ["anthropic_url_oficial", "La IA incluida va a la API oficial de Anthropic"],
+    ["anthropic_rechazos", "Anthropic acepta las peticiones de la IA incluida (tope de gasto, crédito, clave)", rechazos],
+    ["anthropic_tope_sugerido", "Tope de gasto sugerido para el workspace de Anthropic, con las cuentas de hoy", topeSugerido],
     ["catalogo", "El catálogo de planes se puede leer"],
     ["venta", "Cada plan a la venta está completo y su plan de Flow coincide"],
     ["checkouts_atascados", "Compras sin confirmar con Flow hace más de 10 minutos (lo esperado es 0)", cuenta],

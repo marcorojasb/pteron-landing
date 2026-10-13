@@ -21,6 +21,9 @@ contador está en `LEGAL-PENDIENTE.md`.
   registrado (16.962 unidades, modelo `claude-haiku-5-5`).
 - Hecho: la clave de Resend del Worker está cargada y los `SELLER_*` (con `SELLER_REPRESENTATIVE`) están en
   `wrangler.jsonc`, con los datos de la declaración de inicio de actividades del SII (Patagua.dev SpA).
+- Hecho (Marco, 13 de octubre): el workspace de Anthropic tiene su tope de gasto mensual con alertas al 50 % y al
+  80 % (sección 3, paso 4). `/admin` › Salud muestra desde ese día los rechazos de Anthropic y el tope sugerido.
+  Falta confirmar en API keys que la clave cargada en el Worker sea del mismo workspace: si no, el tope no la cubre.
 - Datos del vendedor confirmados por Marco (domicilio y representante legal). Falta lo de `LEGAL-PENDIENTE.md` y
   publicar la app 0.8.0 (sección 7). La venta sigue cerrada.
 
@@ -176,7 +179,11 @@ y el dominio `patagua.dev` verificado ya existen.
 3. API keys › Create: vinculada a esa cuenta de servicio y limitada a ese único workspace. Una
    clave sin workspace fijo hace fallar cada petición.
 4. El workspace › Spend limits: tope mensual de 1,5 × (Basic × US$0,60 + Pro × US$3,00), mínimo
-   US$20, con alertas al 50 % y al 80 %. Es el techo duro si algo más falla.
+   US$20, con alertas al 50 % y al 80 %. Es el techo duro si algo más falla. `/admin` › Salud calcula
+   el tope sugerido con las cuentas que hoy usan la IA incluida (cortesías `tester` incluidas, con
+   su cuota) y avisa en rojo si Anthropic rechazó peticiones en los últimos 7 días por el tope, el
+   crédito o la clave y ninguna funcionó después, con dónde arreglarlo; la primera petición aceptada
+   tras el arreglo lo apaga. Revísalo al abrir la venta y cuando crezcan las cuentas.
 5. El workspace › Rate limits › Claude Haiku 5.5: la mitad de los de la organización.
 6. https://platform.claude.com/settings/capabilities: apaga la búsqueda web y la obtención web.
    pteron no las usa y el Worker ya las filtra; esto es una segunda barrera.
@@ -219,8 +226,9 @@ curl -sS -X POST https://pteron.patagua.dev/api/ai/v1/messages -H 'content-type:
 # 401 not_authenticated: la IA pide licencia. 503 si falta la clave de Anthropic.
 ```
 
-- `/admin` › Salud: todos los secretos presentes, Flow en producción, la firma k2 verificada y la clave
-  de Anthropic válida. Los planes de Flow se revisan sólo cuando están a la venta (sección 8).
+- `/admin` › Salud: todos los secretos presentes, Flow en producción, la firma k2 verificada, la clave
+  de Anthropic válida y «Anthropic acepta las peticiones» en Sí. Los planes de Flow se revisan sólo
+  cuando están a la venta (sección 8).
 - Cloudflare › Workers › `pteron-landing` › Settings › Triggers: el Cron `17 12 * * *` (UTC). Desde el
   primer día, `subscriptions.last_synced_at` avanza en las filas de Flow.
 

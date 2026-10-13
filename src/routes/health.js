@@ -1,6 +1,7 @@
 import { json, method, siteUrl } from "../lib/http.js";
 import { ESPERA_CONCILIACION } from "../lib/flow-sync.js";
 import { faltantesCorreo } from "../lib/correo.js";
+import { includedAiSubscription } from "../lib/gateway.js";
 import { verifyLicense } from "../lib/license.js";
 import { hasKnownPrice } from "../lib/units.js";
 
@@ -20,6 +21,16 @@ const SUJETO_DE_PRUEBA = "pteron-salud";
 const FLOW_PRODUCCION = "https://www.flow.cl/api";
 const ANTHROPIC_API = "https://api.anthropic.com";
 const ANTHROPIC_VERSION = "2023-06-01";
+// Los rechazos de la cuenta de Anthropic que se miran hacia atrás.
+const DIAS_RECHAZOS = 7;
+// 10.000.000 unidades = US$1 (lib/units.js).
+const UNIDADES_POR_USD = 10_000_000;
+// El tope de gasto del workspace de Anthropic (LANZAR-BASIC.md, sección 3):
+// 1,5 veces la cuota mensual de las cuentas con IA incluida, nunca bajo US$20.
+const TOPE_MINIMO_USD = 20;
+// Supabase entrega como máximo 1.000 filas por consulta: se pide por páginas.
+const PAGINA = 1000;
+const PAGINAS_MAXIMAS = 20;
 
 // Por nombre, como los lista el README.
 const SECRETOS = [
@@ -222,6 +233,119 @@ async function checkoutsAtascados(services) {
   }
 }
 
+/**
+ * El rechazo más reciente de la cuenta de pteron en Anthropic (el gateway lo
+ * anota como `provider_paused`, con su motivo y el estado HTTP): el tope de
+ * gasto, el crédito o la clave. La clave puede responder por el modelo y aun
+ * así cada petición rebotar en el tope, así que sólo esto lo muestra. Se leen
+ * tres campos de event_metadata, nunca la fila entera. Si hubo un rechazo, se
+ * busca además la última petición aceptada (`ok`) después de él: `ultimo_ok`
+ * dice que ya se arregló. `ultimo` null = ninguno en la ventana; todo null si
+ * no se pudo leer.
+ */
+async function rechazosDeAnthropic(services) {
+  try {
+    const desde = new Date(Date.now() - DIAS_RECHAZOS * 86_400_000).toISOString();
+    const rows = await services.supabase.select(
+      "ai_requests",
+      `event_metadata->>status=eq.provider_paused&finished_at=gte.${encodeURIComponent(desde)}` +
+        "&select=finished_at,motivo:event_metadata->>motivo,estado:event_metadata->>upstream_status&order=finished_at.desc&limit=1",
+      { admin: true },
+    );
+    if (!Array.isArray(rows)) return null;
+    const [fila] = rows;
+    if (!fila) return { dias: DIAS_RECHAZOS, ultimo: null, ultimo_ok: null };
+    const estado = Number(fila.estado);
+    let ultimoOk = null;
+    if (fila.finished_at) {
+      const aceptadas = await services.supabase.select(
+        "ai_requests",
+        `event_metadata->>status=eq.ok&finished_at=gt.${encodeURIComponent(fila.finished_at)}&select=finished_at&order=finished_at.desc&limit=1`,
+        { admin: true },
+      );
+      if (!Array.isArray(aceptadas)) return null;
+      ultimoOk = aceptadas[0]?.finished_at ?? null;
+    }
+    return {
+      dias: DIAS_RECHAZOS,
+      ultimo: { cuando: fila.finished_at ?? null, motivo: texto(fila.motivo) || null, estado: Number.isInteger(estado) ? estado : null },
+      ultimo_ok: ultimoOk,
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function suscripcionesVigentes(services) {
+  const filas = [];
+  for (let pagina = 0; pagina < PAGINAS_MAXIMAS; pagina++) {
+    const lote = await services.supabase.select(
+      "subscriptions",
+      "status=in.(trialing,active,past_due)" +
+        "&select=plan_id,provider,status,current_period_end,cancel_at_period_end,plan_catalog(display_name,ai_units_limit,license_plan)" +
+        `&order=id.asc&limit=${PAGINA}&offset=${pagina * PAGINA}`,
+      { admin: true },
+    );
+    if (!Array.isArray(lote)) throw new Error("subscriptions ilegible");
+    filas.push(...lote);
+    if (lote.length < PAGINA) return filas;
+  }
+  // Más filas de las que se leyeron: un tope calculado con una parte sería bajo.
+  throw new Error("demasiadas suscripciones");
+}
+
+/**
+ * Tope mensual sugerido para el workspace de Anthropic, con las cuentas que hoy
+ * pueden usar la IA incluida. La regla es la del gateway (includedAiSubscription):
+ * suscripción trialing, active o past_due, de un plan que emite licencia, con
+ * acceso vigente (lo pagado más 72 h de gracia en Flow, sin gracia si canceló al
+ * cierre; una cortesía `comp`, hasta su fin). Las cortesías cuentan con la cuota
+ * de su plan (tester), y una prueba con la cuota mensual del plan, no la de
+ * prueba: pasa a pagar dentro del mismo mes. Una cuenta por fila: la base admite
+ * una sola suscripción vigente por cuenta. Un plan sin tope (ai_units_limit
+ * null) no tiene techo que sumar: se cuenta aparte en `sin_tope`, en total y
+ * por plan. Sólo números, ningún dato de las cuentas; null si no se pudo leer.
+ */
+async function topeSugerido(services) {
+  let filas;
+  try {
+    filas = await suscripcionesVigentes(services);
+  } catch {
+    return null;
+  }
+  const ahora = new Date();
+  const porPlan = new Map();
+  let unidades = 0;
+  let sinTope = 0;
+  for (const fila of filas) {
+    if (!includedAiSubscription(fila, ahora)) continue;
+    const limite = fila.plan_catalog.ai_units_limit;
+    const plan = porPlan.get(fila.plan_id) ?? { id: fila.plan_id, nombre: fila.plan_catalog.display_name || fila.plan_id, cuentas: 0, cortesias: 0, unidades_mes: 0, sin_tope: 0 };
+    plan.cuentas += 1;
+    if (fila.provider === "comp") plan.cortesias += 1;
+    if (limite === null || limite === undefined) {
+      plan.sin_tope += 1;
+      sinTope += 1;
+    } else {
+      // Como en el gateway, una cuota inválida cuenta como 0.
+      const cuota = Number.isInteger(limite) && limite > 0 ? limite : 0;
+      plan.unidades_mes += cuota;
+      unidades += cuota;
+    }
+    porPlan.set(fila.plan_id, plan);
+  }
+  // 1,5 × unidades / 10.000.000, redondeado hacia arriba, en enteros para no arrastrar decimales.
+  const usd = Math.max(TOPE_MINIMO_USD, Math.ceil((unidades * 3) / (UNIDADES_POR_USD * 2)));
+  return {
+    usd,
+    minimo_usd: TOPE_MINIMO_USD,
+    factor: 1.5,
+    unidades_mes: unidades,
+    sin_tope: sinTope,
+    planes: [...porPlan.values()].sort((a, b) => b.unidades_mes - a.unidades_mes || a.id.localeCompare(b.id)),
+  };
+}
+
 function correosAlCliente(env) {
   const faltan = faltantesCorreo(env);
   return { configurado: faltan.length === 0, faltan };
@@ -234,7 +358,14 @@ function correosAlCliente(env) {
  */
 export async function salud({ request, env, services }) {
   const callbackUrl = `${siteUrl(env, request)}/api/billing/flow-callback`;
-  const [base, catalogo, anthropic, atascados] = await Promise.all([esencial(env, services), leerCatalogo(services), claveDeAnthropicValida(env), checkoutsAtascados(services)]);
+  const [base, catalogo, anthropic, atascados, rechazos, tope] = await Promise.all([
+    esencial(env, services),
+    leerCatalogo(services),
+    claveDeAnthropicValida(env),
+    checkoutsAtascados(services),
+    rechazosDeAnthropic(services),
+    topeSugerido(services),
+  ]);
   const planes = await Promise.all((catalogo || []).map(async (plan) => {
     const falta = faltaParaVender(plan);
     const pagado = !falta.includes("precio");
@@ -261,6 +392,9 @@ export async function salud({ request, env, services }) {
     modelo_con_precio: hasKnownPrice(modeloDelGateway(env)),
     anthropic,
     anthropic_url_oficial: anthropicOficial(env),
+    // No es esencial: avisa que Anthropic rechaza las peticiones aunque la clave responda.
+    anthropic_rechazos: rechazos,
+    anthropic_tope_sugerido: tope,
     ia_incluida_pausada: base.ajustes.pausada,
     catalogo: catalogo !== null,
     checkouts_atascados: atascados,

@@ -461,11 +461,14 @@ const catalogo = [
 ];
 const flowPlan = (planId, overrides = {}) => ({ planId, currency: "CLP", amount: 2990, interval: 3, interval_count: 1, status: 1, urlCallback: "https://pteron.test/api/billing/flow-callback", ...overrides });
 
-function saludNetwork({ anthropicStatus = 200, basicPlan = flowPlan("pteron-basic-2990-mensual"), settings = [{ value: false }], atascados = { body: [] } } = {}) {
+function saludNetwork({ anthropicStatus = 200, basicPlan = flowPlan("pteron-basic-2990-mensual"), settings = [{ value: false }], atascados = { body: [] }, rechazos = { body: [] }, aceptadas = { body: [] }, vigentes = { body: [] } } = {}) {
   return fakeNetwork([
     meRoute(admin),
     { match: matches.supabase("app_settings"), respond: { body: settings } },
     { match: matches.supabase("billing_checkout_intents"), respond: atascados },
+    { match: (url, m) => matches.supabase("ai_requests")(url, m) && new URL(url).searchParams.get("event_metadata->>status") === "eq.ok", respond: aceptadas },
+    { match: matches.supabase("ai_requests"), respond: rechazos },
+    { match: matches.supabase("subscriptions"), respond: vigentes },
     { match: matches.supabase("plan_catalog"), respond: { body: catalogo } },
     { match: (url) => url.startsWith("https://api.anthropic.com/v1/models/"), respond: { status: anthropicStatus, body: { id: "claude-haiku-5-5", type: "model" } } },
     { match: matches.flow("/plans/get"), respond: (call) => {
@@ -572,6 +575,170 @@ test("salud dice si los correos al cliente están configurados o exactamente qu�
       assert.equal(JSON.stringify(data).includes("re_secreta_de_prueba") || JSON.stringify(data).includes("Vendedor Uno"), false, "sólo nombres, nunca valores");
     });
   }
+});
+
+test("salud muestra el último rechazo de la cuenta de Anthropic de los últimos 7 días, sin leer más que tres campos", async () => {
+  const { saludEnv, services } = saludFixture();
+  const cuando = new Date(Date.now() - 2 * 3_600_000).toISOString().replace("Z", "+00:00");
+  const network = saludNetwork({ rechazos: { body: [{ finished_at: cuando, motivo: "tope", estado: "400" }] } });
+  await withFetch(network.fetch, async () => {
+    const data = await (await salud(saludEnv, services)).json();
+    assert.deepEqual(data.anthropic_rechazos, { dias: 7, ultimo: { cuando, motivo: "tope", estado: 400 }, ultimo_ok: null });
+    assert.equal(data.anthropic, true, "la clave responde por el modelo aunque el tope rechace cada petición");
+    assert.equal(data.esencial, true, "no es esencial: es un aviso");
+  });
+  const [pausadas, aceptadas] = network.calls.filter((entry) => entry.url.includes("/rest/v1/ai_requests")).map((entry) => {
+    assert.equal(entry.method, "GET");
+    return new URL(entry.url).searchParams;
+  });
+  assert.equal(pausadas.get("event_metadata->>status"), "eq.provider_paused");
+  assert.equal(pausadas.get("select"), "finished_at,motivo:event_metadata->>motivo,estado:event_metadata->>upstream_status");
+  assert.equal(pausadas.get("order"), "finished_at.desc");
+  assert.equal(pausadas.get("limit"), "1");
+  const desde = Date.parse(pausadas.get("finished_at").replace(/^gte\./, ""));
+  assert.ok(Math.abs(Date.now() - 7 * 86_400_000 - desde) < 60_000, "la ventana es de 7 días");
+  // Después busca una petición aceptada posterior al rechazo, con un solo campo (el + de la zona horaria llega entero).
+  assert.equal(aceptadas.get("event_metadata->>status"), "eq.ok");
+  assert.equal(aceptadas.get("finished_at"), `gt.${cuando}`);
+  assert.equal(aceptadas.get("select"), "finished_at");
+  assert.equal(aceptadas.get("order"), "finished_at.desc");
+  assert.equal(aceptadas.get("limit"), "1");
+});
+
+test("salud da el rechazo de Anthropic por superado si una petición funcionó después, y null si no pudo leerlo", async () => {
+  const { saludEnv, services } = saludFixture();
+  const cuando = new Date(Date.now() - 3 * 3_600_000).toISOString();
+  const despues = new Date(Date.now() - 10 * 60_000).toISOString();
+  const rechazos = { body: [{ finished_at: cuando, motivo: "tope", estado: "400" }] };
+  await withFetch(saludNetwork({ rechazos, aceptadas: { body: [{ finished_at: despues }] } }).fetch, async () => {
+    const data = await (await salud(saludEnv, services)).json();
+    assert.deepEqual(data.anthropic_rechazos, { dias: 7, ultimo: { cuando, motivo: "tope", estado: 400 }, ultimo_ok: despues });
+  });
+  await withFetch(saludNetwork({ rechazos, aceptadas: { status: 500, body: { message: "caído" } } }).fetch, async () => {
+    const res = await salud(saludEnv, services);
+    assert.equal(res.status, 200);
+    const data = await res.json();
+    assert.equal(data.anthropic_rechazos, null, "sin saber si se arregló, no se afirma nada");
+    assert.equal(data.esencial, true);
+  });
+});
+
+test("salud dice ningún rechazo de Anthropic con ultimo null, y null si no los pudo leer, sin romper lo demás", async () => {
+  const { saludEnv, services } = saludFixture();
+  const network = saludNetwork();
+  await withFetch(network.fetch, async () => {
+    const data = await (await salud(saludEnv, services)).json();
+    assert.deepEqual(data.anthropic_rechazos, { dias: 7, ultimo: null, ultimo_ok: null });
+  });
+  assert.equal(network.calls.filter((entry) => entry.url.includes("/rest/v1/ai_requests")).length, 1, "sin rechazo no busca aceptadas");
+  await withFetch(saludNetwork({ rechazos: { status: 500, body: { message: "caído" } }, vigentes: { status: 500, body: { message: "caído" } } }).fetch, async () => {
+    const res = await salud(saludEnv, services);
+    assert.equal(res.status, 200);
+    const data = await res.json();
+    assert.equal(data.anthropic_rechazos, null);
+    assert.equal(data.anthropic_tope_sugerido, null);
+    assert.equal(data.esencial, true);
+    assert.equal(data.venta, true);
+  });
+});
+
+const HORA = 3_600_000;
+const PLANES = {
+  basic: { display_name: "Basic", ai_units_limit: 6_000_000, license_plan: "basic" },
+  pro: { display_name: "Pro", ai_units_limit: 30_000_000, license_plan: "pro" },
+  tester: { display_name: "Tester", ai_units_limit: 6_000_000, license_plan: "basic" },
+  free: { display_name: "Gratis", ai_units_limit: null, license_plan: null },
+};
+function vigente(plan, overrides = {}) {
+  return {
+    plan_id: plan,
+    provider: "flow",
+    status: "active",
+    current_period_end: new Date(Date.now() + 20 * 24 * HORA).toISOString(),
+    cancel_at_period_end: false,
+    plan_catalog: PLANES[plan],
+    ...overrides,
+  };
+}
+const repetir = (n, row) => Array.from({ length: n }, () => row);
+
+test("salud sugiere el tope de Anthropic: mínimo US$20 sin cuentas o con pocas", async () => {
+  const { saludEnv, services } = saludFixture();
+  await withFetch(saludNetwork().fetch, async () => {
+    const data = await (await salud(saludEnv, services)).json();
+    assert.deepEqual(data.anthropic_tope_sugerido, { usd: 20, minimo_usd: 20, factor: 1.5, unidades_mes: 0, sin_tope: 0, planes: [] });
+  });
+  // 10 Basic y 2 Pro: 1,5 × (6 + 6) = US$18, bajo el mínimo.
+  await withFetch(saludNetwork({ vigentes: { body: [...repetir(10, vigente("basic")), ...repetir(2, vigente("pro"))] } }).fetch, async () => {
+    const tope = (await (await salud(saludEnv, services)).json()).anthropic_tope_sugerido;
+    assert.equal(tope.unidades_mes, 120_000_000);
+    assert.equal(tope.usd, 20);
+  });
+});
+
+test("salud sugiere el tope de Anthropic con la regla del gateway: cortesías vigentes, prueba, gracia de Flow, y nada más", async () => {
+  const { saludEnv, services } = saludFixture();
+  const antes = (horas) => new Date(Date.now() - horas * HORA).toISOString();
+  const cuentan = [
+    ...repetir(30, vigente("basic")),
+    ...repetir(5, vigente("pro")),
+    vigente("basic", { status: "trialing" }),
+    vigente("basic", { status: "past_due", current_period_end: antes(48) }),
+    vigente("tester", { provider: "comp" }),
+    vigente("tester", { provider: "comp" }),
+    vigente("pro", { provider: "comp" }),
+  ];
+  const noCuentan = [
+    vigente("tester", { provider: "comp", current_period_end: antes(1) }),
+    vigente("basic", { current_period_end: antes(73) }),
+    vigente("basic", { current_period_end: antes(1), cancel_at_period_end: true }),
+    vigente("basic", { status: "canceled" }),
+    vigente("basic", { status: "paused" }),
+    vigente("basic", { current_period_end: null }),
+    vigente("free"),
+  ];
+  const network = saludNetwork({ vigentes: { body: [...cuentan, ...noCuentan] } });
+  await withFetch(network.fetch, async () => {
+    const data = await (await salud(saludEnv, services)).json();
+    // Basic 32 × 6 M + Pro 6 × 30 M + Tester 2 × 6 M = 384 M unidades = US$38,4; × 1,5 = 57,6 → US$58.
+    assert.deepEqual(data.anthropic_tope_sugerido, {
+      usd: 58,
+      minimo_usd: 20,
+      factor: 1.5,
+      unidades_mes: 384_000_000,
+      sin_tope: 0,
+      planes: [
+        { id: "basic", nombre: "Basic", cuentas: 32, cortesias: 0, unidades_mes: 192_000_000, sin_tope: 0 },
+        { id: "pro", nombre: "Pro", cuentas: 6, cortesias: 1, unidades_mes: 180_000_000, sin_tope: 0 },
+        { id: "tester", nombre: "Tester", cuentas: 2, cortesias: 2, unidades_mes: 12_000_000, sin_tope: 0 },
+      ],
+    });
+  });
+  const call = network.calls.find((entry) => entry.url.includes("/rest/v1/subscriptions"));
+  const url = new URL(call.url);
+  assert.equal(url.searchParams.get("status"), "in.(trialing,active,past_due)");
+  assert.equal(url.searchParams.get("select"), "plan_id,provider,status,current_period_end,cancel_at_period_end,plan_catalog(display_name,ai_units_limit,license_plan)");
+  assert.equal(url.searchParams.get("select").includes("user_id"), false, "sólo cuenta: ningún dato de las cuentas");
+});
+
+test("salud redondea el tope hacia arriba, cuenta aparte las cuentas de un plan sin tope de IA y lee por páginas", async () => {
+  const { saludEnv, services } = saludFixture();
+  const sinCuota = { display_name: "Ilimitado", ai_units_limit: null, license_plan: "pro" };
+  // 134 Basic = 804 M unidades = US$80,4; × 1,5 = 120,6 → US$121. La primera página trae 1.000 filas.
+  const filas = [...repetir(134, vigente("basic")), ...repetir(866, vigente("basic", { status: "canceled" })), vigente("pro", { plan_id: "ilimitado", plan_catalog: sinCuota })];
+  const network = saludNetwork({ vigentes: (call) => {
+    const offset = Number(new URL(call.url).searchParams.get("offset"));
+    return { body: filas.slice(offset, offset + 1000) };
+  } });
+  await withFetch(network.fetch, async () => {
+    const tope = (await (await salud(saludEnv, services)).json()).anthropic_tope_sugerido;
+    assert.equal(tope.unidades_mes, 804_000_000);
+    assert.equal(tope.usd, 121);
+    assert.equal(tope.sin_tope, 1);
+    assert.deepEqual(tope.planes.find((plan) => plan.id === "ilimitado"), { id: "ilimitado", nombre: "Ilimitado", cuentas: 1, cortesias: 0, unidades_mes: 0, sin_tope: 1 });
+  });
+  const paginas = network.calls.filter((entry) => entry.url.includes("/rest/v1/subscriptions")).map((entry) => new URL(entry.url).searchParams.get("offset"));
+  assert.deepEqual(paginas, ["0", "1000"]);
 });
 
 test("salud sin clave de Anthropic ni modelo con precio no llama a Anthropic", async () => {

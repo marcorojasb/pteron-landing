@@ -121,6 +121,11 @@
 .admin-prueba-salida p{margin:0}
 .admin-prueba-lista{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:6px}
 .admin-prueba-error{color:var(--error)}
+/* Salud: un resultado con su detalle debajo (rechazos de Anthropic y tope sugerido) */
+.admin-detalle{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.admin-detalle p{margin:0;color:var(--grafito)}
+.admin-detalle .resultado{white-space:normal;text-align:left}
+.admin-detalle-lista{margin:0;padding-left:1.2em;font-size:var(--t-chico)}
 
 /* Consumo: el mes y sus indicadores */
 .admin-period{display:grid;grid-template-columns:minmax(240px,.8fr) minmax(0,2.2fr);gap:16px;align-items:stretch}
