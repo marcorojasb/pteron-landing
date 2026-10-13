@@ -235,7 +235,9 @@ function plan() {
     const base = kit(carpeta);
     if (!existsSync(base)) continue;
     for (const rel of listar(base)) {
-      const descripcion = DESCRIPCIONES[`${carpeta}/${rel}`] || "";
+      const descripcion = DESCRIPCIONES[`${carpeta}/${rel}`];
+      // Cada archivo del kit dice para qué es: uno nuevo sin descripción detiene el armado en vez de entrar mudo.
+      if (!descripcion) throw new Error(`kit/descripciones.json no describe ${carpeta}/${rel}`);
       archivos.push([`${carpeta === "app" ? "app" : carpeta}/${rel}`, path.join(base, rel), publico, descripcion]);
     }
   }

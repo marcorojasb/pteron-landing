@@ -7,6 +7,8 @@
   "app/capturas/home-oscuro.png": "La Home hoy y con el lenguaje, tema oscuro.",
   "app/capturas/conversacion-claro.png": "Una conversación con su material, hoy y con el lenguaje, tema claro.",
   "app/capturas/conversacion-oscuro.png": "Una conversación con su material, hoy y con el lenguaje, tema oscuro.",
+  "app/capturas/preparacion-claro.png": "La preparación inicial hoy y con el lenguaje, con el foco y un aviso, tema claro.",
+  "app/capturas/preparacion-oscuro.png": "La preparación inicial hoy y con el lenguaje, con el foco y un aviso, tema oscuro.",
   "app/capturas/carga.png": "La pantalla de carga con el lenguaje, en claro y en oscuro.",
   "app/capturas/icono.png": "El icono de la app hoy y con el lenguaje, y a 32 y 16 px."
 }
