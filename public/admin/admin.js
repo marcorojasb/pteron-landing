@@ -419,12 +419,46 @@
     ? result(value === 0, "0", String(value))
     : el("span", { class: "resultado resultado-na", text: "No se pudo leer" }));
 
+  const TIPOS_DE_CORREO = { purchase: "Compra", trial_ending: "Fin de prueba", cancellation: "Cancelación" };
+
+  // Los tres correos al cliente con datos de ejemplo, sólo al correo de quien administra. El resultado queda en la
+  // misma celda, en texto y sin recargar la tabla; el botón se desactiva mientras envía.
+  function correosDePrueba() {
+    const salida = el("div", { class: "admin-prueba-salida small", role: "status" });
+    const boton = el("button", { class: "button button-small button-outline", type: "button", text: "Enviarme los correos de prueba" });
+    boton.addEventListener("click", async () => {
+      boton.disabled = true;
+      salida.replaceChildren(el("span", { class: "muted", text: "Enviando los tres correos…" }));
+      try {
+        const data = await api("/api/admin/correo-prueba", { method: "POST" });
+        const lineas = (Array.isArray(data.resultados) ? data.resultados : []).map((fila) => el("li", {}, [
+          el("span", { text: `${TIPOS_DE_CORREO[fila.tipo] || fila.tipo}: ` }),
+          result(fila.estado === "enviado", "enviado", `no se envió (${fila.codigo || "error"})`),
+        ]));
+        salida.replaceChildren(
+          el("p", { text: data.ok ? `Los tres correos salieron a ${data.destinatario}. Revisa la bandeja y la carpeta de spam.` : "Al menos un correo no salió. Revisa el código de cada uno." }),
+          el("ul", { class: "admin-prueba-lista" }, lineas),
+        );
+      } catch (error) {
+        // El mensaje del Worker ya dice qué falta (409) o cuánto esperar (429).
+        salida.replaceChildren(el("p", { class: "admin-prueba-error", text: error.message || "No se pudo enviar." }));
+        if (error.status === 401) fail(error);
+      } finally {
+        boton.disabled = false;
+      }
+    });
+    return el("div", { class: "admin-prueba" }, [boton, salida]);
+  }
+
   // Los correos al cliente no son esenciales: apagados, la venta sigue. Se dice qué nombres faltan para encenderlos.
-  const correos = (value) => (value && typeof value.configurado === "boolean"
-    ? value.configurado
-      ? result(true, "Configurados")
-      : el("span", { class: "resultado resultado-na", text: `Apagados: faltan ${(Array.isArray(value.faltan) ? value.faltan : []).join(", ")}` })
-    : el("span", { class: "resultado resultado-na", text: "No se pudo leer" }));
+  const correos = (value) => el("div", { class: "admin-correos" }, [
+    value && typeof value.configurado === "boolean"
+      ? value.configurado
+        ? result(true, "Configurados")
+        : el("span", { class: "resultado resultado-na", text: `Apagados: faltan ${(Array.isArray(value.faltan) ? value.faltan : []).join(", ")}` })
+      : el("span", { class: "resultado resultado-na", text: "No se pudo leer" }),
+    correosDePrueba(),
+  ]);
 
   const CHEQUEOS = [
     ["esencial", "Lo esencial: lo mismo que mira /api/health"],

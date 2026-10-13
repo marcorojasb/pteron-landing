@@ -33,6 +33,15 @@ test("cada página trae la esquina, el colofón y el índice al día (node scrip
   execFileSync(process.execPath, [path.join(root, "scripts/sitio.mjs"), "--revisar"], { stdio: "pipe" });
 });
 
+test("el pie legal de todas las páginas nombra al vendedor y su RUT, con los enlaces legales", () => {
+  for (const page of ALL) {
+    const legal = /<div class="colofon-legal">([\s\S]*?)<\/div>/.exec(read(page))[1];
+    assert.match(legal, /© <span data-year>2026<\/span> Patagua\.dev SpA · RUT 78\.418\.149-9/, `${page}: vendedor y RUT`);
+    assert.doesNotMatch(legal, /pteron · Patagua/, `${page}: sin la línea anterior`);
+    assert.ok(legal.includes('href="/privacidad"') && legal.includes('href="/terminos"'), `${page}: enlaces legales`);
+  }
+});
+
 test("el índice y el colofón marcan la página actual, y sólo esa", () => {
   const cases = [["index.html", "/"], ["planes/index.html", "/planes"], ["descargar/index.html", "/descargar"], ["docs/index.html", "/docs"], ["cuenta/index.html", "/cuenta"]];
   for (const [page, href] of cases) {

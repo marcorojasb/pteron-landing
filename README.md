@@ -314,8 +314,14 @@ Resend recuerda la clave sólo 24 horas. Enviar nunca cambia el resultado del co
 
 `RESEND_API_KEY` es una clave de Resend distinta de la del SMTP de Supabase Auth
 (que envía el enlace de acceso): permiso de envío, sólo el dominio `patagua.dev`.
-`/admin` › Salud muestra «Correos al cliente», que no bloquea. Ver `LANZAR-BASIC.md`,
-sección 1b.
+`/admin` › Salud muestra «Correos al cliente», que no bloquea, con el botón
+«Enviarme los correos de prueba» (`POST /api/admin/correo-prueba`): manda los tres
+correos reales con datos de ejemplo (Basic con prueba, aviso de fin de prueba y
+cancelación), con asunto «[Prueba] …», sólo al correo de quien administra, con la
+configuración y la clave del Worker. Si falta algo no envía nada y dice qué nombres
+faltan. No lee ni escribe en la base (ni `billing_events` ni suscripciones) y usa
+una `Idempotency-Key` nueva en cada envío. Admite una prueba cada 60 segundos por
+administrador (en la memoria del Worker). Ver `LANZAR-BASIC.md`, sección 1b.
 
 ## Scripts de operación
 
@@ -372,7 +378,8 @@ texto puesta en el panel de Cloudflare se borra en el siguiente despliegue.
 - `EMAIL_FROM` y `SELLER_NAME`, `SELLER_RUT`, `SELLER_ADDRESS`, `SELLER_EMAIL`
   (más `SELLER_REPRESENTATIVE`, opcional: el representante legal si vende una
   persona jurídica): remitente y datos del vendedor de los correos (ver
-  «Correos»). Los `SELLER_*` quedan vacíos hasta que los fije el abogado.
+  «Correos»). Los `SELLER_*` llevan los datos de Patagua.dev SpA según su declaración de inicio de
+  actividades ante el SII (ver `LEGAL-PENDIENTE.md`, punto 1).
 
 Los secretos se cargan con `npx wrangler secret put <NOMBRE>` o desde el panel
 del Worker, nunca en el repositorio ni en la interfaz del navegador:

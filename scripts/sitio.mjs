@@ -86,7 +86,7 @@ function colofon(route, version) {
         </div>
       </div>
       <div class="colofon-legal">
-        <span>© <span data-year>2026</span> pteron · Patagua</span>
+        <span>© <span data-year>2026</span> Patagua.dev SpA · RUT 78.418.149-9</span>
         <span>${PIE.map(([href, name]) => `<a href="${href}"${current(route, href)}>${name}</a>`).join(" · ")}</span>
       </div>
     </div>

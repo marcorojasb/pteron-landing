@@ -10,16 +10,19 @@ contador está en `LEGAL-PENDIENTE.md`.
 
 ## Estado al 13 de octubre de 2026
 
-- Verificado: el Worker está desplegado desde `main`, con todos sus secretos cargados salvo `RESEND_API_KEY` (los
-  correos al cliente están apagados hasta cargarla, ver 1b).
+- Verificado: el Worker está desplegado desde `main`, con todos sus secretos cargados, incluido
+  `RESEND_API_KEY`. Los correos al cliente salen cuando se despliegue el cambio con los `SELLER_*` (ver 1b); la
+  producción actual los tiene vacíos y por eso aún los omite.
 - `supabase/esquema.sql` está aplicado y `/api/health` responde `{"ok":true}` (en verde).
 - Supabase Auth tiene Site URL `https://pteron.patagua.dev/cuenta`, Redirect URLs y SMTP propio por Resend desde
   `no-reply@patagua.dev`, con su propia clave de Resend; el dominio `patagua.dev` está verificado en Resend. Los
   correos de acceso usan las plantillas en español de `supabase/correos/` (aplicadas con `supabase-auth.mjs`).
 - Probado con la cortesía `tester` propia: un pedido real a la IA incluida funcionó de punta a punta y quedó
   registrado (16.962 unidades, modelo `claude-haiku-5-5`).
-- Falta: la clave de Resend del Worker, los datos del vendedor (`SELLER_*`, y `SELLER_REPRESENTATIVE` si vende una
-  persona jurídica) y lo de `LEGAL-PENDIENTE.md`. Publicar la app 0.8.0 (sección 7). La venta sigue cerrada.
+- Hecho: la clave de Resend del Worker está cargada y los `SELLER_*` (con `SELLER_REPRESENTATIVE`) están en
+  `wrangler.jsonc`, con los datos de la declaración de inicio de actividades del SII (Patagua.dev SpA).
+- Datos del vendedor confirmados por Marco (domicilio y representante legal). Falta lo de `LEGAL-PENDIENTE.md` y
+  publicar la app 0.8.0 (sección 7). La venta sigue cerrada.
 
 Los pasos de abajo son genéricos, para un proyecto nuevo o para rehacer algo; lo ya hecho se salta.
 
@@ -93,13 +96,13 @@ Resend envía dos cosas: el enlace de acceso (lo manda Supabase Auth con su prop
 de compra, fin de prueba y cancelación (los manda el Worker, `src/lib/correo.js`). Son claves distintas. La cuenta
 y el dominio `patagua.dev` verificado ya existen.
 
-1. Resend › API Keys › Create: permiso **Sending access**, sólo el dominio `patagua.dev`. Cárgala como secreto
+1. (Hecho) Resend › API Keys › Create: permiso **Sending access**, sólo el dominio `patagua.dev`. Cárgala como secreto
    del Worker: `npx wrangler secret put RESEND_API_KEY` (tipo **Secret**).
 2. El plan gratis de Resend da unos 3.000 correos al mes y 100 al día (confirma en resend.com/pricing). Los
    enlaces de acceso y los correos de compra comparten ese tope: si se acerca, pasa a un plan de pago.
-3. Llena en `wrangler.jsonc` `SELLER_NAME`, `SELLER_RUT`, `SELLER_ADDRESS` y `SELLER_EMAIL` con lo que fije el
-   abogado (`LEGAL-PENDIENTE.md`, punto 1) y, si vende una persona jurídica, `SELLER_REPRESENTATIVE` (opcional:
-   su representante legal), y despliega. Sin la clave o sin cualquiera de los cuatro no sale
+3. (Llenado; falta desplegar) `wrangler.jsonc` ya tiene `SELLER_NAME`, `SELLER_RUT`, `SELLER_ADDRESS`,
+   `SELLER_EMAIL` y `SELLER_REPRESENTATIVE` (opcional: el representante legal de una persona jurídica) con los
+   datos de la declaración del SII (`LEGAL-PENDIENTE.md`, punto 1); confirma el domicilio y el representante, y despliega. Sin la clave o sin cualquiera de los cuatro no sale
    ningún correo del Worker y cada intento queda como evento `<tipo>_email_skipped`: se configura **antes**
    de abrir la venta, porque esas suscripciones no recibirían después ese correo.
 4. Scripts (en `scripts/`; sirven desde una sesión de Claude o desde tu equipo). Los tokens se leen sólo del
@@ -130,7 +133,10 @@ y el dominio `patagua.dev` verificado ya existen.
    > `--verificar`. No imprimas ningún token, no uses `--smtp` sin preguntarme, no hagas commit ni despliegues. Al final reporta qué cambió,
    > qué ya estaba bien y qué falló.
 
-6. Comprueba: `/admin` › Salud, ítem «Correos al cliente» (no bloquea; dice qué falta), y entra a `/cuenta` con
+6. Comprueba: `/admin` › Salud, ítem «Correos al cliente» (no bloquea; dice qué falta) y su botón «Enviarme los
+   correos de prueba», que manda a tu correo de administrador los tres correos al cliente con datos de ejemplo
+   (asunto «[Prueba] …»; una vez por minuto, sin compra ni escrituras en la base): revisa que lleguen, de quién
+   y en qué carpeta. Luego entra a `/cuenta` con
    un correo externo a tu dominio: el enlace debe llegar en español y no a spam. El primer correo de compra se
    ve en la primera compra real (sección 8).
 

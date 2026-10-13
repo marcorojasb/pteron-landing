@@ -1,5 +1,6 @@
 import { HttpError } from "./http.js";
 import { componerCorreo, documentoTerminos } from "./correo-textos.js";
+import { TERMS_VERSION } from "./terms.js";
 
 /**
  * Correos al cliente por la API HTTP de Resend. Apagados hasta que todo esté
@@ -20,6 +21,10 @@ import { componerCorreo, documentoTerminos } from "./correo-textos.js";
  *   Ley 19.496), cuando se anota la suscripción.
  * - trial_ending: aviso a quien termina su prueba en menos de 48 horas.
  * - cancellation: confirmación de «Cancelar renovación».
+ *
+ * `enviarCorreosDePrueba` manda los tres, con datos de ejemplo y un asunto con
+ * «[Prueba] », sólo a quien administra, para ver el envío de punta a punta sin
+ * una compra: no toca la base ni los eventos de los correos reales.
  */
 
 const RESEND_URL = "https://api.resend.com/emails";
@@ -43,6 +48,19 @@ const SITIO = "https://pteron.patagua.dev";
 const eventoDe = (tipo) => `${tipo}_email`;
 const idDeEvento = (tipo, suscripcion) => `email:${tipo}:${suscripcion}`;
 const codificar = encodeURIComponent;
+
+const baseDe = (env) => String(env?.PUBLIC_SITE_URL || "").trim().replace(/\/$/, "") || SITIO;
+
+/** Quién vende, de la configuración; el representante legal sólo existe en una persona jurídica. */
+function vendedorDe(env) {
+  return {
+    nombre: String(env.SELLER_NAME).trim(),
+    rut: String(env.SELLER_RUT).trim(),
+    domicilio: String(env.SELLER_ADDRESS).trim(),
+    correo: String(env.SELLER_EMAIL).trim(),
+    representante: String(env.SELLER_REPRESENTATIVE ?? "").trim(),
+  };
+}
 
 /** Los nombres (de secreto o variable) que faltan para enviar; vacío = listo. Nunca valores. */
 export function faltantesCorreo(env) {
@@ -134,7 +152,7 @@ export function createCorreo(env, supabase, execution = null) {
   const resumen = { enviados: 0, omitidos: 0, fallidos: 0 };
   // Los eventos que esta corrida ya intentó: un fallo de hace un instante no se reintenta en la misma pasada.
   const intentados = new Set();
-  const base = String(env?.PUBLIC_SITE_URL || "").trim().replace(/\/$/, "") || SITIO;
+  const base = baseDe(env);
 
   const insertarUnico = (valores) => supabase.upsert("billing_events", valores, {
     admin: true,
@@ -233,14 +251,7 @@ export function createCorreo(env, supabase, execution = null) {
         if (!destinatario) return await fallar("no_recipient");
         if (!plan?.display_name || !(Number(plan.monthly_price_clp) > 0)) return await fallar("plan_invalid");
 
-        const vendedor = {
-          nombre: String(env.SELLER_NAME).trim(),
-          rut: String(env.SELLER_RUT).trim(),
-          domicilio: String(env.SELLER_ADDRESS).trim(),
-          correo: String(env.SELLER_EMAIL).trim(),
-          // Opcional: sólo una persona jurídica tiene representante legal.
-          representante: String(env.SELLER_REPRESENTATIVE ?? "").trim(),
-        };
+        const vendedor = vendedorDe(env);
         const componer = (copiaAdjunta) => componerCorreo(tipo, { suscripcion, plan, vendedor, base, destinatario, enPrueba: suscripcion.status === "trialing", copiaAdjunta });
         // La copia fija de los Términos va adjunta si se puede leer bien; si no, sólo el enlace.
         const adjunto = tipo === "purchase" ? await adjuntoTerminos(env, suscripcion.terms_version, base) : null;
@@ -384,4 +395,61 @@ export function createCorreo(env, supabase, execution = null) {
     recuperarSinEvento,
     entregar,
   };
+}
+
+// Un plan de ejemplo, no el del catálogo: la prueba no lee la base.
+const PLAN_DE_PRUEBA = { id: "basic", display_name: "Basic", monthly_price_clp: 2990, trial_period_days: 7, ai_units_limit: 6_000_000, trial_ai_units_limit: 1_500_000 };
+
+/** Una suscripción de ejemplo por tipo, con fechas relativas a `ahora`. Ninguna existe en la base. */
+function suscripcionDePrueba(tipo, ahora) {
+  const en = (horas) => new Date(ahora.getTime() + horas * HORA).toISOString();
+  const [inicio, fin] = { purchase: [0, 7 * 24], trial_ending: [-6 * 24, 36], cancellation: [-2 * 24, 5 * 24] }[tipo];
+  return {
+    id: "prueba",
+    user_id: null,
+    plan_id: PLAN_DE_PRUEBA.id,
+    provider: "flow",
+    status: "trialing",
+    trial_ends_at: en(fin),
+    current_period_start: en(inicio),
+    current_period_end: en(fin),
+    cancel_at_period_end: tipo === "cancellation",
+    terms_version: TERMS_VERSION,
+  };
+}
+
+/**
+ * Los tres correos al cliente con datos de ejemplo (Basic con prueba, aviso de
+ * fin de prueba, cancelación), con el configurado de verdad: los mismos
+ * compositores, el remitente y la clave del Worker. Va a `destinatario` y a
+ * nadie más, con asunto «[Prueba] …» y una Idempotency-Key nueva por envío, así
+ * que no choca con la de ningún correo real. No lee ni escribe la base. Con algo
+ * sin configurar no envía nada y devuelve los nombres que faltan. Nunca lanza.
+ * Devuelve {faltan} o {resultados: [{tipo, asunto, estado: "enviado" | "error", codigo?}]}.
+ */
+export async function enviarCorreosDePrueba(env, destinatario, { ahora = new Date() } = {}) {
+  const faltan = faltantesCorreo(env);
+  if (faltan.length) return { faltan };
+  const base = baseDe(env);
+  const vendedor = vendedorDe(env);
+  const resultados = [];
+  for (const tipo of TIPOS) {
+    try {
+      const suscripcion = suscripcionDePrueba(tipo, ahora);
+      const adjunto = tipo === "purchase" ? await adjuntoTerminos(env, suscripcion.terms_version, base) : null;
+      const correo = componerCorreo(tipo, { suscripcion, plan: PLAN_DE_PRUEBA, vendedor, base, destinatario, enPrueba: true, copiaAdjunta: Boolean(adjunto) });
+      const asunto = `[Prueba] ${correo.subject}`;
+      const respuesta = await sendEmail(env, {
+        to: destinatario,
+        ...correo,
+        subject: asunto,
+        idempotencyKey: `prueba:${tipo}:${crypto.randomUUID()}`,
+        attachments: adjunto ? [adjunto] : undefined,
+      });
+      resultados.push(respuesta.ok ? { tipo, asunto, estado: "enviado" } : { tipo, asunto, estado: "error", codigo: respuesta.code });
+    } catch (error) {
+      resultados.push({ tipo, asunto: null, estado: "error", codigo: codigoDe(error) });
+    }
+  }
+  return { resultados };
 }

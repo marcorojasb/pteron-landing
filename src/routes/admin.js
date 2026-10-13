@@ -1,4 +1,5 @@
 import { HttpError, body, json, method, requireAuth, requireString } from "../lib/http.js";
+import { enviarCorreosDePrueba, faltantesCorreo } from "../lib/correo.js";
 import { faltaParaVender, salud } from "./health.js";
 
 /**
@@ -397,6 +398,38 @@ async function actualizarAjustes({ request, services }) {
   return json(200, { ok: true, included_ai_paused: paused(rows) });
 }
 
+// Un clic accidental de más no manda seis correos: una prueba por administrador cada 60 segundos.
+// El registro vive en la memoria del isolate, así que es un freno razonable, no una garantía.
+const ESPERA_PRUEBA_MS = 60_000;
+const ultimaPrueba = new Map();
+
+/**
+ * POST /api/admin/correo-prueba. Manda los tres correos al cliente, con datos de
+ * ejemplo, al correo de quien administra (el de su sesión; el cuerpo se ignora) para
+ * comprobar la clave de Resend y el remitente sin una compra. No escribe en la
+ * base ni usa las cerraduras de los correos reales. Sin configuración completa
+ * responde 409 con los nombres que faltan y no envía nada.
+ */
+async function correoPrueba({ request, env }, adminUser) {
+  method(request, "POST");
+  const destinatario = String(adminUser?.email || "").trim();
+  const faltan = faltantesCorreo(env);
+  if (faltan.length) {
+    return json(409, { error: "email_not_configured", message: `Faltan ${faltan.join(", ")}: no se envió ningún correo.`, faltan });
+  }
+  const ahora = Date.now();
+  for (const [correo, instante] of ultimaPrueba) if (ahora - instante >= ESPERA_PRUEBA_MS) ultimaPrueba.delete(correo);
+  const llave = destinatario.toLowerCase();
+  const desde = ultimaPrueba.get(llave);
+  if (desde !== undefined) {
+    const espera = Math.max(1, Math.ceil((ESPERA_PRUEBA_MS - (ahora - desde)) / 1000));
+    return json(429, { error: "rate_limited", message: `Ya se enviaron correos de prueba hace un momento. Espera ${espera} segundos.`, retry_after_seconds: espera }, { "Retry-After": String(espera) });
+  }
+  ultimaPrueba.set(llave, ahora);
+  const { resultados } = await enviarCorreosDePrueba(env, destinatario);
+  return json(200, { ok: resultados.every((resultado) => resultado.estado === "enviado"), destinatario, resultados });
+}
+
 /** Enruta /api/admin/<resto>. Toda ruta exige administrador antes de leer nada. */
 export async function admin(ctx, rest) {
   const adminUser = await requireAdmin(ctx);
@@ -413,6 +446,7 @@ export async function admin(ctx, rest) {
     throw new HttpError(405, "method_not_allowed", "Método no permitido.");
   }
   if (parts.length === 3 && parts[0] === "cuentas" && parts[2] === "terminar") return terminarAhora(ctx, parts[1], adminUser);
+  if (parts.length === 1 && parts[0] === "correo-prueba") return correoPrueba(ctx, adminUser);
   if (parts.length === 1 && parts[0] === "consumo" && request.method === "GET") return consumo(ctx);
   if (parts.length === 1 && parts[0] === "planes" && request.method === "GET") return planes(ctx);
   if (parts.length === 2 && parts[0] === "planes") return actualizarPlan(ctx, parts[1]);

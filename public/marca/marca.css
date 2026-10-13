@@ -2,7 +2,7 @@
    La marca, el icono, los colores, la letra, las láminas y la voz, cada uno en su bloque numerado como las preguntas de
    una hoja de pteron. Las muestras son los archivos reales: lo que se ve es lo que se descarga. */
 
-@font-face{font-family:"Playwrite CL";font-style:normal;font-weight:100 400;font-display:swap;src:url(/assets/fonts/playwrite-cl-wght-normal.woff2?v=2026-10-13.3) format("woff2")}
+@font-face{font-family:"Playwrite CL";font-style:normal;font-weight:100 400;font-display:swap;src:url(/assets/fonts/playwrite-cl-wght-normal.woff2?v=2026-10-13.4) format("woff2")}
 
 /* ——— Bloques ——— */
 .bloque{padding-block:clamp(56px,8vw,112px)}

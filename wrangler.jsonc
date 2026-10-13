@@ -46,17 +46,18 @@
     // envía nada y cada intento queda como evento <tipo>_email_skipped con los
     // nombres que faltan. EMAIL_FROM es el mismo remitente que ya usa Supabase
     // Auth; las respuestas del cliente llegan a SELLER_EMAIL (reply_to). Los
-    // SELLER_* los llena Marco con lo que fije el abogado (LEGAL-PENDIENTE.md,
-    // punto 1): nombre o razón social, RUT, domicilio y correo de contacto.
+    // SELLER_* son los datos del vendedor, Patagua.dev SpA, según su
+    // declaración de inicio de actividades ante el SII (LEGAL-PENDIENTE.md,
+    // punto 1); el domicilio y el representante están por confirmar con Marco.
     // SELLER_REPRESENTATIVE es opcional y no detiene el envío: el representante
     // legal, que se dice sólo si vende una persona jurídica (Reglamento de
     // comercio electrónico, art. 7 n.º 6); una persona natural lo deja vacío.
     "EMAIL_FROM": "pteron <no-reply@patagua.dev>",
-    "SELLER_NAME": "",
-    "SELLER_RUT": "",
-    "SELLER_ADDRESS": "",
-    "SELLER_EMAIL": "",
-    "SELLER_REPRESENTATIVE": ""
+    "SELLER_NAME": "Patagua.dev SpA",
+    "SELLER_RUT": "78.418.149-9",
+    "SELLER_ADDRESS": "Fundo San Ricardo, Lote A y Lote B, Coronel, Región del Biobío",
+    "SELLER_EMAIL": "hola@patagua.dev",
+    "SELLER_REPRESENTATIVE": "Marco Antonio Rojas Belmar"
   },
   // Cron diario a las 12:17 UTC (09:17 en el verano de Chile, 08:17 en
   // invierno): sincroniza con Flow las suscripciones cerca del fin de lo pagado

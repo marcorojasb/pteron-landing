@@ -510,6 +510,23 @@ test("la copia fija de los Términos existe, es la versión vigente y no cambia 
   assert.ok(TERMINOS.includes(`Versión ${TERMS_VERSION}`));
 });
 
+test("los Términos vigentes y su copia fija identifican al vendedor (Reglamento de comercio electrónico, art. 7)", () => {
+  const vigente = readFileSync(new URL("../public/terminos.html", import.meta.url), "utf8");
+  for (const [donde, html] of [["vigentes", vigente], ["copia fija", TERMINOS]]) {
+    const hoja = /<article class="legal-hoja"[\s\S]*?<\/article>/.exec(html)[0];
+    assert.match(hoja, /Patagua\.dev SpA/, `${donde}: razón social`);
+    assert.ok(hoja.includes("78.418.149-9"), `${donde}: RUT`);
+    assert.ok(hoja.includes("Fundo San Ricardo, Lote A y Lote B, Coronel, Región del Biobío"), `${donde}: domicilio legal`);
+    assert.ok(hoja.includes('href="mailto:hola@patagua.dev"'), `${donde}: medio de contacto`);
+    assert.ok(hoja.includes("desde no-reply@patagua.dev, a la dirección de tu cuenta"), `${donde}: cómo contacta el vendedor`);
+    assert.ok(hoja.includes("Marco Antonio Rojas Belmar"), `${donde}: representante legal`);
+    assert.doesNotMatch(hoja, /tel[eé]fono|\+56/i, `${donde}: sin teléfono`);
+  }
+  // La copia lleva lo mismo que lo vigente: índice de la página y hoja, sin diferencias.
+  const indice = (html) => /<nav class="legal-indice"[\s\S]*?<\/nav>/.exec(html)[0];
+  assert.equal(indice(TERMINOS), indice(vigente));
+});
+
 // ── Configuración ─────────────────────────────────────────────────────────
 
 test("faltantesCorreo nombra lo que falta, también con espacios en blanco, y nunca devuelve valores", () => {
@@ -520,11 +537,20 @@ test("faltantesCorreo nombra lo que falta, también con espacios en blanco, y nu
   assert.deepEqual(faltantesCorreo({ ...CORREO_CONFIGURADO, SELLER_REPRESENTATIVE: "" }), []);
 });
 
-test("wrangler.jsonc declara el remitente de Supabase Auth y los datos del vendedor vacíos; la clave de Resend no está en el archivo", () => {
+test("wrangler.jsonc declara el remitente de Supabase Auth y los datos del vendedor completos; la clave de Resend no está en el archivo", () => {
   const texto = readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8");
   assert.match(texto, /"EMAIL_FROM": "pteron <no-reply@patagua\.dev>"/);
-  for (const nombre of ["SELLER_NAME", "SELLER_RUT", "SELLER_ADDRESS", "SELLER_EMAIL", "SELLER_REPRESENTATIVE"]) assert.match(texto, new RegExp(`"${nombre}": ""`));
+  const vendedor = {
+    SELLER_NAME: "Patagua.dev SpA",
+    SELLER_RUT: "78.418.149-9",
+    SELLER_ADDRESS: "Fundo San Ricardo, Lote A y Lote B, Coronel, Región del Biobío",
+    SELLER_EMAIL: "hola@patagua.dev",
+    SELLER_REPRESENTATIVE: "Marco Antonio Rojas Belmar",
+  };
+  for (const [nombre, valor] of Object.entries(vendedor)) assert.ok(texto.includes(`"${nombre}": "${valor}"`), `${nombre} está lleno en wrangler.jsonc`);
   assert.doesNotMatch(texto, /"RESEND_API_KEY"/);
+  // Con todo lo requerido en wrangler.jsonc y el secreto cargado, no falta nada: los correos salen.
+  assert.deepEqual(faltantesCorreo({ EMAIL_FROM: "pteron <no-reply@patagua.dev>", ...vendedor, RESEND_API_KEY: "re_de_prueba" }), []);
 });
 
 // ── Compuerta: sin configuración no sale nada ─────────────────────────────

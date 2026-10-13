@@ -49,6 +49,16 @@ art. 3 bis y mandó dictar el reglamento de exclusión del retracto, que es el D
 El SERNAC resume lo mismo en «Tus derechos en el Comercio Electrónico»:
 <https://www.sernac.cl/portal/604/w3-propertyvalue-20982.html>
 
+### Estado (13-10-2026)
+
+Llenado con la declaración jurada de inicio de actividades del SII: Patagua.dev SpA, RUT 78.418.149-9, domicilio legal
+«Fundo San Ricardo, Lote A y Lote B, Coronel, Región del Biobío» (el certificado dice «FDO SAN RICARDO LTA LTB,
+Comuna: CORONEL»), correo hola@patagua.dev y representante legal Marco Antonio Rojas Belmar. Marco confirmó
+el 13-10-2026 la redacción del domicilio y que él es el representante legal. El teléfono y los datos de la propiedad del certificado no se
+publican. Ya están en `wrangler.jsonc`, en la sección 12 de los Términos y su copia fija, y en el colofón. Con
+`RESEND_API_KEY` ya cargado y los `SELLER_*` puestos, los correos al cliente (punto 3) quedan habilitados al desplegar
+este cambio.
+
 ### Bloque de identificación
 
 > **Quién vende.** {Razón social o nombre}{, nombre de fantasía pteron}, RUT {…}, domicilio legal {calle, número,
@@ -205,11 +215,10 @@ la exclusión llegara a fallar.
 - El texto sigue el borrador de `LEGAL-PENDIENTE.md` (punto 3) y la estructura de `src/lib/correo-textos.js` (bloque
   «Quién vende», cobro, fechas, cancelación, retracto, cuota y Términos). El párrafo de retracto es copia literal del
   que digan los Términos de esa versión.
-- Hoy el bloque «Quién vende» del Worker (`linea` en `src/lib/correo-textos.js`) sólo imprime nombre, RUT, domicilio y
-  correo (`SELLER_NAME`, `SELLER_RUT`, `SELLER_ADDRESS`, `SELLER_EMAIL`): **no puede mostrar el representante legal**
-  que exige el art. 7 n.º 6 del Reglamento CE si vende una persona jurídica, que es lo probable si se usa el cargo
-  automático de Flow (punto 1). Falta una variable opcional, por ejemplo `SELLER_REPRESENTATIVE`, antes de vender como
-  empresa.
+- El bloque «Quién vende» del Worker (`src/lib/correo-textos.js`) imprime nombre, RUT, domicilio y correo
+  (`SELLER_NAME`, `SELLER_RUT`, `SELLER_ADDRESS`, `SELLER_EMAIL`) y, si está puesta, el representante legal
+  (`SELLER_REPRESENTATIVE`, opcional), que exige el art. 7 n.º 6 del Reglamento CE si vende una persona jurídica. Ya
+  está llena con Marco Antonio Rojas Belmar.
 
 ### Texto del correo
 

@@ -116,6 +116,11 @@
 /* Salud: el interruptor de la IA incluida */
 .admin-ia{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px}
 .admin-ia-estado{font-weight:650}
+.admin-correos{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.admin-prueba{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.admin-prueba-salida p{margin:0}
+.admin-prueba-lista{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.admin-prueba-error{color:var(--error)}
 
 /* Consumo: el mes y sus indicadores */
 .admin-period{display:grid;grid-template-columns:minmax(240px,.8fr) minmax(0,2.2fr);gap:16px;align-items:stretch}

@@ -12,20 +12,29 @@ leer: hay que cotejarlos ahí.
 
 Estado de la implementación (los puntos de abajo dicen lo que falta decidir): el Worker ya tiene el correo de confirmación,
 el aviso de fin de prueba, el correo de cancelación y la copia inmutable de los Términos (`/terminos/2026-10-13`).
-Están implementados y apagados: salen sólo cuando se carga `RESEND_API_KEY` y los `SELLER_*` (y `EMAIL_FROM`); ver
-`README.md`, «Correos». Supabase Auth ya envía el enlace de acceso por Resend desde no-reply@patagua.dev. Los borradores
+Están implementados: salen sólo con `RESEND_API_KEY` y los `SELLER_*` (y `EMAIL_FROM`). La clave ya está cargada en el
+Worker y los `SELLER_*` están en `wrangler.jsonc`, así que quedan habilitados al desplegar este cambio desde `main`
+(producción sigue con los `SELLER_*` vacíos hasta entonces); ver `README.md`, «Correos». Supabase Auth ya envía el enlace de acceso por Resend desde no-reply@patagua.dev. Los borradores
 completos, con sus fuentes, están en `BORRADORES-LEGALES.md`.
 
 Los puntos 1 a 4 impiden abrir la venta. Mientras tanto, la venta sigue cerrada con `for_sale = false` en
 `plan_catalog` y /cuenta muestra «Disponible pronto».
 
-## 1. Quién vende
+## 1. Quién vende (resuelto)
 
-Borradores y fuentes: `BORRADORES-LEGALES.md`, sección 1. Implementado: el correo de confirmación ya incluye el bloque de
-quien vende, leído de `SELLER_NAME`, `SELLER_RUT`, `SELLER_ADDRESS` y `SELLER_EMAIL` en `wrangler.jsonc`, hoy vacíos
-(sin ellos no sale ningún correo); si vende una persona jurídica, `SELLER_REPRESENTATIVE` (opcional) agrega su
-representante legal. Decisión pendiente: quién vende; con eso se llenan las variables y se escribe la
-sección en Términos, Privacidad, /cuenta y el colofón.
+**Llenado (13-10-2026), con la declaración jurada de inicio de actividades del SII:** vende Patagua.dev SpA (sociedad
+por acciones), RUT 78.418.149-9, afecta a IVA, micro empresa, giro de desarrollo de software; contacto
+hola@patagua.dev; representante legal, Marco Antonio Rojas Belmar. Domicilio legal: la declaración dice «FDO SAN
+RICARDO LTA LTB, Comuna: CORONEL»; se escribió «Fundo San Ricardo, Lote A y Lote B, Coronel, Región del Biobío».
+Marco confirmó el 13-10-2026 esa redacción del domicilio y que él es el representante legal. No se publican el
+teléfono ni los datos de la propiedad que trae el certificado.
+
+Ya está en `wrangler.jsonc` (`SELLER_NAME`, `SELLER_RUT`, `SELLER_ADDRESS`, `SELLER_EMAIL`, `SELLER_REPRESENTATIVE`), en
+la sección 12 «Quién vende y contacto» de los Términos y su copia fija, y en la línea legal del colofón de todas las
+páginas. `RESEND_API_KEY` ya está cargado en el Worker; con las variables puestas, los tres correos al cliente quedan
+**habilitados al desplegar este cambio**.
+Falta lo que la tabla de «Dónde va» marca para Privacidad (responsable) y el resumen antes de Flow en /cuenta.
+La opción de abajo quedó resuelta como B: una empresa (Patagua.dev SpA).
 
 Se vende en línea sin decir quién vende. El Reglamento de Comercio Electrónico (Decreto 6/2021 de Economía, vigente
 desde el 24-03-2022) pide nombre o razón social, RUT, domicilio, un contacto y, si es persona jurídica, su representante
@@ -100,8 +109,8 @@ https://www.carey.cl/publican-reglamento-que-establece-exclusiones-al-derecho-de
 
 ## 3. Confirmación escrita del contrato y copia de los Términos
 
-Borradores y fuentes: `BORRADORES-LEGALES.md`, sección 3. Implementado (apagado hasta configurar Resend y los
-`SELLER_*`): el Worker envía el correo de confirmación al crearse la suscripción, con la copia de los Términos aceptados
+Borradores y fuentes: `BORRADORES-LEGALES.md`, sección 3. Implementado (la clave de Resend ya está cargada y los
+`SELLER_*` puestos en `wrangler.jsonc`; sale al desplegar): el Worker envía el correo de confirmación al crearse la suscripción, con la copia de los Términos aceptados
 adjunta y el enlace a la copia inmutable `/terminos/2026-10-13` (`public/terminos/`), por Resend, una vez por
 suscripción, con reintentos del Cron. Decisión pendiente: si basta ese adjunto o hay que enviar el texto íntegro y
 Privacidad, y los textos de quién vende y retracto. Ver `README.md`, «Correos».
@@ -110,8 +119,8 @@ La aceptación previa ya existe: el resumen de /cuenta exige marcar «Leí y ace
 la Política de privacidad», el checkout rechaza otra versión (`terms_required`) y la versión aceptada queda en el
 intento de pago y en la suscripción. La otra mitad del art. 12 A es una vez perfeccionado el contrato: una
 confirmación escrita, por un medio informado antes, con copia íntegra, clara y legible del contrato. Ya está
-implementada (apagada) con Resend, el mismo proveedor del SMTP de Supabase Auth; lo que falta es cargar
-`RESEND_API_KEY` y los `SELLER_*`.
+implementada con Resend, el mismo proveedor del SMTP de Supabase Auth; la clave y los `SELLER_*` ya están puestos y
+sólo falta desplegar.
 
 Borrador del correo, que sale cuando `card-callback` crea la suscripción:
 
@@ -267,7 +276,7 @@ Fuentes: https://web.flow.cl/manual-suscripciones-flowpagos.pdf · https://web.f
 ## 11. Aviso antes del fin de la prueba
 
 Implementado: el Cron diario envía el aviso a quien termina su prueba en menos de 48 horas y no canceló
-(`trial_ending`), también apagado hasta configurar Resend y los `SELLER_*`. Queda por decidir sólo el texto final.
+(`trial_ending`), que sale al desplegar, con la clave de Resend y los `SELLER_*` ya puestos. Queda por decidir sólo el texto final.
 
 No lo exige una norma que se haya encontrado, pero el SERNAC fiscaliza las conversiones poco claras de prueba a pago y
 las barreras de salida. Recomendado: un correo 2 o 3 días antes del primer cobro (necesita el correo del punto 3).
