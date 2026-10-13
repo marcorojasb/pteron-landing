@@ -70,6 +70,7 @@ try {
   await expect("planes con barra redirige", { path: "/planes/" }, redirectTo("/planes"));
   await expect("marca limpia", { path: "/marca" }, (res, body) => (res.status === 200 && body.includes("<h1>Marca</h1>") ? null : `status ${res.status}`));
   await expect("favicon.ico", { path: "/favicon.ico" }, status(200));
+  await expect("apple-touch-icon.png en la raíz", { path: "/apple-touch-icon.png" }, (res) => (res.status === 200 && /image\/png/.test(res.headers.get("content-type") || "") ? null : `status ${res.status} ${res.headers.get("content-type")}`));
   await expect("marca descargable", { path: "/assets/marca/pteron-azul.svg" }, (res) => (res.status === 200 && /svg/.test(res.headers.get("content-type") || "") ? null : `status ${res.status}`));
   await expect("html explícito redirige", { path: "/privacidad.html" }, redirectTo("/privacidad"));
   // La copia inmutable de los Términos a la que enlaza el correo de confirmación de la compra

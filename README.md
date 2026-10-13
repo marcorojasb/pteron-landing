@@ -50,7 +50,8 @@ Worker, desde este repositorio en GitHub.
     licencias; `assets/marca.svg`: el contorno de la marca «pteron» (Outfit con
     la esquina de la «t» doblada); `assets/marca/`: la marca en azul, blanco y
     tinta y el icono, para descargar; `assets/pt-icons.svg`: los iconos Lucide
-    de la app; los iconos `*-v4` y `favicon-v5-*` (la «p» de la marca sobre el azul) y
+    de la app; los iconos `*-v4` y `favicon-v5-*` (la «p» de la marca sobre el azul;
+    `favicon.ico` y `apple-touch-icon.png` van además en la raíz, sin versión) y
     `assets/og/`: una imagen para compartir por página.
 - `src/worker.js`: el Worker. Atiende `/api/*` y reescribe `/docs/:slug` a la
   página de documentación; todo lo demás lo sirven los assets. Su handler

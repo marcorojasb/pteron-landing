@@ -59,6 +59,10 @@ test("cada marca de la web usa la caja del símbolo de marca.svg", () => {
 test("los archivos de la marca están al día con marca.svg (node scripts/marca.mjs)", () => {
   execFileSync(process.execPath, [path.join(root, "scripts/marca.mjs"), "--revisar"], { stdio: "pipe" });
   assert.ok(existsSync(path.join(pub, "favicon.ico")), "favicon.ico en la raíz");
+  assert.ok(
+    readFileSync(path.join(pub, "apple-touch-icon.png")).equals(readFileSync(path.join(pub, "assets/apple-touch-icon-v4.png"))),
+    "apple-touch-icon.png en la raíz, igual al de assets",
+  );
   for (const file of ["favicon-v5-16.png", "favicon-v5-32.png", "favicon-v5-48.png", "apple-touch-icon-v4.png", "app-icon-v5-192.png", "app-icon-v5-512.png", "app-icon-v4-mascara.png", "icono-v4.svg"]) {
     assert.ok(existsSync(path.join(pub, "assets", file)), `falta assets/${file}`);
   }

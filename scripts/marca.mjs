@@ -9,13 +9,13 @@
  *
  * Salidas del sitio: public/assets/marca/pteron-{azul,tinta,blanco}.svg y .png, public/assets/marca/p-{azul,blanco}.svg,
  * public/assets/icono-v4.svg (favicon) y, con --png, los iconos PNG (favicon-v5-16/32/48, apple-touch-icon-v4,
- * app-icon-v5-192/512 y app-icon-v4-mascara) y public/favicon.ico.
+ * app-icon-v5-192/512 y app-icon-v4-mascara), public/favicon.ico y public/apple-touch-icon.png.
  *
  * Salidas del kit, en kit/archivos/ (las arma scripts/kit.mjs junto a las del sitio, sin volver a dibujar): la marca
  * ajustada a su dibujo, la «p» a sangre, de perfil y en la cuadrícula de macOS, y el icono de la app (icon.svg, icon.png,
  * icon.ico e icon.icns, éste en la cuadrícula de macOS).
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { COLOR, ICNS_TIPOS, ICONO, ICONO_MAC, LADO_MAC, RADIO, RADIO_FAVICON, icns, ico, marcaSVG, pChica, pSVG, raiz, rasterizar } from "./marca-dibujos.mjs";
 
@@ -158,5 +158,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.join(raiz, "script
     const entradas = [16, 32, 48].map((px) => [px, readFileSync(path.join(assets, `favicon-v5-${px}.png`))]);
     writeFileSync(path.join(raiz, "public/favicon.ico"), ico(entradas));
     console.log("ico: favicon.ico (16, 32 y 48 px)");
+    // apple-touch-icon.png en la raíz: iPhone, iPad y los lectores de enlaces lo piden ahí por su cuenta, sin leer la
+    // página. Es el mismo de assets; sin versión en el nombre, el navegador lo revalida en cada visita.
+    copyFileSync(path.join(assets, "apple-touch-icon-v4.png"), path.join(raiz, "public/apple-touch-icon.png"));
+    console.log("png: apple-touch-icon.png (el de assets, en la raíz)");
   }
 }
