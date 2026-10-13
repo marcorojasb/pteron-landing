@@ -241,7 +241,9 @@ Los errores llevan `{error, message: "código: texto"}`: 401 de licencia
 `resets_at`) o `concurrency_limited`, 413 `prompt_too_long` y 503
 `included_ai_unavailable` con su motivo. Los errores de la cuenta de pteron en
 Anthropic (saldo, tope de gasto, clave, modelo) se dicen como 503
-`provider_paused`; los 429 y 529 del proveedor pasan con su `retry-after`. Si
+`provider_paused` y la reserva los anota con ese estado, el HTTP de Anthropic y
+un motivo corto (`tope`, `tope_nivel`, `credito`, `clave`, `permiso`, `modelo`;
+nunca su texto); los 429 y 529 del proveedor pasan con su `retry-after`. Si
 Anthropic no responde, o su respuesta no se pudo leer, es 503 con motivo
 `provider_unreachable` (en el segundo caso se cobra lo reservado, porque
 Anthropic ya la ejecutó).
@@ -280,7 +282,11 @@ comp`; no pisa un plan pagado y retirarla revoca sus licencias) y se termina un
 plan de inmediato («Terminar ahora» cancela también en Flow). La pestaña Salud
 (`/api/admin/salud`) dice con booleanos si están los secretos, si Flow es el de
 producción, si la firma k2 se verifica, si la clave de Anthropic responde y si
-el plan de Flow de cada plan a la venta calza con el catálogo. La API vive en
+el plan de Flow de cada plan a la venta calza con el catálogo. También muestra el
+último rechazo de la cuenta de Anthropic en 7 días (la clave puede responder y el
+tope de gasto rechazar cada petición), en rojo sólo si ninguna petición funcionó
+después, y el tope de gasto sugerido para el workspace: 1,5 × la cuota mensual
+de las cuentas que hoy usan la IA incluida, mínimo US$20. La API vive en
 `src/routes/admin.js` y `src/routes/health.js`, y sus pruebas en
 `tests/admin.test.js`.
 

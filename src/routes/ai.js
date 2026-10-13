@@ -23,8 +23,11 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const QUOTA_EXCEEDED =
   "Se agotó la capacidad de IA incluida de este período. Se renueva con tu próximo cobro. Puedes seguir con el motor local o con tu propia clave.";
 // Errores de la cuenta de pteron en Anthropic (sin crédito, tope de gasto propio
-// o del workspace): reintentar no los arregla y no son culpa del docente.
-const ACCOUNT_LIMIT_MESSAGE = /credit balance|specified API usage limits|workspace API usage limits|anthropic-workspace-id/i;
+// o del workspace, clave sin workspace fijo): reintentar no los arregla y no son
+// culpa del docente. Llegan como 400; se reconocen por el texto, que no se guarda.
+const ACCOUNT_CREDIT_MESSAGE = /credit balance/i;
+const ACCOUNT_LIMIT_MESSAGE = /specified API usage limits|workspace API usage limits/i;
+const ACCOUNT_WORKSPACE_MESSAGE = /anthropic-workspace-id/i;
 
 /**
  * El proveedor detrás del plan es Anthropic y el modelo lo decide el servidor
@@ -154,30 +157,46 @@ function parseJson(text) {
 }
 
 /**
+ * Motivo corto de un error de la cuenta de pteron en Anthropic, para /admin ›
+ * Salud; null si es cosa de la petición. «tope» es el límite de gasto que fijó
+ * Marco (organización o workspace) y «tope_nivel», el techo mensual del nivel
+ * de uso de Anthropic; «credito», sin saldo o con un problema de pago; «clave»,
+ * clave inválida o revocada; «permiso», workspace u organización sin acceso;
+ * «modelo», el modelo no está disponible para la organización.
+ */
+function accountReason(status, error) {
+  const message = String(error?.message ?? "");
+  if (status === 401) return "clave";
+  if (status === 402) return "credito";
+  if (status === 403) return "permiso";
+  if (status === 404) return "modelo";
+  if (status === 400 && ACCOUNT_CREDIT_MESSAGE.test(message)) return "credito";
+  if (status === 400 && ACCOUNT_LIMIT_MESSAGE.test(message)) return "tope";
+  if (status === 400 && ACCOUNT_WORKSPACE_MESSAGE.test(message)) return "permiso";
+  if (status === 429 && error?.details?.error_code === "enforced_spend_limit_reached") return "tope_nivel";
+  return null;
+}
+
+/**
  * Un error del proveedor que es cosa de la petición (400, 429, 529, 5xx) pasa
  * al cliente con su estado y cuerpo: pi-ai sabe reintentar una sobrecarga.
  * Uno de la cuenta de pteron en Anthropic (clave, crédito, tope de gasto,
  * modelo no disponible) no es del docente: se traduce a 503 provider_paused y
- * queda en el log para Marco.
+ * queda en el log y en la reserva, con su motivo, para Marco. Devuelve la
+ * respuesta y el motivo (null si no es de la cuenta).
  */
 async function providerFailure(upstreamResponse) {
   const raw = await upstreamResponse.text().catch(() => "");
   const error = parseJson(raw)?.error;
   const status = upstreamResponse.status;
   const type = typeof error?.type === "string" ? error.type : null;
-  const account =
-    status === 401 ||
-    status === 402 ||
-    status === 403 ||
-    status === 404 ||
-    (status === 400 && ACCOUNT_LIMIT_MESSAGE.test(String(error?.message ?? ""))) ||
-    (status === 429 && error?.details?.error_code === "enforced_spend_limit_reached");
-  if (account) {
-    console.error("pteron gateway account", { status, type });
-    return gatewayErrorResponse(includedAiUnavailable("provider_paused"));
+  const motivo = accountReason(status, error);
+  if (motivo) {
+    console.error("pteron gateway account", { status, type, motivo });
+    return { response: gatewayErrorResponse(includedAiUnavailable("provider_paused")), motivo };
   }
   console.error("pteron gateway upstream error", { status, type });
-  return new Response(raw, { status, headers: relayHeaders(upstreamResponse, "application/json") });
+  return { response: new Response(raw, { status, headers: relayHeaders(upstreamResponse, "application/json") }), motivo: null };
 }
 
 /**
@@ -297,7 +316,10 @@ export async function messages({ request, env, execution, services }) {
       providerRequestId = upstreamResponse.headers.get("request-id");
       if (upstreamResponse.status !== 200) {
         outcome = { ...outcome, status: "provider_error" };
-        return await providerFailure(upstreamResponse);
+        const failure = await providerFailure(upstreamResponse);
+        // Sólo el estado y el motivo: el texto de Anthropic no se guarda.
+        if (failure.motivo) outcome = { ...outcome, status: "provider_paused", motivo: failure.motivo, upstreamStatus: upstreamResponse.status };
+        return failure.response;
       }
       if (!body.stream || !upstreamResponse.body) {
         let text;
@@ -331,6 +353,7 @@ export async function messages({ request, env, execution, services }) {
             ...breakdown,
             units,
             status: outcome.status,
+            ...(outcome.motivo ? { motivo: outcome.motivo, upstream_status: outcome.upstreamStatus } : {}),
             ...client,
             request_id: providerRequestId,
           });

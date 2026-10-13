@@ -479,20 +479,20 @@ test("429 y 529 del proveedor pasan tal cual, con retry-after y request-id", asy
   }
 });
 
-test("los errores de la cuenta de pteron en Anthropic se traducen a 503 provider_paused y quedan en el log", async () => {
+test("los errores de la cuenta de pteron en Anthropic se traducen a 503 provider_paused y quedan en el log y en la reserva con su motivo", async () => {
   const ctx = setup();
   const cases = [
-    [401, { type: "authentication_error", message: "invalid x-api-key" }],
-    [402, { type: "billing_error", message: "payment required" }],
-    [403, { type: "permission_error", message: "not allowed" }],
-    [404, { type: "not_found_error", message: `model: ${MODEL}` }],
-    [400, { type: "invalid_request_error", message: "Your credit balance is too low to access the Anthropic API." }],
-    [400, { type: "invalid_request_error", message: "You have reached your specified API usage limits. You will regain access on 2026-11-01." }],
-    [400, { type: "invalid_request_error", message: "You have reached your specified workspace API usage limits." }],
-    [400, { type: "invalid_request_error", message: "The anthropic-workspace-id header is required." }],
-    [429, { type: "rate_limit_error", message: "spend limit", details: { error_code: "enforced_spend_limit_reached" } }],
+    [401, { type: "authentication_error", message: "invalid x-api-key" }, "clave"],
+    [402, { type: "billing_error", message: "payment required" }, "credito"],
+    [403, { type: "permission_error", message: "not allowed" }, "permiso"],
+    [404, { type: "not_found_error", message: `model: ${MODEL}` }, "modelo"],
+    [400, { type: "invalid_request_error", message: "Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits." }, "credito"],
+    [400, { type: "invalid_request_error", message: "You have reached your specified API usage limits. You will regain access on 2026-11-01 at 00:00 UTC." }, "tope"],
+    [400, { type: "invalid_request_error", message: "You have reached your specified workspace API usage limits. You will regain access on 2026-11-01 at 00:00 UTC." }, "tope"],
+    [400, { type: "invalid_request_error", message: "The anthropic-workspace-id header is required." }, "permiso"],
+    [429, { type: "rate_limit_error", message: "spend limit", details: { error_code: "enforced_spend_limit_reached" } }, "tope_nivel"],
   ];
-  for (const [status, error] of cases) {
+  for (const [status, error, motivo] of cases) {
     const where = world({ upstream: () => providerError(status, error) });
     const result = await send(ctx, where, { token: await ctx.license() });
     assert.equal(result.response.status, 503, `${status} ${error.message}`);
@@ -502,8 +502,38 @@ test("los errores de la cuenta de pteron en Anthropic se traducen a 503 provider
       reason: "provider_paused",
     });
     assert.equal(result.response.headers.get("x-should-retry"), "false");
-    assert.deepEqual(result.logs.find(([label]) => label === "pteron gateway account")?.[1], { status, type: error.type });
-    assert.equal(where.finishes()[0].p_units, 0);
+    assert.equal(result.response.headers.get("request-id"), null, "la respuesta al cliente es la de siempre");
+    assert.deepEqual(result.logs.find(([label]) => label === "pteron gateway account")?.[1], { status, type: error.type, motivo });
+    const [finish] = where.finishes();
+    assert.equal(finish.p_units, 0);
+    assert.equal(finish.p_metadata.status, "provider_paused", `${status} ${error.message}`);
+    assert.equal(finish.p_metadata.motivo, motivo, `${status} ${error.message}`);
+    assert.equal(finish.p_metadata.upstream_status, status);
+    assert.equal(finish.p_metadata.request_id, "req_err");
+    assert.equal(JSON.stringify(finish.p_metadata).includes(error.message), false, "el texto de Anthropic no se guarda");
+  }
+});
+
+test("un error del proveedor que no es de la cuenta queda como provider_error, sin motivo, y pasa tal cual", async () => {
+  const ctx = setup();
+  const cases = [
+    [529, { type: "overloaded_error", message: "Overloaded" }, { "x-should-retry": "true" }],
+    [500, { type: "api_error", message: "Internal server error" }, {}],
+    [429, { type: "rate_limit_error", message: "Number of request tokens has exceeded your per-minute rate limit" }, { "retry-after": "12" }],
+    [429, { type: "rate_limit_error", message: "acceleration limit", details: { error_code: "otro_codigo" } }, {}],
+    [400, { type: "invalid_request_error", message: "max_tokens: field required" }, {}],
+  ];
+  for (const [status, error, headers] of cases) {
+    const where = world({ upstream: () => providerError(status, error, headers) });
+    const result = await send(ctx, where, { token: await ctx.license() });
+    assert.equal(result.response.status, status, `${status} ${error.message}`);
+    assert.deepEqual(errorBody(result), { type: "error", error, request_id: "req_err" });
+    for (const [name, value] of Object.entries(headers)) assert.equal(result.response.headers.get(name), value);
+    assert.equal(result.logs.some(([label]) => label === "pteron gateway account"), false);
+    const [finish] = where.finishes();
+    assert.equal(finish.p_metadata.status, "provider_error", `${status} ${error.message}`);
+    assert.equal("motivo" in finish.p_metadata, false);
+    assert.equal("upstream_status" in finish.p_metadata, false);
   }
 });
 
