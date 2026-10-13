@@ -30,7 +30,9 @@ Worker, desde este repositorio en GitHub.
   - `script.js`: el índice que sale de la esquina doblada (los capítulos de la
     página, marcados con `data-capitulo`, y las páginas del sitio), Descargar con la plataforma
     del visitante, la versión publicada, el año y los botones de copiar;
-    `inicio.js` mueve las láminas y las hojas, y `cuenta/cuenta.js`,
+    `inicio.js` mueve las láminas y las hojas (y, con dos clics seguidos en
+    una lámina, abre el recreo: `recreo.js`, que sólo se carga entonces), y
+    `cuenta/cuenta.js`,
     `admin/admin.js`, `descargar/download.js` y `docs/app.js` son los scripts
     de página.
   - `pteron-ventana.js`: las plantillas y la secuencia de la ventana de pteron,
@@ -151,6 +153,16 @@ tocarlas); con el desplazamiento vuelan a sus figuras mientras las hojas se
 imprimen. Con `prefers-reduced-motion` todo queda quieto y legible (sin
 transiciones), y sin JavaScript la página muestra las hojas y la ventana
 terminadas.
+
+El recreo (huevo de pascua): dos clics o dos toques seguidos en una lámina de
+la portada. Las letras del titular caen una a una, las láminas se quedan
+quietas y `recreo.js` las recorta en piezas de un juego de piezas que caen: cada
+lámina deja caer su sobrante y vuela a la hoja cuadriculada (la del doble clic
+es la primera pieza; las tres siguientes esperan al costado). En el juego cada
+pieza conserva su trozo de la obra. Al cerrar, las láminas suben a su lugar y
+las letras vuelven. Con movimiento reducido el juego se abre de una vez; si el
+archivo no carga, la portada vuelve como estaba. El motor del juego es puro y
+se prueba en `tests/recreo.test.js`.
 
 Todo asset propio lleva `?v=<revisión>` para invalidar la caché (`assets/` se
 sirve como inmutable); al cambiar hojas, scripts o imágenes se sube la revisión

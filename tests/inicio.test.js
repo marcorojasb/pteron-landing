@@ -86,7 +86,7 @@ class Nodo {
 }
 
 /** Una página de inicio con cuatro láminas, una mesa de ancho × alto y un reloj y unos cuadros que avanzan a mano. */
-function cargar({ ancho = 1440, alto = 900, estilos = null } = {}) {
+function cargar({ ancho = 1440, alto = 900, estilos = null, quieto = false } = {}) {
   const vista = { ancho, alto, escena: alto * 4, scrollY: 0, falla: false };
   let reloj = 0;
   let siguiente = 0;
@@ -111,6 +111,8 @@ function cargar({ ancho = 1440, alto = 900, estilos = null } = {}) {
     node.hijos.set(".lamina-cuerpo", new Nodo());
     node.hijos.set(".lamina-sombra", new Nodo());
     node.hijos.set(".lamina-reverso", new Nodo());
+    node.hijos.set(".lamina-cara", new Nodo());
+    node.hijos.set(".lamina-cara img", { complete: true, naturalWidth: 600, decode: () => Promise.resolve(), cual: i });
     return node;
   });
   const capa = new Nodo();
@@ -123,7 +125,18 @@ function cargar({ ancho = 1440, alto = 900, estilos = null } = {}) {
   corner.toggleAttribute("data-oculto", true);
   const indice = new Nodo();
   const raiz = new Nodo();
-  const documento = new Nodo({ documentElement: raiz, visibilityState: "visible" });
+  const scripts = [];
+  const documento = new Nodo({
+    documentElement: raiz,
+    visibilityState: "visible",
+    currentScript: { src: "https://pteron.patagua.dev/inicio.js?v=prueba.1" },
+    head: { append: (nodo) => scripts.push(nodo) },
+    createElement: (etiqueta) => {
+      const nodo = new Nodo({ etiqueta });
+      nodo.remove = () => (nodo.quitado = true);
+      return nodo;
+    },
+  });
   const porSelector = { "[data-escena]": escena, "[data-laminas]": capa, ".esquina-descargar": corner };
   documento.querySelector = (sel) => porSelector[sel] ?? null;
   documento.getElementById = (id) => (id === "indice" ? indice : null);
@@ -141,7 +154,7 @@ function cargar({ ancho = 1440, alto = 900, estilos = null } = {}) {
         this.type = type;
       }
     },
-    matchMedia: () => ({ matches: false, addEventListener() {} }),
+    matchMedia: (consulta) => ({ matches: quieto && consulta.includes("reduced-motion"), addEventListener() {} }),
     getComputedStyle: (nodo) => ({ display: "block", getPropertyValue: (k) => nodo.estilo.get(k) ?? "" }),
     requestAnimationFrame: (fn) => {
       siguiente += 1;
@@ -177,6 +190,7 @@ function cargar({ ancho = 1440, alto = 900, estilos = null } = {}) {
     ventana,
     despachados,
     avisos,
+    scripts,
     cuadros,
     cancelados,
     avanzar(ms) {
@@ -300,4 +314,113 @@ test("con hojas de estilo pendientes (Safari corre los defer sin esperarlas), la
   }
   page.cuadro();
   assert.equal(page.cuadros.size, 1, "y el ciclo corre");
+});
+
+const esperar = (ms) => new Promise((listo) => setTimeout(listo, ms));
+const ocultas = (page) => page.laminas.filter((node) => node.style.visibility === "hidden").length;
+
+test("el recreo: dos clics seguidos sobre la misma lámina, no dos lentos ni sobre láminas distintas", () => {
+  const page = cargar();
+  page.cuadro();
+  const [a, b] = page.laminas;
+  a.dispatchEvent({ type: "click" });
+  page.avanzar(100);
+  b.dispatchEvent({ type: "click" });
+  page.avanzar(500);
+  b.dispatchEvent({ type: "click" });
+  assert.equal(page.scripts.length, 0, "distintas o lentas: nada");
+  page.avanzar(120);
+  b.dispatchEvent({ type: "click" });
+  assert.equal(page.scripts.length, 1);
+  assert.equal(page.scripts[0].src, "/recreo.js?v=prueba.1", "con la revisión de caché de inicio.js");
+  // Mientras carga, otro doble clic no pide el archivo de nuevo
+  page.avanzar(50);
+  a.dispatchEvent({ type: "click" });
+  page.avanzar(50);
+  a.dispatchEvent({ type: "click" });
+  assert.equal(page.scripts.length, 1);
+});
+
+test("el recreo toma las láminas quietas y derechas, la del doble clic primero; al cerrar vuelven a su lugar", async () => {
+  const page = cargar();
+  page.cuadro();
+  const antes = page.laminas.map((node) => node.style.transform);
+  const tercera = page.laminas[2];
+  tercera.dispatchEvent({ type: "click" });
+  page.avanzar(80);
+  tercera.dispatchEvent({ type: "click" });
+  const abiertos = [];
+  page.ventana.pteronRecreo = { abrir: (opciones) => abiertos.push(opciones) };
+  page.scripts[0].dispatchEvent({ type: "load" });
+  // Se ordenan: en medio segundo quedan derechas (sin giro) y quietas
+  for (let i = 0; i < 30; i += 1) page.cuadro(20);
+  for (const node of page.laminas) assert.match(node.style.transform, /rotate\(0deg\)/, `derecha: ${node.style.transform}`);
+  await esperar(480);
+  assert.equal(abiertos.length, 1);
+  const [{ laminas, transformar, alCerrar }] = abiertos;
+  assert.equal(transformar, true);
+  assert.equal(laminas.length, 4);
+  assert.equal(laminas[0].img.cual, 2, "la del doble clic, primera");
+  assert.ok(laminas.every((l) => typeof l.lado === "number" && l.sombra && "recorte" in l));
+  assert.equal(ocultas(page), 4, "las de la página se esconden: el recreo las dibuja");
+  page.cuadro();
+  assert.equal(page.cuadros.size, 0, "con las láminas en el recreo la escena no pide cuadros");
+
+  alCerrar();
+  assert.equal(page.cuadros.size, 1, "vuelven");
+  // Se muestran en el cuadro siguiente, ya bajo la pantalla (no en el lugar donde el recreo las tomó) y suben
+  assert.equal(ocultas(page), 4);
+  page.cuadro(16);
+  assert.equal(ocultas(page), 0);
+  assert.ok(page.laminas.some((node) => Number(/translate3d\((-?[\d.]+)px, (-?[\d.]+)px/.exec(node.style.transform)[2]) > 900), "parten bajo la pantalla");
+  for (let i = 0; i < 120; i += 1) page.cuadro(16);
+  page.laminas.forEach((node, i) => {
+    const y = (t) => Number(/translate3d\((-?[\d.]+)px, (-?[\d.]+)px/.exec(t)[2]);
+    assert.ok(Math.abs(y(node.style.transform) - y(antes[i])) < 30, `lámina ${i} de vuelta: ${node.style.transform}`);
+  });
+  // Y se puede volver a abrir
+  page.avanzar(1000);
+  tercera.dispatchEvent({ type: "click" });
+  page.avanzar(80);
+  tercera.dispatchEvent({ type: "click" });
+  await esperar(480);
+  assert.equal(abiertos.length, 2);
+});
+
+test("si recreo.js no carga, las láminas vuelven a flotar, se avisa en la consola y otro doble clic lo intenta de nuevo", async () => {
+  const page = cargar();
+  page.cuadro();
+  const [a] = page.laminas;
+  a.dispatchEvent({ type: "click" });
+  page.avanzar(80);
+  a.dispatchEvent({ type: "click" });
+  page.scripts[0].dispatchEvent({ type: "error" });
+  await esperar(480);
+  assert.ok(page.scripts[0].quitado);
+  assert.equal(ocultas(page), 0);
+  assert.ok(page.avisos.some(([texto]) => String(texto).includes("recreo")));
+  for (let i = 0; i < 40; i += 1) page.cuadro(20);
+  assert.ok(page.laminas.some((node) => !/rotate\(0deg\)/.test(node.style.transform)), "flotan otra vez, con su giro");
+  page.avanzar(1000);
+  a.dispatchEvent({ type: "click" });
+  page.avanzar(80);
+  a.dispatchEvent({ type: "click" });
+  assert.equal(page.scripts.length, 2);
+});
+
+test("con movimiento reducido el recreo se abre de una vez: sin ordenar ni esconder las láminas", async () => {
+  const page = cargar({ quieto: true });
+  const [a] = page.laminas;
+  a.dispatchEvent({ type: "click" });
+  page.avanzar(80);
+  a.dispatchEvent({ type: "click" });
+  const abiertos = [];
+  page.ventana.pteronRecreo = { abrir: (opciones) => abiertos.push(opciones) };
+  page.scripts[0].dispatchEvent({ type: "load" });
+  await esperar(20);
+  assert.equal(abiertos.length, 1);
+  assert.equal(abiertos[0].transformar, false);
+  assert.equal(abiertos[0].laminas.length, 4, "las piezas llevan igual las láminas");
+  assert.equal(ocultas(page), 0);
+  assert.equal(page.cuadros.size, 0, "la escena sigue quieta");
 });

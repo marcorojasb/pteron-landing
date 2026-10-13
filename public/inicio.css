@@ -37,7 +37,7 @@
   font:600 clamp(10px,5.2cqi,15px)/1.2 "Outfit",sans-serif;color:var(--azul);padding:0 2% 1%;opacity:var(--pie,1)}
 .reverso-pie span{display:block;margin-top:.3em;font:500 max(10.5px,.8em)/1.25 var(--letra);font-stretch:94%;color:var(--grafito)}
 .reverso-pie.sin-credito span,.reverso-pie.sin-titulo>*{display:none}
-.laminas .lamina{cursor:pointer}
+.laminas .lamina{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
 
 /* ——— Portada ——— */
 .portada{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);grid-template-rows:1fr auto auto;
@@ -153,6 +153,88 @@ html.no-js .aviso{display:none}
 .plataformas li.is-detected .tu-equipo{display:inline}
 .descarga-planes{grid-column:2;color:var(--grafito)}
 
+/* El titular, letra por letra, cuando las letras se van al recreo */
+.titular-palabra{white-space:nowrap}
+.titular-letra{display:inline-block}
+
+/* ——— El recreo (recreo.js): dos clics seguidos en una lámina y las láminas caen; queda una hoja cuadriculada con un juego
+   de piezas. --c es el lado de una casilla: lo que deja la pantalla para veinte filas y diez columnas, descontado lo
+   demás de la hoja (cabeza, marcador, ayuda o botones). recreo.js lo redondea a píxeles enteros. ——— */
+html.con-recreo{overflow:hidden}
+html.con-recreo body{padding-right:var(--barra,0px)}
+.recreo{--c:clamp(12px,min((100vh - 190px) / 20,(100vw - 240px) / 10),34px);--c:clamp(12px,min((100dvh - 190px) / 20,(100vw - 240px) / 10),34px);
+  --lado:8.5rem;position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;
+  padding:max(12px,env(safe-area-inset-top,0px)) 12px max(12px,env(safe-area-inset-bottom,0px));border:0;background:transparent;color:var(--tinta);
+  overflow:auto;overscroll-behavior:contain;touch-action:manipulation}
+.recreo[open]{display:grid;place-items:center}
+/* Quieta, la página queda detrás de la mesa; con el vuelo no hace falta: las letras ya se fueron y las láminas son las
+   piezas */
+.recreo::backdrop{background:color-mix(in srgb,var(--mesa) 92%,transparent)}
+.recreo[data-transforma]::backdrop{background:transparent}
+.recreo-vuelo{position:fixed;inset:0;pointer-events:none}
+.recreo-hoja{display:flex;flex-direction:column;gap:16px;padding:20px 24px 18px;border-radius:6px;background:var(--hoja);
+  box-shadow:0 2px 3px rgb(var(--sombra)/.08),0 40px 80px -36px rgb(var(--sombra)/.5)}
+.recreo[open] .recreo-hoja{animation:recreo-sube .5s var(--curva) backwards}
+.recreo[open]::backdrop{animation:recreo-fondo .3s ease backwards}
+.recreo.is-cerrando .recreo-hoja{animation:recreo-baja .26s cubic-bezier(.5,0,.75,0) forwards}
+.recreo.is-cerrando::backdrop{animation:recreo-fondo .26s ease reverse forwards}
+@keyframes recreo-sube{from{opacity:0;transform:translateY(56px) rotate(-1.5deg)}}
+@keyframes recreo-baja{to{opacity:0;transform:translateY(40px) rotate(1deg)}}
+@keyframes recreo-fondo{from{opacity:0}}
+.recreo-cabeza{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
+.recreo-titulo{font-size:1.625rem;font-stretch:118%;letter-spacing:-.02em;line-height:1}
+.recreo-acciones{display:flex;gap:8px}
+.recreo-boton{min-height:44px;padding:0 16px;border:var(--borde) solid var(--linea);border-radius:999px;background:var(--hoja);color:var(--azul);
+  font-weight:620;font-size:.9375rem;transition:border-color .2s}
+.recreo-boton:hover{border-color:color-mix(in srgb,var(--azul) 45%,var(--linea))}
+.recreo-boton:disabled{color:var(--grafito);opacity:.6;cursor:default}
+.recreo-cuerpo{display:flex;align-items:flex-start;gap:24px}
+.recreo-tablero{position:relative;flex:none;display:grid;place-items:center;width:calc(var(--c) * 10);height:calc(var(--c) * 20)}
+.recreo-lienzo{border-radius:2px;box-shadow:0 0 0 var(--borde) var(--linea)}
+.recreo-aviso{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:10px;padding:16px;text-align:center;
+  background:rgb(255 255 255/.88);transition:opacity .4s var(--curva)}
+/* Antes de empezar la hoja está vacía: el aviso va sin velo, bajo la primera pieza. Mientras vuelan las láminas no se ve */
+.recreo-aviso[data-estado="listo"]{background:none}
+.recreo-hoja[data-vuelo] .recreo-aviso{opacity:0;pointer-events:none}
+.recreo-aviso-titulo{color:var(--azul);font-size:1.375rem;font-weight:740;font-stretch:112%;letter-spacing:-.015em;line-height:1.1;text-wrap:balance}
+.recreo-aviso-texto{max-width:22ch;color:var(--grafito);font-size:var(--t-chico);line-height:1.4}
+.recreo-aviso .boton{margin-top:8px}
+.recreo-lado{display:grid;align-content:start;gap:18px;width:max(var(--lado),var(--recreo-mini,0px))}
+.recreo-rotulo,.recreo-datos dt{font-size:var(--t-rotulo);font-weight:650;font-stretch:94%;color:var(--azul)}
+.recreo-rotulo{margin-bottom:8px}
+.recreo-datos{display:grid;gap:10px}
+.recreo-datos div{padding-top:8px;border-top:var(--borde) solid var(--regla)}
+.recreo-datos dd{margin:0;font-size:1.25rem;font-weight:680;font-stretch:104%;font-variant-numeric:tabular-nums;line-height:1.3;color:var(--tinta)}
+/* La ayuda y los botones toman el ancho de la hoja sin agrandarla */
+.recreo-ayuda,.recreo-controles{width:0;min-width:100%}
+.recreo-ayuda{font-size:var(--t-rotulo);line-height:1.9;color:var(--grafito);text-align:center;text-wrap:balance}
+.recreo-ayuda span{white-space:nowrap}
+.recreo-ayuda kbd{padding:1px 6px;border:var(--borde) solid var(--linea);border-radius:5px;background:var(--mesa);color:var(--tinta);font:inherit;font-weight:650}
+.recreo-controles{display:none}
+.recreo-control{display:grid;place-items:center;min-height:56px;padding:0;border:var(--borde) solid var(--linea);border-radius:12px;background:var(--mesa);color:var(--azul);
+  touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.recreo-control:active{background:var(--mesa-honda);border-color:color-mix(in srgb,var(--azul) 45%,var(--linea))}
+.recreo-control svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* En pantallas táctiles, botones bajo el tablero en vez de la ayuda del teclado: las flechas a la izquierda, girar y
+   soltar a la derecha */
+@media (hover:none) and (pointer:coarse){
+  .recreo{--lado:5.25rem;--c:clamp(12px,min((100vh - 190px) / 20,(100vw - 160px) / 10),34px);--c:clamp(12px,min((100dvh - 190px) / 20,(100vw - 160px) / 10),34px)}
+  .recreo-hoja{gap:12px;padding:16px 16px 14px}
+  .recreo-cuerpo{gap:12px}
+  .recreo-titulo{font-size:1.375rem}
+  .recreo-datos dd{font-size:1.125rem}
+  .recreo-controles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+  .recreo-ayuda{display:none}
+}
+/* Un teléfono acostado: los botones van al costado, en dos columnas */
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:540px){
+  .recreo{--c:clamp(10px,(100vh - 116px) / 20,34px);--c:clamp(10px,(100dvh - 116px) / 20,34px)}
+  .recreo-hoja{display:grid;grid-template-columns:auto auto;grid-template-areas:"cabeza cabeza" "cuerpo controles";align-items:start;column-gap:20px}
+  .recreo-cabeza{grid-area:cabeza}
+  .recreo-cuerpo{grid-area:cuerpo}
+  .recreo-controles{grid-area:controles;width:auto;min-width:0;grid-template-columns:repeat(2,64px);align-self:end}
+}
+
 /* ——— Anchos ——— */
 @media (max-width:1180px){
   .mesa-hojas{grid-template-columns:repeat(2,max-content);--s:.36}
@@ -199,7 +281,7 @@ html.no-js .aviso{display:none}
 @media print{
   .escena[data-viva]{height:auto!important}
   .escena .escena-fija{position:static!important;height:auto!important;overflow:visible!important}
-  .laminas,.mesa,.ventana,.ver-de-nuevo,.controles,.portada-acciones,.aviso{display:none!important}
+  .laminas,.mesa,.ventana,.ver-de-nuevo,.controles,.portada-acciones,.aviso,.recreo{display:none!important}
   .portada{display:block!important;min-height:0!important;padding:0 0 8mm!important;opacity:1!important;transform:none!important;visibility:visible!important}
   .portada-marca{display:inline-block;margin-bottom:12mm}
   .portada h1{font-size:30pt!important;max-width:none!important;text-shadow:none!important}

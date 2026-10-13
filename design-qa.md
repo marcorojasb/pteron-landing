@@ -1,5 +1,36 @@
 # Design QA
 
+## El recreo (huevo de pascua de la portada) — 2026-10-13
+
+Pedido: dos clics en una de las formas de la portada; las letras se van, las láminas se transforman en las piezas de
+un juego de piezas que caen, totalmente jugable.
+
+Verificado en Chromium (Playwright) con un servidor estático de `public/`, a 1440 × 900 (puntero) y 390 × 844
+(táctil), con capturas por ráfagas y con el reloj del vuelo congelado en 0, 300, 400, 600, 900, 1100, 1500 y 2200 ms:
+
+- Inicio: el doble clic no salta nada; las láminas se enderezan y dejan de flotar; las letras del titular caen una a una
+  y lo demás de la portada se desvanece.
+- Toma: en el cuadro en que el recreo dibuja las láminas, la página esconde las suyas; congelado en 0 ms, la copia
+  calza con el original (sin corrimientos ni trozos de otra parte de la obra).
+- Recorte: la línea de tinta rodea la pieza dentro de cada lámina, el sobrante cae girando y se desvanece; ninguna
+  pieza ocupa la lámina entera.
+- Vuelo y llegada: la primera pieza llega a donde nace en el tablero; las tres siguientes, a «Siguiente»; las demás se
+  apilan detrás y se desvanecen. Al terminar no queda nada del vuelo encima de la hoja.
+- Juego: piezas con su trozo de lámina y contorno de tinta; fantasma a lápiz; pausa, fin del recreo y récord; teclado
+  en escritorio y botones táctiles en el teléfono.
+- Cierre: la hoja baja, las láminas suben a su lugar desde abajo y las letras vuelven; el titular queda idéntico al
+  original y no quedan animaciones colgando.
+- Movimiento reducido: el juego se abre de una vez, con las piezas recortadas de las láminas y la página detrás de la
+  mesa.
+- Falla del recurso (`recreo.js` bloqueado): la portada vuelve como estaba, un aviso en la consola y un segundo doble
+  clic lo intenta de nuevo.
+- Desborde horizontal: 0 px. Consola: sin errores propios (sólo el 403 por límite de la API pública de GitHub que pide
+  `release-data.js`, ajeno a este cambio).
+- Rendimiento: en el Chromium sin GPU del entorno de prueba, la toma de las láminas tarda unos 200 ms (con las láminas
+  quietas) y el vuelo corre a unos 40 cuadros por segundo a densidad 1; falta medirlo en un teléfono real.
+
+Final result: passed (pendiente: Safari en iPhone y un teléfono de gama baja)
+
 ## Landing móvil y carga de video — 2026-07-28
 
 Target: Pteron landing, responsive mobile correction and video loading state

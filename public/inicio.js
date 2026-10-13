@@ -4,9 +4,14 @@
       figura, mientras las hojas se imprimen. Todo es función del avance del scroll: hacia atrás se deshace igual.
    3. La hoja: hoja del estudiante o versión docente, color o blanco y negro.
    4. El aviso de datos de estudiantes con la regla y la tarjeta de pteron (pteron-ventana.js).
+   5. El recreo: dos clics (o dos toques) seguidos en una lámina y las letras de la portada se van, las láminas se
+      ordenan y recreo.js (que se carga recién entonces) las recorta en las piezas de un juego de piezas que caen.
    Sin JavaScript o con movimiento reducido, la página ya está completa y quieta (inicio.css). */
 (async () => {
   "use strict";
+  // La revisión de caché con que llegó este archivo: el recreo se pide con la misma (se lee antes de esperar nada, mientras
+  // document.currentScript todavía es este script)
+  const revision = /[?&]v=([^&#]+)/.exec(document.currentScript?.src || "")?.[1] ?? "";
   // Safari corre este script sin esperar las hojas de estilo: medir antes daría la escena sin su CSS (una mesa de miles de
   // píxeles de alto y las láminas fuera de la pantalla). script.js avisa cuándo están todas puestas
   if (window.pteronEstilos) await window.pteronEstilos;
@@ -138,6 +143,184 @@
     lamina.node.addEventListener("click", () => {
       if (fine.matches) return;
       voltear(lamina, lamina.quiere ? 0 : 1);
+    });
+  });
+
+  /* ——— 5. El recreo ——— */
+  // La escena viva deja aquí cómo mover las láminas para el recreo (ordenar, soltar, desordenar y volver). Quieta,
+  // las láminas no se mueven y el recreo se abre de una vez
+  let escenaRecreo = null;
+  let recreo = "cerrado"; // cerrado, abriendo o abierto
+  let pedido = null;
+  const cargarRecreo = () => {
+    if (window.pteronRecreo) return Promise.resolve(window.pteronRecreo);
+    pedido ||= new Promise((listo, falla) => {
+      const script = document.createElement("script");
+      // Un juego que no llega no deja la portada a medias: a los diez segundos se da por perdido
+      const espera = setTimeout(() => fallar(new Error("recreo.js no llegó a tiempo")), 10000);
+      const fallar = (error) => {
+        clearTimeout(espera);
+        pedido = null;
+        script.remove();
+        falla(error);
+      };
+      script.src = `/recreo.js${revision ? `?v=${revision}` : ""}`;
+      script.async = true;
+      script.addEventListener("load", () => {
+        clearTimeout(espera);
+        if (window.pteronRecreo) listo(window.pteronRecreo);
+        else fallar(new Error("recreo.js cargó sin el juego"));
+      });
+      script.addEventListener("error", () => fallar(new Error("recreo.js no cargó")));
+      document.head.append(script);
+    });
+    return pedido;
+  };
+
+  // Las letras de la portada se van: las del titular caen una a una, como piezas, y lo demás se desvanece. Al volver,
+  // suben en el orden inverso y el titular queda como estaba
+  const titular = portada && $("h1", portada);
+  const titularOriginal = titular?.innerHTML ?? "";
+  const restoPortada = portada ? [".portada-marca", ".portada-texto", ".portada-acciones", ".portada-nota"].map((sel) => $(sel, portada)).filter(Boolean) : [];
+  let letras = null;
+  const irseLetras = () => {
+    if (letras || !titular || typeof titular.animate !== "function") return;
+    const texto = titular.textContent.replace(/\s+/g, " ").trim();
+    const sueltas = [];
+    const palabras = document.createDocumentFragment();
+    texto.split(" ").forEach((palabra, i) => {
+      if (i) palabras.append(" ");
+      const grupo = document.createElement("span");
+      grupo.className = "titular-palabra";
+      for (const caracter of palabra) {
+        const letra = document.createElement("span");
+        letra.className = "titular-letra";
+        letra.textContent = caracter;
+        grupo.append(letra);
+        sueltas.push(letra);
+      }
+      palabras.append(grupo);
+    });
+    titular.setAttribute("aria-label", texto);
+    titular.replaceChildren(palabras);
+    const alto = window.innerHeight;
+    const caidas = sueltas.map((letra, i) => {
+      const caja = letra.getBoundingClientRect();
+      const destino = `translate(${(Math.random() - 0.5) * 50}px, ${alto - caja.top + caja.height * (1 + Math.random())}px) rotate(${(Math.random() - 0.5) * 70}deg)`;
+      const anim = letra.animate([{ transform: "none" }, { transform: destino }], {
+        duration: 640 + Math.random() * 220,
+        delay: i * 15 + Math.random() * 70,
+        easing: "cubic-bezier(.55,0,.85,.4)",
+        fill: "both",
+      });
+      return { letra, destino, anim };
+    });
+    const desvanecidos = restoPortada.map((el, i) =>
+      el.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(18px)" }], { duration: 360, delay: 50 * i, easing: "ease-in", fill: "both" }),
+    );
+    letras = { caidas, desvanecidos };
+  };
+  const volverLetras = () => {
+    if (!letras) return;
+    const { caidas, desvanecidos } = letras;
+    letras = null;
+    const vueltas = caidas.map(({ letra, destino, anim }, i) => {
+      anim.cancel();
+      return letra.animate([{ transform: destino }, { transform: "none" }], {
+        duration: 620,
+        delay: (caidas.length - 1 - i) * 13,
+        easing: "cubic-bezier(.2,.7,.2,1)",
+        fill: "backwards",
+      });
+    });
+    desvanecidos.forEach((anim) => anim.reverse());
+    Promise.all([...vueltas, ...desvanecidos].map((anim) => anim.finished)).then(
+      () => {
+        if (letras) return;
+        desvanecidos.forEach((anim) => anim.cancel());
+        titular.innerHTML = titularOriginal;
+        titular.removeAttribute("aria-label");
+      },
+      () => {},
+    );
+  };
+
+  /** Lo que el recreo necesita de cada lámina: su imagen y, si se va a transformar, dónde está, su filtro y su sombra. */
+  const laminasParaRecreo = (primera) => {
+    const vistas = laminas.filter((lamina) => {
+      const img = $(".lamina-cara img", lamina.node);
+      return img?.complete && img.naturalWidth > 0 && getComputedStyle(lamina.node).display !== "none";
+    });
+    // La del doble clic primero y las demás según su distancia a ella: el recorte se propaga desde ahí
+    const centro = (lamina) => {
+      const caja = lamina.node.getBoundingClientRect();
+      return [caja.left + caja.width / 2, caja.top + caja.height / 2];
+    };
+    const [px, py] = centro(primera);
+    const distancia = new Map(vistas.map((lamina) => [lamina, Math.hypot(...centro(lamina).map((v, i) => v - [px, py][i]))]));
+    vistas.sort((a, b) => (a === primera ? -1 : b === primera ? 1 : distancia.get(a) - distancia.get(b)));
+    return vistas.map((lamina) => {
+      const caja = lamina.node.getBoundingClientRect();
+      const css = getComputedStyle(lamina.node);
+      return {
+        nombre: lamina.node.dataset.lamina,
+        img: $(".lamina-cara img", lamina.node),
+        recorte: lamina.reverso?.style.clipPath || "",
+        x: caja.left,
+        y: caja.top,
+        lado: caja.width,
+        filtro: getComputedStyle($(".lamina-cara", lamina.node)).filter,
+        sombra: { x: lamina.sx ?? 10, y: lamina.sy ?? 16, desenfoque: parseFloat(css.getPropertyValue("--sb")) || 12, opacidad: parseFloat(css.getPropertyValue("--so")) || 0.3 },
+      };
+    });
+  };
+
+  const abrirRecreo = async (primera) => {
+    if (recreo !== "cerrado") return;
+    recreo = "abriendo";
+    laminas.forEach((lamina) => voltear(lamina, 0));
+    const viva = escenaRecreo && !caida;
+    let demora = 0;
+    if (viva) {
+      demora = escenaRecreo.ordenar();
+      irseLetras();
+    }
+    // Mientras se ordenan, las imágenes de las láminas se dejan listas para dibujarlas en el recreo sin esperar
+    const imagenes = laminas.map((lamina) => $(".lamina-cara img", lamina.node)?.decode?.().catch(() => {}));
+    try {
+      const [juego] = await Promise.all([cargarRecreo(), new Promise((listo) => setTimeout(listo, demora)), ...imagenes]);
+      const transforma = Boolean(escenaRecreo && !caida);
+      const datos = laminasParaRecreo(primera);
+      juego.abrir({
+        laminas: datos,
+        transformar: transforma,
+        alCerrar: () => {
+          recreo = "cerrado";
+          if (escenaRecreo && !caida) escenaRecreo.volver();
+          volverLetras();
+        },
+      });
+      // En el mismo cuadro en que el recreo dibuja las láminas, las de la página se esconden
+      if (transforma) escenaRecreo.soltar();
+      recreo = "abierto";
+    } catch (error) {
+      recreo = "cerrado";
+      if (escenaRecreo && !caida) escenaRecreo.desordenar();
+      volverLetras();
+      console.warn("pteron: el recreo no se pudo abrir", error);
+    }
+  };
+  // Dos clics seguidos sobre la misma lámina. No se usa dblclick: Safari en iPhone no lo manda al tocar dos veces
+  let anterior = { lamina: null, t: -Infinity };
+  laminas.forEach((lamina) => {
+    lamina.node.addEventListener("click", () => {
+      const t = performance.now();
+      if (anterior.lamina === lamina && t - anterior.t < 450) {
+        anterior = { lamina: null, t: -Infinity };
+        abrirRecreo(lamina);
+      } else {
+        anterior = { lamina, t };
+      }
     });
   });
 
@@ -398,6 +581,40 @@
   let medirOtraVez = true;
   const demoFlip = laminas.find((lamina) => lamina.node.dataset.lamina === "ciencias-luna");
 
+  // El recreo: al doble clic las láminas dejan de flotar y se enderezan (ordenar); después el recreo las toma y las
+  // recorta en piezas (soltar: aquí se esconden). Al cerrar el juego vuelven subiendo a saltos de una casilla, cada una a
+  // su turno, como piezas al revés (volver). Avanza con el reloj, no con el desplazamiento
+  const ORDEN = 420;
+  const CAIDA = 1100;
+  const enRecreo = { orden: 0, haciaOrden: 0, k: 0, haciaK: 0, oculta: false, antes: 0 };
+  const acercar = (v, hacia, paso) => (v < hacia ? Math.min(hacia, v + paso) : Math.max(hacia, v - paso));
+  escenaRecreo = {
+    ordenar() {
+      if (caida) return 0;
+      enRecreo.haciaOrden = 1;
+      enRecreo.antes = 0;
+      start();
+      return ORDEN * (1 - enRecreo.orden);
+    },
+    soltar() {
+      if (caida) return;
+      enRecreo.oculta = true;
+      laminas.forEach((lamina) => (lamina.node.style.visibility = "hidden"));
+    },
+    desordenar() {
+      enRecreo.haciaOrden = 0;
+      enRecreo.antes = 0;
+      start();
+    },
+    volver() {
+      if (caida) return;
+      // Vuelven desde abajo, ya derechas, y suben a su lugar en un orden que no se lee como fila
+      laminas.forEach((lamina, i) => (lamina.turno = (((i * 7) % laminas.length) / laminas.length) * 0.4));
+      Object.assign(enRecreo, { oculta: false, orden: 0, haciaOrden: 0, k: 1, haciaK: 0, antes: 0 });
+      start();
+    },
+  };
+
   /** Un cuadro de la escena en el instante now. Devuelve si hace falta otro. */
   function pintar(now) {
     if (enIndice()) {
@@ -421,6 +638,10 @@
     // La geometría se lee al comienzo del cuadro, antes de escribir estilos: así no se fuerza un cálculo de diseño
     readProgress();
     const p = progress;
+    const dt = enRecreo.antes ? Math.min(50, now - enRecreo.antes) : 16;
+    enRecreo.antes = now;
+    enRecreo.orden = acercar(enRecreo.orden, enRecreo.haciaOrden, dt / ORDEN);
+    enRecreo.k = acercar(enRecreo.k, enRecreo.haciaK, dt / CAIDA);
     pointer.x = lerp(pointer.x, pointer.tx, 0.06);
     pointer.y = lerp(pointer.y, pointer.ty, 0.06);
 
@@ -521,17 +742,40 @@
         lift = lerp(1, 0.6, k);
       }
 
+      // Ordenadas para el recreo: quietas en su lugar y derechas
+      const o = smooth(enRecreo.orden);
+      if (o > 0) {
+        x = lerp(x, L.x, o);
+        y = lerp(y, L.y, o);
+        r = lerp(r, 0, o);
+        flip *= 1 - o;
+      }
+      if (enRecreo.k > 0) {
+        // De vuelta: abajo de la pantalla y derecha; sube de a un tercio de lámina, su cuadrícula, y al llegar se gira
+        const turno = lamina.turno ?? 0;
+        const e = span(enRecreo.k, turno, turno + 0.6);
+        const g = smooth(span(e, 0, 0.3));
+        r = lerp(r, 0, g);
+        flip *= 1 - g;
+        const casilla = L.L / 3;
+        const saltos = Math.ceil((H - L.y + L.L) / casilla) + 1;
+        y += Math.floor(span(e, 0.3, 1) ** 2 * saltos) * casilla;
+      }
+
       lamina.node.toggleAttribute("data-arriba", flip > 0.04 || (lamina.vuelo && p > lamina.vuelo[0]));
       lamina.node.style.transform = `translate3d(${x - L.L / 2}px, ${y - L.L / 2}px, 0) rotate(${r}deg) scale(${s})`;
       lamina.node.style.opacity = alpha < 1 ? String(alpha) : "";
       lamina.node.style.setProperty("--papel", papel < 1 ? String(papel) : "1");
       lamina.node.style.setProperty("--pie", pie < 1 ? String(pie) : "1");
-      lamina.node.style.visibility = alpha <= 0 ? "hidden" : "";
+      lamina.node.style.visibility = alpha <= 0 || enRecreo.oculta ? "hidden" : "";
       lamina.cuerpo.style.transform = flip > 0.001 ? `rotateY(${flip * 180}deg)` : "";
       if (lamina.sombra) {
         const sx = 4 + 12 * lift * (0.6 + 0.4 * Math.sin((2 * Math.PI * t) / lamina.py + lamina.fase * 0.7));
         const sy = 6 + 20 * lift;
         lamina.sombra.style.transform = `translate3d(${sx}px, ${sy}px, 0)${flip > 0.001 ? ` rotateY(${flip * 180}deg)` : ""}`;
+        // El recreo dibuja la sombra igual al tomar la lámina
+        lamina.sx = sx;
+        lamina.sy = sy;
       }
     });
 
@@ -540,7 +784,10 @@
     // Pasadas las hojas (rótulos y pie ya puestos) no queda nada en movimiento: el ciclo se detiene hasta el próximo
     // desplazamiento o volteo
     const volteando = laminas.some((lamina) => Math.abs(lamina.volteo - Math.max(lamina.quiere, lamina.demo || 0)) > 0.002);
-    return (visible && p < 0.85) || volteando;
+    // Con las láminas en manos del recreo no queda nada que mover
+    if (enRecreo.oculta) return false;
+    const recreando = enRecreo.orden !== enRecreo.haciaOrden || enRecreo.k !== enRecreo.haciaK;
+    return (visible && p < 0.85) || volteando || recreando;
   }
 
   function frame(now) {
