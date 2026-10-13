@@ -5,8 +5,11 @@
    3. La hoja: hoja del estudiante o versión docente, color o blanco y negro.
    4. El aviso de datos de estudiantes con la regla y la tarjeta de pteron (pteron-ventana.js).
    Sin JavaScript o con movimiento reducido, la página ya está completa y quieta (inicio.css). */
-(() => {
+(async () => {
   "use strict";
+  // Safari corre este script sin esperar las hojas de estilo: medir antes daría la escena sin su CSS (una mesa de miles de
+  // píxeles de alto y las láminas fuera de la pantalla). script.js avisa cuándo están todas puestas
+  if (window.pteronEstilos) await window.pteronEstilos;
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -144,31 +147,86 @@
   const staticFlip = () => {
     laminas.forEach((lamina) => lamina.node.classList.toggle("is-volteada", lamina.quiere > 0.5));
   };
-  if (quieta()) {
+  const flipQuieto = () =>
     laminas.forEach((lamina) => {
       lamina.node.addEventListener("pointerenter", staticFlip);
       lamina.node.addEventListener("pointerleave", () => setTimeout(staticFlip, 700));
       lamina.node.addEventListener("click", staticFlip);
     });
+  if (quieta()) {
+    flipQuieto();
     return;
   }
 
   /* ——— Escena viva ——— */
-  escena.setAttribute("data-viva", "");
+  // Lo que la escena escribe en línea, tal como venía en el HTML: si algo falla, se devuelve tal cual y la página queda
+  // como la dibuja el CSS
+  const escritos = new Map();
+  [portada, pie, ...laminas.flatMap((lamina) => [lamina.node, lamina.cuerpo, lamina.sombra])]
+    .concat(hojas.flatMap((hoja) => [hoja.node, hoja.doc, hoja.rotulo, ...$$("svg[data-figura]", hoja.node)]))
+    .forEach((node) => node && escritos.set(node, node.getAttribute("style")));
   const corner = $(".esquina-descargar");
-  if (corner) corner.dataset.control = "inicio";
+  let watcher = null;
+  let raf = 0;
+  let running = false;
+  let visible = true;
+  let latido = 0; // cuándo corrió (o se pidió) el último cuadro
+  let caida = false;
+
+  /** Plan de reserva: ante cualquier error la escena se detiene y la página queda quieta, como con movimiento reducido:
+      sin data-viva, sin estilos en línea, el volteo por clase y la esquina de vuelta en manos de script.js. */
+  function aquietar(error) {
+    if (caida) return;
+    caida = true;
+    running = false;
+    cancelAnimationFrame(raf);
+    try {
+      watcher?.disconnect();
+      escena.removeAttribute("data-viva");
+      escritos.forEach((style, node) => (style === null ? node.removeAttribute("style") : node.setAttribute("style", style)));
+      laminas.forEach((lamina) => lamina.node.removeAttribute("data-arriba"));
+      flipQuieto();
+      staticFlip();
+    } finally {
+      if (corner) {
+        delete corner.dataset.control;
+        // script.js vuelve a mirar el botón de la portada y decide si la esquina se ve
+        document.dispatchEvent(new CustomEvent("pteron:esquina"));
+      }
+      if (error) console.warn("pteron: la escena del inicio queda quieta por un error", error);
+    }
+  }
+  /** Envuelve un manejador de la escena: si falla, la página queda quieta; si ya quedó quieta, no hace nada. */
+  const seguro =
+    (fn) =>
+    (...args) => {
+      if (caida) return undefined;
+      try {
+        return fn(...args);
+      } catch (error) {
+        aquietar(error);
+        return undefined;
+      }
+    };
+
+  try {
+    escena.setAttribute("data-viva", "");
+    if (corner) corner.dataset.control = "inicio";
+  } catch (error) {
+    aquietar(error);
+  }
   // Donde la página ya ofrece la descarga (la sección «Descargar» y el pie), la esquina se aparta
   let cornerQuiet = false;
   const quietZones = [$("#descargar"), $("#colofon")].filter(Boolean);
-  if (corner && quietZones.length && "IntersectionObserver" in window) {
+  if (!caida && corner && quietZones.length && "IntersectionObserver" in window) {
     const seen = new Set();
-    const watcher = new IntersectionObserver(
-      (entries) => {
+    watcher = new IntersectionObserver(
+      seguro((entries) => {
         entries.forEach((entry) => (entry.isIntersecting ? seen.add(entry.target) : seen.delete(entry.target)));
         cornerQuiet = seen.size > 0;
         if (cornerQuiet) corner.setAttribute("data-oculto", "");
         else if (progress >= 0.1 || escena.getBoundingClientRect().bottom <= H) corner.removeAttribute("data-oculto");
-      },
+      }),
       { rootMargin: "0px 0px -30% 0px" },
     );
     quietZones.forEach((zone) => watcher.observe(zone));
@@ -337,19 +395,29 @@
   const enIndice = () => document.documentElement.classList.contains("con-indice");
   let pausa = 0;
   let pausadaDesde = 0;
+  let medirOtraVez = true;
   const demoFlip = laminas.find((lamina) => lamina.node.dataset.lamina === "ciencias-luna");
 
-  function frame(now) {
+  /** Un cuadro de la escena en el instante now. Devuelve si hace falta otro. */
+  function pintar(now) {
     if (enIndice()) {
       pausadaDesde ||= now;
-      running = false;
-      return;
+      return false;
     }
     if (pausadaDesde) {
       pausa += now - pausadaDesde;
       pausadaDesde = 0;
     }
     const t = (now - intro - pausa) / 1000;
+    // Se mide otra vez si alguien lo pidió o si la mesa ya no mide lo medido: una pestaña de fondo, la caché de ida y
+    // vuelta o una página congelada cambian el tamaño sin avisar con resize. Se mide aquí, con el índice cerrado, para
+    // dibujar en el mismo cuadro: ninguna lámina queda en la pose de medir
+    if (medirOtraVez || fija.clientWidth !== W || fija.clientHeight !== H || narrow.matches !== movil) {
+      medirOtraVez = false;
+      measure();
+      flights();
+      waiting();
+    }
     // La geometría se lee al comienzo del cuadro, antes de escribir estilos: así no se fuerza un cálculo de diseño
     readProgress();
     const p = progress;
@@ -472,7 +540,20 @@
     // Pasadas las hojas (rótulos y pie ya puestos) no queda nada en movimiento: el ciclo se detiene hasta el próximo
     // desplazamiento o volteo
     const volteando = laminas.some((lamina) => Math.abs(lamina.volteo - Math.max(lamina.quiere, lamina.demo || 0)) > 0.002);
-    running = (visible && p < 0.85) || volteando;
+    return (visible && p < 0.85) || volteando;
+  }
+
+  function frame(now) {
+    if (caida) return;
+    latido = performance.now();
+    let sigue = false;
+    try {
+      sigue = pintar(now);
+    } catch (error) {
+      aquietar(error);
+      return;
+    }
+    running = sigue;
     if (running) raf = requestAnimationFrame(frame);
   }
 
@@ -485,59 +566,85 @@
       }),
     );
 
-  let raf = 0;
-  let running = false;
-  let visible = true;
   const start = () => {
+    if (caida) return;
+    // Un cuadro pedido hace más de un segundo que no llegó (la página cargó en una pestaña de fondo, quedó congelada o
+    // volvió de la caché de ida y vuelta) ya no va a llegar: se cancela y se pide otro
+    if (running && performance.now() - latido > 1000) {
+      cancelAnimationFrame(raf);
+      running = false;
+    }
     if (!running) {
       running = true;
+      latido = performance.now();
       raf = requestAnimationFrame(frame);
     }
   };
-  measure();
-  flights();
-  waiting();
-  readProgress();
-  start();
+  // Medir y dibujar el primer cuadro en el acto, sin esperar un requestAnimationFrame que podría no llegar. Con el índice
+  // abierto el cuadro no se dibuja y la medida queda pedida para cuando se cierre
+  const remedir = seguro(() => {
+    medirOtraVez = true;
+    pintar(performance.now());
+    start();
+  });
+  remedir();
+
+  // Las letras, las imágenes y la vuelta desde la caché cambian lo medido: se mide otra vez. Si con las letras
+  // definitivas la portada ya no cabe y nadie ha bajado todavía, la página queda quieta, como si lo hubiera sabido al
+  // cargar
+  const alCargar = seguro(() => {
+    if (quieta() && progress <= 0) aquietar();
+    else remedir();
+  });
+  window.addEventListener("load", alCargar, { once: true });
+  document.fonts?.ready?.then(alCargar, () => {});
+  window.addEventListener(
+    "pageshow",
+    seguro((event) => {
+      visible = document.visibilityState === "visible" && escena.getBoundingClientRect().bottom > 0;
+      if (event.persisted) remedir();
+      else start();
+    }),
+  );
+  window.addEventListener("focus", seguro(start));
 
   // Al llegar con #hojas (desde el índice o un enlace), la escena se abre con las hojas ya impresas
   const capitulo = $("#hojas", escena);
   const avance = Number.parseFloat(capitulo?.dataset.capituloAvance);
   const navegacion = performance.getEntriesByType?.("navigation")[0]?.type;
-  if (location.hash === "#hojas" && Number.isFinite(avance) && navegacion !== "reload" && navegacion !== "back_forward") {
-    const alas = () => {
+  if (!caida && location.hash === "#hojas" && Number.isFinite(avance) && navegacion !== "reload" && navegacion !== "back_forward") {
+    const alas = seguro(() => {
       window.scrollTo(0, escena.getBoundingClientRect().top + window.scrollY + (escena.offsetHeight - H) * avance);
       readProgress();
       start();
-    };
+    });
     alas();
     // El navegador vuelve a buscar el ancla al terminar de cargar: se corrige después de él
     window.addEventListener("load", () => setTimeout(alas, 0), { once: true });
   }
 
   // El desplazamiento sólo despierta el ciclo: el cuadro mide al comenzar
-  window.addEventListener("scroll", start, { passive: true });
+  window.addEventListener("scroll", seguro(start), { passive: true });
   let resizing = 0;
   window.addEventListener("resize", () => {
     clearTimeout(resizing);
-    resizing = setTimeout(() => {
-      measure();
-      flights();
-      waiting();
-      readProgress();
-      start();
-    }, 120);
+    resizing = setTimeout(remedir, 120);
   });
   if ("IntersectionObserver" in window) {
-    new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting && document.visibilityState === "visible";
-      if (visible) start();
-    }).observe(escena);
+    new IntersectionObserver(
+      seguro(([entry]) => {
+        visible = entry.isIntersecting && document.visibilityState === "visible";
+        if (visible) start();
+      }),
+    ).observe(escena);
   }
-  document.getElementById("indice")?.addEventListener("close", start);
-  document.addEventListener("visibilitychange", () => {
-    visible = document.visibilityState === "visible" && escena.getBoundingClientRect().bottom > 0;
-    if (visible) start();
-  });
+  document.getElementById("indice")?.addEventListener("close", seguro(start));
+  document.addEventListener(
+    "visibilitychange",
+    seguro(() => {
+      visible = document.visibilityState === "visible" && escena.getBoundingClientRect().bottom > 0;
+      if (visible) start();
+    }),
+  );
   motion.addEventListener?.("change", () => window.location.reload());
 })();

@@ -29,6 +29,17 @@
 
   const pageUrl = slug => slug === "inicio" ? "/docs" : `/docs?pagina=${encodeURIComponent(slug)}`;
 
+  // Si el índice tiene su propio desplazamiento, el enlace activo queda a la vista.
+  const mostrarActivo = () => {
+    const scroller = nav.closest(".docs-indice");
+    const current = nav.querySelector(".is-active");
+    if (scroller && current && scroller.scrollHeight > scroller.clientHeight) {
+      scroller.scrollTop += current.getBoundingClientRect().top - scroller.getBoundingClientRect().top - scroller.clientHeight / 2;
+    }
+  };
+  // Safari puede correr esto antes que las hojas de estilo (script.js lo sabe): con ellas puestas se mira otra vez
+  window.pteronEstilos?.then(mostrarActivo);
+
   const renderNav = active => {
     nav.innerHTML = docs.groups.map(group => `
       <section>
@@ -38,12 +49,7 @@
         ).join("")}
       </section>
     `).join("");
-    // Si el índice tiene su propio desplazamiento, el enlace activo queda a la vista.
-    const scroller = nav.closest(".docs-indice");
-    const current = nav.querySelector(".is-active");
-    if (scroller && current && scroller.scrollHeight > scroller.clientHeight) {
-      scroller.scrollTop += current.getBoundingClientRect().top - scroller.getBoundingClientRect().top - scroller.clientHeight / 2;
-    }
+    mostrarActivo();
   };
 
   // El índice del sitio (la esquina) suma las páginas de la sección que se lee: al final de un artículo largo en el

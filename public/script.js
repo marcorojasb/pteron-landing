@@ -5,6 +5,28 @@
   "use strict";
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
+  /* ——— Hojas de estilo: Safari corre los scripts «defer» sin esperarlas (Chromium y Firefox sí las esperan), y lo que se
+     mide al cargar saldría de la página sin su CSS. window.pteronEstilos es una promesa que se cumple cuando todas las
+     hojas de la página están puestas, o null si ya lo estaban. ——— */
+  const hojasPendientes = $$('link[rel="stylesheet"]').filter((link) => !link.sheet && (!link.media || window.matchMedia(link.media).matches));
+  const estilos =
+    hojasPendientes.length && document.readyState !== "complete"
+      ? new Promise((listo) => {
+          const faltan = new Set(hojasPendientes);
+          const una = (event) => {
+            faltan.delete(event.currentTarget);
+            if (!faltan.size) listo();
+          };
+          faltan.forEach((link) => {
+            link.addEventListener("load", una, { once: true });
+            link.addEventListener("error", una, { once: true });
+          });
+          // Una hoja que ya había fallado no vuelve a avisar: el «load» de la página llega de todos modos
+          window.addEventListener("load", listo, { once: true });
+        })
+      : null;
+  window.pteronEstilos = estilos;
+
   $$("[data-year]").forEach((node) => {
     node.textContent = String(new Date().getFullYear());
   });
@@ -254,6 +276,11 @@
     ajustar();
     document.fonts?.ready.then(pedir);
     window.addEventListener("resize", pedir, { passive: true });
+    // Si las hojas llegaron después (Safari), se ajusta otra vez con ellas y con sus letras
+    estilos?.then(() => {
+      pedir();
+      document.fonts?.ready.then(pedir);
+    });
   }
 
   /* ——— Piezas de las cabeceras: con el dedo se dan vuelta al tocarlas; con cursor, al pasar por encima (CSS) ——— */
@@ -337,11 +364,17 @@
   const own = $$("main [data-descargar], main .boton-principal").find((node) => node !== corner);
   if (corner) {
     if (own && "IntersectionObserver" in window) {
-      new IntersectionObserver(([entry]) => {
+      const vigia = new IntersectionObserver(([entry]) => {
         // Una página que maneja la esquina por su cuenta (el inicio) lo marca con data-control
         if (corner.dataset.control) return;
         corner.toggleAttribute("data-oculto", entry.isIntersecting || entry.boundingClientRect.top > 0);
-      }).observe(own);
+      });
+      vigia.observe(own);
+      // Si el inicio suelta la esquina (su escena falló y la página quedó quieta), se vuelve a mirar el botón desde cero
+      document.addEventListener("pteron:esquina", () => {
+        vigia.unobserve(own);
+        vigia.observe(own);
+      });
     } else corner.removeAttribute("data-oculto");
   }
 
