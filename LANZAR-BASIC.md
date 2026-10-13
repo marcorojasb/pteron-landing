@@ -14,7 +14,8 @@ contador está en `LEGAL-PENDIENTE.md`.
   correos al cliente están apagados hasta cargarla, ver 1b).
 - `supabase/esquema.sql` está aplicado y `/api/health` responde `{"ok":true}` (en verde).
 - Supabase Auth tiene Site URL `https://pteron.patagua.dev/cuenta`, Redirect URLs y SMTP propio por Resend desde
-  `no-reply@patagua.dev`, con su propia clave de Resend; el dominio `patagua.dev` está verificado en Resend.
+  `no-reply@patagua.dev`, con su propia clave de Resend; el dominio `patagua.dev` está verificado en Resend. Los
+  correos de acceso usan las plantillas en español de `supabase/correos/` (aplicadas con `supabase-auth.mjs`).
 - Probado con la cortesía `tester` propia: un pedido real a la IA incluida funcionó de punta a punta y quedó
   registrado (16.962 unidades, modelo `claude-haiku-5-5`).
 - Falta: la clave de Resend del Worker, los datos del vendedor (`SELLER_*`, y `SELLER_REPRESENTATIVE` si vende una
@@ -118,6 +119,8 @@ y el dominio `patagua.dev` verificado ya existen.
    ```
 
    Hoy el esquema, Auth, el SMTP y el DNS de Resend ya están hechos: los scripts sirven para comprobar o rehacer.
+   En una sesión de Claude en la nube, antepón `NODE_USE_ENV_PROXY=1` a cada comando: el `fetch` de Node no usa
+   el proxy del entorno por sí solo y el script diría «no hubo respuesta de la red». En tu equipo no hace falta.
 5. Prompt para una sesión nueva de Claude (con los tres tokens en el entorno):
 
    > En /workspace/pteron-landing corre, en este orden, `scripts/supabase-esquema.mjs`, `scripts/supabase-auth.mjs`

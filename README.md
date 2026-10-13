@@ -322,6 +322,8 @@ sección 1b.
 Tres scripts en `scripts/` para dejar Supabase y Resend como pide el Worker, con
 `scripts/operador.mjs` como pieza común. Son un ensayo de sólo lectura por omisión
 y actúan sólo con `--aplicar`; los tokens salen del entorno y no se imprimen.
+En una sesión en la nube con proxy, `NODE_USE_ENV_PROXY=1` hace que el `fetch` de
+Node lo use.
 
 - `supabase-esquema.mjs` (`SUPABASE_ACCESS_TOKEN`): revisa las suscripciones de
   Flow vivas y se detiene si hay (salvo `--forzar`); con `--aplicar` se niega además
