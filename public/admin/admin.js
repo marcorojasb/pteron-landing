@@ -419,6 +419,13 @@
     ? result(value === 0, "0", String(value))
     : el("span", { class: "resultado resultado-na", text: "No se pudo leer" }));
 
+  // Los correos al cliente no son esenciales: apagados, la venta sigue. Se dice qué nombres faltan para encenderlos.
+  const correos = (value) => (value && typeof value.configurado === "boolean"
+    ? value.configurado
+      ? result(true, "Configurados")
+      : el("span", { class: "resultado resultado-na", text: `Apagados: faltan ${(Array.isArray(value.faltan) ? value.faltan : []).join(", ")}` })
+    : el("span", { class: "resultado resultado-na", text: "No se pudo leer" }));
+
   const CHEQUEOS = [
     ["esencial", "Lo esencial: lo mismo que mira /api/health"],
     ["supabase", "Supabase responde con la clave del servidor"],
@@ -431,6 +438,7 @@
     ["catalogo", "El catálogo de planes se puede leer"],
     ["venta", "Cada plan a la venta está completo y su plan de Flow coincide"],
     ["checkouts_atascados", "Compras sin confirmar con Flow hace más de 10 minutos (lo esperado es 0)", cuenta],
+    ["correos", "Correos al cliente (compra, fin de prueba, cancelación); no bloquea la venta", correos],
   ];
 
   function renderPausa(paused) {

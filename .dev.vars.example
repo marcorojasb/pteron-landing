@@ -18,5 +18,8 @@ LICENSE_PRIVATE_KEY_PEM=
 ANTHROPIC_API_KEY=
 # Opcionales: GATEWAY_MAX_IN_FLIGHT (por defecto 3) y ANTHROPIC_BASE_URL. GATEWAY_MODEL_ID
 # vive en wrangler.jsonc y no tiene valor por defecto: sin él, la IA incluida responde 503.
+# Correos al cliente (src/lib/correo.js): clave de Resend del Worker, con permiso de envío
+# sólo para patagua.dev. Sin ella no se envía ninguno.
+RESEND_API_KEY=
 # Correos que pueden entrar en /admin, separados por coma.
 ADMIN_EMAILS=

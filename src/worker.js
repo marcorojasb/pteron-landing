@@ -1,6 +1,7 @@
 import { SECURITY_HEADERS, handleError, json, requireSiteHost } from "./lib/http.js";
 import { createSupabase } from "./lib/supabase.js";
 import { createFlow } from "./lib/flow.js";
+import { createCorreo } from "./lib/correo.js";
 import { syncDueSubscriptions } from "./lib/flow-sync.js";
 import { PUBLIC_KEYS, createLicenseService } from "./lib/license.js";
 import { createGateway } from "./lib/gateway.js";
@@ -27,10 +28,12 @@ const EXACT_ROUTES = {
   "/api/ai/v1/messages": messages,
 };
 
-export function createServices(env) {
+// `execution` (waitUntil) deja que un correo siga después de responder; sin él, se espera en el momento.
+export function createServices(env, execution = null) {
   const supabase = createSupabase(env);
   return {
     supabase,
+    correo: createCorreo(env, supabase, execution),
     flow: createFlow(env),
     license: createLicenseService(env, supabase),
     gateway: createGateway(supabase),
@@ -58,7 +61,7 @@ async function handleApi(request, env, execution) {
     if (SITE_ONLY.test(url.pathname)) requireSiteHost(env, url);
     const route = matchApi(url.pathname);
     if (!route) return json(404, { error: "not_found", message: "Ruta no encontrada." });
-    return await route({ request, env, url, execution, services: createServices(env) });
+    return await route({ request, env, url, execution, services: createServices(env, execution) });
   } catch (error) {
     return handleError(error);
   }

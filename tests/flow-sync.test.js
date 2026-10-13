@@ -231,6 +231,8 @@ test("el Cron sincroniza las filas cerca del fin de lo pagado, sigue si una fall
     { match: matches.supabase("subscriptions", "PATCH"), respond: { body: [{ id: "fila-1" }] } },
     { match: matches.supabase("billing_checkout_intents", "PATCH"), respond: { body: [{ id: "i1" }, { id: "i2" }] } },
     { match: matches.supabase("billing_checkout_intents", "GET"), respond: { body: [] } },
+    // Los avisos de fin de prueba (sin correo configurado) sólo dejan su evento *_email_skipped.
+    { match: matches.supabase("billing_events", "POST"), respond: { body: [] } },
   ]);
   const ahora = new Date("2026-10-20T12:17:00Z");
   const errores = [];
@@ -241,6 +243,9 @@ test("el Cron sincroniza las filas cerca del fin de lo pagado, sigue si una fall
       assert.deepEqual(await syncDueSubscriptions(testServices(env), ahora), {
         sincronizadas: 1,
         fallidas: 1,
+        correosEnviados: 0,
+        correosOmitidos: 2,
+        correosFallidos: 0,
         checkoutsVencidos: 2,
         cortesiasVencidas: 1,
         checkoutsConciliados: 0,
@@ -300,13 +305,17 @@ test("el handler scheduled del Worker corre la sincronización del Cron dentro d
     assert.deepEqual(await ctx.promises[0], {
       sincronizadas: 0,
       fallidas: 0,
+      correosEnviados: 0,
+      correosOmitidos: 0,
+      correosFallidos: 0,
       checkoutsVencidos: 0,
       cortesiasVencidas: 0,
       checkoutsConciliados: 0,
       checkoutsSinSuscripcion: 0,
       checkoutsPendientes: 0,
     });
-    assert.deepEqual(network.calls.map((call) => call.method), ["GET", "PATCH", "PATCH", "GET"]);
+    // El último GET es la búsqueda de pruebas por terminar, de los avisos por correo.
+    assert.deepEqual(network.calls.map((call) => call.method), ["GET", "PATCH", "PATCH", "GET", "GET"]);
   });
 });
 
@@ -338,6 +347,7 @@ test("si la conciliación del Cron falla, la sincronización de las suscripcione
     { match: matches.supabase("subscriptions", "PATCH"), respond: { body: [{ id: "fila-1" }] } },
     { match: matches.supabase("billing_checkout_intents", "PATCH"), respond: { body: [] } },
     { match: matches.supabase("billing_checkout_intents", "GET"), respond: { status: 500, body: { message: "caído" } } },
+    { match: matches.supabase("billing_events", "POST"), respond: { body: [] } },
   ]);
   const errores = [];
   const consoleError = console.error;
@@ -347,6 +357,9 @@ test("si la conciliación del Cron falla, la sincronización de las suscripcione
       assert.deepEqual(await syncDueSubscriptions(testServices(env), new Date("2026-10-20T12:17:00Z")), {
         sincronizadas: 1,
         fallidas: 0,
+        correosEnviados: 0,
+        correosOmitidos: 1,
+        correosFallidos: 0,
         checkoutsVencidos: 0,
         cortesiasVencidas: 0,
         checkoutsConciliados: 0,

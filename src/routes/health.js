@@ -1,5 +1,6 @@
 import { json, method, siteUrl } from "../lib/http.js";
 import { ESPERA_CONCILIACION } from "../lib/flow-sync.js";
+import { faltantesCorreo } from "../lib/correo.js";
 import { verifyLicense } from "../lib/license.js";
 import { hasKnownPrice } from "../lib/units.js";
 
@@ -221,6 +222,11 @@ async function checkoutsAtascados(services) {
   }
 }
 
+function correosAlCliente(env) {
+  const faltan = faltantesCorreo(env);
+  return { configurado: faltan.length === 0, faltan };
+}
+
 /**
  * GET /api/admin/salud. Los planes de pago se comparan con Flow aunque no
  * estén a la venta: así se revisa el plan antes de abrirla. Uno gratuito no
@@ -258,6 +264,10 @@ export async function salud({ request, env, services }) {
     ia_incluida_pausada: base.ajustes.pausada,
     catalogo: catalogo !== null,
     checkouts_atascados: atascados,
+    // Los correos al cliente salen apagados hasta tener la clave de Resend y los
+    // datos del vendedor. No es esencial ni bloquea la venta: sólo dice qué
+    // nombres faltan (nunca sus valores).
+    correos: correosAlCliente(env),
     planes,
     // Sin planes a la venta no hay nada que revisar: null, no true.
     venta: aLaVenta.length ? aLaVenta.every((plan) => plan.visible && plan.precio && plan.cuota && plan.licencia && plan.flow === true) : null,

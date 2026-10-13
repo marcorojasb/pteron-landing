@@ -8,6 +8,19 @@ solo archivo y la venta nace cerrada (`for_sale = false`).
 Cada paso dice dónde y cómo comprobarlo, sin exponer secretos. Lo que se decide con abogado o
 contador está en `LEGAL-PENDIENTE.md`.
 
+## Estado al 13 de octubre de 2026
+
+- El Worker está desplegado desde `main`, con todos sus secretos salvo `RESEND_API_KEY` (los correos al cliente
+  están apagados hasta cargarla, ver 1b).
+- `supabase/esquema.sql` está aplicado y `/api/health` responde `{"ok":true}`.
+- Supabase Auth tiene Site URL `https://pteron.patagua.dev/cuenta`, Redirect URLs y SMTP propio por Resend desde
+  `no-reply@patagua.dev`, con su propia clave de Resend.
+- Probado con una cortesía propia: un pedido real a la IA incluida funcionó de punta a punta.
+- Falta: la clave de Resend del Worker, los datos del vendedor (`SELLER_*`) y lo de `LEGAL-PENDIENTE.md`. La venta
+  sigue cerrada.
+
+Los pasos de abajo son genéricos, para un proyecto nuevo o para rehacer algo; lo ya hecho se salta.
+
 ## 0. Publicar el Worker
 
 Workers Builds no está conectado a este repositorio: un push a `main` todavía no despliega solo.
@@ -29,8 +42,11 @@ Workers Builds no está conectado a este repositorio: un push a `main` todavía 
 
 ## 1. Supabase
 
-1. Antes de correr el esquema (y antes de cada vez que lo vuelvas a correr), en SQL Editor, sólo
-   lectura:
+Los pasos 1 a 3 tienen dos variantes: con script (1b) o a mano.
+
+1. Antes de correr el esquema (y antes de cada vez que lo vuelvas a correr), sólo lectura. El script
+   `supabase-esquema` lo hace solo: se detiene si hay suscripciones de Flow vivas y, con `--aplicar`, también si
+   cualquier tabla de datos (suscripciones, licencias, uso, eventos de cobro) ya tiene filas; a mano, en SQL Editor:
 
    ```sql
    select user_id, provider_subscription_id, status
@@ -41,10 +57,11 @@ Workers Builds no está conectado a este repositorio: un push a `main` todavía 
    Cada fila es una suscripción que Flow sigue cobrando: cancélala en el panel de Flow antes de
    seguir, porque después del esquema nada la encuentra para cancelarla. En un proyecto nuevo la
    tabla no existe y no hay nada que revisar.
-2. SQL Editor: pega entero `supabase/esquema.sql` y ejecútalo. **Borra todos los datos de pteron**
+2. **Script:** `node scripts/supabase-esquema.mjs --aplicar` corre el archivo entero y comprueba el resultado.
+   **A mano:** SQL Editor, pega entero `supabase/esquema.sql` y ejecútalo. Borra **todos los datos de pteron**
    (no toca `auth.users`) y deja el esquema de cero; puede correrse de nuevo. Sólo conserva qué
    cliente de Flow es de cada cuenta (`billing_customers`): Flow no deja crear otro con la misma
-   cuenta. Comprueba:
+   cuenta. Comprueba (el script ya lo hace):
 
    ```sql
    select id, monthly_price_clp, trial_period_days, ai_units_limit, trial_ai_units_limit, for_sale
@@ -59,29 +76,75 @@ Workers Builds no está conectado a este repositorio: un push a `main` todavía 
    Si el disparador de `auth.users` hubo que rehacerlo, debe correr el archivo quien sea dueño de esa
    tabla (el esquema sólo lo crea si falta o difiere). Si alguna vez aplicaste migraciones con la CLI
    (`supabase db push`), no la vuelvas a usar para la base: este archivo la reemplaza.
-3. Authentication › Emails › SMTP Settings: SMTP propio con tu dominio (SPF y DKIM). Sin él,
-   Supabase sólo envía el enlace mágico a miembros del equipo del proyecto. Prueba con un correo
-   externo.
-4. Authentication › URL Configuration: Site URL `https://pteron.patagua.dev/cuenta` y la misma en
-   Redirect URLs.
-5. Antes de abrir la venta, plan Pro (US$25 al mes): el gratis pausa proyectos inactivos y no da
+3. Authentication: **script** `node scripts/supabase-auth.mjs --aplicar` fija Site URL, Redirect URLs (conserva
+   las que haya) y los correos en español de `supabase/correos/`; **a mano:** Authentication › URL Configuration,
+   Site URL `https://pteron.patagua.dev/cuenta` y la misma en Redirect URLs, y en Emails › Templates pega esos
+   HTML (asunto en su primera línea). Authentication › Emails › SMTP Settings: SMTP propio con tu dominio
+   (SPF y DKIM); sin él, Supabase sólo envía el enlace mágico a miembros del equipo del proyecto. El script no
+   toca el SMTP salvo con `--smtp` (ver 1b). Prueba con un correo externo.
+4. Antes de abrir la venta, plan Pro (US$25 al mes): el gratis pausa proyectos inactivos y no da
    respaldos descargables, y esta base guarda quién pagó.
+
+## 1b. Correos con Resend y scripts de operación
+
+Resend envía dos cosas: el enlace de acceso (lo manda Supabase Auth con su propia clave de Resend) y los correos
+de compra, fin de prueba y cancelación (los manda el Worker, `src/lib/correo.js`). Son claves distintas. La cuenta
+y el dominio `patagua.dev` verificado ya existen.
+
+1. Resend › API Keys › Create: permiso **Sending access**, sólo el dominio `patagua.dev`. Cárgala como secreto
+   del Worker: `npx wrangler secret put RESEND_API_KEY` (tipo **Secret**).
+2. El plan gratis de Resend da unos 3.000 correos al mes y 100 al día (confirma en resend.com/pricing). Los
+   enlaces de acceso y los correos de compra comparten ese tope: si se acerca, pasa a un plan de pago.
+3. Llena en `wrangler.jsonc` `SELLER_NAME`, `SELLER_RUT`, `SELLER_ADDRESS` y `SELLER_EMAIL` con lo que fije el
+   abogado (`LEGAL-PENDIENTE.md`, punto 1) y despliega. Sin la clave o sin cualquiera de los cuatro no sale
+   ningún correo del Worker y cada intento queda como evento `<tipo>_email_skipped`: se configura **antes**
+   de abrir la venta, porque esas suscripciones no recibirían después ese correo.
+4. Scripts (en `scripts/`; sirven desde una sesión de Claude o desde tu equipo). Los tokens se leen sólo del
+   entorno y nunca se imprimen. Cada uno es ensayo de sólo lectura por omisión; corre primero así, revisa y
+   repite con `--aplicar`:
+
+   | Script | Variables de entorno | Hace |
+   |---|---|---|
+   | `supabase-esquema.mjs` | `SUPABASE_ACCESS_TOKEN` | Esquema (sección 1). `--verificar` sólo comprueba; `--forzar` sigue pese a suscripciones vivas; `--aplicar` se niega si ya hay datos, salvo `--borrar-datos` (vacía todo pteron: sólo para rehacer un proyecto a propósito) |
+   | `supabase-auth.mjs` | `SUPABASE_ACCESS_TOKEN` (y `RESEND_SMTP_KEY` con `--smtp`) | Site URL, Redirect URLs y correos en español. `--limite-correos N` cambia el límite por hora (hoy 30) |
+   | `resend-dns.mjs` | `RESEND_API_KEY` (de administración), `CLOUDFLARE_API_TOKEN` | Compara los registros DNS que pide Resend con Cloudflare y crea los que faltan; nunca modifica ni borra |
+
+   ```bash
+   SUPABASE_ACCESS_TOKEN=... node scripts/supabase-esquema.mjs        # ensayo; en producción ya hay datos: no lo apliques
+   SUPABASE_ACCESS_TOKEN=... node scripts/supabase-auth.mjs           # ensayo; luego --aplicar
+   RESEND_API_KEY=... CLOUDFLARE_API_TOKEN=... node scripts/resend-dns.mjs   # ensayo; luego --aplicar
+   ```
+
+   Hoy el esquema, Auth, el SMTP y el DNS de Resend ya están hechos: los scripts sirven para comprobar o rehacer.
+5. Prompt para una sesión nueva de Claude (con los tres tokens en el entorno):
+
+   > En /workspace/pteron-landing corre, en este orden, `scripts/supabase-esquema.mjs`, `scripts/supabase-auth.mjs`
+   > y `scripts/resend-dns.mjs`. De cada uno, primero el ensayo (sin `--aplicar`): muéstrame su salida y espera mi
+   > OK. Para `supabase-auth.mjs` y `resend-dns.mjs`, luego repítelo con `--aplicar`. Para `supabase-esquema.mjs`
+   > NUNCA uses `--aplicar`, `--forzar` ni `--borrar-datos` (borra todos los datos de pteron): sólo el ensayo y
+   > `--verificar`. No imprimas ningún token, no uses `--smtp` sin preguntarme, no hagas commit ni despliegues. Al final reporta qué cambió,
+   > qué ya estaba bien y qué falló.
+
+6. Comprueba: `/admin` › Salud, ítem «Correos al cliente» (no bloquea; dice qué falta), y entra a `/cuenta` con
+   un correo externo a tu dominio: el enlace debe llegar en español y no a spam. El primer correo de compra se
+   ve en la primera compra real (sección 8).
 
 ## 2. Cloudflare
 
 1. Workers Paid (US$5 al mes). El plan gratis da 10 ms de CPU y corta las respuestas largas de la IA.
 2. Secretos del Worker `pteron-landing`, de tipo **Secret** (`npx wrangler secret put NOMBRE` desde
    esta carpeta, o Settings › Variables and Secrets). `npx wrangler secret list` muestra sólo los
-   nombres. El código lee estos siete:
+   nombres. El código lee estos ocho:
    - `SUPABASE_PUBLISHABLE_KEY` y `SUPABASE_SERVICE_ROLE_KEY` (el nombre viejo `SUPABASE_ANON_KEY`
      ya no se lee: si la tenías así, créala con el nombre nuevo)
    - `FLOW_API_KEY` y `FLOW_SECRET_KEY`, **de producción**
    - `LICENSE_PRIVATE_KEY_PEM`: la privada k2 (PKCS8)
    - `ANTHROPIC_API_KEY`: se carga en la sección 3
    - `ADMIN_EMAILS`: tus correos, separados por comas; sin él, `/admin` responde 503
+   - `RESEND_API_KEY`: la del Worker (sección 1b); sin ella no salen los correos al cliente
 
    Las variables de texto ya están en `wrangler.jsonc` (`PUBLIC_SITE_URL`, `SUPABASE_URL`,
-   `LICENSE_KID`, `GATEWAY_MODEL_ID`, `FLOW_BASE_URL`, `FLOW_BASIC_PLAN_ID`, `FLOW_PRO_PLAN_ID`): no
+   `LICENSE_KID`, `GATEWAY_MODEL_ID`, `FLOW_BASE_URL`, `FLOW_BASIC_PLAN_ID`, `FLOW_PRO_PLAN_ID`, `EMAIL_FROM` y los cuatro `SELLER_*`): no
    las repitas en el panel, porque cada despliegue borra las de tipo Text. Opcionales que no hay que
    poner: `GATEWAY_MAX_IN_FLIGHT` (por defecto 3), `ANTHROPIC_BASE_URL` (en producción sólo la oficial)
    y `FLOW_ALLOW_SANDBOX`, que nunca va en producción.
@@ -177,13 +240,14 @@ curl -sS -X POST https://pteron.patagua.dev/api/ai/v1/messages -H 'content-type:
 Sólo con 0.7.2 publicada (sección 7).
 
 1. Resuelve `LEGAL-PENDIENTE.md`: quién vende (con RUT y domicilio), retracto y devoluciones,
-   confirmación escrita, boleta por cada cobro y encargo de datos.
+   confirmación escrita, boleta por cada cobro y encargo de datos. Los borradores están en
+   `BORRADORES-LEGALES.md`. Llena los `SELLER_*` (1b).
 2. `/admin` › Planes: abre la venta de Basic, y la de Pro si corresponde.
 3. Primera compra real con tu tarjeta:
    - la suscripción queda en prueba;
    - al séptimo día, Flow cobra y la licencia se extiende sola;
    - cancelas y el plan termina al cierre.
-   Revisa la boleta y el correo de confirmación.
+   Revisa la boleta y el correo de confirmación (con la copia de los Términos).
 4. `/admin` › Salud: el plan de Flow de cada plan a la venta debe calzar con el catálogo. Si abriste
    Pro antes de que alguien lo comprara, dirá que no calza hasta que el primer checkout cree el plan
    (o lo crees a mano con los valores de la sección 4).

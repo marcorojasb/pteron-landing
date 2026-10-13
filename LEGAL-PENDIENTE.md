@@ -10,10 +10,20 @@ Todo lo de este archivo requiere revisión. Las fuentes son las del informe web-
 legales salieron de copias oficiales (SERNAC, SUSESO, Diario Oficial) y de estudios jurídicos, porque bcn.cl no se pudo
 leer: hay que cotejarlos ahí.
 
+Estado de la implementación (los puntos de abajo dicen lo que falta decidir): el Worker ya tiene el correo de confirmación,
+el aviso de fin de prueba, el correo de cancelación y la copia inmutable de los Términos (`/terminos/2026-10-13`).
+Salen sólo cuando se carga `RESEND_API_KEY` y los `SELLER_*`; ver `README.md`, «Correos». Los borradores completos,
+con sus fuentes, están en `BORRADORES-LEGALES.md`.
+
 Los puntos 1 a 4 impiden abrir la venta. Mientras tanto, la venta sigue cerrada con `for_sale = false` en
 `plan_catalog` y /cuenta muestra «Disponible pronto».
 
 ## 1. Quién vende
+
+Borradores y fuentes: `BORRADORES-LEGALES.md`, sección 1. Implementado: el correo de confirmación ya incluye el bloque de
+quien vende, leído de `SELLER_NAME`, `SELLER_RUT`, `SELLER_ADDRESS` y `SELLER_EMAIL` en `wrangler.jsonc`, hoy vacíos
+(sin ellos no sale ningún correo). Decisión pendiente: quién vende; con eso se llenan las variables y se escribe la
+sección en Términos, Privacidad, /cuenta y el colofón.
 
 Se vende en línea sin decir quién vende. El Reglamento de Comercio Electrónico (Decreto 6/2021 de Economía, vigente
 desde el 24-03-2022) pide nombre o razón social, RUT, domicilio, un contacto y, si es persona jurídica, su representante
@@ -44,6 +54,11 @@ https://www.sernac.cl/portal/604/w3-propertyvalue-20982.html ·
 https://web.flow.cl/es-cl/preguntas-frecuentes/cargo-automatico/
 
 ## 2. Derecho a retracto y devoluciones
+
+Borradores y fuentes: `BORRADORES-LEGALES.md`, sección 2 (opción A mantener, opción B excluir). Implementado: nada de
+política; el correo omite el párrafo de retracto mientras `TERMS_RETRACTO` (`src/lib/terms.js`) esté vacío, y una prueba
+obliga a pegarlo ahí si los Términos lo incluyen. Decisión pendiente: mantenerlo o excluirlo, desde cuándo corre con la
+prueba, el tamaño de la advertencia y el procedimiento de reembolso.
 
 Ni las páginas ni el Worker dicen nada de retracto ni de devoluciones. Según el art. 3 bis b) de la Ley 19.496 (texto
 de la Ley 21.398), en servicios contratados a distancia el consumidor puede retractarse dentro de 10 días desde la
@@ -82,6 +97,13 @@ https://www.carey.cl/publican-reglamento-que-establece-exclusiones-al-derecho-de
 
 ## 3. Confirmación escrita del contrato y copia de los Términos
 
+Borradores y fuentes: `BORRADORES-LEGALES.md`, sección 3. Implementado (apagado hasta configurar Resend y los
+`SELLER_*`): el Worker envía el correo de confirmación al crearse la suscripción, con la copia de los Términos aceptados
+adjunta y el enlace a la copia inmutable `/terminos/2026-10-13` (`public/terminos/`), por Resend, una vez por
+suscripción, con reintentos del Cron. Decisión pendiente: si basta ese adjunto o hay que enviar el texto íntegro y
+Privacidad, y los textos de quién vende y retracto. El párrafo de este punto que dice que el Worker no envía correos
+quedó atrás; ver `README.md`, «Correos».
+
 La aceptación previa ya existe: el resumen de /cuenta exige marcar «Leí y acepto los Términos (versión 2026-10-13) y
 la Política de privacidad», el checkout rechaza otra versión (`terms_required`) y la versión aceptada queda en el
 intento de pago y en la suscripción. Falta la otra mitad del art. 12 A: una vez perfeccionado el contrato, una
@@ -111,6 +133,12 @@ Fuente: https://www.suseso.gob.cl/612/w3-propertyvalue-119539.html
 
 ## 4. Boleta electrónica e IVA
 
+Borradores y fuentes: `BORRADORES-LEGALES.md`, sección 4. Corrige este punto: según la Res. 176/2020 del SII, el
+comprobante de una venta con tarjeta en línea puede valer como boleta si Flow está registrado ante el SII y el
+comprobante trae el contenido exigido; hay que confirmarlo con Flow (correo listo en la sección 6 de los borradores) y
+con el contador. El desglose es $2.990 = $2.513 neto + $477 IVA. Implementado: nada. Decisión pendiente: voucher de
+Flow, sistema gratuito del SII o emisión automática, el giro y la anulación en reembolsos.
+
 Cada cobro de $2.990 a un consumidor requiere boleta electrónica (Ley 21.210) con el IVA desglosado, y desde el
 1-1-2023 los servicios están afectos a IVA (Ley 21.420). Flow no emite boletas y el Worker tampoco. Los precios ya se
 publican con IVA incluido ($2.990 = $2.512,61 neto + $477,39 de IVA, según el informe).
@@ -131,6 +159,10 @@ https://www.sii.cl/normativa_legislacion/circulares/2022/circu50.pdf
 
 ## 5. Datos de estudiantes: tratamiento por encargo
 
+Borradores y fuentes: `BORRADORES-LEGALES.md`, sección 5 (roles, DPA de Anthropic, cláusula de encargo). Implementado:
+nada. Decisión pendiente: los roles, si las cláusulas tipo del DPA amparan la transferencia a EE. UU. y la cláusula de
+los Términos.
+
 Cuando un docente incluye datos de sus estudiantes (muchas veces menores) en un pedido a la IA incluida, el
 responsable sería el docente o su establecimiento, y pteron un encargado que a su vez usa a Anthropic y a Cloudflare.
 Desde el 1-12-2026 la Ley 21.719 regula al encargado (art. 15 bis) y las transferencias internacionales (arts. 27 y
@@ -148,6 +180,10 @@ Fuentes: https://www.bcn.cl/leychile/navegar?idNorma=1209272 ·
 https://blog.hackmetrix.com/proveedores-y-transferencia-internacional-en-la-ley-21-719/
 
 ## 6. Lo que le falta a Privacidad (art. 14 ter, desde el 1-12-2026)
+
+Borradores y fuentes: `BORRADORES-LEGALES.md`, sección 5. Implementado: el proveedor de correo ya es conocido (Resend,
+para el enlace de acceso con Supabase Auth y para los correos del Worker); falta nombrarlo en Privacidad junto con el
+resto de este punto. Decisión pendiente: todo lo demás, con los plazos de respuesta antes de diciembre.
 
 Privacidad ya tiene: los datos de la cuenta y del plan, la IA incluida (contenido, identificador seudónimo, retención de
 Anthropic), los proveedores (Cloudflare con sus registros de hasta 7 días, Supabase, Flow, Anthropic, GitHub) y su
@@ -174,6 +210,9 @@ Fuentes: https://actualidadjuridica.doe.cl/articulo-14-ter-el-deber-de-informar-
 https://supabase.com/docs/guides/auth/auth-smtp
 
 ## 7. Cambios de precio, cuota o condiciones
+
+Implementado: el correo de cancelación (`cancellation`) confirma «Cancelar renovación». El aviso de cambios de precio no
+existe. Decisión pendiente: plazos y texto; los correos ya tienen por dónde salir.
 
 Hecho técnico que la decisión debe considerar: la cuota de un período se fija la primera vez que se usa la IA incluida
 en él, con el valor del catálogo de ese momento. Una baja de cuota en /admin puede alcanzar así a un período ya empezado
@@ -209,6 +248,9 @@ Borrador, para validar (tribunal competente, art. 50 A de la Ley 19.496):
 
 ## 10. Flow: lo que hay que confirmar porque los textos lo afirman
 
+Borradores y fuentes: `BORRADORES-LEGALES.md`, sección 6 (correo a Flow con ocho preguntas, listo para enviar).
+Implementado: nada; son confirmaciones de Flow.
+
 - **Cargo automático** (punto 1): sin él, la tarjeta registrada no se cobra sola.
 - **Cargo de validación:** el manual de suscripciones de Flow anuncia un cargo de $50 para validar la tarjeta, que se
   devuelve. El resumen antes de Flow dice «Hoy no se cobra nada»; si ese cargo ocurre, agregar «Flow puede hacer un
@@ -221,6 +263,9 @@ Borrador, para validar (tribunal competente, art. 50 A de la Ley 19.496):
 Fuentes: https://web.flow.cl/manual-suscripciones-flowpagos.pdf · https://web.flow.cl/es-cl/suscripciones-de-pago/
 
 ## 11. Aviso antes del fin de la prueba
+
+Implementado: el Cron diario envía el aviso a quien termina su prueba en menos de 48 horas y no canceló
+(`trial_ending`), también apagado hasta configurar Resend y los `SELLER_*`. Queda por decidir sólo el texto final.
 
 No lo exige una norma que se haya encontrado, pero el SERNAC fiscaliza las conversiones poco claras de prueba a pago y
 las barreras de salida. Recomendado: un correo 2 o 3 días antes del primer cobro (necesita el correo del punto 3).

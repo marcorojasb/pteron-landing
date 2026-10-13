@@ -303,7 +303,9 @@ async function conciliar(services, intent, now) {
     console.error("pteron reconcile", { intent: intent.id, reason: "several_subscriptions", subscriptions: candidatas.map((s) => s.subscriptionId) });
   }
   try {
-    await recordFlowSubscription(services, intent, elegida, now);
+    const fila = await recordFlowSubscription(services, intent, elegida, now);
+    // Se anotó recién ahora: la confirmación de compra sale aquí, una vez por suscripción.
+    await services.correo?.confirmacionCompra(fila?.id, intent.user_id);
   } catch (error) {
     // provider_subscription_id es único: si otra conciliación la anotó antes, ya está registrada.
     const [ya] = (await supabase.select("subscriptions", `provider_subscription_id=eq.${encodeURIComponent(elegida.subscriptionId)}&select=id&limit=1`, { admin: true })) || [];
@@ -385,14 +387,39 @@ export async function syncAfterPayment(services, payment, now = new Date()) {
 }
 
 /**
+ * Avisos de fin de prueba, reintentos de los correos fallidos y envío de los que nunca
+ * llegaron a anotarse (compra y cancelación), más lo que la
+ * conciliación haya enviado en esta corrida (confirmaciones de compra). Devuelve
+ * cuántos salieron, se omitieron (sin configurar o ya no aplicaban) o fallaron.
+ */
+async function correosDelCron(services, now, antes) {
+  const correo = services.correo;
+  if (!correo) return { enviados: 0, omitidos: 0, fallidos: 0 };
+  try {
+    await correo.avisarFinDePrueba(now);
+    await correo.reintentar(now);
+    await correo.recuperarSinEvento(now);
+  } catch (error) {
+    console.error("pteron correo", { error: error instanceof Error ? error.message : String(error) });
+  }
+  return {
+    enviados: correo.resumen.enviados - (antes.enviados ?? 0),
+    omitidos: correo.resumen.omitidos - (antes.omitidos ?? 0),
+    fallidos: correo.resumen.fallidos - (antes.fallidos ?? 0),
+  };
+}
+
+/**
  * Corrida del Cron diario: filas Flow vigentes cuyo período pagado termina
  * entre hace 4 días y dentro de 2, sin período todavía, que cancelan al cierre
  * o que no se sincronizan hace más de 7 días (o nunca). Hasta 100, las menos
  * recientes primero. También vence los checkouts que nadie completó y concilia
- * los que quedaron sin saber si Flow creó la suscripción.
+ * los que quedaron sin saber si Flow creó la suscripción. Al final envía los
+ * avisos de fin de prueba y reintenta los correos fallidos.
  */
 export async function syncDueSubscriptions(services, now = new Date()) {
   const { supabase } = services;
+  const correosAntes = { ...services.correo?.resumen };
   const desde = new Date(now.getTime() - 4 * DIA).toISOString();
   const hasta = new Date(now.getTime() + 2 * DIA).toISOString();
   const antiguo = new Date(now.getTime() - 7 * DIA).toISOString();
@@ -429,9 +456,15 @@ export async function syncDueSubscriptions(services, now = new Date()) {
   } catch (error) {
     console.error("pteron reconcile", { error: error instanceof Error ? error.message : String(error) });
   }
+  // Los correos al cliente van al final y aparte: la sincronización de arriba
+  // ya corrió y un fallo de envío nunca la afecta (el servicio no lanza).
+  const correos = await correosDelCron(services, now, correosAntes);
   return {
     sincronizadas: resultado.sincronizadas,
     fallidas: resultado.fallidas,
+    correosEnviados: correos.enviados,
+    correosOmitidos: correos.omitidos,
+    correosFallidos: correos.fallidos,
     checkoutsVencidos: vencidos.length,
     cortesiasVencidas: cortesias.length,
     checkoutsConciliados: conciliacion.conciliados,

@@ -24,8 +24,8 @@
   },
   // Variables públicas. Los secretos (SUPABASE_PUBLISHABLE_KEY,
   // SUPABASE_SERVICE_ROLE_KEY, FLOW_API_KEY, FLOW_SECRET_KEY,
-  // LICENSE_PRIVATE_KEY_PEM, ANTHROPIC_API_KEY, ADMIN_EMAILS) se cargan con
-  // `wrangler secret put` o desde el panel; nunca en este archivo.
+  // LICENSE_PRIVATE_KEY_PEM, ANTHROPIC_API_KEY, ADMIN_EMAILS, RESEND_API_KEY) se
+  // cargan con `wrangler secret put` o desde el panel; nunca en este archivo.
   "vars": {
     "PUBLIC_SITE_URL": "https://pteron.patagua.dev",
     "SUPABASE_URL": "https://swzqblyllbudwbmbcthr.supabase.co",
@@ -39,7 +39,20 @@
     // cada precio tiene su id. El checkout compara monto, moneda, intervalo y
     // urlCallback con plan_catalog y detiene la venta si algo no calza.
     "FLOW_BASIC_PLAN_ID": "pteron-basic-2990-mensual",
-    "FLOW_PRO_PLAN_ID": "pteron-pro-9990-mensual"
+    "FLOW_PRO_PLAN_ID": "pteron-pro-9990-mensual",
+    // Correos al cliente por Resend (src/lib/correo.js). Salen sólo con
+    // RESEND_API_KEY (secreto, otra clave que la del SMTP de Supabase Auth),
+    // EMAIL_FROM y los cuatro datos del vendedor: si falta cualquiera no se
+    // envía nada y cada intento queda como evento <tipo>_email_skipped con los
+    // nombres que faltan. EMAIL_FROM es el mismo remitente que ya usa Supabase
+    // Auth; las respuestas del cliente llegan a SELLER_EMAIL (reply_to). Los
+    // SELLER_* los llena Marco con lo que fije el abogado (LEGAL-PENDIENTE.md,
+    // punto 1): nombre o razón social, RUT, domicilio y correo de contacto.
+    "EMAIL_FROM": "pteron <no-reply@patagua.dev>",
+    "SELLER_NAME": "",
+    "SELLER_RUT": "",
+    "SELLER_ADDRESS": "",
+    "SELLER_EMAIL": ""
   },
   // Cron diario a las 12:17 UTC (09:17 en el verano de Chile, 08:17 en
   // invierno): sincroniza con Flow las suscripciones cerca del fin de lo pagado

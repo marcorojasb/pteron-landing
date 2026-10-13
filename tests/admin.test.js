@@ -555,6 +555,25 @@ test("salud cuenta los intentos atascados en subscription_pending sin bloquear l
   });
 });
 
+test("salud dice si los correos al cliente están configurados o exactamente qué nombres faltan, sin bloquear lo esencial ni la venta", async () => {
+  const completo = { RESEND_API_KEY: "re_secreta_de_prueba", EMAIL_FROM: "pteron <no-reply@patagua.dev>", SELLER_NAME: "Vendedor Uno", SELLER_RUT: "1-9", SELLER_ADDRESS: "Calle 1", SELLER_EMAIL: "v@vendedor.test" };
+  const casos = [
+    [{}, { configurado: false, faltan: ["RESEND_API_KEY", "EMAIL_FROM", "SELLER_NAME", "SELLER_RUT", "SELLER_ADDRESS", "SELLER_EMAIL"] }],
+    [{ ...completo, SELLER_RUT: "", SELLER_EMAIL: " " }, { configurado: false, faltan: ["SELLER_RUT", "SELLER_EMAIL"] }],
+    [completo, { configurado: true, faltan: [] }],
+  ];
+  for (const [vars, esperado] of casos) {
+    const { saludEnv, services } = saludFixture(vars);
+    await withFetch(saludNetwork().fetch, async () => {
+      const data = await (await salud(saludEnv, services)).json();
+      assert.deepEqual(data.correos, esperado);
+      assert.equal(data.esencial, true, "los correos no son esenciales");
+      assert.equal(data.venta, true);
+      assert.equal(JSON.stringify(data).includes("re_secreta_de_prueba") || JSON.stringify(data).includes("Vendedor Uno"), false, "sólo nombres, nunca valores");
+    });
+  }
+});
+
 test("salud sin clave de Anthropic ni modelo con precio no llama a Anthropic", async () => {
   const { saludEnv, services } = saludFixture({ ANTHROPIC_API_KEY: "", GATEWAY_MODEL_ID: "modelo-sin-precio" });
   const network = saludNetwork();

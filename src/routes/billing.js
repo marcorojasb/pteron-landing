@@ -204,6 +204,8 @@ async function cancel({ request, services }) {
     // La cancelación ya quedó en Flow y anotada; el Cron pone al día el resto.
     console.error("pteron cancel sync", { subscription: subscription.id, error: error instanceof Error ? error.message : String(error) });
   }
+  // La respuesta no depende del correo: el servicio no lanza y, con waitUntil, sigue después de responder.
+  await services.correo?.confirmacionCancelacion(subscription.id, user.id);
   return json(200, { ok: true, cancelAt: current.current_period_end || null });
 }
 
@@ -318,8 +320,9 @@ async function registerCard({ request, url, services, now }) {
   }
 
   const subscriptionId = created.subscriptionId;
+  let recorded;
   try {
-    await recordFlowSubscription(services, intent, created, now);
+    recorded = await recordFlowSubscription(services, intent, created, now);
   } catch (error) {
     await undoSubscription(services, intent, subscriptionId, error);
     return ["error", "subscription_failed"];
@@ -330,6 +333,10 @@ async function registerCard({ request, url, services, now }) {
     // La suscripción existe; un retorno repetido verá processing en vez de crear otra.
     console.error("pteron card-callback", { intent: intent.id, reason: "complete_failed", error: error instanceof Error ? error.message : String(error) });
   }
+  // La confirmación de compra sale una vez por suscripción; si falla, el retorno
+  // no cambia (el servicio de correos no lanza) y el Cron lo reintenta; si ni
+  // siquiera llegó a anotarse el evento, el Cron lo encuentra por la suscripción.
+  await services.correo?.confirmacionCompra(recorded?.id, intent.user_id);
   return ["success"];
 }
 

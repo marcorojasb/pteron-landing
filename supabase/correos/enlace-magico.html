@@ -1,0 +1,46 @@
+<!-- asunto: Tu enlace para entrar a pteron -->
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light only">
+<title>Tu enlace para entrar a pteron</title>
+</head>
+<body style="margin:0;padding:0;background-color:#E9EDF1;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#E9EDF1;">Un enlace de un solo uso para entrar a tu cuenta.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#E9EDF1;">
+  <tr>
+    <td align="center" style="padding:32px 16px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;background-color:#FFFFFF;border-radius:4px;">
+        <tr>
+          <td style="padding:32px 32px 8px 32px;font-family:Arial,Helvetica,sans-serif;font-size:26px;line-height:32px;font-weight:bold;color:#1E3F94;">pteron</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 32px 0 32px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:28px;font-weight:bold;color:#1F2A3D;">Entra a tu cuenta</td>
+        </tr>
+        <tr>
+          <td style="padding:12px 32px 0 32px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:24px;color:#1F2A3D;">Pediste un enlace para entrar a pteron con el correo {{ .Email }}. Sirve una sola vez y caduca pronto.</td>
+        </tr>
+        <tr>
+          <td style="padding:24px 32px 0 32px;">
+            <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:12px 24px;background-color:#1F2A3D;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:24px;font-weight:bold;text-decoration:none;border-radius:4px;">Entrar a mi cuenta</a>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:24px 32px 0 32px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:21px;color:#5B6B82;">Si el botón no abre, copia esta dirección en tu navegador:<br><a href="{{ .ConfirmationURL }}" style="color:#1E3F94;word-break:break-all;">{{ .ConfirmationURL }}</a></td>
+        </tr>
+        <tr>
+          <td style="padding:24px 32px 32px 32px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:21px;color:#5B6B82;">Si no lo pediste tú, ignora este correo: sin el enlace nadie entra a tu cuenta.</td>
+        </tr>
+      </table>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;">
+        <tr>
+          <td style="padding:16px 32px 0 32px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:20px;color:#5B6B82;">pteron, hecho por profes, para profes · pteron.patagua.dev</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

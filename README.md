@@ -60,7 +60,8 @@ Worker, desde este repositorio en GitHub.
     (`flow-sync.js`), firma y verificación de licencias (Ed25519 con Web
     Crypto), el saneamiento de las peticiones a la IA incluida
     (`gateway-request.js`), sus unidades por costo (`units.js`), la
-    contabilidad del gateway y la versión vigente de los Términos (`terms.js`).
+    contabilidad del gateway, la versión vigente de los Términos (`terms.js`) y los
+    correos al cliente (`correo.js`, `correo-textos.js`).
   - `src/routes/`: `auth`, `billing`, `activation`, `license`, `account`, `ai`,
     `admin` y `health`.
   - `/api/*` y `/docs/*` entran siempre por el Worker (`run_worker_first`):
@@ -74,13 +75,15 @@ Worker, desde este repositorio en GitHub.
   abrir la venta de Basic con IA incluida (Supabase, Cloudflare, Anthropic y
   Flow).
 - `LEGAL-PENDIENTE.md`: lo que se decide con abogado o contador antes de vender
-  (quién vende, retracto, confirmación escrita, boleta), con borradores.
+  (quién vende, retracto, confirmación escrita, boleta), con borradores;
+  `BORRADORES-LEGALES.md` trae los textos, las opciones y las fuentes.
 - `tests/`: pruebas con `node --test`, sin red: Supabase, Flow y el proveedor
   de IA se simulan.
 - `scripts/`: sincronización de versiones, capturas, comprobaciones y la prueba
   de humo contra `wrangler dev` (`scripts/smoke.mjs`), que cubre lo que las
   pruebas unitarias no ven: URLs limpias, 404, cabeceras y navegaciones reales.
   Además, los generadores del sitio:
+  - Los scripts de operación (esquema, Auth, DNS de Resend) están en «Scripts de operación».
   - `sitio.mjs` escribe la esquina, el colofón y el índice en cada página
     (`--revisar` sólo comprueba que estén al día; lo usa una prueba).
   - `pteron-hojas.mjs <ruta de pteron>` arma las hojas del inicio con el código
@@ -116,6 +119,8 @@ Worker, desde este repositorio en GitHub.
   - `pteron-ventana.mjs` escribe la ventana en reposo con las plantillas de
     `pteron-ventana.js`, y `pteron-app-css.mjs` extrae y acota las reglas de la
     app a `pteron-app.css`.
+- `supabase/correos/`: los correos de Supabase Auth en español (enlace mágico y
+  confirmación), que carga `scripts/supabase-auth.mjs`.
 - `wrangler.jsonc`: configuración del Worker, los assets y las variables públicas.
 - `design-qa.md`: registro de verificación visual y decisiones de interfaz.
 
@@ -278,6 +283,60 @@ el plan de Flow de cada plan a la venta calza con el catálogo. La API vive en
 `src/routes/admin.js` y `src/routes/health.js`, y sus pruebas en
 `tests/admin.test.js`.
 
+## Correos
+
+El Worker envía tres correos al cliente por la API HTTP de Resend
+(`src/lib/correo.js`; los textos, en `correo-textos.js`):
+
+- `purchase`: confirmación de compra (art. 12 A de la Ley 19.496), cuando se
+  anota la suscripción. Lleva quién vende, el plan, el precio, la prueba o el
+  primer cobro, la cuota, cómo cancelar, y la copia de los Términos aceptados
+  (adjunta, más el enlace a `/terminos/<versión>`, una copia que no cambia).
+- `trial_ending`: aviso a quien termina su prueba en menos de 48 horas y no
+  canceló; lo envía el Cron diario.
+- `cancellation`: confirmación de «Cancelar renovación».
+
+Apagados hasta configurar todo: si falta el secreto `RESEND_API_KEY` o cualquiera
+de `EMAIL_FROM`, `SELLER_NAME`, `SELLER_RUT`, `SELLER_ADDRESS` y `SELLER_EMAIL`
+(variables de `wrangler.jsonc`), no se lee nada ni se llama a Resend, y queda un
+evento `<tipo>_email_skipped` con los nombres que faltan. Esas suscripciones no
+recibirán después ese correo. El retracto sólo aparece cuando `TERMS_RETRACTO`
+(`src/lib/terms.js`) tiene texto, es decir, cuando los Términos lo dicen.
+
+Idempotencia: un evento `<tipo>_email` con id `email:<tipo>:<suscripción>` hace de
+cerradura (insert que ignora duplicados) y el mismo id va como `Idempotency-Key`,
+así que cada correo sale una vez por suscripción. El evento pasa a `processed` o
+`failed` (sólo con el código del error). El Cron reintenta los fallidos de menos de
+3 días, hasta 20 por corrida, y los que quedaron en `received` más de 30 minutos;
+además busca compras y cancelaciones de esos 3 días que nunca llegaron a anotar su
+evento (ni el `:skipped`) y las envía.
+Resend recuerda la clave sólo 24 horas. Enviar nunca cambia el resultado del cobro.
+
+`RESEND_API_KEY` es una clave de Resend distinta de la del SMTP de Supabase Auth
+(que envía el enlace de acceso): permiso de envío, sólo el dominio `patagua.dev`.
+`/admin` › Salud muestra «Correos al cliente», que no bloquea. Ver `LANZAR-BASIC.md`,
+sección 1b.
+
+## Scripts de operación
+
+Tres scripts en `scripts/` para dejar Supabase y Resend como pide el Worker, con
+`scripts/operador.mjs` como pieza común. Son un ensayo de sólo lectura por omisión
+y actúan sólo con `--aplicar`; los tokens salen del entorno y no se imprimen.
+
+- `supabase-esquema.mjs` (`SUPABASE_ACCESS_TOKEN`): revisa las suscripciones de
+  Flow vivas y se detiene si hay (salvo `--forzar`); con `--aplicar` se niega además
+  si alguna tabla de datos ya tiene filas (salvo `--borrar-datos`), corre `esquema.sql`
+  y comprueba el resultado; `--verificar` sólo comprueba.
+- `supabase-auth.mjs` (`SUPABASE_ACCESS_TOKEN`): Site URL, Redirect URLs (agrega,
+  no quita) y los correos de `supabase/correos/`. No toca el SMTP salvo con
+  `--smtp` y `RESEND_SMTP_KEY`; `--limite-correos N` cambia el límite por hora.
+- `resend-dns.mjs` (`RESEND_API_KEY`, `CLOUDFLARE_API_TOKEN`): compara los registros
+  de `patagua.dev` en Resend con los de Cloudflare y crea los que faltan; nunca
+  modifica ni borra uno existente.
+
+Sus pruebas offline son `tests/scripts-*.test.js`. Uso y prompt para una sesión de
+Claude: `LANZAR-BASIC.md`, sección 1b.
+
 ## Versiones públicas
 
 El workflow `sync-pteron-releases.yml` actualiza `public/docs/data/releases.json`
@@ -308,6 +367,9 @@ texto puesta en el panel de Cloudflare se borra en el siguiente despliegue.
   plan, así que un precio nuevo es un id nuevo. El Worker crea el plan en el
   primer checkout con los valores de `plan_catalog` (Basic $2.990 al mes, IVA
   incluido, con 7 días de prueba; Pro $9.990, sin prueba).
+- `EMAIL_FROM` y `SELLER_NAME`, `SELLER_RUT`, `SELLER_ADDRESS`, `SELLER_EMAIL`:
+  remitente y datos del vendedor de los correos (ver «Correos»). Los `SELLER_*`
+  quedan vacíos hasta que los fije el abogado.
 
 Los secretos se cargan con `npx wrangler secret put <NOMBRE>` o desde el panel
 del Worker, nunca en el repositorio ni en la interfaz del navegador:
@@ -323,6 +385,8 @@ del Worker, nunca en el repositorio ni en la interfaz del navegador:
 - `ANTHROPIC_API_KEY`: clave de Anthropic del gateway de IA incluida.
 - `ADMIN_EMAILS`: correos autorizados para `/admin` y `/api/admin/*`, separados
   por comas. Sin esta variable, la administración responde 503.
+- `RESEND_API_KEY`: clave de Resend del Worker para los correos al cliente (ver
+  «Correos»). Sin ella no se envía ninguno.
 
 Opcionales: `GATEWAY_MAX_IN_FLIGHT` (peticiones de IA en vuelo por cuenta, por
 defecto 3) y `ANTHROPIC_BASE_URL` (en producción sólo la oficial). Sólo para
@@ -383,7 +447,8 @@ probar con el sandbox de Flow, `.dev.vars` lleva su `FLOW_BASE_URL` y
 ## Antes del lanzamiento comercial
 
 - Seguir `LANZAR-BASIC.md` y resolver `LEGAL-PENDIENTE.md` (quién vende,
-  retracto, confirmación escrita, boleta) antes de abrir la venta.
+  retracto, confirmación escrita, boleta) antes de abrir la venta; los borradores
+  están en `BORRADORES-LEGALES.md`.
 - Mantener los enlaces de descarga sincronizados con los releases públicos.
 - Probar la activación en una instalación limpia de cada plataforma soportada.
 - Medir cuántos materiales caben en cada cuota y publicar esa equivalencia.

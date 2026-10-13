@@ -605,7 +605,10 @@ test("conciliar adopta la suscripción de Flow que la base no conoce: fila con l
   assert.equal(insert.last_synced_at, null);
   assert.ok(world.network.calls.some((call) => call.url.includes("/subscription/get") && call.url.includes("sus_huerfana")), "la primera sincronización");
   assert.deepEqual([world.intents[0].status, world.intents[0].provider_subscription_id], ["completed", "sus_huerfana"]);
-  assert.deepEqual(world.eventos, [{
+  // Sin correo configurado, la confirmación de compra sólo deja su evento *_email_skipped.
+  const [omitido, ...demas] = world.eventos;
+  assert.deepEqual([omitido.event_type, omitido.status, omitido.user_id], ["purchase_email_skipped", "ignored", user.id]);
+  assert.deepEqual(demas, [{
     user_id: user.id,
     external_event_id: `flow:intent:${INTENT}:subscription_reconciled`,
     event_type: "subscription_reconciled",
