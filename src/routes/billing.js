@@ -1,7 +1,7 @@
 import { HttpError, body, json, method, redirect, requireAuth, requireString, siteUrl } from "../lib/http.js";
 import { sha256Hex } from "../lib/crypto.js";
 import { flowRejected } from "../lib/flow.js";
-import { syncAfterPayment, syncFlowSubscription, valoresDesdeFlow } from "../lib/flow-sync.js";
+import { reconcilePendingCheckouts, recordBillingEvent, recordFlowSubscription, syncAfterPayment, syncFlowSubscription } from "../lib/flow-sync.js";
 import { accesoHasta } from "../lib/license.js";
 import { TERMS_VERSION } from "../lib/terms.js";
 
@@ -50,6 +50,24 @@ async function rejectCurrentPlan(services, userId, now) {
   }
   if (VIGENTES.includes(current.status)) {
     throw new HttpError(409, "subscription_exists", "Ya tienes un plan en curso. Puedes administrarlo desde tu cuenta.");
+  }
+}
+
+/**
+ * Un intento en subscription_pending pudo crear ya la suscripción en Flow: antes
+ * de otra compra se concilia (los de más de 10 minutos), y si alguno sigue sin
+ * resolverse se espera, porque otro checkout podría duplicar la suscripción y la prueba.
+ */
+async function rejectPendingCheckout(services, userId, now) {
+  const pendientes = () => services.supabase.select(
+    "billing_checkout_intents",
+    `user_id=eq.${encodeURIComponent(userId)}&status=eq.subscription_pending&select=id&limit=1`,
+    { admin: true },
+  );
+  if (!(await pendientes())?.length) return;
+  await reconcilePendingCheckouts(services, { now, userId });
+  if ((await pendientes())?.length) {
+    throw new HttpError(409, "checkout_pending", "Tu compra anterior todavía se está confirmando con Flow. Vuelve a intentarlo en unos minutos.");
   }
 }
 
@@ -137,6 +155,7 @@ async function checkout({ request, env, services }) {
   if (!catalogo || !(catalogo.monthly_price_clp > 0) || !catalogo.license_plan) {
     throw new HttpError(409, "plan_not_for_sale", "Este plan todavía no está a la venta.");
   }
+  await rejectPendingCheckout(services, user.id, now);
   await rejectCurrentPlan(services, user.id, now);
   const trialDays = (await trialEligible(supabase, user.id)) ? Number(catalogo.trial_period_days) || 0 : 0;
 
@@ -296,38 +315,20 @@ async function registerCard({ request, url, services, now }) {
       await mark("failed").catch(() => undefined);
     } else {
       // Sin respuesta de Flow la suscripción pudo quedar creada allá: el intento
-      // sigue en subscription_pending, a la vista para conciliarlo a mano.
+      // sigue en subscription_pending y, pasados 10 minutos, el Cron o el
+      // siguiente checkout lo concilian con Flow.
       console.error("pteron card-callback", { intent: intent.id, customer: intent.provider_customer_id, reason: "subscription_create_uncertain" });
+      await recordBillingEvent(supabase, intent, "subscription_create_uncertain", "received", { customerId: intent.provider_customer_id, planId: intent.provider_plan_id });
     }
     throw error;
   }
 
   const subscriptionId = created.subscriptionId;
-  let row;
   try {
-    await supabase.update("billing_checkout_intents", porId(intent.id), { provider_subscription_id: subscriptionId }, { admin: true });
-    [row] = await supabase.insert("subscriptions", {
-      user_id: intent.user_id,
-      plan_id: intent.plan_id,
-      provider: "flow",
-      provider_customer_id: intent.provider_customer_id,
-      provider_subscription_id: subscriptionId,
-      terms_version: intent.terms_version,
-      // Lo que dijo subscription/create, sin marcarlo sincronizado: si la
-      // consulta de abajo falla, la renovación y el Cron la repiten.
-      ...valoresDesdeFlow(created, { provider_plan_id: intent.provider_plan_id }, now),
-      last_synced_at: null,
-    }, { admin: true });
+    await recordFlowSubscription(services, intent, created, now);
   } catch (error) {
     await undoSubscription(services, intent, subscriptionId, error);
     return ["error", "subscription_failed"];
-  }
-  if (row?.id) {
-    try {
-      await syncFlowSubscription(services, row, now);
-    } catch (error) {
-      console.error("pteron card-callback sync", { subscription: row.id, error: error instanceof Error ? error.message : String(error) });
-    }
   }
   try {
     await mark("completed");

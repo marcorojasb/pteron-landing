@@ -1,4 +1,5 @@
 import { json, method, siteUrl } from "../lib/http.js";
+import { ESPERA_CONCILIACION } from "../lib/flow-sync.js";
 import { verifyLicense } from "../lib/license.js";
 import { hasKnownPrice } from "../lib/units.js";
 
@@ -203,13 +204,33 @@ async function leerCatalogo(services) {
 }
 
 /**
+ * Compras que Flow pudo cobrar sin que pteron lo supiera: intentos en
+ * subscription_pending desde hace más de 10 minutos, los que el Cron y el
+ * siguiente checkout concilian. Lo esperado es 0; null si no se pudo leer.
+ * No bloquea nada: es una alerta para revisar.
+ */
+async function checkoutsAtascados(services) {
+  try {
+    const antes = new Date(Date.now() - ESPERA_CONCILIACION).toISOString();
+    const rows = await services.supabase.select(
+      "billing_checkout_intents",
+      `status=eq.subscription_pending&updated_at=lt.${encodeURIComponent(antes)}&select=id`,
+      { admin: true },
+    );
+    return Array.isArray(rows) ? rows.length : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * GET /api/admin/salud. Los planes de pago se comparan con Flow aunque no
  * estén a la venta: así se revisa el plan antes de abrirla. Uno gratuito no
  * pasa por Flow (`flow: null`).
  */
 export async function salud({ request, env, services }) {
   const callbackUrl = `${siteUrl(env, request)}/api/billing/flow-callback`;
-  const [base, catalogo, anthropic] = await Promise.all([esencial(env, services), leerCatalogo(services), claveDeAnthropicValida(env)]);
+  const [base, catalogo, anthropic, atascados] = await Promise.all([esencial(env, services), leerCatalogo(services), claveDeAnthropicValida(env), checkoutsAtascados(services)]);
   const planes = await Promise.all((catalogo || []).map(async (plan) => {
     const falta = faltaParaVender(plan);
     const pagado = !falta.includes("precio");
@@ -238,6 +259,7 @@ export async function salud({ request, env, services }) {
     anthropic_url_oficial: anthropicOficial(env),
     ia_incluida_pausada: base.ajustes.pausada,
     catalogo: catalogo !== null,
+    checkouts_atascados: atascados,
     planes,
     // Sin planes a la venta no hay nada que revisar: null, no true.
     venta: aLaVenta.length ? aLaVenta.every((plan) => plan.visible && plan.precio && plan.cuota && plan.licencia && plan.flow === true) : null,

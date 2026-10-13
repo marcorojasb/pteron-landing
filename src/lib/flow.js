@@ -5,6 +5,9 @@ import { hmacSha256Hex } from "./crypto.js";
 export const FLOW_PRODUCTION_URL = "https://www.flow.cl/api";
 const FLOW_SANDBOX_URL = "https://sandbox.flow.cl/api";
 const PRODUCTION_HOST = "pteron.patagua.dev";
+// Flow no publica un tiempo de respuesta: sin tope, una llamada colgada deja
+// esperando al docente y, en subscription/create, sin saber qué pasó.
+const FLOW_TIMEOUT_MS = 10_000;
 
 // Lectores tipados. Cada respuesta de Flow se lee con los nombres de su esquema
 // oficial (apiFlow.yaml: Subscription, Invoice, Plan, PaymentStatus,
@@ -51,6 +54,8 @@ export function readSubscription(raw) {
     morose: flowNumber(raw?.morose),
     cancel_at_period_end: flowNumber(raw?.cancel_at_period_end),
     cancel_at: flowText(raw?.cancel_at),
+    created: flowText(raw?.created),
+    trial_period_days: flowNumber(raw?.trial_period_days),
     trial_start: flowText(raw?.trial_start),
     trial_end: flowText(raw?.trial_end),
     next_invoice_date: flowText(raw?.next_invoice_date),
@@ -150,7 +155,8 @@ export function createFlow(env) {
     const values = { ...params, apiKey };
     values.s = await signedParams(values, secretKey);
     const url = new URL(`${baseUrl}${path.startsWith("/") ? path : `/${path}`}`);
-    const init = { method: requestMethod, headers: { Accept: "application/json" } };
+    // Un vencimiento rechaza el fetch como una red caída: no es un rechazo de Flow.
+    const init = { method: requestMethod, headers: { Accept: "application/json" }, signal: AbortSignal.timeout(FLOW_TIMEOUT_MS) };
     if (requestMethod === "GET") {
       for (const [key, value] of Object.entries(values)) url.searchParams.set(key, String(value));
     } else {
@@ -245,6 +251,30 @@ export function createFlow(env) {
     return subscription;
   }
 
+  /**
+   * GET /customer/getSubscriptions: la primera página (hasta 100) de las
+   * suscripciones del cliente, como el List de Flow. `data` llega como arreglo
+   * o como texto JSON; si no se puede leer, el error sube: una lista vacía
+   * por error haría pasar por no creada una suscripción que sí existe.
+   */
+  async function customerSubscriptions(customerId) {
+    const list = await request("/customer/getSubscriptions", { customerId, start: 0, limit: 100 }, "GET");
+    let items = list.data;
+    if (typeof items === "string") {
+      try {
+        items = JSON.parse(items);
+      } catch {
+        items = null;
+      }
+    }
+    if (!Array.isArray(items)) throw new HttpError(502, "flow_error", "Flow no entregó la lista de suscripciones.");
+    return {
+      total: flowNumber(list.total),
+      hasMore: list.hasMore === true || flowNumber(list.hasMore) === 1,
+      data: items.map(readSubscription),
+    };
+  }
+
   // Sin valor por defecto: cancelar en el acto (0) o al cierre del período
   // pagado (1) lo decide quien llama, nunca un olvido.
   async function cancelSubscription({ subscriptionId, atPeriodEnd }) {
@@ -266,6 +296,7 @@ export function createFlow(env) {
     createCustomer,
     createPlan,
     createSubscription,
+    customerSubscriptions,
     flowBaseUrl,
     getPlan,
     getSubscription,

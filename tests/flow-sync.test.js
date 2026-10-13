@@ -1,7 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import worker from "../src/worker.js";
-import { createFlow, readInvoice, readPaymentStatus, readPlan, readRegisterResult, readSubscription } from "../src/lib/flow.js";
+import { HttpError } from "../src/lib/http.js";
+import { createFlow, flowRejected, readInvoice, readPaymentStatus, readPlan, readRegisterResult, readSubscription } from "../src/lib/flow.js";
 import { estadoLocal, inicioDelDiaChile, leerFechaFlow, pagadoHasta, syncAfterPayment, syncDueSubscriptions, syncFlowSubscription, valoresDesdeFlow } from "../src/lib/flow-sync.js";
 import { fakeExecution, fakeNetwork, matches, testEnv, testServices, withFetch } from "./helpers/fakes.js";
 import { CUSTOMER, INVOICE, PAYMENT_STATUS, PLAN, REGISTER_RESULT, SUBSCRIPTION, basicEnPrueba, cobroMensual, conCampos, factura, soloDocumentados, suscripcion } from "./helpers/flow-fixtures.js";
@@ -26,6 +27,8 @@ test("los lectores leen sólo campos del esquema oficial de Flow y normalizan su
   assert.equal(s.status, 1);
   assert.equal(s.trial_end, "2018-06-26 00:00:00");
   assert.equal(s.cancel_at, null);
+  assert.equal(s.trial_period_days, 1);
+  assert.equal(s.created, "2018-06-26 17:29:06");
   assert.deepEqual(s.invoices, [{
     id: 1034,
     status: 0,
@@ -86,6 +89,10 @@ test("pagado hasta: el fin inclusivo de la última factura pagada; en prueba, el
   // Un Pro sin prueba antes de su primer cobro: todavía nada pagado.
   const pro = suscripcion({ status: 1, trial_period_days: 0, trial_start: null, trial_end: null, invoices: [factura({ status: 0 })] });
   assert.equal(pagadoHasta(readSubscription(pro)), null);
+  // Sin prueba (trial_period_days 0) las fechas de prueba que Flow devuelva no dan acceso.
+  const sinPrueba = basicEnPrueba({ status: 1, trial_period_days: 0, invoices: [cobroMensual({ id: 2101, desde: "2026-10-13", hasta: "2026-11-12", pagado: false, flowOrder: 9000101 })] });
+  assert.equal(pagadoHasta(readSubscription(sinPrueba)), null);
+  assert.equal(pagadoHasta(readSubscription({ ...sinPrueba, status: 2 })).toISOString(), "2026-10-20T03:00:00.000Z", "en prueba (status 2) la prueba cuenta aunque falte el día");
 });
 
 test("estado local desde status y morose de Flow, y la cancelación al cierre cuando se acaba lo pagado", () => {
@@ -223,6 +230,7 @@ test("el Cron sincroniza las filas cerca del fin de lo pagado, sigue si una fall
     { match: (url, m) => matches.supabase("subscriptions", "PATCH")(url, m) && url.includes("provider=eq.comp"), respond: { body: [{ id: "cortesia-1" }] } },
     { match: matches.supabase("subscriptions", "PATCH"), respond: { body: [{ id: "fila-1" }] } },
     { match: matches.supabase("billing_checkout_intents", "PATCH"), respond: { body: [{ id: "i1" }, { id: "i2" }] } },
+    { match: matches.supabase("billing_checkout_intents", "GET"), respond: { body: [] } },
   ]);
   const ahora = new Date("2026-10-20T12:17:00Z");
   const errores = [];
@@ -230,7 +238,15 @@ test("el Cron sincroniza las filas cerca del fin de lo pagado, sigue si una fall
   console.error = (...args) => errores.push(args);
   try {
     await withFetch(network.fetch, async () => {
-      assert.deepEqual(await syncDueSubscriptions(testServices(env), ahora), { sincronizadas: 1, fallidas: 1, checkoutsVencidos: 2, cortesiasVencidas: 1 });
+      assert.deepEqual(await syncDueSubscriptions(testServices(env), ahora), {
+        sincronizadas: 1,
+        fallidas: 1,
+        checkoutsVencidos: 2,
+        cortesiasVencidas: 1,
+        checkoutsConciliados: 0,
+        checkoutsSinSuscripcion: 0,
+        checkoutsPendientes: 0,
+      });
     });
   } finally {
     console.error = consoleError;
@@ -275,13 +291,22 @@ test("el handler scheduled del Worker corre la sincronización del Cron dentro d
     { match: matches.supabase("subscriptions", "GET"), respond: { body: [] } },
     { match: matches.supabase("billing_checkout_intents", "PATCH"), respond: { body: [] } },
     { match: matches.supabase("subscriptions", "PATCH"), respond: { body: [] } },
+    { match: matches.supabase("billing_checkout_intents", "GET"), respond: { body: [] } },
   ]);
   await withFetch(network.fetch, async () => {
     const ctx = fakeExecution();
     await worker.scheduled({ cron: "17 12 * * *", scheduledTime: Date.now() }, env, ctx);
     assert.equal(ctx.promises.length, 1);
-    assert.deepEqual(await ctx.promises[0], { sincronizadas: 0, fallidas: 0, checkoutsVencidos: 0, cortesiasVencidas: 0 });
-    assert.deepEqual(network.calls.map((call) => call.method), ["GET", "PATCH", "PATCH"]);
+    assert.deepEqual(await ctx.promises[0], {
+      sincronizadas: 0,
+      fallidas: 0,
+      checkoutsVencidos: 0,
+      cortesiasVencidas: 0,
+      checkoutsConciliados: 0,
+      checkoutsSinSuscripcion: 0,
+      checkoutsPendientes: 0,
+    });
+    assert.deepEqual(network.calls.map((call) => call.method), ["GET", "PATCH", "PATCH", "GET"]);
   });
 });
 
@@ -303,6 +328,91 @@ test("la base de Flow no tiene valor por defecto y el sitio de producción sólo
   } finally {
     console.error = consoleError;
   }
+});
+
+test("si la conciliación del Cron falla, la sincronización de las suscripciones ya corrió y el resumen lo cuenta en cero", async () => {
+  const network = fakeNetwork([
+    { match: matches.supabase("subscriptions", "GET"), respond: { body: [{ id: "fila-1", user_id: "u1", provider_subscription_id: "sus_basic01", status: "trialing", canceled_at: null }] } },
+    { match: matches.flow("/subscription/get"), respond: { body: basicCobrada() } },
+    { match: (url, m) => matches.supabase("subscriptions", "PATCH")(url, m) && url.includes("provider=eq.comp"), respond: { body: [] } },
+    { match: matches.supabase("subscriptions", "PATCH"), respond: { body: [{ id: "fila-1" }] } },
+    { match: matches.supabase("billing_checkout_intents", "PATCH"), respond: { body: [] } },
+    { match: matches.supabase("billing_checkout_intents", "GET"), respond: { status: 500, body: { message: "caído" } } },
+  ]);
+  const errores = [];
+  const consoleError = console.error;
+  console.error = (...args) => errores.push(args);
+  try {
+    await withFetch(network.fetch, async () => {
+      assert.deepEqual(await syncDueSubscriptions(testServices(env), new Date("2026-10-20T12:17:00Z")), {
+        sincronizadas: 1,
+        fallidas: 0,
+        checkoutsVencidos: 0,
+        cortesiasVencidas: 0,
+        checkoutsConciliados: 0,
+        checkoutsSinSuscripcion: 0,
+        checkoutsPendientes: 0,
+      });
+    });
+  } finally {
+    console.error = consoleError;
+  }
+  assert.equal(errores.length, 1);
+  assert.equal(errores[0][0], "pteron reconcile");
+});
+
+test("un vencimiento de Flow rechaza el fetch como una red caída: no es un rechazo de Flow y la creación de la suscripción queda incierta", async () => {
+  const flow = createFlow({ FLOW_API_KEY: "a", FLOW_SECRET_KEY: "b", FLOW_BASE_URL: "https://sandbox.flow.cl/api" });
+  const señales = [];
+  const vencido = async (url, init) => {
+    señales.push(init.signal);
+    throw new DOMException("The operation was aborted due to timeout", "TimeoutError");
+  };
+  await withFetch(vencido, async () => {
+    const lecturas = [
+      flow.getSubscription("sus_basic01"),
+      flow.createSubscription({ planId: "pteron-basic-1990-mensual", customerId: "cus_1", trialPeriodDays: 0 }),
+    ];
+    for (const lectura of lecturas) {
+      const error = await lectura.then(() => null, (falla) => falla);
+      assert.equal(error?.name, "TimeoutError");
+      assert.equal(flowRejected(error), false, "un vencimiento no dice qué pasó en Flow");
+    }
+  });
+  assert.equal(señales.length, 2);
+  assert.ok(señales.every((señal) => señal instanceof AbortSignal && !señal.aborted), "cada llamada lleva su propio tope de tiempo");
+  assert.equal(flowRejected(new HttpError(502, "flow_error", "x", { flowStatus: 500 })), false);
+  assert.equal(flowRejected(new HttpError(502, "flow_error", "x", { flowStatus: 400 })), true);
+});
+
+test("customerSubscriptions pide la primera página firmada y lee data como arreglo o como texto JSON", async () => {
+  const flow = createFlow({ FLOW_API_KEY: "a", FLOW_SECRET_KEY: "b", FLOW_BASE_URL: "https://sandbox.flow.cl/api" });
+  const items = [basicEnPrueba(), basicCobrada({ subscriptionId: "sus_otra" })];
+  for (const data of [items, JSON.stringify(items)]) {
+    const network = fakeNetwork([{ match: matches.flow("/customer/getSubscriptions"), respond: { body: { total: "2", hasMore: 1, data } } }]);
+    await withFetch(network.fetch, async () => {
+      const lista = await flow.customerSubscriptions("cus_1");
+      assert.equal(lista.total, 2);
+      assert.equal(lista.hasMore, true);
+      assert.deepEqual(lista.data.map((s) => [s.subscriptionId, s.planId, s.status, s.created]), [
+        ["sus_basic01", "pteron-basic-1990-mensual", 2, "2026-10-13 15:20:00"],
+        ["sus_otra", "pteron-basic-1990-mensual", 1, "2026-10-13 15:20:00"],
+      ]);
+    });
+    const [llamada] = network.calls;
+    assert.equal(llamada.method, "GET");
+    const consulta = new URL(llamada.url).searchParams;
+    assert.deepEqual([consulta.get("customerId"), consulta.get("start"), consulta.get("limit")], ["cus_1", "0", "100"]);
+    assert.match(consulta.get("s"), /^[0-9a-f]{64}$/);
+  }
+  for (const body of [{ total: 1, hasMore: 0, data: "no es json" }, { total: 0, hasMore: 0 }, { total: 1, hasMore: 0, data: { 0: {} } }]) {
+    const network = fakeNetwork([{ match: matches.flow("/customer/getSubscriptions"), respond: { body } }]);
+    await withFetch(network.fetch, async () => {
+      await assert.rejects(flow.customerSubscriptions("cus_1"), { code: "flow_error" }, JSON.stringify(body));
+    });
+  }
+  const vacia = fakeNetwork([{ match: matches.flow("/customer/getSubscriptions"), respond: { body: { total: 0, hasMore: 0, data: [] } } }]);
+  await withFetch(vacia.fetch, async () => assert.deepEqual(await flow.customerSubscriptions("cus_1"), { total: 0, hasMore: false, data: [] }));
 });
 
 test("cancelar en Flow exige decir si es en el acto o al cierre", async () => {

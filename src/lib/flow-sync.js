@@ -17,6 +17,11 @@ const SINCRONIZABLES = "status=in.(incomplete,trialing,active,past_due)";
 const CAMPOS = "select=id,user_id,provider_subscription_id,provider_plan_id,status,canceled_at";
 // Pocas consultas a la vez: Flow no publica su límite de tasa.
 const EN_PARALELO = 4;
+// Un intento en subscription_pending más joven que esto puede seguir dentro de
+// un card-callback (updated_at es cuando lo reclamó): no se concilia ni se cuenta.
+export const ESPERA_CONCILIACION = 10 * MINUTO;
+const LIMITE_CONCILIACION = 20;
+const INTENTO_CONCILIAR = "id,user_id,plan_id,provider_customer_id,provider_plan_id,status,trial_days,terms_version,provider_subscription_id";
 
 // ── Fechas de Flow ────────────────────────────────────────────────────────
 // Flow escribe 'yyyy-mm-dd hh:mm:ss' sin zona: son fechas del calendario de
@@ -135,11 +140,13 @@ function ultimaFacturaImpaga(s) {
  * Hasta cuándo está pagado: el fin de la última factura pagada; en prueba (o
  * si nunca hubo un cobro pagado) también el fin de la prueba. null si no hay
  * ninguno de los dos: un Pro antes de su primer cobro todavía no tiene acceso.
+ * La prueba sólo cuenta si la suscripción la tiene: con trial_period_days 0
+ * (quien ya tuvo la suya) Flow puede devolver igual fechas de prueba.
  */
 export function pagadoHasta(s) {
   const pagada = ultimaFacturaPagada(s);
   let hasta = pagada?.fin ?? null;
-  const finPrueba = finDelDiaChile(s.trial_end);
+  const finPrueba = s.status === 2 || s.trial_period_days > 0 ? finDelDiaChile(s.trial_end) : null;
   if (finPrueba && (s.status === 2 || !pagada) && (!hasta || finPrueba > hasta)) hasta = finPrueba;
   return hasta;
 }
@@ -210,6 +217,132 @@ export async function syncFlowSubscription(services, fila, now = new Date()) {
   return (await sincronizar(services, fila, now)).fila;
 }
 
+// ── Conciliar checkouts inciertos ─────────────────────────────────────────
+
+/**
+ * Un evento de cobro, sin romper a quien lo anota: es rastro para revisar, no
+ * parte de la operación. Su id es único por intento y tipo.
+ */
+export function recordBillingEvent(supabase, intent, eventType, status, metadata = {}) {
+  return supabase.insert("billing_events", {
+    user_id: intent.user_id,
+    external_event_id: `flow:intent:${intent.id}:${eventType}`,
+    event_type: eventType,
+    status,
+    event_metadata: { intentId: intent.id, ...metadata },
+  }, { admin: true }).catch(() => undefined);
+}
+
+/**
+ * Anota una suscripción de Flow como la de este intento: su id en el intento,
+ * la fila en `subscriptions` con lo que dijo Flow (sin marcarla sincronizada) y
+ * la primera sincronización con subscription/get. La comparten el retorno de
+ * la tarjeta y la conciliación. Si el id en el intento o el insert fallan, el
+ * error sube; la sincronización que falla sólo se registra, porque la
+ * renovación y el Cron la repiten.
+ */
+export async function recordFlowSubscription(services, intent, subscription, now = new Date()) {
+  const { supabase } = services;
+  await supabase.update("billing_checkout_intents", `id=eq.${encodeURIComponent(intent.id)}`, { provider_subscription_id: subscription.subscriptionId }, { admin: true });
+  const [row] = await supabase.insert("subscriptions", {
+    user_id: intent.user_id,
+    plan_id: intent.plan_id,
+    provider: "flow",
+    provider_customer_id: intent.provider_customer_id,
+    provider_subscription_id: subscription.subscriptionId,
+    terms_version: intent.terms_version,
+    // Lo que dijo Flow, sin marcarlo sincronizado: si la consulta de abajo
+    // falla, la renovación y el Cron la repiten.
+    ...valoresDesdeFlow(subscription, { provider_plan_id: intent.provider_plan_id }, now),
+    last_synced_at: null,
+  }, { admin: true });
+  if (row?.id) {
+    try {
+      await syncFlowSubscription(services, row, now);
+    } catch (error) {
+      console.error("pteron flow sync", { subscription: row.id, error: error instanceof Error ? error.message : String(error) });
+    }
+  }
+  return row;
+}
+
+/** Concilia un intento: "conciliados", "sinSuscripcion", o lanza si queda pendiente. */
+async function conciliar(services, intent, now) {
+  const { supabase, flow } = services;
+  const cerrar = (status) => supabase.update(
+    "billing_checkout_intents",
+    `id=eq.${encodeURIComponent(intent.id)}&status=eq.subscription_pending`,
+    { status },
+    { admin: true },
+  );
+  const lista = await flow.customerSubscriptions(intent.provider_customer_id);
+  const delPlan = lista.data.filter((s) => s.subscriptionId && s.planId === intent.provider_plan_id);
+  const ids = encodeURIComponent(`(${delPlan.map((s) => citado(s.subscriptionId)).join(",")})`);
+  const anotadas = new Set(
+    delPlan.length
+      ? ((await supabase.select("subscriptions", `provider_subscription_id=in.${ids}&select=provider_subscription_id`, { admin: true })) || []).map((fila) => fila.provider_subscription_id)
+      : [],
+  );
+  // Ya quedó anotada y sólo faltó cerrar el intento.
+  if (intent.provider_subscription_id && anotadas.has(intent.provider_subscription_id)) {
+    await cerrar("completed");
+    return "conciliados";
+  }
+  const candidatas = delPlan
+    .filter((s) => s.status !== 4 && !anotadas.has(s.subscriptionId))
+    .sort((a, b) => String(b.created ?? "").localeCompare(String(a.created ?? "")));
+  if (!candidatas.length) {
+    // Una lista que no cabe en la página no prueba que la suscripción no exista.
+    if (lista.hasMore) throw new Error("la lista de suscripciones de Flow tiene más páginas");
+    await cerrar("failed");
+    await recordBillingEvent(supabase, intent, "subscription_create_not_found", "processed", { customerId: intent.provider_customer_id, planId: intent.provider_plan_id });
+    return "sinSuscripcion";
+  }
+  const [elegida] = candidatas;
+  if (candidatas.length > 1) {
+    console.error("pteron reconcile", { intent: intent.id, reason: "several_subscriptions", subscriptions: candidatas.map((s) => s.subscriptionId) });
+  }
+  try {
+    await recordFlowSubscription(services, intent, elegida, now);
+  } catch (error) {
+    // provider_subscription_id es único: si otra conciliación la anotó antes, ya está registrada.
+    const [ya] = (await supabase.select("subscriptions", `provider_subscription_id=eq.${encodeURIComponent(elegida.subscriptionId)}&select=id&limit=1`, { admin: true })) || [];
+    if (!ya) throw error;
+  }
+  await cerrar("completed");
+  await recordBillingEvent(supabase, intent, "subscription_reconciled", "processed", { subscriptionId: elegida.subscriptionId, customerId: intent.provider_customer_id, planId: intent.provider_plan_id });
+  return "conciliados";
+}
+
+/**
+ * Un subscription/create que no respondió pudo crear la suscripción en Flow sin
+ * que pteron la anotara: el intento queda en subscription_pending. Aquí se
+ * busca en Flow, entre las suscripciones del cliente, la del plan del intento
+ * que la base no conoce: si está, se anota y el intento se completa; si no,
+ * el intento falla y la persona puede comprar de nuevo. Si Flow o la base
+ * fallan, el intento sigue pendiente. Sólo toca intentos reclamados hace más
+ * de 10 minutos (hasta 20), de `userId` si se indica.
+ */
+export async function reconcilePendingCheckouts(services, { now = new Date(), userId = null } = {}) {
+  const antes = new Date(now.getTime() - ESPERA_CONCILIACION).toISOString();
+  const deLaCuenta = userId ? `&user_id=eq.${encodeURIComponent(userId)}` : "";
+  const intentos = await services.supabase.select(
+    "billing_checkout_intents",
+    `status=eq.subscription_pending&updated_at=lt.${encodeURIComponent(antes)}${deLaCuenta}&select=${INTENTO_CONCILIAR}&order=updated_at.asc&limit=${LIMITE_CONCILIACION}`,
+    { admin: true },
+  );
+  const resultado = { conciliados: 0, sinSuscripcion: 0, pendientes: 0 };
+  for (const intent of intentos || []) {
+    try {
+      resultado[await conciliar(services, intent, now)] += 1;
+    } catch (error) {
+      resultado.pendientes += 1;
+      console.error("pteron reconcile", { intent: intent.id, error: error instanceof Error ? error.message : String(error) });
+    }
+  }
+  return resultado;
+}
+
 async function sincronizarFilas(services, filas, now) {
   const resultado = { sincronizadas: 0, fallidas: 0, suscripciones: [] };
   let siguiente = 0;
@@ -255,7 +388,8 @@ export async function syncAfterPayment(services, payment, now = new Date()) {
  * Corrida del Cron diario: filas Flow vigentes cuyo período pagado termina
  * entre hace 4 días y dentro de 2, sin período todavía, que cancelan al cierre
  * o que no se sincronizan hace más de 7 días (o nunca). Hasta 100, las menos
- * recientes primero. También vence los checkouts que nadie completó.
+ * recientes primero. También vence los checkouts que nadie completó y concilia
+ * los que quedaron sin saber si Flow creó la suscripción.
  */
 export async function syncDueSubscriptions(services, now = new Date()) {
   const { supabase } = services;
@@ -272,7 +406,7 @@ export async function syncDueSubscriptions(services, now = new Date()) {
   );
   const resultado = await sincronizarFilas(services, filas || [], now);
   // Sólo los que nunca volvieron de Flow. Uno en subscription_pending pudo
-  // crear la suscripción allá: queda a la vista para conciliarlo a mano.
+  // crear la suscripción allá: se concilia más abajo.
   const vencidos = await supabase.update(
     "billing_checkout_intents",
     `status=eq.card_registration_pending&expires_at=lt.${encodeURIComponent(now.toISOString())}&select=id`,
@@ -288,10 +422,20 @@ export async function syncDueSubscriptions(services, now = new Date()) {
     { status: "expired" },
     { admin: true },
   );
+  // Aparte: si la conciliación falla, la sincronización de arriba ya corrió.
+  let conciliacion = { conciliados: 0, sinSuscripcion: 0, pendientes: 0 };
+  try {
+    conciliacion = await reconcilePendingCheckouts(services, { now });
+  } catch (error) {
+    console.error("pteron reconcile", { error: error instanceof Error ? error.message : String(error) });
+  }
   return {
     sincronizadas: resultado.sincronizadas,
     fallidas: resultado.fallidas,
     checkoutsVencidos: vencidos.length,
     cortesiasVencidas: cortesias.length,
+    checkoutsConciliados: conciliacion.conciliados,
+    checkoutsSinSuscripcion: conciliacion.sinSuscripcion,
+    checkoutsPendientes: conciliacion.pendientes,
   };
 }

@@ -189,6 +189,15 @@ día siguiente a la última factura pagada, o al fin de la prueba, y se guarda e
   moneda, el intervalo o el `urlCallback` no calzan, no cobra (503).
 - El retorno de la tarjeta reclama el intento una sola vez, siempre redirige a
   `/cuenta?billing=…` y, si no puede guardar la suscripción, la cancela en Flow.
+- Si `subscription/create` no responde (red, vencimiento de 10 s o 5xx), la
+  suscripción pudo quedar creada en Flow: el intento sigue en
+  `subscription_pending` y se anota el evento `subscription_create_uncertain`.
+  Pasados 10 minutos, el Cron diario y el siguiente checkout de esa cuenta lo
+  concilian con `customer/getSubscriptions`: si Flow tiene una suscripción de
+  ese plan que la base no conoce, se anota (`subscription_reconciled`); si no,
+  el intento falla (`subscription_create_not_found`) y se puede comprar de
+  nuevo. Mientras tanto el checkout responde 409 `checkout_pending`, y
+  `/api/admin/salud` cuenta los intentos que llevan más de 10 minutos así.
 - La licencia vence en lo pagado más 72 h (sin gracia si se canceló al cierre;
   en una cortesía, su fin), con un tope de 7 días: la app la renueva sola. La
   renovación devuelve además el estado del plan.
@@ -225,7 +234,10 @@ Los errores llevan `{error, message: "código: texto"}`: 401 de licencia
 `resets_at`) o `concurrency_limited`, 413 `prompt_too_long` y 503
 `included_ai_unavailable` con su motivo. Los errores de la cuenta de pteron en
 Anthropic (saldo, tope de gasto, clave, modelo) se dicen como 503
-`provider_paused`; los 429 y 529 del proveedor pasan con su `retry-after`.
+`provider_paused`; los 429 y 529 del proveedor pasan con su `retry-after`. Si
+Anthropic no responde, o su respuesta no se pudo leer, es 503 con motivo
+`provider_unreachable` (en el segundo caso se cobra lo reservado, porque
+Anthropic ya la ejecutó).
 
 Proyecto Supabase configurado:
 

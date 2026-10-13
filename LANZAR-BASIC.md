@@ -181,6 +181,16 @@ despliega. Con el servidor ya en `main` no cambia nada del cobro ni de la IA.
     and current_period_end < now() - interval '3 days';
   ```
 
+- Cada semana, los checkouts que quedaron sin saber si Flow creó la suscripción (debe dar 0 filas;
+  el Cron y el siguiente checkout los concilian solos):
+
+  ```sql
+  select id, user_id, plan_id, provider_customer_id, status, updated_at
+  from public.billing_checkout_intents
+  where status = 'subscription_pending'
+    and updated_at < now() - interval '10 minutes';
+  ```
+
 - Cada mes, el costo del workspace en la consola de Anthropic contra la suma de unidades de
   `/admin` (10.000.000 = US$1). La diferencia debe ser menor al 5 %.
 - Subir una cuota no exige aviso; bajarla, sí, y rige desde el período siguiente.

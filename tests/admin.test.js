@@ -461,10 +461,11 @@ const catalogo = [
 ];
 const flowPlan = (planId, overrides = {}) => ({ planId, currency: "CLP", amount: 1990, interval: 3, interval_count: 1, status: 1, urlCallback: "https://pteron.test/api/billing/flow-callback", ...overrides });
 
-function saludNetwork({ anthropicStatus = 200, basicPlan = flowPlan("pteron-basic-1990-mensual"), settings = [{ value: false }] } = {}) {
+function saludNetwork({ anthropicStatus = 200, basicPlan = flowPlan("pteron-basic-1990-mensual"), settings = [{ value: false }], atascados = { body: [] } } = {}) {
   return fakeNetwork([
     meRoute(admin),
     { match: matches.supabase("app_settings"), respond: { body: settings } },
+    { match: matches.supabase("billing_checkout_intents"), respond: atascados },
     { match: matches.supabase("plan_catalog"), respond: { body: catalogo } },
     { match: (url) => url.startsWith("https://api.anthropic.com/v1/models/"), respond: { status: anthropicStatus, body: { id: "claude-haiku-5-5", type: "model" } } },
     { match: matches.flow("/plans/get"), respond: (call) => {
@@ -499,6 +500,7 @@ test("salud responde con booleanos por chequeo, compara con Flow cada plan de pa
     assert.equal(data.anthropic_url_oficial, true);
     assert.equal(data.ia_incluida_pausada, false);
     assert.equal(data.catalogo, true);
+    assert.equal(data.checkouts_atascados, 0, "ningún intento lleva más de 10 minutos en subscription_pending");
     const plan = (id) => data.planes.find((row) => row.id === id);
     assert.equal(plan("free").flow, null, "un plan gratuito no pasa por Flow");
     assert.equal(plan("tester").flow, null);
@@ -506,6 +508,8 @@ test("salud responde con booleanos por chequeo, compara con Flow cada plan de pa
     assert.equal(plan("pro").flow, false, "otro urlCallback");
     assert.equal(data.venta, true, "Pro no está a la venta: no cuenta");
 
+    const atascados = network.calls.find((call) => call.url.includes("billing_checkout_intents"));
+    assert.match(decodeURIComponent(atascados.url), /status=eq\.subscription_pending&updated_at=lt\.\d{4}-\d{2}-\d{2}T[^&]+&select=id$/);
     const anthropic = network.calls.find((call) => call.url.startsWith("https://api.anthropic.com"));
     assert.equal(anthropic.url, "https://api.anthropic.com/v1/models/claude-haiku-5-5");
     assert.equal(anthropic.headers["x-api-key"], "anthropic-secreta");
@@ -533,6 +537,21 @@ test("salud dice qué falla: firma sin clave, Anthropic que rechaza la clave, pl
     assert.equal(data.ia_incluida_pausada, true, "sin fila, pausada");
     assert.equal(data.planes.find((row) => row.id === "basic").flow, false);
     assert.equal(data.venta, false, "Basic está a la venta y Flow cobraría otro monto");
+  });
+});
+
+test("salud cuenta los intentos atascados en subscription_pending sin bloquear lo esencial, y dice null si no puede leerlos", async () => {
+  const { saludEnv, services } = saludFixture();
+  await withFetch(saludNetwork({ atascados: { body: [{ id: "i1" }, { id: "i2" }] } }).fetch, async () => {
+    const data = await (await salud(saludEnv, services)).json();
+    assert.equal(data.checkouts_atascados, 2);
+    assert.equal(data.esencial, true);
+    assert.equal(data.venta, true);
+  });
+  await withFetch(saludNetwork({ atascados: { status: 500, body: { message: "caído" } } }).fetch, async () => {
+    const data = await (await salud(saludEnv, services)).json();
+    assert.equal(data.checkouts_atascados, null);
+    assert.equal(data.esencial, true);
   });
 });
 

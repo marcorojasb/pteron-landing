@@ -517,6 +517,26 @@ test("sin red hacia Anthropic responde 503 provider_unreachable y libera la rese
   assert.deepEqual([where.finishes()[0].p_units, where.finishes()[0].p_metadata.status], [0, "provider_unreachable"]);
 });
 
+test("un 200 cuyo cuerpo no se puede leer responde 503 provider_unreachable y cobra lo reservado", async () => {
+  const ctx = setup();
+  const unreadable = new Response(new ReadableStream({ pull(controller) { controller.error(new TypeError("terminated")); } }), {
+    status: 200,
+    headers: { "content-type": "application/json", "request-id": "req_cut" },
+  });
+  const where = world({ upstream: () => unreadable });
+  const result = await send(ctx, where, { token: await ctx.license(), body: { ...BODY, stream: false } });
+  assert.equal(result.response.status, 503);
+  assert.equal(errorBody(result).reason, "provider_unreachable");
+  const estimate = reservationEstimate(new TextEncoder().encode(JSON.stringify({ ...BODY, stream: false })).byteLength, 32_768);
+  assert.ok(estimate > 0);
+  assert.equal(where.finishes().length, 1);
+  const [finish] = where.finishes();
+  assert.equal(finish.p_units, estimate);
+  assert.equal(finish.p_metadata.status, "upstream_read_failed");
+  assert.equal(finish.p_metadata.units, estimate, "el desglose cuenta lo mismo que se cobra");
+  assert.equal(finish.p_metadata.request_id, "req_cut");
+});
+
 test("licencia ausente, inválida o vencida: 401 con el código al comienzo del mensaje, sin tocar Supabase", async () => {
   const ctx = setup();
   const other = setup();

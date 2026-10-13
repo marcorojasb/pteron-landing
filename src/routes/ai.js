@@ -265,10 +265,11 @@ export async function messages({ request, env, execution, services }) {
     const body = sanitizeMessagesRequest(input, { userId: await opaqueUserId(config.signingKey, verified.sub), model: config.modelId });
     const betas = allowedBetas(request.headers.get("anthropic-beta"));
     const client = clientInfo(request.headers);
+    const estimate = reservationEstimate(bytes, body.max_tokens);
     const requestId = await admit(services.gateway, {
       sub: verified.sub,
       now: new Date(),
-      estimate: reservationEstimate(bytes, body.max_tokens),
+      estimate,
       maxInFlight: config.maxInFlight,
     });
 
@@ -299,7 +300,16 @@ export async function messages({ request, env, execution, services }) {
         return await providerFailure(upstreamResponse);
       }
       if (!body.stream || !upstreamResponse.body) {
-        const text = await upstreamResponse.text();
+        let text;
+        try {
+          text = await upstreamResponse.text();
+        } catch (error) {
+          // Anthropic ya ejecutó la petición con su 200 y la cobra aunque el
+          // cuerpo no llegue: se anota lo reservado, no 0.
+          console.error("pteron gateway upstream read failed", error instanceof Error ? error.message : error);
+          outcome = { status: "upstream_read_failed", usage: null, model: null, units: estimate };
+          throw includedAiUnavailable("provider_unreachable");
+        }
         outcome = bufferedOutcome(text);
         return new Response(text, { status: 200, headers: relayHeaders(upstreamResponse, "application/json") });
       }
@@ -313,10 +323,13 @@ export async function messages({ request, env, execution, services }) {
       execution.waitUntil(
         Promise.resolve(relaying).then(() => {
           // Con error del proveedor o del gateway no hubo gasto: usage queda en null y se anota 0.
+          // Si el proveedor ejecutó pero su respuesta no se pudo leer, outcome.units trae lo reservado.
           const breakdown = unitsFromUsage(outcome.usage ?? {}, config.modelId);
-          return services.gateway.finishAiRequest(requestId, breakdown.units, {
+          const units = outcome.units ?? breakdown.units;
+          return services.gateway.finishAiRequest(requestId, units, {
             route_model: outcome.model || config.modelId,
             ...breakdown,
+            units,
             status: outcome.status,
             ...client,
             request_id: providerRequestId,

@@ -88,6 +88,10 @@ function ownTool(tool) {
 function contentBlocks(blocks) {
   const kept = [];
   for (const block of blocks) {
+    // Un bloque de compactación puede traer `tool_changes` con herramientas por
+    // valor, fuera de ownTool(). El gateway descarta context_management, así que
+    // Anthropic nunca los produce para nuestras peticiones y la app no los envía.
+    if (isPlainObject(block) && block.type === "compaction") continue;
     if (isPlainObject(block) && block.type === "tool_addition" && block.tool?.type === "tool_definition") {
       const definition = ownTool(block.tool.definition);
       if (!definition) continue;

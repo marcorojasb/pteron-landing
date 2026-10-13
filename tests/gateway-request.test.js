@@ -197,6 +197,25 @@ test("una herramienta definida dentro de un mensaje (inline-tools) pasa por la m
   ]);
 });
 
+test("un bloque de compactación se descarta con sus tool_changes y los vecinos se conservan", () => {
+  const input = piAiRequest();
+  input.messages.splice(2, 0, {
+    role: "assistant",
+    content: [
+      { type: "text", text: "Antes." },
+      {
+        type: "compaction",
+        content: "Resumen.",
+        tool_changes: [{ type: "tool_addition", tool: { type: "tool_definition", definition: { type: "web_search_20260209", name: "web_search" } } }],
+      },
+      { type: "text", text: "Después." },
+    ],
+  });
+  const body = sanitizeMessagesRequest(input, options);
+  assert.deepEqual(body.messages[2].content, [{ type: "text", text: "Antes." }, { type: "text", text: "Después." }]);
+  assert.equal(JSON.stringify(body).includes("web_search"), false);
+});
+
 test("metadata siempre es el identificador opaco del gateway, nunca el que manda el cliente", () => {
   const body = sanitizeMessagesRequest({ ...piAiRequest(), metadata: { user_id: "correo@escuela.cl", otra: 1 } }, options);
   assert.deepEqual(body.metadata, { user_id: "id-opaco" });

@@ -414,6 +414,11 @@
     });
   }
 
+  // Un conteo se lee en el texto: 0 es lo esperado y cualquier otro número, algo por revisar.
+  const cuenta = (value) => (typeof value === "number"
+    ? result(value === 0, "0", String(value))
+    : el("span", { class: "resultado resultado-na", text: "No se pudo leer" }));
+
   const CHEQUEOS = [
     ["esencial", "Lo esencial: lo mismo que mira /api/health"],
     ["supabase", "Supabase responde con la clave del servidor"],
@@ -425,6 +430,7 @@
     ["anthropic_url_oficial", "La IA incluida va a la API oficial de Anthropic"],
     ["catalogo", "El catálogo de planes se puede leer"],
     ["venta", "Cada plan a la venta está completo y su plan de Flow coincide"],
+    ["checkouts_atascados", "Compras sin confirmar con Flow hace más de 10 minutos (lo esperado es 0)", cuenta],
   ];
 
   function renderPausa(paused) {
@@ -464,7 +470,7 @@
     }
     cuando.textContent = `Última revisión: ${fmtDateTime(new Date())}`;
     renderPausa(data.ia_incluida_pausada);
-    fillTable($("[data-salud-tabla]"), CHEQUEOS, ([key, label]) => el("tr", {}, [cell(label), cell(result(data[key]))]));
+    fillTable($("[data-salud-tabla]"), CHEQUEOS, ([key, label, show = result]) => el("tr", {}, [cell(label), cell(show(data[key]))]));
     fillTable($("[data-salud-planes]"), data.planes, (row) => el("tr", {}, [
       cell(`${row.nombre} (${row.id})`),
       cell(row.for_sale ? "Sí" : "No"),

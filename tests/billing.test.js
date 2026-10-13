@@ -2,8 +2,10 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import worker from "../src/worker.js";
 import { sha256Hex } from "../src/lib/crypto.js";
+import { reconcilePendingCheckouts } from "../src/lib/flow-sync.js";
+import { trialEligible } from "../src/routes/billing.js";
 import { TERMS_VERSION } from "../src/lib/terms.js";
-import { fakeExecution, fakeNetwork, formRequest, jsonRequest, matches, testEnv, withFetch } from "./helpers/fakes.js";
+import { fakeExecution, fakeNetwork, formRequest, jsonRequest, matches, testEnv, testServices, withFetch } from "./helpers/fakes.js";
 import { FLOW_ERROR, REGISTER, basicEnPrueba, cliente, cobroMensual, pago, planFlow, registro } from "./helpers/flow-fixtures.js";
 
 const env = testEnv({
@@ -46,9 +48,10 @@ async function registrando(fn) {
 
 /**
  * Red del checkout. `planGet` son las respuestas sucesivas de plans/get;
- * `previas`, las suscripciones Flow que la cuenta ya tuvo (deciden la prueba).
+ * `previas`, las suscripciones Flow que la cuenta ya tuvo (deciden la prueba);
+ * `pendientes`, los intentos suyos en subscription_pending.
  */
-function checkoutNetwork({ catalogo = [BASIC], vigentes = [], previas = [], guardado = [], intentosPrevios = [], planGet = [{ body: PLAN_BASIC }], extra = [] } = {}) {
+function checkoutNetwork({ catalogo = [BASIC], vigentes = [], previas = [], guardado = [], intentosPrevios = [], pendientes = [], planGet = [{ body: PLAN_BASIC }], extra = [] } = {}) {
   let lecturasPlan = 0;
   return fakeNetwork([
     ...extra,
@@ -58,6 +61,7 @@ function checkoutNetwork({ catalogo = [BASIC], vigentes = [], previas = [], guar
     { match: matches.supabase("subscriptions", "GET"), respond: { body: vigentes } },
     { match: matches.supabase("billing_customers", "GET"), respond: { body: guardado } },
     { match: matches.supabase("billing_customers", "POST"), respond: { body: [{ user_id: user.id }] } },
+    { match: (url, m) => matches.supabase("billing_checkout_intents", "GET")(url, m) && url.includes("status=eq.subscription_pending"), respond: { body: pendientes } },
     { match: matches.supabase("billing_checkout_intents", "GET"), respond: { body: intentosPrevios } },
     { match: matches.supabase("billing_checkout_intents", "POST"), respond: { body: [{ id: INTENT }] } },
     { match: matches.flow("/plans/get"), respond: () => planGet[Math.min(lecturasPlan++, planGet.length - 1)] },
@@ -139,7 +143,7 @@ test("un plan de Flow con otro monto o con otro aviso detiene la venta (503 bill
     }));
     assert.equal(errores[0][0], "pteron flow plan");
     assert.equal(errores[0][1].campo, campo);
-    assert.equal(network.calls.some((call) => call.url.includes("/customer/") || call.url.includes("billing_checkout_intents")), false, campo);
+    assert.equal(network.calls.some((call) => call.url.includes("/customer/") || (call.url.includes("billing_checkout_intents") && call.method !== "GET")), false, campo);
   }
 });
 
@@ -276,7 +280,7 @@ function intentoPendiente(cambios = {}) {
  * Red del retorno con un intento que cambia como en la base: el PATCH
  * condicional sólo reclama un intento pendiente y vigente.
  */
-function callbackNetwork({ intent = intentoPendiente(), registrado = registro({ customerId: "cus_1" }), vigentes = [], creada = basicEnPrueba(), insertFalla = false, registroFalla = false } = {}) {
+function callbackNetwork({ intent = intentoPendiente(), registrado = registro({ customerId: "cus_1" }), vigentes = [], creada = basicEnPrueba(), creacion = { body: creada }, insertFalla = false, registroFalla = false } = {}) {
   const estado = { ...intent };
   return {
     estado,
@@ -296,7 +300,7 @@ function callbackNetwork({ intent = intentoPendiente(), registrado = registro({ 
       { match: matches.supabase("billing_checkout_intents", "GET"), respond: () => ({ body: [{ status: estado.status, expires_at: estado.expires_at }] }) },
       { match: matches.flow("/customer/getRegisterStatus"), respond: registroFalla ? { status: 500, body: { message: "Flow no responde" } } : { body: registrado } },
       { match: matches.supabase("subscriptions", "GET"), respond: { body: vigentes } },
-      { match: matches.flow("/subscription/create"), respond: { body: creada } },
+      { match: matches.flow("/subscription/create"), respond: creacion },
       {
         match: matches.supabase("subscriptions", "POST"),
         respond: (call) => (insertFalla
@@ -453,6 +457,334 @@ test("la segunda prueba negada llega a Flow como trial_period_days 0", async () 
   assert.equal(fila.status, "active");
   assert.equal(fila.trial_ends_at, null);
   assert.equal(fila.current_period_end, "2026-11-13T03:00:00.000Z");
+});
+
+test("un subscription/create sin respuesta (error 5xx o vencimiento) anota subscription_create_uncertain y deja el intento pendiente", async () => {
+  const casos = [
+    [{ status: 500, body: { message: "Flow no responde" } }, "flow_error"],
+    [() => { throw new DOMException("The operation was aborted due to timeout", "TimeoutError"); }, "server_error"],
+  ];
+  for (const [creacion, codigo] of casos) {
+    const { network, estado } = callbackNetwork({ creacion });
+    await registrando(() => withFetch(network.fetch, async () => {
+      assert.equal((await retorno()).headers.get("location"), `https://pteron.test/cuenta?billing=error&code=${codigo}`);
+    }));
+    assert.equal(estado.status, "subscription_pending", "pudo quedar creada en Flow: no se libera ni se da por fallida");
+    const evento = network.calls.find((call) => call.url.includes("billing_events"));
+    assert.deepEqual(evento.body, {
+      user_id: user.id,
+      external_event_id: `flow:intent:${INTENT}:subscription_create_uncertain`,
+      event_type: "subscription_create_uncertain",
+      status: "received",
+      event_metadata: { intentId: INTENT, customerId: "cus_1", planId: "pteron-basic-1990-mensual" },
+    });
+    assert.equal(network.calls.some((call) => call.url.includes("/rest/v1/subscriptions") && call.method === "POST"), false);
+  }
+  // Un rechazo de Flow (400) sí es seguro: no se creó nada, el intento falla y no hay evento.
+  const rechazo = callbackNetwork({ creacion: { status: 400, body: FLOW_ERROR } });
+  await registrando(() => withFetch(rechazo.network.fetch, async () => {
+    assert.equal((await retorno()).headers.get("location"), "https://pteron.test/cuenta?billing=error&code=flow_error");
+  }));
+  assert.equal(rechazo.estado.status, "failed");
+  assert.equal(rechazo.network.calls.some((call) => call.url.includes("billing_events")), false);
+});
+
+// ── Conciliar los checkouts inciertos ──────────────────────────────────────
+
+const haceMinutos = (minutos) => new Date(Date.now() - minutos * 60_000).toISOString();
+const HUERFANA = basicEnPrueba({ subscriptionId: "sus_huerfana", created: "2026-10-13 15:20:00" });
+
+/**
+ * Supabase y Flow con estado: los intentos y las filas cambian como en la base
+ * (el filtro por status, updated_at y user_id lo aplica el mock) y Flow lista
+ * `enFlow` como las suscripciones del cliente. `carrera` es una fila que otra
+ * conciliación anota justo antes del insert, que entonces falla por duplicado.
+ */
+function conciliacionNetwork({ intentos = [], filas = [], enFlow = [], lista = null, carrera = null } = {}) {
+  const intents = intentos.map((intent) => ({ ...intent }));
+  const subs = filas.map((fila) => ({ ...fila }));
+  const eventos = [];
+  const param = (call, nombre) => new URL(call.url).searchParams.get(nombre)?.replace(/^(eq|lt)\./, "") ?? null;
+  const listaFlow = lista ?? { body: { total: enFlow.length, hasMore: false, data: enFlow } };
+  let carreraPendiente = carrera;
+  const network = fakeNetwork([
+    { match: matches.auth("user"), respond: { body: user } },
+    { match: matches.supabase("plan_catalog"), respond: { body: [BASIC] } },
+    {
+      match: matches.supabase("billing_checkout_intents", "GET"),
+      respond: (call) => {
+        const [status, antes, usuario] = ["status", "updated_at", "user_id"].map((nombre) => param(call, nombre));
+        return { body: intents.filter((intent) => (!status || intent.status === status) && (!antes || Date.parse(intent.updated_at) < Date.parse(antes)) && (!usuario || intent.user_id === usuario)).map((intent) => ({ ...intent })) };
+      },
+    },
+    {
+      match: matches.supabase("billing_checkout_intents", "PATCH"),
+      respond: (call) => {
+        const [id, status] = [param(call, "id"), param(call, "status")];
+        const intent = intents.find((fila) => fila.id === id && (!status || fila.status === status));
+        if (!intent) return { body: [] };
+        Object.assign(intent, call.body, { updated_at: new Date().toISOString() });
+        return { body: [{ ...intent }] };
+      },
+    },
+    {
+      match: matches.supabase("subscriptions", "GET"),
+      respond: (call) => {
+        const ids = [...(new URL(call.url).searchParams.get("provider_subscription_id") ?? "").matchAll(/"([^"]+)"/g)].map(([, id]) => id);
+        const unico = /^eq\./.test(new URL(call.url).searchParams.get("provider_subscription_id") ?? "") ? param(call, "provider_subscription_id") : null;
+        const estados = /^in\.\((.*)\)$/.exec(new URL(call.url).searchParams.get("status") ?? "")?.[1].split(",");
+        const usuario = param(call, "user_id");
+        return { body: subs.filter((fila) => (!ids.length || ids.includes(fila.provider_subscription_id)) && (!unico || unico === fila.provider_subscription_id) && (!estados || estados.includes(fila.status)) && (!usuario || fila.user_id === usuario)) };
+      },
+    },
+    {
+      match: matches.supabase("subscriptions", "POST"),
+      respond: (call) => {
+        if (carreraPendiente) {
+          subs.push({ id: "fila-carrera", ...carreraPendiente });
+          carreraPendiente = null;
+        }
+        if (subs.some((fila) => fila.provider_subscription_id === call.body.provider_subscription_id)) {
+          return { status: 409, body: { message: 'duplicate key value violates unique constraint "subscriptions_provider_subscription_id_key"' } };
+        }
+        const fila = { id: `fila-${subs.length + 1}`, canceled_at: null, ...call.body };
+        subs.push(fila);
+        return { body: [{ ...fila }] };
+      },
+    },
+    { match: matches.supabase("subscriptions", "PATCH"), respond: (call) => ({ body: param(call, "id") ? [{ id: param(call, "id") }] : [] }) },
+    { match: matches.supabase("billing_events", "POST"), respond: (call) => { eventos.push(call.body); return { body: [{ id: "evento-1" }] }; } },
+    // Lo que el checkout sigue necesitando si la conciliación lo deja pasar.
+    { match: matches.supabase("billing_customers", "GET"), respond: { body: [{ provider_customer_id: "cus_1" }] } },
+    {
+      match: matches.supabase("billing_checkout_intents", "POST"),
+      respond: (call) => {
+        const intent = { id: "55555555-5555-4555-8555-555555555555", updated_at: new Date().toISOString(), ...call.body };
+        intents.push(intent);
+        return { body: [{ ...intent }] };
+      },
+    },
+    { match: matches.flow("/plans/get"), respond: { body: PLAN_BASIC } },
+    { match: matches.flow("/customer/register"), respond: { body: REGISTER } },
+    { match: matches.flow("/customer/getSubscriptions"), respond: listaFlow },
+    {
+      match: matches.flow("/subscription/get"),
+      respond: (call) => {
+        const encontrada = enFlow.find((s) => call.url.includes(`subscriptionId=${s.subscriptionId}`));
+        return encontrada ? { body: encontrada } : { status: 400, body: FLOW_ERROR };
+      },
+    },
+  ]);
+  return { network, intents, subs, eventos };
+}
+
+/** El intento de una compra que Flow pudo haber creado sin avisar: reclamado hace `minutos`. */
+const intentoIncierto = (minutos = 15, cambios = {}) => intentoPendiente({ status: "subscription_pending", updated_at: haceMinutos(minutos), ...cambios });
+
+test("conciliar adopta la suscripción de Flow que la base no conoce: fila con la primera sincronización, intento completado y evento", async () => {
+  const canceladaAntes = basicEnPrueba({ subscriptionId: "sus_vieja", status: 4, created: "2026-09-01 10:00:00" });
+  const deOtroPlan = basicEnPrueba({ subscriptionId: "sus_otroplan", planId: "pteron-pro-monthly", created: "2026-10-13 16:00:00" });
+  const yaAnotada = basicEnPrueba({ subscriptionId: "sus_anotada", created: "2026-10-01 10:00:00" });
+  const world = conciliacionNetwork({
+    intentos: [intentoIncierto()],
+    filas: [{ id: "fila-0", user_id: "otro-usuario", status: "canceled", provider_subscription_id: "sus_anotada" }],
+    enFlow: [canceladaAntes, yaAnotada, HUERFANA, deOtroPlan],
+  });
+  await withFetch(world.network.fetch, async () => {
+    assert.deepEqual(await reconcilePendingCheckouts(testServices(env), { now: new Date() }), { conciliados: 1, sinSuscripcion: 0, pendientes: 0 });
+  });
+  const lista = world.network.calls.find((call) => call.url.includes("/customer/getSubscriptions"));
+  assert.equal(lista.method, "GET");
+  assert.match(lista.url, /[?&]customerId=cus_1(&|$)/);
+  assert.match(lista.url, /[?&]start=0(&|$)/);
+  assert.match(lista.url, /[?&]limit=100(&|$)/);
+  assert.match(lista.url, /[?&]s=[0-9a-f]{64}(&|$)/);
+  const insert = world.network.calls.find((call) => call.url.includes("/rest/v1/subscriptions") && call.method === "POST").body;
+  assert.deepEqual([insert.user_id, insert.plan_id, insert.provider, insert.provider_customer_id, insert.provider_subscription_id, insert.terms_version], [user.id, "basic", "flow", "cus_1", "sus_huerfana", TERMS_VERSION]);
+  assert.equal(insert.status, "trialing");
+  assert.equal(insert.last_synced_at, null);
+  assert.ok(world.network.calls.some((call) => call.url.includes("/subscription/get") && call.url.includes("sus_huerfana")), "la primera sincronización");
+  assert.deepEqual([world.intents[0].status, world.intents[0].provider_subscription_id], ["completed", "sus_huerfana"]);
+  assert.deepEqual(world.eventos, [{
+    user_id: user.id,
+    external_event_id: `flow:intent:${INTENT}:subscription_reconciled`,
+    event_type: "subscription_reconciled",
+    status: "processed",
+    event_metadata: { intentId: INTENT, subscriptionId: "sus_huerfana", customerId: "cus_1", planId: "pteron-basic-1990-mensual" },
+  }]);
+  const seleccion = decodeURIComponent(world.network.calls[0].url);
+  assert.match(seleccion, /status=eq\.subscription_pending&updated_at=lt\./);
+  assert.match(seleccion, /limit=20$/);
+});
+
+test("conciliar elige la suscripción más nueva y deja constancia cuando hay más de una; la lista de Flow también puede venir como texto JSON", async () => {
+  const nueva = basicEnPrueba({ subscriptionId: "sus_nueva", created: "2026-10-13 15:25:00" });
+  const world = conciliacionNetwork({
+    intentos: [intentoIncierto()],
+    enFlow: [HUERFANA, nueva],
+    lista: { body: { total: 2, hasMore: 0, data: JSON.stringify([HUERFANA, nueva]) } },
+  });
+  const errores = await registrando(() => withFetch(world.network.fetch, async () => {
+    assert.equal((await reconcilePendingCheckouts(testServices(env), { now: new Date() })).conciliados, 1);
+  }));
+  assert.equal(world.subs[0].provider_subscription_id, "sus_nueva");
+  const aviso = errores.find(([etiqueta, detalle]) => etiqueta === "pteron reconcile" && detalle.reason === "several_subscriptions");
+  assert.deepEqual(aviso[1].subscriptions, ["sus_nueva", "sus_huerfana"]);
+});
+
+test("conciliar sin ninguna suscripción de Flow para ese plan falla el intento y deja el evento, para que la persona pueda comprar de nuevo", async () => {
+  const world = conciliacionNetwork({
+    intentos: [intentoIncierto()],
+    enFlow: [basicEnPrueba({ subscriptionId: "sus_vieja", status: 4 }), basicEnPrueba({ subscriptionId: "sus_otroplan", planId: "pteron-pro-monthly" })],
+  });
+  await withFetch(world.network.fetch, async () => {
+    assert.deepEqual(await reconcilePendingCheckouts(testServices(env), { now: new Date() }), { conciliados: 0, sinSuscripcion: 1, pendientes: 0 });
+  });
+  assert.equal(world.intents[0].status, "failed");
+  assert.equal(world.network.calls.some((call) => call.url.includes("/rest/v1/subscriptions") && call.method === "POST"), false);
+  assert.deepEqual(world.eventos, [{
+    user_id: user.id,
+    external_event_id: `flow:intent:${INTENT}:subscription_create_not_found`,
+    event_type: "subscription_create_not_found",
+    status: "processed",
+    event_metadata: { intentId: INTENT, customerId: "cus_1", planId: "pteron-basic-1990-mensual" },
+  }]);
+});
+
+test("conciliar no toca los intentos de menos de 10 minutos, que pueden seguir dentro de un card-callback, ni los de otros estados", async () => {
+  const world = conciliacionNetwork({
+    intentos: [intentoIncierto(5), intentoIncierto(30, { id: "33333333-3333-4333-8333-333333333333", status: "card_registration_pending" })],
+    enFlow: [HUERFANA],
+  });
+  await withFetch(world.network.fetch, async () => {
+    const antes = Date.now();
+    assert.deepEqual(await reconcilePendingCheckouts(testServices(env), { now: new Date(antes) }), { conciliados: 0, sinSuscripcion: 0, pendientes: 0 });
+    const seleccion = decodeURIComponent(world.network.calls[0].url);
+    assert.ok(seleccion.includes(`updated_at=lt.${new Date(antes - 10 * 60_000).toISOString()}`), seleccion);
+  });
+  assert.deepEqual(world.network.calls.map((call) => call.method), ["GET"], "ni Flow ni ninguna escritura");
+  assert.deepEqual(world.intents.map((intent) => intent.status), ["subscription_pending", "card_registration_pending"]);
+});
+
+test("conciliar filtra por cuenta cuando se le pide y deja los intentos de otras cuentas", async () => {
+  const world = conciliacionNetwork({ intentos: [intentoIncierto(), intentoIncierto(20, { id: "44444444-4444-4444-8444-444444444444", user_id: "otro-usuario" })], enFlow: [] });
+  await withFetch(world.network.fetch, async () => {
+    assert.equal((await reconcilePendingCheckouts(testServices(env), { now: new Date(), userId: user.id })).sinSuscripcion, 1);
+  });
+  assert.match(world.network.calls[0].url, new RegExp(`user_id=eq\\.${user.id}`));
+  assert.deepEqual(world.intents.map((intent) => intent.status), ["failed", "subscription_pending"]);
+});
+
+test("si Flow falla o devuelve una lista ilegible, el intento sigue pendiente y no se inventa que la suscripción no existe", async () => {
+  const casos = [
+    { status: 500, body: { message: "Flow no responde" } },
+    { body: { total: 1, hasMore: false, data: "no es json" } },
+    { body: { total: 1, hasMore: false } },
+  ];
+  for (const lista of casos) {
+    const world = conciliacionNetwork({ intentos: [intentoIncierto()], lista });
+    const errores = await registrando(() => withFetch(world.network.fetch, async () => {
+      assert.deepEqual(await reconcilePendingCheckouts(testServices(env), { now: new Date() }), { conciliados: 0, sinSuscripcion: 0, pendientes: 1 });
+    }));
+    assert.equal(world.intents[0].status, "subscription_pending", JSON.stringify(lista));
+    assert.equal(errores[0][0], "pteron reconcile");
+    assert.equal(world.eventos.length, 0);
+  }
+  // Una lista con más páginas de las que se leen tampoco prueba que no exista.
+  const larga = conciliacionNetwork({ intentos: [intentoIncierto()], lista: { body: { total: 150, hasMore: 1, data: [] } } });
+  await registrando(() => withFetch(larga.network.fetch, async () => {
+    assert.equal((await reconcilePendingCheckouts(testServices(env), { now: new Date() })).pendientes, 1);
+  }));
+  assert.equal(larga.intents[0].status, "subscription_pending");
+});
+
+test("si otra conciliación ya anotó la suscripción (provider_subscription_id es único), no es un error: el intento se completa", async () => {
+  const world = conciliacionNetwork({ intentos: [intentoIncierto()], enFlow: [HUERFANA], carrera: { user_id: user.id, status: "trialing", provider_subscription_id: "sus_huerfana" } });
+  await withFetch(world.network.fetch, async () => {
+    assert.deepEqual(await reconcilePendingCheckouts(testServices(env), { now: new Date() }), { conciliados: 1, sinSuscripcion: 0, pendientes: 0 });
+  });
+  assert.equal(world.intents[0].status, "completed");
+  assert.equal(world.subs.length, 1);
+});
+
+test("un intento cuya suscripción ya quedó anotada y sólo faltó cerrar se completa sin crear otra fila", async () => {
+  const world = conciliacionNetwork({
+    intentos: [intentoIncierto(15, { provider_subscription_id: "sus_huerfana" })],
+    filas: [{ id: "fila-1", user_id: user.id, status: "trialing", provider_subscription_id: "sus_huerfana" }],
+    enFlow: [HUERFANA],
+  });
+  await withFetch(world.network.fetch, async () => {
+    assert.equal((await reconcilePendingCheckouts(testServices(env), { now: new Date() })).conciliados, 1);
+  });
+  assert.equal(world.intents[0].status, "completed");
+  assert.equal(world.network.calls.some((call) => call.url.includes("/rest/v1/subscriptions") && call.method === "POST"), false);
+});
+
+test("checkout con un intento reciente en subscription_pending responde 409 checkout_pending y no le pide nada a Flow", async () => {
+  const world = conciliacionNetwork({ intentos: [intentoIncierto(2)], enFlow: [HUERFANA] });
+  await withFetch(world.network.fetch, async () => {
+    const res = await pedirCheckout(conTerminos("basic"));
+    assert.equal(res.status, 409);
+    const payload = await res.json();
+    assert.equal(payload.error, "checkout_pending");
+    assert.equal(payload.message, "Tu compra anterior todavía se está confirmando con Flow. Vuelve a intentarlo en unos minutos.");
+  });
+  assert.equal(world.network.calls.some((call) => call.url.includes("flow.cl")), false);
+  assert.equal(world.network.calls.some((call) => call.method !== "GET" && !call.url.includes("/auth/")), false, "no se escribe nada");
+});
+
+test("checkout con un intento incierto de hace más de 10 minutos que Flow no puede confirmar sigue en 409 checkout_pending", async () => {
+  const world = conciliacionNetwork({ intentos: [intentoIncierto(20)], lista: { status: 500, body: { message: "Flow no responde" } } });
+  await registrando(() => withFetch(world.network.fetch, async () => {
+    const res = await pedirCheckout(conTerminos("basic"));
+    assert.equal(res.status, 409);
+    assert.equal((await res.json()).error, "checkout_pending");
+  }));
+  assert.equal(world.network.calls.some((call) => call.url.includes("/customer/register") || call.url.includes("/subscription/create")), false);
+  assert.equal(world.intents[0].status, "subscription_pending");
+});
+
+test("checkout concilia primero: adopta la suscripción de Flow y responde 409 subscription_exists, sin segunda suscripción ni segunda prueba", async () => {
+  const world = conciliacionNetwork({ intentos: [intentoIncierto(20)], enFlow: [HUERFANA] });
+  await withFetch(world.network.fetch, async () => {
+    const res = await pedirCheckout(conTerminos("basic"));
+    assert.equal(res.status, 409);
+    assert.equal((await res.json()).error, "subscription_exists");
+    assert.equal(world.subs.length, 1);
+    assert.equal(world.subs[0].provider_subscription_id, "sus_huerfana");
+    assert.equal(world.intents[0].status, "completed");
+    assert.equal(await trialEligible(testServices(env).supabase, user.id), false, "la prueba ya se usó en esa suscripción");
+  });
+  assert.equal(world.network.calls.some((call) => call.url.includes("/customer/register") || call.url.includes("/subscription/create") || (call.url.includes("billing_checkout_intents") && call.method === "POST")), false);
+});
+
+test("checkout concilia primero: sin suscripción en Flow el intento falla y la compra sigue como nueva, con su prueba", async () => {
+  const world = conciliacionNetwork({ intentos: [intentoIncierto(20)], enFlow: [] });
+  await withFetch(world.network.fetch, async () => {
+    const res = await pedirCheckout(conTerminos("basic"));
+    assert.equal(res.status, 200);
+    assert.equal((await res.json()).trialPeriodDays, 7, "no hubo suscripción: la prueba sigue disponible");
+  });
+  assert.equal(world.intents[0].status, "failed");
+  assert.equal(world.intents.length, 2);
+  assert.equal(world.intents[1].status, "card_registration_pending");
+});
+
+test("el Cron concilia los checkouts inciertos y suma sus cuentas al resumen", async () => {
+  const world = conciliacionNetwork({
+    intentos: [intentoIncierto(30), intentoIncierto(40, { id: "66666666-6666-4666-8666-666666666666", user_id: "otro-usuario", provider_customer_id: "cus_2" })],
+    enFlow: [HUERFANA],
+    lista: { body: { total: 1, hasMore: false, data: [HUERFANA] } },
+  });
+  await withFetch(world.network.fetch, async () => {
+    const ctx = fakeExecution();
+    await worker.scheduled({ cron: "17 12 * * *", scheduledTime: Date.now() }, env, ctx);
+    const resumen = await ctx.promises[0];
+    // El mismo cliente de la lista adopta la suscripción del primero; al segundo ya no le queda ninguna sin anotar.
+    assert.deepEqual([resumen.checkoutsConciliados, resumen.checkoutsSinSuscripcion, resumen.checkoutsPendientes], [1, 1, 0]);
+  });
+  assert.deepEqual(world.intents.map((intent) => intent.status), ["completed", "failed"]);
+  assert.match(decodeURIComponent(world.network.calls.find((call) => call.url.includes("updated_at=lt.")).url), /status=eq\.subscription_pending&updated_at=lt\.[^&]+&select=[^&]+&order=updated_at\.asc&limit=20$/, "todas las cuentas: sin user_id");
 });
 
 // ── Aviso de pago y cancelación ────────────────────────────────────────────
