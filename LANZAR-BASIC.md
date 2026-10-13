@@ -1,19 +1,31 @@
 # Qué falta para que funcione
 
 Lista, en orden, de lo que se hace a mano para abrir la venta de Basic con IA incluida (ADR-177 de
-pteron). Todo lo demás se publica solo: al llegar a `main`, Workers Builds despliega el Worker, el
-sitio y el Cron en https://pteron.patagua.dev. No hay usuarios reales, migraciones ni Worker viejo:
-la base se arma con un solo archivo y la venta nace cerrada (`for_sale = false`).
+pteron). El código está completo en `main`: el Worker, el sitio y el Cron se publican con un
+despliegue (sección 0). No hay usuarios reales, migraciones ni Worker viejo: la base se arma con un
+solo archivo y la venta nace cerrada (`for_sale = false`).
 
 Cada paso dice dónde y cómo comprobarlo, sin exponer secretos. Lo que se decide con abogado o
 contador está en `LEGAL-PENDIENTE.md`.
 
-Empieza cuando `main` ya esté desplegado. Esto debe imprimir 404; otro número significa que todavía
-responde el Worker anterior, que usaría la clave de Anthropic sin cuota ni filtros:
+## 0. Publicar el Worker
 
-```bash
-curl -sS -o /dev/null -w '%{http_code}\n' -X POST https://pteron.patagua.dev/api/ai/v1/chat/completions
-```
+Workers Builds no está conectado a este repositorio: un push a `main` todavía no despliega solo.
+
+1. Cloudflare › Workers & Pages › `pteron-landing` › Settings › Variables and Secrets: borra el
+   secreto `FLOW_BASE_URL`. Ahora es una variable de `wrangler.jsonc` (la API de producción de Flow)
+   y no puede existir también como secreto.
+2. Despliega `main`, de una de estas dos formas:
+   - Settings › Build › Connect: repositorio `marcorojasb/pteron-landing`, rama `main`, build vacío y
+     deploy `npx wrangler deploy`. Desde ahí cada push a `main` se publica solo.
+   - Desde tu equipo, en esta carpeta con `main` al día: `npx wrangler deploy`.
+3. Comprueba. Esto debe imprimir 404; otro número significa que todavía responde el Worker anterior,
+   que usaría la clave de Anthropic sin cuota ni filtros. Y `/planes` debe decir $2.990:
+
+   ```bash
+   curl -sS -o /dev/null -w '%{http_code}\n' -X POST https://pteron.patagua.dev/api/ai/v1/chat/completions
+   curl -sS https://pteron.patagua.dev/planes | grep -o '\$2\.990' | head -1
+   ```
 
 ## 1. Supabase
 
