@@ -317,6 +317,15 @@ test("con hojas de estilo pendientes (Safari corre los defer sin esperarlas), la
 });
 
 const esperar = (ms) => new Promise((listo) => setTimeout(listo, ms));
+/** Espera a que se cumpla la condición (la escena espera con temporizadores reales): con la máquina ocupada, una espera
+    fija puede quedar corta. */
+async function hasta(condicion, ms = 3000) {
+  const fin = Date.now() + ms;
+  while (!condicion()) {
+    if (Date.now() > fin) throw new Error("la condición no se cumplió a tiempo");
+    await esperar(10);
+  }
+}
 const ocultas = (page) => page.laminas.filter((node) => node.style.visibility === "hidden").length;
 
 test("el recreo: dos clics seguidos sobre la misma lámina, no dos lentos ni sobre láminas distintas", () => {
@@ -355,8 +364,7 @@ test("el recreo toma las láminas quietas y derechas, la del doble clic primero;
   // Se ordenan: en medio segundo quedan derechas (sin giro) y quietas
   for (let i = 0; i < 30; i += 1) page.cuadro(20);
   for (const node of page.laminas) assert.match(node.style.transform, /rotate\(0deg\)/, `derecha: ${node.style.transform}`);
-  await esperar(480);
-  assert.equal(abiertos.length, 1);
+  await hasta(() => abiertos.length === 1);
   const [{ laminas, transformar, alCerrar }] = abiertos;
   assert.equal(transformar, true);
   assert.equal(laminas.length, 4);
@@ -383,8 +391,7 @@ test("el recreo toma las láminas quietas y derechas, la del doble clic primero;
   tercera.dispatchEvent({ type: "click" });
   page.avanzar(80);
   tercera.dispatchEvent({ type: "click" });
-  await esperar(480);
-  assert.equal(abiertos.length, 2);
+  await hasta(() => abiertos.length === 2);
 });
 
 test("si recreo.js no carga, las láminas vuelven a flotar, se avisa en la consola y otro doble clic lo intenta de nuevo", async () => {
@@ -395,7 +402,7 @@ test("si recreo.js no carga, las láminas vuelven a flotar, se avisa en la conso
   page.avanzar(80);
   a.dispatchEvent({ type: "click" });
   page.scripts[0].dispatchEvent({ type: "error" });
-  await esperar(480);
+  await hasta(() => page.avisos.length > 0);
   assert.ok(page.scripts[0].quitado);
   assert.equal(ocultas(page), 0);
   assert.ok(page.avisos.some(([texto]) => String(texto).includes("recreo")));
@@ -417,8 +424,7 @@ test("con movimiento reducido el recreo se abre de una vez: sin ordenar ni escon
   const abiertos = [];
   page.ventana.pteronRecreo = { abrir: (opciones) => abiertos.push(opciones) };
   page.scripts[0].dispatchEvent({ type: "load" });
-  await esperar(20);
-  assert.equal(abiertos.length, 1);
+  await hasta(() => abiertos.length === 1);
   assert.equal(abiertos[0].transformar, false);
   assert.equal(abiertos[0].laminas.length, 4, "las piezas llevan igual las láminas");
   assert.equal(ocultas(page), 0);
