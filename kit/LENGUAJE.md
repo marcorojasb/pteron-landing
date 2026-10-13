@@ -94,7 +94,8 @@ Sobre el azul, el texto secundario va en `#C9D3EA` y los enlaces en `#DCE3F2`.
 
 En la app, sobre la mesa, el texto tiene tres niveles: tinta, el **rótulo** `#4A5A72` (el de los rótulos de campo de
 las hojas, 6 : 1 sobre la mesa) y el grafito, los tres AA sobre la mesa y la hoja. Entre la mesa y la hoja, los paneles
-van en **lavado** `#F3F6FB`. Los dos están en `color-app` de `tokens.json`.
+van en **lavado** `#F3F6FB`. En el planificador, «Por revisar» va en el **ámbar** `#B7791F` de las figuras. Los tres
+están en `color-app` de `tokens.json`.
 
 Reglas:
 
