@@ -70,7 +70,8 @@ pteron y su guía, `app/APLICAR.md`:
   disuelve hacia abajo, a la misma escala que la letra anterior; el icono del kit para macOS (en su cuadrícula de
   824), Windows y Linux, con pruebas que fijan sus sumas. Se retira `--font-brand`.
 - ADR-170: los tokens de la app con los colores de las hojas, en claro y en el oscuro de pteron-design; el foco y la
-  selección en azul, el lápiz sólo como destacador y la mesa plana.
+  selección en azul, el lápiz sólo como destacador y la mesa plana. El CSS del editor deja de teñir la app: el foco
+  verde, el aviso global y la preparación inicial vuelven a ser de pteron.
 - La respuesta guardada como archivo ya no se titula «Material creado con pteron».
 
 Mientras la app no publique una versión con estos cambios, la ventana de la web sigue mostrando el «pteron» de Iowan
