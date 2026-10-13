@@ -53,16 +53,26 @@ Worker, desde este repositorio en GitHub.
     de la app; los iconos `*-v4` y `favicon-v5-*` (la «p» de la marca sobre el azul) y
     `assets/og/`: una imagen para compartir por página.
 - `src/worker.js`: el Worker. Atiende `/api/*` y reescribe `/docs/:slug` a la
-  página de documentación; todo lo demás lo sirven los assets.
-  - `src/lib/`: ayudantes HTTP, cliente de Supabase, cliente de Flow, firma y
-    verificación de licencias (Ed25519 con Web Crypto) y contabilidad del
-    gateway de IA.
-  - `src/routes/`: `auth`, `billing`, `activation`, `license`, `account` y `ai`.
+  página de documentación; todo lo demás lo sirven los assets. Su handler
+  `scheduled` corre el Cron diario de la sincronización con Flow.
+  - `src/lib/`: ayudantes HTTP (con la guarda de host), cliente de Supabase,
+    cliente de Flow con lectores tipados, la sincronización con Flow
+    (`flow-sync.js`), firma y verificación de licencias (Ed25519 con Web
+    Crypto), el saneamiento de las peticiones a la IA incluida
+    (`gateway-request.js`), sus unidades por costo (`units.js`), la
+    contabilidad del gateway y la versión vigente de los Términos (`terms.js`).
+  - `src/routes/`: `auth`, `billing`, `activation`, `license`, `account`, `ai`,
+    `admin` y `health`.
   - `/api/*` y `/docs/*` entran siempre por el Worker (`run_worker_first`):
     sin eso, una navegación del navegador a una ruta sin asset la respondería
     la página 404 y el retorno de Flow nunca llegaría.
 - `supabase/migrations/`: esquema de perfiles, suscripciones, licencias,
-  activaciones, eventos de cobro y uso.
+  activaciones, eventos de cobro y uso; la de `20261013120000` agrega precios,
+  cuotas, venta cerrada, reservas de IA y lo que se sincroniza con Flow.
+- `LANZAR-BASIC.md`: la guía, en orden, para configurar y abrir la venta de
+  Basic con IA incluida (Anthropic, Cloudflare, Supabase y Flow).
+- `LEGAL-PENDIENTE.md`: lo que se decide con abogado o contador antes de vender
+  (quién vende, retracto, confirmación escrita, boleta), con borradores.
 - `tests/`: pruebas con `node --test`, sin red: Supabase, Flow y el proveedor
   de IA se simulan.
 - `scripts/`: sincronización de versiones, capturas, comprobaciones y la prueba
@@ -155,30 +165,67 @@ cuenta web, Flow y la aplicación de escritorio siguen llamando a
 Ed25519 que produce Web Crypto es la misma que verifica `node:crypto` en la
 aplicación, y una prueba lo comprueba en cada corrida. Las claves públicas
 admitidas viven en `src/lib/license.js` (`PUBLIC_KEYS`, por `kid`); la privada
-que firma es el secreto `LICENSE_PRIVATE_KEY_PEM` y `LICENSE_KID` dice con cuál.
+que firma es el secreto `LICENSE_PRIVATE_KEY_PEM` y `LICENSE_KID` dice con cuál
+(sin `LICENSE_KID` no se firma; cada firma se verifica con su clave pública
+antes de entregarla).
+
+Fuera del dominio de `PUBLIC_SITE_URL` (una URL de versión o `*.workers.dev`),
+las rutas de cuenta, cobro, licencia, activación, IA y admin responden 421: una
+vista previa no cobra, no firma ni gasta IA con los secretos de producción.
+
+### Cobro y licencia
+
+Flow es la fuente de verdad del cobro (ADR-177 de pteron). El aviso de pago de
+Flow no trae la suscripción: el Worker la lee con `subscription/get` al crearla,
+tras cada aviso, al emitir una licencia cerca de su fin (a lo más cada 15
+minutos) y en un Cron diario (`17 12 * * *` UTC). Las fechas de Flow son días
+del calendario de Chile con el fin incluido; «pagado hasta» es el comienzo del
+día siguiente a la última factura pagada, o al fin de la prueba, y se guarda en
+`subscriptions.current_period_end`.
+
+- El checkout vende sólo un plan de `plan_catalog` con `for_sale`, toma de ahí
+  el precio y la prueba (una por persona), exige aceptar los Términos vigentes
+  (`TERMS_VERSION`) y valida el plan de Flow con `plans/get`: si el monto, la
+  moneda, el intervalo o el `urlCallback` no calzan, no cobra (503).
+- El retorno de la tarjeta reclama el intento una sola vez, siempre redirige a
+  `/cuenta?billing=…` y, si no puede guardar la suscripción, la cancela en Flow.
+- La licencia vence en lo pagado más 72 h (sin gracia si se canceló al cierre;
+  en una cortesía, su fin), con un tope de 7 días: la app la renueva sola. La
+  renovación devuelve además el estado del plan.
 
 ### Gateway de IA incluida
 
 El proveedor detrás del plan es Anthropic y el modelo lo fija el servidor
-(`GATEWAY_MODEL_ID`, hoy `claude-haiku-5-5`); el cliente sólo pide
-`pteron-managed` y se identifica con su licencia (ADR-054/055/056 de pteron).
+(`GATEWAY_MODEL_ID`, hoy `claude-haiku-5-5`, que debe tener precio conocido en
+`src/lib/units.js`); el cliente sólo pide `pteron-managed` y se identifica con
+su licencia (ADR-054/055/056 y ADR-177 de pteron).
 
-- `POST /api/ai/v1/messages`: la API Messages de Anthropic tal cual. La app
-  (pi-ai sobre el SDK oficial) envía la licencia en `x-api-key` y sus betas en
-  `anthropic-beta`; el Worker añade la clave real, reemplaza el modelo y
-  retransmite el stream byte a byte. Los tokens se contabilizan desde
-  `message_start` y `message_delta` (entrada, caché escrita y leída, salida).
-- `POST /api/ai/v1/chat/completions`: puente transitorio para la app 0.6.0,
-  que habla el formato de chat completions, por la capa compatible con OpenAI
-  de Anthropic. Esa capa está pensada para pruebas, no como solución de largo
-  plazo: se retira cuando no queden instalaciones 0.6.0.
-- `GET /api/ai/v1/models`: el único modelo virtual.
+- `POST /api/ai/v1/messages`: la API Messages de Anthropic, saneada. Pasa sólo
+  lo que usa la app (herramientas propias, las betas de pi-ai, `max_tokens`
+  hasta 65.536, caché de 5 minutos), con el esfuerzo bajo fijado arriba y en
+  los mensajes system y un seudónimo de la cuenta en `metadata.user_id`. El
+  cuerpo admite hasta 1.200.000 bytes. Exige una suscripción vigente, reserva
+  unidades con `begin_ai_request` (hasta 3 en vuelo por cuenta), retransmite
+  el stream byte a byte y cierra con `finish_ai_request` el gasto real, aunque
+  cruce el tope.
+- `GET /api/ai/v1/models`: el único modelo virtual; responde 503 si falta la
+  configuración o la IA incluida está en pausa.
+- `POST /api/ai/v1/chat/completions`: 410. Era el puente de 0.6.0, que ya no
+  puede renovar su licencia.
 
-La cuota (`plan_catalog.ai_units_limit`, hoy `null`, sin tope) se aplica en el
-chequeo previo comparando lo usado con el tope; la petición que cruza el tope
-anota lo que cabe y deja el período lleno. Un 429 del proveedor pasa al cliente
-con su cuerpo para que la app reintente; un 401 de la clave propia se traduce a
-502 para no confundirse con la licencia.
+La cuota se cuenta en unidades por costo: equivalentes de token de entrada a
+precio de lista (10.000.000 = US$1; la salida pesa 5, la escritura de caché
+1,25 y la lectura 0,1; sobre 100.000 tokens de prompt, todo ×5). Basic tiene
+6.000.000 por período, 1.500.000 en la prueba y Pro 30.000.000
+(`plan_catalog`); el período es el mes pagado, la prueba o el mes de aniversario
+de una cortesía, y su límite queda fijo desde el primer uso.
+
+Los errores llevan `{error, message: "código: texto"}`: 401 de licencia
+(`license_revoked` si no hay suscripción vigente), 429 `quota_exceeded` (con
+`resets_at`) o `concurrency_limited`, 413 `prompt_too_long` y 503
+`included_ai_unavailable` con su motivo. Los errores de la cuenta de pteron en
+Anthropic (saldo, tope de gasto, clave, modelo) se dicen como 503
+`provider_paused`; los 429 y 529 del proveedor pasan con su `retry-after`.
 
 Proyecto Supabase configurado:
 
@@ -192,13 +239,19 @@ aplicarse en orden si se prepara otro entorno.
 ## Administración
 
 `/admin` usa la misma sesión que `/cuenta` y sólo responde a los correos de
-`ADMIN_EMAILS`. Muestra el resumen (cuentas, pagos, cortesías, tokens del mes,
-licencias vigentes), la lista y el detalle de cada cuenta (suscripciones,
-licencias, activaciones, consumo mensual, peticiones de IA y eventos de cobro),
-el consumo por mes, por modelo y por cuenta, y el catálogo de planes con su
-límite mensual de tokens. Desde el detalle se concede o retira una cortesía
-(`provider = comp`), que cancela el plan vigente y emite licencia como un plan
-pagado. La API vive en `src/routes/admin.js` y sus pruebas en
+`ADMIN_EMAILS`. Muestra el resumen (cuentas, pagos, cortesías, unidades del
+mes, licencias vigentes, planes a la venta y si la IA incluida está en pausa),
+la lista y el detalle de cada cuenta (suscripciones, licencias, activaciones,
+consumo del período, peticiones de IA y eventos de cobro), el consumo por mes,
+por modelo y por cuenta (agregado en SQL), y el catálogo de planes con su cuota
+en unidades y su equivalente en US$. Desde ahí se abre o cierra la venta de cada
+plan, se pausa la IA incluida, se concede o retira una cortesía (`provider =
+comp`; no pisa un plan pagado y retirarla revoca sus licencias) y se termina un
+plan de inmediato («Terminar ahora» cancela también en Flow). La pestaña Salud
+(`/api/admin/salud`) dice con booleanos si están los secretos, si Flow es el de
+producción, si la firma k2 se verifica, si la clave de Anthropic responde y si
+el plan de Flow de cada plan a la venta calza con el catálogo. La API vive en
+`src/routes/admin.js` y `src/routes/health.js`, y sus pruebas en
 `tests/admin.test.js`.
 
 ## Versiones públicas
@@ -217,12 +270,18 @@ publicar una versión nueva del producto.
 
 ## Variables y secretos
 
-Las variables públicas viven en `wrangler.jsonc`:
+Las variables públicas viven en `wrangler.jsonc`, y sólo ahí: una variable de
+texto puesta en el panel de Cloudflare se borra en el siguiente despliegue.
 
 - `PUBLIC_SITE_URL=https://pteron.patagua.dev`
 - `SUPABASE_URL=https://swzqblyllbudwbmbcthr.supabase.co`
 - `LICENSE_KID=k2`
 - `GATEWAY_MODEL_ID=claude-haiku-5-5`
+- `FLOW_BASE_URL=https://www.flow.cl/api`: en el sitio de producción no se
+  acepta otra (salvo `FLOW_ALLOW_SANDBOX=1`, sólo para desarrollo).
+- `FLOW_BASIC_PLAN_ID=pteron-basic-1990-mensual` y
+  `FLOW_PRO_PLAN_ID=pteron-pro-monthly`: Flow fija el monto al crear un plan,
+  así que un precio nuevo es un id nuevo.
 
 Los secretos se cargan con `npx wrangler secret put <NOMBRE>` o desde el panel
 del Worker, nunca en el repositorio ni en la interfaz del navegador:
@@ -239,15 +298,19 @@ del Worker, nunca en el repositorio ni en la interfaz del navegador:
 - `ADMIN_EMAILS`: correos autorizados para `/admin` y `/api/admin/*`, separados
   por comas. Sin esta variable, la administración responde 503.
 
-Variables opcionales, también como secretos o en `vars`: `FLOW_BASE_URL`
-(`https://sandbox.flow.cl/api` durante las pruebas, `https://www.flow.cl/api`
-en producción; por defecto sandbox), `FLOW_BASIC_PLAN_ID`, `FLOW_PRO_PLAN_ID`,
-y `ANTHROPIC_BASE_URL`.
+Opcionales: `GATEWAY_MAX_IN_FLIGHT` (peticiones de IA en vuelo por cuenta, por
+defecto 3) y `ANTHROPIC_BASE_URL` (en producción sólo la oficial).
+
+`/api/health` responde `{ok}` (200 o 503) y `/api/admin/salud` dice qué falta,
+sin mostrar valores.
 
 Para desarrollo local, copia `.dev.vars.example` a `.dev.vars`; ese archivo
 está ignorado por Git.
 
 ## Despliegue
+
+Para lanzar Basic con IA incluida, sigue `LANZAR-BASIC.md`: el orden importa
+(la migración antes que el Worker, y la clave de Anthropic al final).
 
 El Worker se despliega desde GitHub con la integración Git de Cloudflare
 (Workers Builds): cada push a `main` publica producción y cada rama recibe una
@@ -260,16 +323,15 @@ URL de previsualización. Configuración del proyecto en el panel:
 3. En Supabase Auth, mantener como Site URL `https://pteron.patagua.dev/cuenta`
    y permitir ese destino como URL de redirección. Las URLs de previsualización
    no sirven para el enlace mágico salvo que se añadan ahí.
-4. En Flow, probar primero con sandbox: registro de tarjeta, callback,
-   suscripción Basic con siete días de prueba, cancelación y callback de pago.
+4. En Flow, probar primero con sandbox en un entorno aparte (las URLs de
+   versión usan los secretos de producción): registro de tarjeta, prueba,
+   primer cobro y que la licencia se extienda, cobro rechazado y cancelación.
 5. Al momento del corte, asignar el dominio `pteron.patagua.dev` al Worker
    desde Custom Domains; Cloudflare reemplaza el CNAME anterior. Hasta
    entonces el despliegue anterior sigue respondiendo.
-6. Antes de cobrar, cambiar las credenciales y `FLOW_BASE_URL` al entorno de
-   producción, confirmar los precios publicados y revisar las condiciones de
-   devolución.
-7. Definir la cuota de IA antes de habilitar capacidad adicional; el esquema
-   deja `ai_units_limit` como `null` hasta tomar esa decisión.
+6. Antes de cobrar, cargar las credenciales de producción de Flow, aplicar la
+   migración y resolver `LEGAL-PENDIENTE.md`. La venta nace cerrada y se abre
+   desde `/admin`.
 
 El gateway de IA retransmite respuestas largas del proveedor; el plan Workers
 Paid evita el tope de CPU del plan gratuito en esas peticiones.
@@ -297,11 +359,14 @@ npm run verify     # sintaxis, empaquetado en seco, pruebas y humo contra wrangl
 
 `npm run dev` necesita `.dev.vars` para la cuenta, Flow y el gateway; sin él,
 esas rutas responden 503 con un código que nombra la configuración ausente.
-La web estática, la documentación y las descargas funcionan sin secretos.
+La web estática, la documentación y las descargas funcionan sin secretos. Para
+probar con el sandbox de Flow, `.dev.vars` lleva su `FLOW_BASE_URL` y
+`FLOW_ALLOW_SANDBOX=1`.
 
 ## Antes del lanzamiento comercial
 
-- Revisar legalmente Privacidad, Términos, prueba con tarjeta y devoluciones.
+- Seguir `LANZAR-BASIC.md` y resolver `LEGAL-PENDIENTE.md` (quién vende,
+  retracto, confirmación escrita, boleta) antes de abrir la venta.
 - Mantener los enlaces de descarga sincronizados con los releases públicos.
 - Probar la activación en una instalación limpia de cada plataforma soportada.
-- Confirmar las capacidades exactas de Basic y Pro, incluida la cuota de IA.
+- Medir cuántos materiales caben en cada cuota y publicar esa equivalencia.
