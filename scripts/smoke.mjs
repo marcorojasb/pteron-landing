@@ -82,7 +82,11 @@ try {
   await expect("caché immutable", { path: "/assets/favicon-v5-32.png" }, (res) => (/immutable/.test(res.headers.get("cache-control") || "") ? null : `cache-control ${res.headers.get("cache-control")}`));
   await expect("api desconocida", { path: "/api/nada" }, jsonError("not_found", 404));
   await expect("api desconocida por navegación", { path: "/api/nada", headers: navigate }, jsonError("not_found", 404));
-  await expect("retorno de Flow por navegación", { path: "/api/billing/card-callback?intent=x", method: "POST", headers: { ...navigate, "content-type": "application/x-www-form-urlencoded" }, body: "token=abc" }, jsonError("checkout_expired", 410));
+  // El retorno de Flow lo atiende el Worker y siempre vuelve a /cuenta, nunca con un JSON.
+  await expect("retorno de Flow por navegación", { path: "/api/billing/card-callback?intent=x", method: "POST", headers: { ...navigate, "content-type": "application/x-www-form-urlencoded" }, body: "token=abc" }, (res) => {
+    const location = res.headers.get("location") || "";
+    return res.status === 303 && location.endsWith("/cuenta?billing=expired") ? null : `esperaba 303 a /cuenta?billing=expired, llegó ${res.status} ${location}`;
+  });
   await expect("api sin sesión", { path: "/api/account" }, jsonError("not_authenticated", 401));
   await expect("api con cabeceras de seguridad", { path: "/api/nada" }, (res) => (res.headers.get("x-frame-options") === "DENY" && res.headers.get("cache-control") === "no-store" ? null : "faltan cabeceras"));
   await expect("fuente no publicada", { path: "/wrangler.jsonc" }, status(404));

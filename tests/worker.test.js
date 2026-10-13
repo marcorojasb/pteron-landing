@@ -205,7 +205,7 @@ test("license/renew reemite a partir de una licencia firmada aunque esté vencid
   const { gatewayEnv, services, sign } = gatewayFixture();
   const old = await sign({ expiresAt: new Date(Date.now() - 86400000).toISOString() });
   const supabase = fakeSupabase([
-    { table: "subscriptions", method: "GET", respond: { body: [{ plan_id: "pro", current_period_end: new Date(Date.now() + 86400000).toISOString(), plan_catalog: { license_plan: "pro" } }] } },
+    { table: "subscriptions", method: "GET", respond: { body: [{ plan_id: "pro", status: "active", current_period_end: new Date(Date.now() + 86400000).toISOString(), plan_catalog: { license_plan: "pro" } }] } },
     { table: "licenses", method: "POST", respond: { body: [{ id: "l" }] } },
   ]);
   await withFetch(supabase.fetch, async () => {

@@ -1,11 +1,17 @@
 # Copia este archivo a .dev.vars para `npm run dev`. Nunca lo subas al repositorio.
-# Las variables públicas (PUBLIC_SITE_URL, SUPABASE_URL, LICENSE_KID) viven en wrangler.jsonc.
+# Las variables públicas (PUBLIC_SITE_URL, SUPABASE_URL, LICENSE_KID, FLOW_BASE_URL y los
+# ids de los planes de Flow) viven en wrangler.jsonc; lo que se escriba aquí las reemplaza
+# sólo en local.
 SUPABASE_PUBLISHABLE_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
+# En local se cobra en el sandbox de Flow, con sus propias llaves. Como PUBLIC_SITE_URL sigue
+# siendo el dominio de producción, el sandbox exige FLOW_ALLOW_SANDBOX=1. Nunca en el Worker
+# de producción: ahí la tarjeta de prueba pública de Flow regalaría el plan.
 FLOW_BASE_URL=https://sandbox.flow.cl/api
+FLOW_ALLOW_SANDBOX=1
 FLOW_API_KEY=
 FLOW_SECRET_KEY=
-# Opcionales si los planes ya existen en Flow con otro id (por defecto pteron-<plan>-monthly):
+# Opcionales si en el sandbox los planes tienen otro id que en wrangler.jsonc:
 # FLOW_BASIC_PLAN_ID=
 # FLOW_PRO_PLAN_ID=
 LICENSE_PRIVATE_KEY_PEM=

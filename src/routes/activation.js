@@ -12,7 +12,9 @@ async function start({ request, env, services }) {
   }
   const code = randomHex(32);
   const codeHash = await sha256Hex(code);
-  const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+  // Una hora: quien activa por primera vez suele pasar por el registro de la
+  // tarjeta en Flow antes de volver a la app.
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
   await services.supabase.insert("activation_intents", {
     code_hash: codeHash,
     app_instance_id: appInstanceId,
@@ -39,7 +41,7 @@ async function exchange({ request, services }) {
   );
   const intent = rows?.[0];
   if (!intent?.user_id) throw new HttpError(410, "activation_not_ready", "Autoriza primero este equipo desde tu cuenta web.");
-  const issued = await license.issueLicense(intent.user_id);
+  const issued = await license.issueLicense(intent.user_id, services);
   const consumed = await supabase.update(
     "activation_intents",
     `id=eq.${encodeURIComponent(intent.id)}&status=eq.pending`,
@@ -47,7 +49,8 @@ async function exchange({ request, services }) {
     { admin: true },
   );
   if (!consumed.length) throw new HttpError(409, "activation_used", "Este enlace de activación ya fue usado.");
-  return json(200, { ok: true, token: issued.token, plan: issued.plan, expiresAt: issued.expiresAt, keyId: issued.keyId });
+  // Lo mismo que /api/license/renew: la licencia y el estado del plan.
+  return json(200, { ok: true, ...issued });
 }
 
 async function complete({ request, services }) {

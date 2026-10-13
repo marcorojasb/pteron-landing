@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import worker from "../src/worker.js";
-import { fakeExecution, fakeNetwork, jsonRequest, matches, testEnv, testKeyPair, withFetch } from "./helpers/fakes.js";
+import worker, { matchApi } from "../src/worker.js";
+import { fakeExecution, fakeNetwork, jsonRequest, matches, testEnv, testKeyPair, testServices, withFetch } from "./helpers/fakes.js";
 
 const keys = testKeyPair();
 const env = testEnv({ LICENSE_PRIVATE_KEY_PEM: keys.privatePem });
@@ -106,11 +106,13 @@ test("activation/complete vincula el intent a la cuenta y rechaza los que vencie
 test("license/refresh reemite desde la sesión web y firma con el kid configurado", async () => {
   const network = fakeNetwork([
     { match: matches.auth("user"), respond: { body: user } },
-    { match: matches.supabase("subscriptions"), respond: { body: [{ plan_id: "basic", current_period_end: new Date(Date.now() + 86400000).toISOString(), plan_catalog: { license_plan: "basic" } }] } },
+    { match: matches.supabase("subscriptions"), respond: { body: [{ plan_id: "basic", status: "active", current_period_end: new Date(Date.now() + 86400000).toISOString(), plan_catalog: { license_plan: "basic" } }] } },
     { match: matches.supabase("licenses", "POST"), respond: { body: [{ id: "l" }] } },
   ]);
   await withFetch(network.fetch, async () => {
-    const res = await run(jsonRequest("https://pteron.test/api/license/refresh", {}, { headers: { authorization: "Bearer sesion" } }));
+    // La firma recién hecha se comprueba con la clave pública del kid: aquí, la del par de pruebas.
+    const request = jsonRequest("https://pteron.test/api/license/refresh", {}, { headers: { authorization: "Bearer sesion" } });
+    const res = await matchApi("/api/license/refresh")({ request, env, url: new URL(request.url), execution: fakeExecution(), services: testServices(env, { k1: keys.publicPem }) });
     assert.equal(res.status, 200);
     const payload = await res.json();
     assert.equal(payload.plan, "basic");

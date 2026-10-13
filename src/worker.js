@@ -1,6 +1,7 @@
 import { SECURITY_HEADERS, handleError, json } from "./lib/http.js";
 import { createSupabase } from "./lib/supabase.js";
 import { createFlow } from "./lib/flow.js";
+import { syncDueSubscriptions } from "./lib/flow-sync.js";
 import { PUBLIC_KEYS, createLicenseService } from "./lib/license.js";
 import { createGateway } from "./lib/gateway.js";
 import { ACTIONS as auth } from "./routes/auth.js";
@@ -89,5 +90,11 @@ export default {
     const { pathname } = new URL(request.url);
     if (pathname === "/api" || pathname.startsWith("/api/")) return handleApi(request, env, execution);
     return handleAssets(request, env);
+  },
+  // Cron diario (triggers.crons en wrangler.jsonc): pone al día con Flow las
+  // suscripciones cerca del fin de lo pagado, aunque el aviso de pago no llegue
+  // y el docente no abra la app.
+  async scheduled(controller, env, ctx) {
+    ctx.waitUntil(syncDueSubscriptions(createServices(env), new Date()));
   },
 };

@@ -30,8 +30,21 @@
     "PUBLIC_SITE_URL": "https://pteron.patagua.dev",
     "SUPABASE_URL": "https://swzqblyllbudwbmbcthr.supabase.co",
     "LICENSE_KID": "k2",
-    "GATEWAY_MODEL_ID": "claude-haiku-5-5"
+    "GATEWAY_MODEL_ID": "claude-haiku-5-5",
+    // Flow va aquí y no en el panel: cada despliegue reemplaza las variables de
+    // texto del panel por las de este archivo. Sin FLOW_BASE_URL el Worker no
+    // cobra, y en el sitio de producción sólo acepta la API de producción.
+    "FLOW_BASE_URL": "https://www.flow.cl/api",
+    // Flow fija el monto al crear un plan y no deja cambiarlo con suscriptores:
+    // cada precio tiene su id. El checkout compara monto, moneda, intervalo y
+    // urlCallback con plan_catalog y detiene la venta si algo no calza.
+    "FLOW_BASIC_PLAN_ID": "pteron-basic-1990-mensual",
+    "FLOW_PRO_PLAN_ID": "pteron-pro-monthly"
   },
+  // Cron diario a las 12:17 UTC (09:17 en el verano de Chile, 08:17 en
+  // invierno): sincroniza con Flow las suscripciones cerca del fin de lo pagado
+  // y vence los checkouts abandonados (handler scheduled de src/worker.js).
+  "triggers": { "crons": ["17 12 * * *"] },
   // Dominio de producción como Custom Domain: Cloudflare mantiene el registro
   // DNS y el certificado. El corte desde Vercel se hizo con este despliegue.
   "routes": [{ "pattern": "pteron.patagua.dev", "custom_domain": true }]
