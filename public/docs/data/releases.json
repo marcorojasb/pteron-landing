@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-12T03:25:19.352Z",
+  "generatedAt": "2026-10-13T19:19:46.445Z",
   "latest": {
     "version": "0.7.1",
     "publishedAt": "2026-10-12T03:25:05Z",
@@ -131,6 +131,81 @@
   },
   "stable": null,
   "releases": [
+    {
+      "version": "0.8.0",
+      "publishedAt": "2026-10-13T19:19:28Z",
+      "publishedLabel": "octubre de 2026",
+      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.8.0",
+      "assets": [
+        {
+          "name": "beta-mac.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.8.0/beta-mac.yml",
+          "bytes": 494
+        },
+        {
+          "name": "beta.yml",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.8.0/beta.yml",
+          "bytes": 337
+        },
+        {
+          "name": "pteron-0.8.0-arm64.dmg",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.8.0/pteron-0.8.0-arm64.dmg",
+          "bytes": 168611591
+        },
+        {
+          "name": "pteron-0.8.0-arm64.dmg.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.8.0/pteron-0.8.0-arm64.dmg.blockmap",
+          "bytes": 175933
+        },
+        {
+          "name": "pteron-0.8.0-arm64.zip",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.8.0/pteron-0.8.0-arm64.zip",
+          "bytes": 168294220
+        },
+        {
+          "name": "pteron-0.8.0-arm64.zip.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.8.0/pteron-0.8.0-arm64.zip.blockmap",
+          "bytes": 177491
+        },
+        {
+          "name": "pteron-0.8.0-x64.exe",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.8.0/pteron-0.8.0-x64.exe",
+          "bytes": 133193721
+        },
+        {
+          "name": "pteron-0.8.0-x64.exe.blockmap",
+          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.8.0/pteron-0.8.0-x64.exe.blockmap",
+          "bytes": 140480
+        }
+      ],
+      "notes": [
+        {
+          "type": "paragraph",
+          "text": "Esta versión cambia cómo se trabaja en pteron: el material queda sobre la mesa y la conversación, a su lado. Y llega Basic, con la IA incluida."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Un índice a la izquierda reúne tus encargos, ordenados por curso y con su estado en palabras. Desde ahí también abres la Biblioteca y la Configuración.",
+            "Al abrir un material, la conversación pasa a un margen junto a la hoja: pides ajustes sin perder de vista el material y la pliegas cuando necesitas espacio.",
+            "Mientras pteron escribe una guía, la ves armarse como hoja, con el mismo diseño que tendrá en el editor.",
+            "Los cambios que pides se aplican en el mismo editor y quedan marcados un momento en la hoja. Si no te sirven, «Deshacer» vuelve a la versión anterior, que además queda en Versiones.",
+            "Si una respuesta falla, el aviso aparece donde ocurrió, con «Reintentar» y «Cambiar de modelo», y lo que alcanzó a escribirse sigue a la vista.",
+            "Letra nueva, la marca dibujada y los colores de las hojas, en claro y en oscuro.",
+            "Basic trae la IA incluida por $2.990 al mes, IVA incluido, con 7 días de prueba. Se activa en Configuración › Perfil: pteron espera solo a que autorices el equipo en tu cuenta, y antes de usarla te dice que lo que envías va a Anthropic. Si la IA incluida no puede responder, pteron te dice por qué y cómo seguir."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Disponible para macOS en equipos Apple serie M y Windows 11."
+        },
+        {
+          "type": "paragraph",
+          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
+        }
+      ],
+      "channel": "beta"
+    },
     {
       "version": "0.7.1",
       "publishedAt": "2026-10-12T03:25:05Z",
@@ -2203,126 +2278,6 @@
             "El nombre del material deja de repetirse y las herramientas aparecen cuando puedes usarlas.",
             "Los bloques se pueden mover desde el margen de la hoja.",
             "Las presentaciones muestran controles propios y un espacio accesible para las notas del orador."
-          ]
-        },
-        {
-          "type": "paragraph",
-          "text": "Disponible para macOS en equipos Apple serie M, Windows 11, Linux."
-        },
-        {
-          "type": "paragraph",
-          "text": "El instalador de Windows todavía no tiene firma digital y puede mostrar un aviso de SmartScreen. Descárgalo desde esta página oficial."
-        }
-      ],
-      "channel": "beta"
-    },
-    {
-      "version": "0.4.2",
-      "publishedAt": "2026-08-18T17:19:45Z",
-      "publishedLabel": "agosto de 2026",
-      "url": "https://github.com/marcorojasb/pteron-beta/releases/tag/v0.4.2",
-      "assets": [
-        {
-          "name": "beta-linux.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/beta-linux.yml",
-          "bytes": 685
-        },
-        {
-          "name": "beta-mac.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/beta-mac.yml",
-          "bytes": 494
-        },
-        {
-          "name": "beta.yml",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/beta.yml",
-          "bytes": 337
-        },
-        {
-          "name": "pteron-0.4.2-amd64.deb",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-amd64.deb",
-          "bytes": 133144056
-        },
-        {
-          "name": "pteron-0.4.2-amd64.deb.asc",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-amd64.deb.asc",
-          "bytes": 833
-        },
-        {
-          "name": "pteron-0.4.2-arm64.dmg",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-arm64.dmg",
-          "bytes": 171398812
-        },
-        {
-          "name": "pteron-0.4.2-arm64.dmg.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-arm64.dmg.blockmap",
-          "bytes": 179904
-        },
-        {
-          "name": "pteron-0.4.2-arm64.zip",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-arm64.zip",
-          "bytes": 170832830
-        },
-        {
-          "name": "pteron-0.4.2-arm64.zip.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-arm64.zip.blockmap",
-          "bytes": 179512
-        },
-        {
-          "name": "pteron-0.4.2-x64.exe",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x64.exe",
-          "bytes": 133429886
-        },
-        {
-          "name": "pteron-0.4.2-x64.exe.blockmap",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x64.exe.blockmap",
-          "bytes": 139540
-        },
-        {
-          "name": "pteron-0.4.2-x64.tar.gz",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x64.tar.gz",
-          "bytes": 171458488
-        },
-        {
-          "name": "pteron-0.4.2-x64.tar.gz.asc",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x64.tar.gz.asc",
-          "bytes": 833
-        },
-        {
-          "name": "pteron-0.4.2-x86_64.AppImage",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x86_64.AppImage",
-          "bytes": 182308810
-        },
-        {
-          "name": "pteron-0.4.2-x86_64.AppImage.asc",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x86_64.AppImage.asc",
-          "bytes": 833
-        },
-        {
-          "name": "pteron-0.4.2-x86_64.rpm",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x86_64.rpm",
-          "bytes": 111368521
-        },
-        {
-          "name": "pteron-0.4.2-x86_64.rpm.asc",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-0.4.2-x86_64.rpm.asc",
-          "bytes": 833
-        },
-        {
-          "name": "pteron-releases-public.asc",
-          "url": "https://github.com/marcorojasb/pteron-beta/releases/download/v0.4.2/pteron-releases-public.asc",
-          "bytes": 1680
-        }
-      ],
-      "notes": [
-        {
-          "type": "paragraph",
-          "text": "Hojas más limpias y pedidos de materiales más fiables."
-        },
-        {
-          "type": "list",
-          "items": [
-            "Los encabezados dejan de repetir etiquetas o mostrar valores incorrectos.",
-            "Se corrigen detalles de creación y presentación de materiales."
           ]
         },
         {
