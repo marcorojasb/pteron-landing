@@ -75,10 +75,15 @@ Cada una de esas acciones requiere autorización específica.
 - `public/` es lo publicado; `src/` es el Worker; `tests/` prueba sin red.
 - Un cambio en `src/` o en `public/*.js` incluye pruebas proporcionales y pasa
   `npm run verify` antes de cerrarse.
-- Producción se despliega desde `main` por la integración Git de Cloudflare;
-  no hay URLs de previsualización (`workers_dev` y `preview_urls` están
-  apagados). Nada se despliega a mano desde una sesión sin autorización
-  específica.
+- Producción se publica a mano con `wrangler deploy` desde `main`, siguiendo
+  «Despliegue» en `README.md`: `main` al día, `npm ci`, `npm run verify`,
+  desplegar con el commit en el mensaje y comprobar en el sitio real. Workers
+  Builds no está conectado: un push a `main` no publica nada. No hay URLs de
+  previsualización (`workers_dev` y `preview_urls` están apagados).
+- Nada se despliega desde una sesión sin autorización específica del usuario.
+  Con ella, las credenciales están en `CLOUDFLARE_API_TOKEN` y
+  `CLOUDFLARE_ACCOUNT_ID`; ningún otro secreto del entorno hace falta para
+  desplegar.
 - Los secretos viven en el Worker, nunca en el repositorio ni en `wrangler.jsonc`.
 
 ## Calidad

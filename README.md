@@ -3,7 +3,7 @@
 Sitio público de `pteron`, con la cuenta web para autenticación, planes,
 registro de tarjeta y activación de licencias en la aplicación de escritorio.
 Todo se despliega en Cloudflare: la web como assets estáticos y la API como un
-Worker, desde este repositorio en GitHub.
+Worker, con `wrangler` desde la rama `main` de este repositorio (ver «Despliegue»).
 
 ## Contenido
 
@@ -371,7 +371,10 @@ El workflow `sync-pteron-releases.yml` actualiza `public/docs/data/releases.json
 a partir de los releases publicados. Una versión sólo pasa a ser la actual
 cuando su matriz de artefactos está completa. En el navegador,
 `release-data.js` combina ese JSON con la API pública de GitHub y conserva un
-fallback local. Cada commit del workflow en `main` despliega el sitio de nuevo.
+fallback local. Sus commits en `main` no se publican solos (ver «Despliegue»):
+mientras tanto el sitio ya anuncia la versión nueva, porque `release-data.js` la
+toma de la API pública de GitHub, y el JSON publicado, que es el respaldo, se
+pone al día en el despliegue siguiente.
 
 Los HTML cargan el CSS y JavaScript compartidos con un parámetro `?v=` para
 evitar que un archivo antiguo de la caché reemplace los enlaces actuales. Ese
@@ -430,20 +433,72 @@ está ignorado por Git.
 
 ## Despliegue
 
-El Worker se despliega desde GitHub con la integración Git de Cloudflare
-(Workers Builds): cada push a `main` publica producción, con el sitio, la API
-y el Cron, en `pteron.patagua.dev`. No hay URLs de previsualización por rama
-(`workers_dev` y `preview_urls` están en `false`): lo que se quiera ver antes se
-prueba con `npm run dev` o con el sandbox de Flow en local. Configuración del
-proyecto en el panel:
+Producción se publica a mano con `wrangler`, desde `main`. Workers Builds (la
+integración Git de Cloudflare) no está conectado a este repositorio: un push a
+`main` corre la CI («Verificar») pero no publica nada. `wrangler deploy` sube el
+sitio, la API y el Cron a `pteron.patagua.dev`. No hay URLs de previsualización
+por rama (`workers_dev` y `preview_urls` están en `false`): lo que se quiera ver
+antes se prueba con `npm run dev` o con el sandbox de Flow en local.
 
-1. Crear el Worker desde el repositorio `marcorojasb/pteron-landing`, rama de
-   producción `main`, comando de build vacío y comando de deploy
-   `npx wrangler deploy`.
-2. El dominio `pteron.patagua.dev` lo asigna `wrangler.jsonc` como Custom
+### Cómo se despliega
+
+Credenciales de Cloudflare: en una sesión de Claude Code en la nube están en
+`CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID`, que `wrangler` lee solo; en un
+equipo propio basta `npx wrangler login` una vez. Una sesión despliega sólo con
+la autorización explícita de Marco en esa conversación (`AGENTS.md`).
+
+1. Partir de `main` al día y sin cambios:
+
+   ```bash
+   git checkout main && git pull
+   git status --short    # no debe imprimir nada
+   ```
+
+2. Instalar lo del lockfile y verificar. Si `verify` falla, no se despliega:
+
+   ```bash
+   npm ci
+   npm run verify        # sintaxis, empaquetado en seco, pruebas y humo contra wrangler dev
+   ```
+
+3. Desplegar con el commit en el mensaje, para encontrarlo después en el
+   historial. Imprime el `Current Version ID`:
+
+   ```bash
+   npx wrangler deploy --message "main $(git rev-parse --short HEAD): <qué cambia>"
+   ```
+
+4. Comprobar en producción, con un parámetro al azar para no leer una copia
+   guardada:
+
+   ```bash
+   curl -s "https://pteron.patagua.dev/?r=$RANDOM" | grep -o 'styles.css?v=[^"]*'   # la revisión nueva
+   curl -s "https://pteron.patagua.dev/inicio.js?r=$RANDOM" | cmp - public/inicio.js && echo igual
+   curl -s https://pteron.patagua.dev/api/health                                    # {"ok":true}
+   ```
+
+   Repite el `cmp` con cada archivo que cambió y mira el cambio en el sitio real,
+   en escritorio y teléfono.
+
+5. Historial y vuelta atrás: `npx wrangler deployments list` muestra cada
+   despliegue (el último, al final) con su origen y su mensaje;
+   `npx wrangler rollback <version-id> --message "<por qué>"` vuelve a una versión
+   anterior.
+
+`wrangler deploy` toma las variables públicas de `wrangler.jsonc` y conserva los
+secretos del Worker, que no viven en el repositorio.
+
+Para que cada push a `main` se publique solo, hay que conectar Workers Builds:
+Cloudflare › Workers & Pages › `pteron-landing` › Settings › Build › Connect,
+repositorio `marcorojasb/pteron-landing`, rama `main`, build vacío y deploy
+`npx wrangler deploy`. Si se conecta, se actualizan esta sección y `AGENTS.md`.
+
+### Configuración del proyecto
+
+1. El dominio `pteron.patagua.dev` lo asigna `wrangler.jsonc` como Custom
    Domain; Cloudflare mantiene el registro DNS y el certificado.
-3. Cargar los secretos listados arriba y aplicar `supabase/esquema.sql`.
-4. En Supabase Auth, Site URL `https://pteron.patagua.dev/cuenta` y ese mismo
+2. Cargar los secretos listados arriba y aplicar `supabase/esquema.sql`.
+3. En Supabase Auth, Site URL `https://pteron.patagua.dev/cuenta` y ese mismo
    destino como URL de redirección del enlace mágico.
 
 Lo que queda por configurar a mano antes de cobrar (secretos, SMTP, Anthropic,
@@ -452,13 +507,6 @@ abre desde `/admin`.
 
 El gateway de IA retransmite respuestas largas del proveedor; el plan Workers
 Paid evita el tope de CPU del plan gratuito en esas peticiones.
-
-Despliegue manual desde una máquina autenticada:
-
-```bash
-npx wrangler login
-npm run deploy
-```
 
 ## Desarrollo y comprobaciones
 

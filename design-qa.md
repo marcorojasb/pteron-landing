@@ -30,6 +30,11 @@ Verificado en Chromium (Playwright) con un servidor estático de `public/`, a 14
 - Rendimiento: en el Chromium sin GPU del entorno de prueba, la toma de las láminas tarda unos 200 ms (con las láminas
   quietas) y el vuelo corre a unos 40 cuadros por segundo a densidad 1; falta medirlo en un teléfono real.
 
+Producción: desplegado a mano con `wrangler` desde `main` (`49ee072`, versión `59c53292`) tras `npm run verify`.
+En pteron.patagua.dev la portada carga la revisión 2026-10-13.6, `recreo.js` es idéntico al del repositorio,
+`/api/health` responde `{"ok":true}`, y el doble clic, el juego y el cierre funcionan en escritorio y teléfono sin
+errores ni desborde.
+
 Final result: passed (pendiente: Safari en iPhone y un teléfono de gama baja)
 
 ## Landing móvil y carga de video — 2026-07-28

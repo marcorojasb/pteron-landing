@@ -39,7 +39,8 @@ Workers Builds no está conectado a este repositorio: un push a `main` todavía 
 2. Despliega `main`, de una de estas dos formas:
    - Settings › Build › Connect: repositorio `marcorojasb/pteron-landing`, rama `main`, build vacío y
      deploy `npx wrangler deploy`. Desde ahí cada push a `main` se publica solo.
-   - Desde tu equipo, en esta carpeta con `main` al día: `npx wrangler deploy`.
+   - A mano, como se ha hecho hasta ahora: los pasos de «Despliegue» en `README.md` (`main` al día,
+     `npm ci`, `npm run verify`, `npx wrangler deploy --message "main <commit>: …"` y comprobar).
 3. Comprueba. Esto debe imprimir 404; otro número significa que todavía responde el Worker anterior,
    que usaría la clave de Anthropic sin cuota ni filtros. Y `/planes` debe decir $2.990:
 
@@ -251,8 +252,10 @@ curl -sS -X POST https://pteron.patagua.dev/api/ai/v1/messages -H 'content-type:
    ahí. 0.8.0 trae Basic a $2.990 con IVA, sólo la clave k2 y la activación que espera sola a la
    cuenta; la 0.7.1 publicada todavía muestra $1.990.
 2. `sync-pteron-releases.yml` hace un commit en `main` de esta web con
-   `public/docs/data/releases.json` en 0.8.0 y la despliega (corre cada 15 minutos, o a mano desde
-   Actions). Comprueba que https://pteron.patagua.dev/descargar ofrece 0.8.0.
+   `public/docs/data/releases.json` en 0.8.0 (corre cada 15 minutos, o a mano desde Actions). Ese
+   commit no se publica solo: `/descargar` ya ofrece 0.8.0 porque la consulta a la API de GitHub,
+   pero el JSON de respaldo queda viejo hasta desplegar `main` («Despliegue» en `README.md`).
+   Comprueba que https://pteron.patagua.dev/descargar ofrece 0.8.0.
 
 ## 8. Abrir la venta
 
