@@ -23,6 +23,11 @@ Verificado en Chromium (Playwright) con un servidor estático de `public/`, a 14
   juego aparece de una vez, con las piezas ya recortadas y la página tapada por la mesa).
 - Desborde: 0 px en todas las medidas. Consola: sin errores propios.
 
+Producción: desplegado a mano con `wrangler` desde `main` (`b81189f`, versión `b373de57`) tras `npm ci` y
+`npm run verify`. En pteron.patagua.dev la portada carga la revisión 2026-10-14.1, `recreo.js`, `inicio.js`,
+`inicio.css`, `styles.css` y la portada son idénticos a los del repositorio, `/api/health` responde `{"ok":true}`, y
+el doble clic, el vuelo y el juego funcionan en escritorio (1440 × 900) y teléfono (390 × 844) sin errores ni desborde.
+
 Final result: passed (pendiente: Safari en iPhone y un teléfono de gama baja)
 
 ## El recreo (huevo de pascua de la portada) — 2026-10-13
