@@ -11,7 +11,8 @@ Worker, con `wrangler` desde la rama `main` de este repositorio (ver «Despliegu
   URLs limpias y sin barra final.
   - `index.html`: el inicio. Láminas antiguas que flotan; al bajar, cada una se
     da vuelta y aterriza sobre su figura en hojas armadas con el código de pteron.
-    Siguen «Cómo se pide» (la ventana de pteron), la hoja en sus dos versiones,
+    Siguen «Cómo funciona» (la ventana de pteron, con las escenas del recorrido
+    de bienvenida de la app: pedir, decidir, crear y guardar), la hoja en sus dos versiones,
     el aviso de datos de estudiantes y la descarga.
   - `planes/index.html`: planes, precios y funcionamiento de las licencias.
   - `cuenta/`: cuenta web, acceso por enlace mágico, checkout y activación.
@@ -35,9 +36,10 @@ Worker, con `wrangler` desde la rama `main` de este repositorio (ver «Despliegu
     `cuenta/cuenta.js`,
     `admin/admin.js`, `descargar/download.js` y `docs/app.js` son los scripts
     de página.
-  - `pteron-ventana.js`: las plantillas y la secuencia de la ventana de pteron,
-    con el reconocimiento del pedido y el aviso de datos de estudiantes de la
-    app. `pteron-app.css` son las reglas de la app acotadas a `.pt-app` y
+  - `pteron-ventana.js`: las plantillas y la secuencia de la ventana de pteron
+    (el índice, la Home con la marca, el recuadro, el plan con su decisión, la
+    hoja que se escribe y las tarjetas del material), con el reconocimiento del
+    pedido y el aviso de datos de estudiantes de la app. `pteron-app.css` son las reglas de la app acotadas a `.pt-app` y
     `pteron-hoja.css` las de las hojas de Write acotadas a `.pteron-document`;
     las dos se generan (ver Scripts) y no se editan a mano.
   - `release-data.js`: selección semver de la última versión completa a partir
@@ -46,13 +48,13 @@ Worker, con `wrangler` desde la rama `main` de este repositorio (ver «Despliegu
     versiones publicadas.
   - `_headers`: cabeceras de seguridad y caché de `assets/`.
   - `assets/atlas/`: recortes de láminas de dominio público y piezas propias;
-    sus créditos están en `/privacidad#creditos`. `assets/app/` y
-    `assets/docs/`: capturas reales de pteron para la documentación.
+    sus créditos están en `/privacidad#creditos`. `assets/app/`: capturas reales
+    de pteron para la documentación, con su `LEEME.md`.
   - `assets/fonts/`: Archivo, Outfit, Playwrite CL e IBM Plex, con sus
     licencias; `assets/marca.svg`: el contorno de la marca «pteron» (Outfit con
     la esquina de la «t» doblada); `assets/marca/`: la marca en azul, blanco y
     tinta y el icono, para descargar; `assets/pt-icons.svg`: los iconos Lucide
-    de la app; los iconos `*-v4` y `favicon-v5-*` (la «p» de la marca sobre el azul;
+    de la ventana, los de la app (lo escribe `scripts/pteron-iconos.mjs`); los iconos `*-v4` y `favicon-v5-*` (la «p» de la marca sobre el azul;
     `favicon.ico` y `apple-touch-icon.png` van además en la raíz, sin versión) y
     `assets/og/`: una imagen para compartir por página.
 - `src/worker.js`: el Worker. Atiende `/api/*` y reescribe `/docs/:slug` a la
@@ -120,8 +122,15 @@ Worker, con `wrangler` desde la rama `main` de este repositorio (ver «Despliegu
     `twitter:image` y el texto alternativo de cada página. También necesita
     `PLAYWRIGHT`.
   - `pteron-ventana.mjs` escribe la ventana en reposo con las plantillas de
-    `pteron-ventana.js`, y `pteron-app-css.mjs` extrae y acota las reglas de la
-    app a `pteron-app.css`.
+    `pteron-ventana.js`, `pteron-app-css.mjs` extrae y acota las reglas de la
+    app a `pteron-app.css` y `pteron-iconos.mjs` arma `assets/pt-icons.svg` con
+    los iconos de lucide-solid del `node_modules` de pteron.
+  - `capturas-pteron.mjs <ruta de pteron>` toma las capturas de la documentación
+    con el arnés de pteron (sus escenas `PTERON_CAPTURE_SCENE` y la siembra de
+    materiales de prueba) sobre una mesa con encargos y archivos de un profesor,
+    a 1440 × 880 y escala 2, y les compone el marco de macOS. Necesita pteron
+    construido (`npm run build`) con sus paquetes; en Linux, un servidor X
+    (`xvfb-run`). El detalle está en `assets/app/LEEME.md`.
 - `supabase/correos/`: los correos de Supabase Auth en español (enlace mágico y
   confirmación), que carga `scripts/supabase-auth.mjs`.
 - `wrangler.jsonc`: configuración del Worker, los assets y las variables públicas.
@@ -138,8 +147,8 @@ Una sola familia para el sitio, **Archivo** (variable en ancho y peso), con la
 jerarquía hecha por ancho y peso. La marca «pteron» no se escribe con una letra:
 se dibuja con su contorno (`assets/marca.svg`), sobre Outfit, la letra de las
 figuras de pteron, que en la web no compone texto. Las hojas usan las letras de
-los materiales de pteron (Outfit y Playwrite CL) y la ventana las de la app (IBM
-Plex). Sin cursivas.
+los materiales de pteron (Outfit y Playwrite CL) y la ventana las de la app
+(Archivo, como el sitio, e IBM Plex Mono para lo técnico). Sin cursivas.
 
 Sin barra superior: la esquina de arriba a la derecha está doblada y debajo
 asoma la hoja azul del índice, con los capítulos de la página y las páginas del
@@ -151,8 +160,9 @@ dibuja con sus reglas (`pteron-app.css`) y las hojas con el código de Write.
 Movimiento: las láminas flotan y se dan vuelta al pasar el puntero (o al
 tocarlas); con el desplazamiento vuelan a sus figuras mientras las hojas se
 imprimen. Con `prefers-reduced-motion` todo queda quieto y legible (sin
-transiciones), y sin JavaScript la página muestra las hojas y la ventana
-terminadas.
+transiciones) y la ventana muestra el encargo terminado; sin JavaScript la
+página muestra las hojas terminadas y los pasos de «Cómo funciona», sin la
+ventana, que necesita el script para escalarse.
 
 El recreo (huevo de pascua): dos clics o dos toques seguidos en una lámina de
 la portada. Las letras del titular caen una a una, las láminas se quedan

@@ -1,5 +1,70 @@
 # Design QA
 
+## La landing con el diseño de pteron 0.8 y el recorrido de bienvenida — 2026-10-14
+
+Pedido: alinear la landing con el diseño nuevo de la app (0.8.0 y 0.8.1: el índice, el margen, Archivo, la marca
+dibujada, los colores de las hojas) y con el recorrido de bienvenida de la rama `nuevo-onboarding` de pteron
+(c61e8f05, ADR-183), sobre todo las capturas y las animaciones.
+
+- «Cómo funciona» (antes «Cómo se pide»): la ventana se rehízo con el marcado de los componentes actuales (ShellIndex,
+  HomePage con `Marca.tsx`, Composer, la tarjeta del plan y su decisión en el recuadro, la hojita, LiveSheet y las
+  tarjetas de material) y las reglas de la app regeneradas (`pteron-app.css`, desde c61e8f05). La secuencia sigue las
+  escenas del recorrido: Pedir (el primer pedido de partida del recorrido, «Una guía de fracciones equivalentes para
+  5° básico, de 45 minutos, con ejercicios graduados», con lo reconocido y «Agregar todo»), Decidir (el encargo entra
+  al índice en 5° básico · Matemática y el plan pregunta cómo graduar; se elige la sugerida), Crear (la hoja que se
+  escribe es la guía de Matemática de «La hoja», bloque a bloque) y Guardar (la guía y su pauta quedan en el
+  encargo). La guía de «La hoja» pasa a 5° básico, el curso del pedido.
+- Verificado en Chromium (Playwright) con un servidor estático de `public/`, a 1440 × 900 y 390 × 844, con cuadros a
+  0, 1,5, 4, 7, 9,5, 12, 14,5, 17, 19,5, 22, 25 y 29 s: inicio en reposo, el recuadro que se amplía, el pedido
+  escrito, «¿Agregar?», las fichas aceptadas, el índice con «Trabajando…» y «Falta 1 decisión», la alternativa
+  elegida, el plan Listo y «Crear la guía», la hoja que se arma y el final con las dos tarjetas y «Ver de nuevo».
+  En el teléfono la vista se acerca al recuadro, al plan con su decisión, a la hoja y a las tarjetas.
+- Los pasos 2, 3 y 4 retoman la secuencia desde su escena; «Ver de nuevo» la reinicia; si la ventana sale de la
+  pantalla a medio camino vuelve a la Home y empieza de nuevo al volver. Movimiento reducido: el encargo terminado,
+  sin animación, en escritorio y teléfono. Sin JavaScript la ventana sigue oculta (no se puede escalar) y ahora el
+  texto ocupa el ancho, sin un hueco a la derecha.
+- El aviso de datos de estudiantes de «En tu computador» va dentro del recuadro, como en la app (título ámbar).
+- Las figuras de las hojas (la de las fracciones en «La hoja», las de la portada y la hoja que se escribe en la
+  ventana) quedan centradas en su pregunta, como en el Word de pteron: medido, 0 px entre el centro de cada figura y el
+  de su tarjeta. En la hoja de Write la figura es `inline-block` y su `margin: auto` no la centraba; además, las reglas
+  de la imagen no alcanzaban al SVG con que la web la reemplaza.
+- Iconos: `assets/pt-icons.svg` sale de lucide-solid 1.43.0 (el de la app) con `scripts/pteron-iconos.mjs`; una prueba
+  comprueba que cada icono que pide la ventana esté en el sprite.
+- Docs: las 22 figuras de 0.6 y 0.7 pasan a 26, hechas con 24 capturas nuevas (dos se muestran recortadas), tomadas
+  con `scripts/capturas-pteron.mjs` sobre el arnés de pteron: Home, pedido reconocido, rumbo Planificar, encargo, memoria,
+  conversación, Biblioteca, plan por acordar y listo, Write con margen y ficha, apaisada, respuestas, pauta, imprimir,
+  cambio aplicado con «Deshacer», vista doble con PDF, Present con el maestro nuevo, aviso de datos, Modelo de IA
+  («¿Dónde trabaja la IA?»), error al exportar, el recorrido (apertura y escena Crear) y la guía de IA. Sale la figura
+  del taller de figuras, que la app ya no tiene. Los textos de docs se alinearon con la interfaz (índice, encargos,
+  margen, cambios con «Deshacer», Configuración al instante, primera apertura con el recorrido y la guía de IA).
+- Cómo se toman las capturas (Linux bajo Xvfb, plataforma de macOS, IA incluida respondiendo, mesa preparada) está en
+  `public/assets/app/LEEME.md`. Revisadas una por una en hojas de contacto; cargan todas en docs, sin errores.
+- Las cuatro guías de la portada y «La hoja», revisadas como guías de un profe:
+  - Matemática: los rótulos de las fracciones van todos bajo su barra (antes 3/4 y 6/8 iban arriba y las casillas
+    abajo). La segunda barra llega en blanco, para pintar 3/4 en doceavos. Luego una recta con tercios y sextos, con
+    los sextos sin simplificar (el kit escribía 1/3 y 1/2) y una casilla en 4/6. Es la gradación de lo concreto a lo
+    simbólico que elige la ventana: su plan y su respuesta cuentan esta guía.
+  - Ciencias: los dibujos de las fases van numerados, para no confundirlos con las letras de las alternativas, que
+    ahora son nombres de fases. La pregunta de la órbita trae espacio para responder y pide explicar.
+  - Historia: la República ya no empieza en 1810 (Conquista, Colonia e Independencia hasta 1823). La tabla, que no se
+    podía contestar porque la línea no rotula el inicio ni el fin de cada período, pasa a «¿En qué período ocurrió
+    cada hecho?», con un año (1647) que se ubica con la escala.
+  - Lenguaje: la consigna de caligrafía calza con la pauta (palabra modelo, dos copias para repasar y espacio). Las
+    sílabas usan tres animales del mismo trazo (mariposa, conejo y rana: cuatro, tres y dos sílabas directas) en vez
+    de tres dibujos de estilos distintos.
+  - Las respuestas esperadas y los criterios de corrección van en la versión docente. Las figuras se piden a la medida
+    y con su descripción para el lector de pantalla. Sólo llevan pie las que dicen algo que el enunciado no dice
+    (en pteron el pie es opcional).
+  - La figura entra a Write con la proporción de su PNG, como en la app, así que pteron decide qué figura va junto al
+    enunciado: las fases de la Luna. Cada hoja, también la versión docente, cabe en su página oficio de 1248 px, con
+    un margen de 32 a 135 px.
+  - La portada, con sus láminas cayendo sobre las figuras, y la ventana se revisaron por cuadros a 1440 y 390.
+- Desborde horizontal: 0 px en /, /marca, /privacidad y docs a 1440 y 390. Consola: sin errores propios (sólo el 403
+  por límite de la API pública de GitHub que pide `release-data.js`).
+- `npm run verify`: sintaxis y `wrangler deploy --dry-run`, 400 pruebas y la prueba de humo contra `wrangler dev`.
+
+Final result: passed (pendiente: Safari en iPhone y verla en el sitio real; nada se desplegó)
+
 ## El recreo (huevo de pascua de la portada) — 2026-10-13
 
 Pedido: dos clics en una de las formas de la portada; las letras se van, las láminas se transforman en las piezas de

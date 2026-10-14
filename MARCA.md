@@ -31,7 +31,8 @@ Iowan Old Style de la app no lo convencía.
    En fotocopia: azul 71 % de gris, tinta 83 %, lápiz 20 %, mesa 6 %.
 4. **Letra**: Archivo (Omnibus-Type, OFL) compone la web, con la jerarquía hecha por ancho y peso. Outfit es la letra
    de la marca y de las hojas de pteron —su texto, sus títulos y sus figuras—; en la web no compone texto. La pauta de
-   caligrafía de primer ciclo va en Playwrite CL, las diapositivas en Arial y la interfaz de la app en IBM Plex.
+   caligrafía de primer ciclo va en Playwrite CL, las diapositivas en Arial y la interfaz de la app, desde 0.8.0, en Archivo,
+   como la web (IBM Plex Mono queda para el texto técnico).
 5. **Láminas y figuras**: obras de dominio público o piezas propias, recortadas en escalera (uno, tres o seis
    cuadros), con la figura de pteron detrás y su crédito siempre.
 6. **La hoja**: oficio por omisión. En la web, la página es una hoja: la esquina de arriba a la derecha se dobla y
@@ -74,9 +75,10 @@ pteron y su guía, `app/APLICAR.md`:
   verde, el aviso global y la preparación inicial vuelven a ser de pteron.
 - La respuesta guardada como archivo ya no se titula «Material creado con pteron».
 
-Mientras la app no publique una versión con estos cambios, la ventana de la web sigue mostrando el «pteron» de Iowan
-y la paleta anterior, porque muestra la app tal como es; tampoco muestra el icono de la app, para no tener dos iconos
-en la misma página. Cuando salga, se regeneran `public/pteron-app.css` y el `WORDMARK` de `public/pteron-ventana.js`.
+La app publicó estos cambios en 0.8.0 (ADR-175, ADR-176 y ADR-178: la marca dibujada, los colores de las hojas y
+Archivo como letra de la interfaz). La ventana de la web se regeneró con ellos: `public/pteron-app.css` sale de las
+hojas de la app y la marca de agua de la Home es el trazo de `Marca.tsx`. La ventana sigue sin mostrar el icono de la
+app, para no tener dos iconos en la misma página.
 
 Queda por elegir: «Basic» o «Básico» para el plan (la web y parte de la app dicen «Basic»; `src/shared/licensing.ts`,
 «Básico»).
