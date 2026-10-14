@@ -157,13 +157,17 @@ terminadas.
 El recreo (huevo de pascua): dos clics o dos toques seguidos en una lámina de
 la portada. Las letras del titular caen una a una, las láminas se quedan
 quietas y `recreo.js` las recorta en piezas de un juego de piezas que caen: cada
-lámina deja caer su sobrante, vuela a la cuadrícula y en el aire se da vuelta,
-como las de la portada; detrás está su figura, la pieza del juego (la del doble
-clic es la primera; las tres siguientes esperan al costado). El juego va suelto
-sobre la mesa, sin hoja detrás. Al cerrar, las láminas suben a su lugar y
-las letras vuelven. Con movimiento reducido el juego se abre de una vez; si el
-archivo no carga, la portada vuelve como estaba. El motor del juego es puro y
-se prueba en `tests/recreo.test.js`.
+lámina deja caer su sobrante y la pieza vuela con su trozo de la obra (la del
+doble clic a la cuadrícula; las cuatro siguientes, a «Siguiente»). Cada pieza
+nueva lleva la obra de una lámina, siempre al derecho, y las fijas forman un
+collage. Sobre la mesa van tres tarjetas: la cuadrícula al centro, la guardada y
+el marcador a la izquierda, y las que siguen y los controles a la derecha (en
+pantallas táctiles, un costado y botones abajo). Es el juego completo: bolsa de
+siete, giros SRS, guardar, fantasma, T-spin, combos y jugadas seguidas. Al
+cerrar, las láminas suben a su lugar y las letras vuelven. Con movimiento
+reducido el juego se abre de una vez; si el archivo no carga, la portada vuelve
+como estaba. El motor del juego es puro y se prueba en `tests/recreo.test.js`,
+junto con lo que se dibuja sin documento.
 
 Todo asset propio lleva `?v=<revisión>` para invalidar la caché (`assets/` se
 sirve como inmutable); al cambiar hojas, scripts o imágenes se sube la revisión

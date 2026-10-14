@@ -279,3 +279,134 @@ test("jugando a ciegas hasta perder, el motor nunca deja una pieza fuera de la h
   }
   assert.equal(juego.tablero.length, ALTO);
 });
+
+test("girar es lo último que hizo la pieza hasta que se mueve o cae", () => {
+  const juego = conPieza("T");
+  motor.bajar(juego);
+  assert.ok(motor.girar(juego, 1));
+  assert.ok(juego.giro, "girar lo anota");
+  assert.ok(motor.mover(juego, 1));
+  assert.equal(juego.giro, null, "moverse lo borra");
+  assert.ok(motor.girar(juego, -1));
+  assert.ok(motor.bajar(juego));
+  assert.equal(juego.giro, null, "bajar también");
+});
+
+test("T-spin doble: la T entra girando a su hueco, borra dos filas y vale 1.200 por nivel", () => {
+  const juego = conPieza("T");
+  const fondo = ALTO - 1;
+  llenarFila(juego, 0, [4]);
+  llenarFila(juego, 1, [3, 4, 5]);
+  juego.tablero[fondo - 2][5] = { tipo: "O", n: 99, k: 0, giro: 0 }; // el alero sobre el hueco
+  // La T de pie, apuntando a la derecha, justo sobre el hueco: gira sin patada y queda apuntando abajo
+  juego.pieza = { ...juego.pieza, giro: 1, x: 3, y: fondo - 2 };
+  assert.ok(motor.girar(juego, 1));
+  assert.deepEqual(plano(motor.celdas(juego.pieza).sort()), plano([[3, fondo - 1], [4, fondo - 1], [5, fondo - 1], [4, fondo]].sort()));
+  assert.equal(motor.soltar(juego), 0, "ya está en el fondo");
+  assert.equal(juego.lineas, 2);
+  assert.equal(juego.puntaje, 1200);
+  assert.deepEqual(plano(juego.eventos.find((e) => e.tipo === "jugada")), { tipo: "jugada", filas: 2, giro: "t", seguidas: false, combo: 0, puntos: 1200 });
+  assert.ok(juego.eventos.some((e) => e.tipo === "lineas" && e.n === 2));
+
+  // Después, cuatro filas de una vez: jugadas difíciles seguidas valen una vez y media, y es la segunda del combo
+  juego.tablero.forEach((fila) => fila.fill(null));
+  for (let f = 0; f < 4; f += 1) llenarFila(juego, f, [0]);
+  juego.pieza = { ...juego.pieza, tipo: "I", giro: 1, x: -2, y: OCULTAS };
+  juego.eventos.length = 0;
+  const antes = juego.puntaje;
+  const filas = motor.soltar(juego);
+  assert.equal(juego.lineas, 6);
+  assert.equal(juego.puntaje - antes - filas * 2, 800 * 1.5 + 50);
+  assert.deepEqual(plano(juego.eventos.find((e) => e.tipo === "jugada")), { tipo: "jugada", filas: 4, giro: null, seguidas: true, combo: 1, puntos: 1250 });
+});
+
+test("mini T-spin: tres esquinas, pero sólo una de las del frente; con una fila vale 200", () => {
+  const juego = conPieza("T");
+  const fondo = ALTO - 1;
+  llenarFila(juego, 0, [3, 4, 5]);
+  juego.tablero[fondo - 1][5] = { tipo: "O", n: 99, k: 0, giro: 0 };
+  // La T apuntando arriba, en el suelo; su última jugada fue girar
+  juego.pieza = { ...juego.pieza, giro: 0, x: 3, y: fondo - 1 };
+  juego.giro = { patada: 0 };
+  motor.soltar(juego);
+  assert.equal(juego.lineas, 1);
+  assert.equal(juego.puntaje, 200);
+  assert.equal(juego.eventos.find((e) => e.tipo === "jugada").giro, "mini");
+  // Si entró con la última patada, cuenta como completo
+  const otro = conPieza("T");
+  llenarFila(otro, 0, [3, 4, 5]);
+  otro.tablero[fondo - 1][5] = { tipo: "O", n: 99, k: 0, giro: 0 };
+  otro.pieza = { ...otro.pieza, giro: 0, x: 3, y: fondo - 1 };
+  otro.giro = { patada: 4 };
+  motor.soltar(otro);
+  assert.equal(otro.puntaje, 800);
+  // Sin girar no es T-spin: una fila común
+  const comun = conPieza("T");
+  llenarFila(comun, 0, [3, 4, 5]);
+  comun.tablero[fondo - 1][5] = { tipo: "O", n: 99, k: 0, giro: 0 };
+  comun.pieza = { ...comun.pieza, giro: 0, x: 3, y: fondo - 1 };
+  motor.soltar(comun);
+  assert.equal(comun.puntaje, 100);
+  assert.equal(comun.eventos.some((e) => e.tipo === "jugada"), false);
+});
+
+test("combo: cada pieza seguida que borra filas suma 50 por el número del combo; una que no borra lo corta", () => {
+  const juego = conPieza("O");
+  const soltarO = (libres) => {
+    juego.tablero.forEach((fila) => fila.fill(null));
+    llenarFila(juego, 0, libres);
+    llenarFila(juego, 1, libres);
+    juego.pieza = { ...juego.pieza, tipo: "O", giro: 0, x: libres[0], y: OCULTAS };
+    const antes = juego.puntaje;
+    const filas = motor.soltar(juego);
+    return juego.puntaje - antes - filas * 2;
+  };
+  assert.equal(soltarO([0, 1]), 300, "dos filas");
+  assert.equal(soltarO([4, 5]), 300 + 50, "combo ×2");
+  assert.equal(soltarO([8, 9]), 300 + 100, "combo ×3");
+  assert.equal(juego.combo, 2);
+  // Una que no borra nada
+  juego.tablero.forEach((fila) => fila.fill(null));
+  juego.pieza = { ...juego.pieza, tipo: "O", giro: 0, x: 0, y: OCULTAS };
+  motor.soltar(juego);
+  assert.equal(juego.combo, -1);
+  assert.equal(soltarO([0, 1]), 300, "otra vez sin combo");
+});
+
+test("las piezas fijas se dibujan en grupos: si se va una fila del medio, la parte de arriba es otro trozo", () => {
+  const { grupos } = ventana.pteronRecreo.dibujo;
+  // Una I de pie en la primera columna, sobre cuatro filas; la segunda desde abajo se completa
+  const juego = conPieza("I");
+  llenarFila(juego, 1, [0]);
+  juego.pieza = { ...juego.pieza, giro: 1, x: -2, y: OCULTAS };
+  const n = juego.pieza.n;
+  motor.soltar(juego);
+  const deLaI = grupos(juego.tablero).filter((g) => g.n === n);
+  assert.equal(deLaI.length, 2);
+  assert.deepEqual(plano(deLaI.map((g) => g.casillas.length).sort()), [1, 2]);
+  // Cada grupo sabe dónde está la caja de su pieza: sus casillas, puestas desde ahí, son las del tablero
+  for (const g of deLaI) {
+    for (const [x, y] of g.casillas) assert.equal(juego.tablero[OCULTAS + g.oy + y][g.ox + x].n, n);
+  }
+  assert.ok(grupos(juego.tablero).every((g, i, todos) => i === 0 || todos[i - 1].n <= g.n), "las más nuevas, encima");
+});
+
+test("contornos: una línea por cada parte suelta, sólo con las esquinas", () => {
+  const { contornos } = ventana.pteronRecreo.dibujo;
+  const s = contornos([[1, 0], [2, 0], [0, 1], [1, 1]]);
+  assert.equal(s.length, 1);
+  assert.equal(s[0].length, 8);
+  const sueltas = contornos([[0, 0], [3, 0]]);
+  assert.equal(sueltas.length, 2);
+  assert.ok(sueltas.every((linea) => linea.length === 4));
+});
+
+test("al costado van hasta cuatro de las que siguen; si no caben bien, menos", () => {
+  const { disponer } = ventana.pteronRecreo.dibujo;
+  const alto = disponer(184, 380, 40);
+  assert.equal(alto.cuantas, 4);
+  assert.ok(alto.m >= 28 && alto.m <= 32, `del tamaño de la cuadrícula: ${alto.m}`);
+  const bajo = disponer(184, 140, 30);
+  assert.ok(bajo.cuantas < 4);
+  assert.ok(bajo.m * 2 <= bajo.s, "cada una cabe en su lugar");
+});
