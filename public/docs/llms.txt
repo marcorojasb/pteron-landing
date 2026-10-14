@@ -2,11 +2,13 @@
 
 > pteron es un espacio de trabajo local-first para docentes. Prepara guías,
 > pruebas, planificaciones, rúbricas y presentaciones a partir de las
-> fuentes del profesor, y las entrega como un documento editable que él decide
-> si conservar. No reemplaza su criterio.
+> fuentes del profesor, y las entrega como un documento editable que el profesor
+> decide si conservar. No reemplaza su criterio.
 
 El núcleo local es gratis para siempre y no depende de un plan de pago. Los
-planes sólo agregan IA incluida.
+planes sólo agregan IA incluida. La primera apertura es un recorrido breve
+(Pedir, Decidir, Crear y Guardar) que no configura nada; la IA se elige aparte,
+en la guía de IA o en Configuración › Modelo de IA.
 
 ## Empezar
 
@@ -20,13 +22,15 @@ planes sólo agregan IA incluida.
 
 ## Conocer la aplicación
 
-El selector superior derecho cambia entre tres espacios: Chats (conversaciones y
-pestañas), Biblioteca (materiales y archivos) y Configuración (Perfil, Modelo de
-IA, Memoria y contexto, Complementos, Labs y Sobre pteron). El Planificador
-(clases, unidades y calendario) está pausado y se activa en Configuración › Labs.
+El índice, a la izquierda, reúne Nuevo encargo, la Biblioteca (materiales y
+archivos), Buscar y los encargos agrupados por curso y asignatura; al pie,
+Configuración (Perfil, Modelo de IA, Memoria y contexto, Complementos, Labs y
+Sobre pteron), el modelo que responde y la carpeta. Al abrir un material, la
+conversación del encargo queda en un margen a su lado. El Planificador (clases,
+unidades y calendario) está pausado y se activa en Configuración › Labs.
 
 - [La pantalla de inicio](https://pteron.patagua.dev/docs?pagina=pantalla-inicio)
-- [Sesiones y memoria](https://pteron.patagua.dev/docs?pagina=sesiones-memoria)
+- [Encargos y memoria](https://pteron.patagua.dev/docs?pagina=sesiones-memoria)
 - [Carpeta de trabajo](https://pteron.patagua.dev/docs?pagina=carpeta-trabajo)
 - [Fuentes y contexto](https://pteron.patagua.dev/docs?pagina=fuentes-contexto)
 - [Abrir un recurso](https://pteron.patagua.dev/docs?pagina=biblioteca)

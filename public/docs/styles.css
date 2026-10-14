@@ -104,7 +104,7 @@ html:not(.js) :is(.docs-lado,.docs-toc){visibility:hidden}
 .docs-hoja blockquote::after{content:"";position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;
   background:var(--azul) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19V5M5 12l7-7 7 7'/%3E%3C/svg%3E") center/15px no-repeat}
 
-/* Capturas de la app tal cual: las de assets/app traen su marco real de macOS (-marco), las demás son la ventana sin marco */
+/* Capturas de la app tal cual, con el marco de la ventana de macOS (-marco); sin marco, la imagen va sobre papel */
 .docs-hoja .product-shot{position:relative;margin-top:1.6em;overflow:hidden;border-radius:10px;background:var(--hoja);container-type:inline-size;
   box-shadow:0 0 0 1px rgb(var(--sombra)/.12),0 2px 6px rgb(var(--sombra)/.06),0 26px 52px -30px rgb(var(--sombra)/.5)}
 .docs-hoja .product-shot img{display:block;width:100%;height:auto;background:#f6f5f2}
