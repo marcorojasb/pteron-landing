@@ -1,17 +1,16 @@
-/* pteron · recreo (2026-10-14.1)
+/* pteron · recreo (2026-10-14.2)
    El huevo de pascua del inicio. Dos clics (o dos toques) seguidos en una lámina: las letras de la portada se van, las
    láminas se quedan quietas e inicio.js carga este archivo, que las toma donde están y las recorta en piezas. Cada
-   lámina deja caer el sobrante de su recorte, vuela a la cuadrícula y en el aire se da vuelta, como las láminas de la
-   portada: detrás está su figura, la pieza del juego. La del doble clic es la primera pieza, las tres que siguen
-   esperan al costado y las demás se apilan detrás.
+   lámina deja caer el sobrante de su recorte y la pieza vuela a su lugar con su trozo de la obra: la del doble clic a la
+   cuadrícula, las que siguen al costado y las demás se apilan detrás. Cada pieza nueva lleva la obra de una lámina.
    1. El motor: tablero de 10 × 20, bolsa de siete, giros con las patadas de SRS, espera en el suelo, guardar, líneas,
-      puntaje y niveles. Es puro (no toca el documento) y se prueba sin navegador: window.pteronRecreo.motor. Cada pieza
-      lleva un número de serie; la vista le da la lámina que le toca.
-   2. La vista: un <dialog> sin hoja detrás (la cuadrícula va suelta sobre la mesa), un canvas para el tablero y otro,
-      encima de todo, para el vuelo de las láminas.
-      Teclado: ← → mover, ↑ o X girar, Z girar al revés, ↓ bajar, Espacio soltar, C guardar, P pausa y Esc salir; en
-      pantallas táctiles, botones bajo el tablero. Con movimiento reducido no hay vuelo ni animaciones de adorno: el juego
-      aparece de una vez, con las piezas ya recortadas, y el destacador no barre. */
+      giros de la T, combos, jugadas seguidas, puntaje y niveles. Es puro (no toca el documento) y se prueba sin
+      navegador: window.pteronRecreo.motor. Cada pieza lleva un número de serie; la vista le da la lámina que le toca.
+   2. La vista: un <dialog> con tres tarjetas sobre la mesa (la cuadrícula al centro; la guardada y el marcador a un
+      lado; las que siguen y los controles al otro), un canvas para el tablero y otro, encima de todo, para el vuelo.
+      Teclado: ← → mover, ↑ o X rotar, Z rotar al revés, ↓ bajar, Espacio caída rápida, C guardar, P pausa y Esc salir;
+      en pantallas táctiles, botones bajo el tablero. Con movimiento reducido no hay vuelo ni animaciones de adorno: el
+      juego aparece de una vez, con las piezas ya recortadas. */
 (() => {
   "use strict";
 
@@ -23,7 +22,11 @@
   const BLOQUEO = 500; // ms que una pieza espera en el suelo antes de quedar fija
   const RESETEOS = 15; // movimientos en el suelo que reinician esa espera, por cada fila nueva que alcanza
   const PAUSA_LINEAS = 280; // ms que una fila completa queda destacada antes de irse
-  const PUNTOS = [0, 100, 300, 500, 800]; // por una, dos, tres o cuatro filas a la vez, por el nivel
+  // Puntos por una, dos, tres o cuatro filas a la vez, por el nivel; los giros de la T valen más (con cero filas también)
+  const PUNTOS = [0, 100, 300, 500, 800];
+  const PUNTOS_T = [400, 800, 1200, 1600];
+  const PUNTOS_MINI = [100, 200, 400];
+  const COMBO = 50; // por cada pieza seguida que borra filas, por el nivel
 
   // Las siete piezas en su giro 0 (x a la derecha, y hacia abajo) dentro de la caja en que giran
   const PIEZAS = {
@@ -104,8 +107,11 @@
       bloqueo: 0, // ms en el suelo
       reseteos: 0,
       masBaja: 0,
+      giro: null, // { patada } si lo último que hizo la pieza fue girar: así se reconocen los giros de la T
+      combo: -1, // piezas seguidas que borran filas, menos una
+      dificil: false, // la última jugada con filas fue de cuatro o un giro de la T: la siguiente igual vale más
       limpiando: null, // { filas, resta }: filas completas, todavía destacadas
-      eventos: [], // lo que la vista tiene que contar: líneas, nivel y fin
+      eventos: [], // lo que la vista tiene que contar: líneas, jugadas, nivel y fin
     };
     llenarCola(juego);
     return juego;
@@ -144,6 +150,7 @@
     juego.bloqueo = 0;
     juego.reseteos = 0;
     juego.masBaja = pieza.y;
+    juego.giro = null;
     return true;
   }
 
@@ -168,6 +175,7 @@
     const pieza = { ...juego.pieza, y: juego.pieza.y + 1 };
     if (choca(juego, pieza)) return false;
     juego.pieza = pieza;
+    juego.giro = null;
     if (pieza.y > juego.masBaja) {
       juego.masBaja = pieza.y;
       juego.reseteos = 0;
@@ -194,6 +202,7 @@
     if (choca(juego, pieza)) return false;
     const suelo = enSuelo(juego);
     juego.pieza = pieza;
+    juego.giro = null;
     if (suelo || enSuelo(juego)) tocar(juego);
     return true;
   }
@@ -204,10 +213,11 @@
     const actual = juego.pieza;
     const giro = (actual.giro + (dir > 0 ? 1 : 3)) % 4;
     const suelo = enSuelo(juego);
-    for (const [px, py] of patadas(actual.tipo, actual.giro, dir)) {
+    for (const [i, [px, py]] of patadas(actual.tipo, actual.giro, dir).entries()) {
       const pieza = { ...actual, giro, x: actual.x + px, y: actual.y - py };
       if (choca(juego, pieza)) continue;
       juego.pieza = pieza;
+      juego.giro = { patada: i };
       if (pieza.y > juego.masBaja) {
         juego.masBaja = pieza.y;
         juego.reseteos = 0;
@@ -254,8 +264,21 @@
     return pieza;
   }
 
+  /** Si la T quedó fija girando a un hueco: tres de las cuatro esquinas de su caja ocupadas (las paredes y el suelo
+      cuentan). Es completo si están las dos del lado al que apunta, o si entró con la última patada; si no, mini. */
+  function giroDeT(juego, pieza) {
+    if (pieza.tipo !== "T" || !juego.giro) return null;
+    const ocupada = ([x, y]) => x < 0 || x >= COLUMNAS || y >= ALTO || (y >= 0 && juego.tablero[y][x] !== null);
+    const esquinas = [[0, 0], [2, 0], [2, 2], [0, 2]].map(([x, y]) => ocupada([pieza.x + x, pieza.y + y]));
+    if (esquinas.filter(Boolean).length < 3) return null;
+    // Las dos esquinas del frente: arriba (giro 0), a la derecha, abajo y a la izquierda
+    const frente = [[0, 1], [1, 2], [2, 3], [3, 0]][pieza.giro];
+    return frente.every((i) => esquinas[i]) || juego.giro.patada === 4 ? "t" : "mini";
+  }
+
   function fijar(juego) {
     const { pieza, tablero } = juego;
+    let giroT = giroDeT(juego, pieza);
     const puestas = celdas(pieza);
     puestas.forEach(([x, y], k) => (tablero[y][x] = { tipo: pieza.tipo, n: pieza.n, k, giro: pieza.giro }));
     juego.pieza = null;
@@ -268,15 +291,29 @@
     }
     const filas = [];
     tablero.forEach((fila, y) => fila.every((celda) => celda !== null) && filas.push(y));
-    if (!filas.length) {
+    const nivel = juego.nivel;
+    const n = filas.length;
+    if (giroT === "mini" && n > 2) giroT = "t"; // tres filas con la T sólo se hacen con un giro completo
+    let puntos = (giroT === "t" ? PUNTOS_T : giroT === "mini" ? PUNTOS_MINI : PUNTOS)[n] * nivel;
+    // Cuatro filas o un giro de la T con filas, justo después de otra jugada así: vale una vez y media. Una jugada
+    // con filas que no es de esas corta la cadena; un giro sin filas no la corta
+    const dificil = n === 4 || (n > 0 && giroT !== null);
+    const seguidas = dificil && juego.dificil;
+    if (seguidas) puntos = Math.floor(puntos * 1.5);
+    if (n > 0) juego.dificil = dificil;
+    juego.combo = n > 0 ? juego.combo + 1 : -1;
+    if (juego.combo > 0) puntos += COMBO * juego.combo * nivel;
+    juego.puntaje += puntos;
+    if (n === 4 || giroT || juego.combo > 0) {
+      juego.eventos.push({ tipo: "jugada", filas: n, giro: giroT, seguidas, combo: Math.max(0, juego.combo), puntos });
+    }
+    if (!n) {
       nacer(juego);
       return;
     }
-    const nivel = juego.nivel;
-    juego.lineas += filas.length;
-    juego.puntaje += PUNTOS[filas.length] * nivel;
+    juego.lineas += n;
     juego.nivel = 1 + Math.floor(juego.lineas / 10);
-    juego.eventos.push({ tipo: "lineas", filas, n: filas.length });
+    juego.eventos.push({ tipo: "lineas", filas, n });
     if (juego.nivel > nivel) juego.eventos.push({ tipo: "nivel", nivel: juego.nivel });
     juego.limpiando = { filas, resta: juego.pausaLineas };
     if (juego.pausaLineas <= 0) limpiar(juego);
@@ -344,19 +381,27 @@
 
 
   /* ——— 2. Vista ——— */
-  // Cada pieza es una figura de pteron: el color con que rellena sus figuras y el trazo de tinta, como en ellas
+  // Cada pieza lleva la obra de la lámina que le toca, recortada a su forma. Si ninguna lámina llegó a cargar, cada una
+  // es una figura de pteron de un solo color
   const COLORES = { I: "#1E3F94", O: "#F0C060", T: "#6B4C9A", S: "#2F8A5B", Z: "#C0492F", J: "#7F9BD6", L: "#B7791F" };
   const TINTA = "#1F2A3D";
-  const LINEA = "#C9D3E1";
-  const GRAFITO = "#5B6B82";
-  const LAPIZ = "#F0C060";
+  const CUADRICULA = "#D3DAE3";
   const CLAVE = "pteron:recreo:record";
   const DAS = 160; // ms antes de que una flecha sostenida repita
   const ARR = 40; // ms entre repeticiones
   // El vuelo, en ms: la línea del recorte, el sobrante que cae, cuándo parten y cuánto tardan en llegar
-  const VUELO = { escalonCorte: 24, corte: 320, sobrante: [220, 900], parte: 640, escalon: 38, viaje: 720 };
+  const VUELO = { escalonCorte: 24, corte: 320, sobrante: [220, 900], parte: 640, escalon: 38, viaje: 760 };
   const DENSIDAD_SOMBRA = 0.4;
+  // Las sombras, en casillas: la pieza que cae flota sobre la cuadrícula, las fijas están apoyadas y apenas se despegan,
+  // y las de al costado esperan como láminas sobre la mesa
+  const SOMBRA = {
+    cae: { y: 0.2, blur: 0.6, alfa: 0.34 },
+    fija: { y: 0.05, blur: 0.2, alfa: 0.28 },
+    costado: { y: 0.18, blur: 0.55, alfa: 0.3 },
+  };
+  const LEJOS = 10000; // la silueta de una sombra se dibuja fuera del canvas y sólo su sombra cae adentro
 
+  // Los botones táctiles, bajo el tablero
   const ICONOS = {
     izquierda: '<path d="M15 5l-7 7 7 7"/>',
     bajar: '<path d="M12 5v13M6 12l6 6 6-6"/>',
@@ -370,9 +415,27 @@
     ["bajar", "Bajar"],
     ["derecha", "Mover a la derecha"],
     ["guardar", "Guardar"],
-    ["girar", "Girar"],
-    ["soltar", "Soltar"],
+    ["girar", "Rotar"],
+    ["soltar", "Caída rápida"],
   ];
+  // Los controles del teclado, como teclas
+  const FLECHAS = {
+    izquierda: ['<path d="M19 12H5M11 6l-6 6 6 6"/>', "Flecha izquierda"],
+    derecha: ['<path d="M5 12h14M13 6l6 6-6 6"/>', "Flecha derecha"],
+    abajo: ['<path d="M12 5v14M6 13l6 6 6-6"/>', "Flecha abajo"],
+    arriba: ['<path d="M12 19V5M6 11l6-6 6 6"/>', "Flecha arriba"],
+  };
+  const AYUDA = [
+    [["izquierda", "derecha"], "Mover"],
+    [["abajo"], "Bajar"],
+    [["arriba"], "Rotar"],
+    [["Espacio"], "Caída rápida"],
+    [["C"], "Guardar"],
+  ];
+  const kbd = (tecla) =>
+    FLECHAS[tecla]
+      ? `<kbd class="recreo-tecla"><svg viewBox="0 0 24 24" aria-hidden="true">${FLECHAS[tecla][0]}</svg><span class="sr-only">${FLECHAS[tecla][1]}</span></kbd>`
+      : `<kbd class="recreo-tecla${tecla.length > 3 ? " recreo-tecla-ancha" : ""}">${tecla}</kbd>`;
 
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
   const span = (v, a, b) => clamp((v - a) / (b - a));
@@ -380,6 +443,8 @@
   const smooth = (t) => t * t * (3 - 2 * t);
   const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
   const numero = (n) => n.toLocaleString("es-CL");
+  /** Una sombra de SOMBRA en px, para casillas de lado t; alfa la puede apagar. */
+  const sombraDe = ({ y, blur, alfa }, t, k = 1) => ({ y: y * t, blur: blur * t, alfa: alfa * k });
   const leerRecord = () => {
     try {
       return Math.max(0, Number.parseInt(window.localStorage.getItem(CLAVE), 10) || 0);
@@ -395,9 +460,9 @@
     }
   };
 
-  /** La caja de una pieza en su giro 0: desde qué casilla empieza y cuántas mide. */
-  function caja(tipo) {
-    const forma = FORMAS[tipo][0];
+  /** La caja de una pieza en un giro: desde qué casilla empieza y cuántas mide. */
+  function caja(tipo, giro = 0) {
+    const forma = FORMAS[tipo][giro];
     const xs = forma.map(([x]) => x);
     const ys = forma.map(([, y]) => y);
     const x0 = Math.min(...xs);
@@ -405,34 +470,61 @@
     return { x0, y0, w: Math.max(...xs) - x0 + 1, h: Math.max(...ys) - y0 + 1 };
   }
 
-  /** El contorno de una pieza como una sola línea cerrada, en casillas (las piezas no tienen agujeros ni esquinas que
-      se toquen en diagonal). */
+  /** El contorno de unas casillas como líneas cerradas, en casillas: una por cada parte suelta (las piezas no tienen
+      agujeros). Sin los puntos que quedan en medio de un lado recto. */
+  function contornos(casillas) {
+    const hay = new Set(casillas.map(([x, y]) => `${x},${y}`));
+    const lados = new Map();
+    const lado = (a, b) => lados.set(`${a}`, [...(lados.get(`${a}`) ?? []), b]);
+    for (const [x, y] of casillas) {
+      if (!hay.has(`${x},${y - 1}`)) lado([x, y], [x + 1, y]);
+      if (!hay.has(`${x + 1},${y}`)) lado([x + 1, y], [x + 1, y + 1]);
+      if (!hay.has(`${x},${y + 1}`)) lado([x + 1, y + 1], [x, y + 1]);
+      if (!hay.has(`${x - 1},${y}`)) lado([x, y + 1], [x, y]);
+    }
+    const lineas = [];
+    while (lados.size) {
+      const [inicio] = lados.keys();
+      const puntos = [];
+      for (let punto = inicio.split(",").map(Number); lados.has(`${punto}`); ) {
+        const salidas = lados.get(`${punto}`);
+        puntos.push(punto);
+        const siguiente = salidas.shift();
+        if (!salidas.length) lados.delete(`${punto}`);
+        punto = siguiente;
+      }
+      lineas.push(
+        puntos.filter((p, i) => {
+          const a = puntos[(i + puntos.length - 1) % puntos.length];
+          const b = puntos[(i + 1) % puntos.length];
+          return (p[0] - a[0]) * (b[1] - p[1]) - (p[1] - a[1]) * (b[0] - p[0]) !== 0;
+        }),
+      );
+    }
+    return lineas;
+  }
+
+  /** El contorno de una pieza en su giro 0, con la esquina de su caja en (0, 0). */
   function contorno(tipo) {
     const { x0, y0 } = caja(tipo);
-    const cs = FORMAS[tipo][0].map(([x, y]) => [x - x0, y - y0]);
-    const hay = new Set(cs.map(([x, y]) => `${x},${y}`));
-    const lados = new Map();
-    for (const [x, y] of cs) {
-      if (!hay.has(`${x},${y - 1}`)) lados.set(`${x},${y}`, [x + 1, y]);
-      if (!hay.has(`${x + 1},${y}`)) lados.set(`${x + 1},${y}`, [x + 1, y + 1]);
-      if (!hay.has(`${x},${y + 1}`)) lados.set(`${x + 1},${y + 1}`, [x, y + 1]);
-      if (!hay.has(`${x - 1},${y}`)) lados.set(`${x},${y + 1}`, [x, y]);
+    return contornos(FORMAS[tipo][0].map(([x, y]) => [x - x0, y - y0]))[0];
+  }
+
+  /** Las líneas cerradas de contornos() como un camino, en px: casillas de lado t desde (ox, oy). */
+  function camino(lineas, ox, oy, t) {
+    const c = new Path2D();
+    for (const linea of lineas) {
+      linea.forEach(([x, y], i) => (i ? c.lineTo(ox + x * t, oy + y * t) : c.moveTo(ox + x * t, oy + y * t)));
+      c.closePath();
     }
-    const [inicio] = lados.keys();
-    const puntos = [inicio.split(",").map(Number)];
-    for (let punto = lados.get(inicio); `${punto}` !== inicio; punto = lados.get(`${punto}`)) puntos.push(punto);
-    // Sin los puntos que están en medio de un lado recto
-    return puntos.filter((p, i) => {
-      const a = puntos[(i + puntos.length - 1) % puntos.length];
-      const b = puntos[(i + 1) % puntos.length];
-      return (p[0] - a[0]) * (b[1] - p[1]) - (p[1] - a[1]) * (b[0] - p[0]) !== 0;
-    });
+    return c;
   }
 
   /* ——— Las láminas como piezas ———
      Una lámina está recortada en escalera: tiene esquinas vacías. De cada una se sabe qué sextos tienen imagen y se busca
-     el rectángulo lleno donde la pieza cabe más grande; ahí se recorta y cada casilla se queda con su trozo de la obra,
-     que gira con ella. */
+     el rectángulo lleno donde la pieza cabe más grande; ahí se recorta, y la pieza se queda con ese trozo de la obra, que
+     sigue en sus casillas cuando quedan fijas. La obra siempre va al derecho: al girar, la pieza se recorta de nuevo, del
+     mismo lugar de la lámina y al mismo tamaño, con su forma nueva. */
   const SEXTOS = Array.from({ length: 6 }, (_, i) => (i + 0.5) / 6);
 
   /** Qué sextos de la lámina tienen imagen. La escalera viene como el polígono del reverso (en %), que es el espejo de la
@@ -463,9 +555,10 @@
     }
   }
 
-  function recorte(arte, tipo) {
-    if (arte.recortes[tipo]) return arte.recortes[tipo];
-    const { x0, y0, w, h } = caja(tipo);
+  function recorte(arte, tipo, giro = 0) {
+    const de = `${tipo}${giro}`;
+    if (arte.recortes[de]) return arte.recortes[de];
+    const { x0, y0, w, h } = caja(tipo, giro);
     const opaco = (a, b, c, d) => {
       for (let y = c; y < d; y += 1) for (let x = a; x < b; x += 1) if (!arte.mapa[y][x]) return false;
       return true;
@@ -484,124 +577,150 @@
     // entera: siempre queda un sobrante que cae
     const lado = Math.min((mejor.lado / 6) * 0.97, 0.78 / Math.max(w, h));
     const r = { x0, y0, w, h, lado, ox: (mejor.a + mejor.b) / 12 - (w * lado) / 2, oy: (mejor.c + mejor.d) / 12 - (h * lado) / 2 };
-    arte.recortes[tipo] = r;
+    arte.recortes[de] = r;
     return r;
   }
 
   const arteDe = (n) => (vista.artes.length ? vista.artes[n % vista.artes.length] : null);
 
   /** La obra de una lámina en un canvas de tamaño conocido. Con srcset, la imagen dice medir lo que ocupa en la página y
-      no lo que mide de verdad, y un recorte por coordenadas saldría de otro lugar; dibujada entera no hay dudas. */
+      no lo que mide de verdad, y un recorte por coordenadas saldría de otro lugar; dibujada entera no hay dudas. Va
+      sobre papel: algunas láminas son recortes con calados, y una pieza no deja ver la cuadrícula a través. */
   const LADO_ARTE = 512;
+  const PAPEL = "#F7F4EE";
   function arte(l) {
     const lienzo = document.createElement("canvas");
     lienzo.width = lienzo.height = LADO_ARTE;
-    lienzo.getContext("2d").drawImage(l.img, 0, 0, LADO_ARTE, LADO_ARTE);
+    const ctx = lienzo.getContext("2d");
+    ctx.fillStyle = PAPEL;
+    ctx.fillRect(0, 0, LADO_ARTE, LADO_ARTE);
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(l.img, 0, 0, LADO_ARTE, LADO_ARTE);
     return { lienzo, mapa: mapaOpaco(l), recortes: {} };
   }
 
-  /** Casillas de piezas, dadas en casillas como [x, y, tipo, n, k, giro]. En el juego son figuras de pteron: el color
-      plano de su pieza, las divisiones apenas marcadas y el contorno a tinta sólo donde termina la pieza (dos piezas
-      vecinas quedan separadas por sus dos bordes). Con conArte, la lámina recién recortada que todavía no se da vuelta,
-      cada casilla lleva su trozo de la obra, que gira con ella. */
-  function dibujarCasillas(ctx, lista, t, ox = 0, oy = 0, trazo = 1, conArte = false) {
-    const de = new Map(lista.map(([x, y, , n]) => [`${x},${y}`, n]));
-    // Las casillas se montan un poco sobre sus vecinas: entre las de una misma pieza no queda costura
-    const monta = 0.4;
-    for (const [x, y, tipo, n, k, giro] of lista) {
-      const px = ox + x * t;
-      const py = oy + y * t;
-      const arte = conArte && arteDe(n);
-      if (arte) {
-        const r = recorte(arte, tipo);
-        const [cx, cy] = PIEZAS[tipo].celdas[k];
-        ctx.save();
-        ctx.translate(px + t / 2, py + t / 2);
-        if (giro) ctx.rotate((giro * Math.PI) / 2);
-        ctx.drawImage(arte.lienzo, (r.ox + (cx - r.x0) * r.lado) * LADO_ARTE, (r.oy + (cy - r.y0) * r.lado) * LADO_ARTE, r.lado * LADO_ARTE, r.lado * LADO_ARTE, -t / 2 - monta, -t / 2 - monta, t + 2 * monta, t + 2 * monta);
-        ctx.restore();
-      } else {
-        ctx.fillStyle = COLORES[tipo];
-        ctx.fillRect(px - monta, py - monta, t + 2 * monta, t + 2 * monta);
-      }
+  /** Una pieza, o lo que queda de ella: (ox, oy) es la esquina de la caja en que gira, t el lado de una casilla y
+      casillas, las que se ven, dentro de esa caja. La obra de su lámina se dibuja de una vez bajo la silueta, sin
+      costuras entre casillas, y la termina un filo apenas oscuro, como el corte de un papel. La sombra, si se pide, va
+      debajo (en px, como t). */
+  function figura(ctx, { tipo, n, giro = 0 }, ox, oy, t, { casillas = FORMAS[tipo][giro], sombra = null } = {}) {
+    if (!casillas.length) return;
+    const silueta = new Path2D();
+    for (const [x, y] of casillas) silueta.rect(ox + x * t, oy + y * t, t, t);
+    if (sombra && sombra.alfa > 0) {
+      // Las sombras del canvas no siguen la transformación: se dan en px de la pantalla
+      const m = ctx.getTransform();
+      const escala = Math.hypot(m.a, m.b);
+      ctx.save();
+      ctx.setTransform(m.a, m.b, m.c, m.d, m.e - LEJOS, m.f);
+      ctx.shadowColor = `rgba(31,42,61,${sombra.alfa})`;
+      ctx.shadowBlur = sombra.blur * escala;
+      ctx.shadowOffsetX = LEJOS;
+      ctx.shadowOffsetY = sombra.y * escala;
+      ctx.fillStyle = "#000";
+      ctx.fill(silueta);
+      ctx.restore();
     }
-    if (trazo <= 0) return;
-    const ancho = Math.max(1.25, t / 24);
-    const a = ancho / 2;
-    const misma = (x, y, n) => de.get(`${x},${y}`) === n;
+    const arte = arteDe(n);
     ctx.save();
-    ctx.globalAlpha *= trazo;
-    ctx.lineCap = "square";
-    // Las divisiones entre casillas de una misma pieza, apenas marcadas
-    if (!conArte) {
-      ctx.strokeStyle = "rgba(31,42,61,.2)";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      for (const [x, y, , n] of lista) {
-        const px = ox + x * t;
-        const py = oy + y * t;
-        if (misma(x + 1, y, n)) {
-          ctx.moveTo(px + t, py + ancho);
-          ctx.lineTo(px + t, py + t - ancho);
-        }
-        if (misma(x, y + 1, n)) {
-          ctx.moveTo(px + ancho, py + t);
-          ctx.lineTo(px + t - ancho, py + t);
-        }
-      }
-      ctx.stroke();
+    ctx.clip(silueta);
+    if (arte) {
+      const r = recorte(arte, tipo, giro);
+      // Un poco más grande que la caja: el borde lo da la silueta, no el de la imagen
+      const extra = 1 / t;
+      const fuente = r.lado * LADO_ARTE;
+      ctx.drawImage(
+        arte.lienzo,
+        r.ox * LADO_ARTE - extra * fuente,
+        r.oy * LADO_ARTE - extra * fuente,
+        (r.w + 2 * extra) * fuente,
+        (r.h + 2 * extra) * fuente,
+        ox + r.x0 * t - 1,
+        oy + r.y0 * t - 1,
+        r.w * t + 2,
+        r.h * t + 2,
+      );
+    } else {
+      ctx.fillStyle = COLORES[tipo];
+      ctx.fill(silueta);
     }
-    // El contorno, a tinta
-    ctx.strokeStyle = TINTA;
-    ctx.lineWidth = ancho;
-    ctx.beginPath();
-    for (const [x, y, , n] of lista) {
-      const px = ox + x * t;
-      const py = oy + y * t;
-      if (!misma(x, y - 1, n)) {
-        ctx.moveTo(px + a, py + a);
-        ctx.lineTo(px + t - a, py + a);
-      }
-      if (!misma(x + 1, y, n)) {
-        ctx.moveTo(px + t - a, py + a);
-        ctx.lineTo(px + t - a, py + t - a);
-      }
-      if (!misma(x, y + 1, n)) {
-        ctx.moveTo(px + a, py + t - a);
-        ctx.lineTo(px + t - a, py + t - a);
-      }
-      if (!misma(x - 1, y, n)) {
-        ctx.moveTo(px + a, py + a);
-        ctx.lineTo(px + a, py + t - a);
-      }
-    }
-    ctx.stroke();
+    // El filo, de un píxel de la pantalla, por dentro de la silueta
+    const matriz = ctx.getTransform();
+    ctx.strokeStyle = "rgba(31,42,61,.2)";
+    ctx.lineWidth = 2 / Math.hypot(matriz.a, matriz.b);
+    ctx.stroke(camino(contornos(casillas), ox, oy, t));
     ctx.restore();
   }
 
-  /** Las casillas de una pieza en su giro 0, con la esquina de su caja en (0, 0). */
-  const casillasDe = (entrada) => {
-    const { x0, y0 } = caja(entrada.tipo);
-    return FORMAS[entrada.tipo][0].map(([x, y], k) => [x - x0, y - y0, entrada.tipo, entrada.n, k, 0]);
-  };
-
-  /** Una pieza del tablero (sin las casillas que quedan sobre la hoja). */
-  function dibujarPieza(ctx, pieza, c) {
-    const lista = celdas(pieza)
-      .map(([x, y], k) => [x, y - OCULTAS, pieza.tipo, pieza.n, k, pieza.giro])
-      .filter(([, y]) => y >= 0);
-    dibujarCasillas(ctx, lista, c);
+  /** Las casillas fijas, en grupos que se dibujan juntos: las de una misma pieza que siguen en su lugar. Cuando se va
+      una fila del medio de una pieza, su parte de arriba baja y es otro grupo, con su trozo de la obra. Las más nuevas
+      van encima. */
+  function grupos(tablero) {
+    const de = new Map();
+    for (let y = OCULTAS; y < ALTO; y += 1) {
+      tablero[y].forEach((celda, x) => {
+        if (!celda) return;
+        const [fx, fy] = FORMAS[celda.tipo][celda.giro][celda.k];
+        const ox = x - fx;
+        const oy = y - OCULTAS - fy;
+        const clave = `${celda.n}|${ox}|${oy}`;
+        if (!de.has(clave)) de.set(clave, { tipo: celda.tipo, n: celda.n, giro: celda.giro, ox, oy, casillas: [] });
+        de.get(clave).casillas.push([fx, fy]);
+      });
+    }
+    return [...de.values()].sort((a, b) => a.n - b.n);
   }
 
-  /** Dónde va, en su canvas, la caja de la pieza j de las de al costado: centrada en su lugar. */
-  function posMini(tipo, j, m) {
-    const { w, h } = caja(tipo);
-    return [Math.round(m * 2.25 - (w * m) / 2), Math.round(m * (1.5 + j * 3) - (h * m) / 2)];
+  /** Una pieza del tablero, sin las casillas que quedan sobre la cuadrícula. */
+  function dibujarPieza(ctx, pieza, c, sombra = null) {
+    const casillas = FORMAS[pieza.tipo][pieza.giro].filter(([, y]) => pieza.y + y >= OCULTAS);
+    figura(ctx, pieza, pieza.x * c, (pieza.y - OCULTAS) * c, c, { casillas, sombra });
   }
 
-  function mini(ctx, entrada, j, m) {
-    const [px, py] = posMini(entrada.tipo, j, m);
-    dibujarCasillas(ctx, casillasDe(entrada), m, px, py);
+  /** Dónde caería la pieza: su contorno, punteado. */
+  function dibujarFantasma(ctx, pieza, c) {
+    const casillas = FORMAS[pieza.tipo][pieza.giro].filter(([, y]) => pieza.y + y >= OCULTAS);
+    if (!casillas.length) return;
+    const linea = camino(contornos(casillas), pieza.x * c, (pieza.y - OCULTAS) * c, c);
+    ctx.save();
+    ctx.fillStyle = "rgba(31,42,61,.05)";
+    ctx.fill(linea);
+    ctx.strokeStyle = "rgba(31,42,61,.34)";
+    ctx.lineWidth = Math.max(1, c / 26);
+    ctx.lineJoin = "round";
+    ctx.setLineDash([Math.max(2, c / 7), Math.max(2, c / 9)]);
+    ctx.stroke(linea);
+    ctx.restore();
+  }
+
+  /** Cuántas de las que siguen caben al costado y de qué tamaño: hasta cuatro, una bajo la otra. Si no caben cuatro del
+      tamaño que permite el ancho, van menos. */
+  function disponer(W, H, c) {
+    const porAncho = Math.min(c * 0.8, (W - 12) / 4.2);
+    let disp = null;
+    for (const cuantas of [4, 3, 2]) {
+      const s = H / cuantas;
+      const m = Math.max(4, Math.floor(Math.min(porAncho, s / 2.7)));
+      disp = { cuantas, s, m, W, H };
+      if (m >= porAncho * 0.72) break;
+    }
+    return disp;
+  }
+
+  /** La esquina de la caja que gira de la pieza j de las que siguen, en su canvas, y el lado de sus casillas: la pieza
+      queda al centro de su lugar. */
+  function posSiguiente(tipo, j, disp = vista.disp) {
+    const { x0, y0, w, h } = caja(tipo);
+    const { m, s, W } = disp;
+    return [Math.round(W / 2 - (w * m) / 2) - x0 * m, Math.round(s * (j + 0.5) - (h * m) / 2) - y0 * m, m];
+  }
+
+  /** Lo mismo para la guardada, al centro de su canvas. */
+  function posGuardada(tipo) {
+    const { x0, y0, w, h } = caja(tipo);
+    const { W, H } = vista.dispGuardada;
+    const m = Math.max(4, Math.floor(Math.min(vista.disp.m, (W - 12) / 4.2, H / 2.4)));
+    return [Math.round(W / 2 - (w * m) / 2) - x0 * m, Math.round(H / 2 - (h * m) / 2) - y0 * m, m];
   }
 
   let vista = null;
@@ -615,36 +734,47 @@
       ([accion, nombre]) =>
         `<button type="button" class="recreo-control" data-accion="${accion}" aria-label="${nombre}"><svg viewBox="0 0 24 24" aria-hidden="true">${ICONOS[accion]}</svg></button>`,
     ).join("");
+    const ayuda = AYUDA.map(([teclas, que]) => `<li><span class="recreo-teclas-de">${teclas.map(kbd).join("")}</span><span>${que}</span></li>`).join("");
     dialogo.innerHTML = `<div class="recreo-hoja" data-recreo-hoja>
-  <header class="recreo-cabeza">
-    <h2 class="recreo-titulo" id="recreo-titulo">Recreo</h2>
-    <div class="recreo-acciones">
-      <button type="button" class="recreo-boton" data-recreo-pausa disabled>Pausa</button>
-      <button type="button" class="recreo-boton" data-recreo-cerrar>Cerrar</button>
-    </div>
-  </header>
-  <div class="recreo-cuerpo">
-    <div class="recreo-tablero" data-recreo-tablero tabindex="-1">
-      <canvas class="recreo-lienzo" data-recreo-lienzo role="img" aria-label="La hoja cuadriculada donde caen las piezas"></canvas>
-      <div class="recreo-aviso" data-recreo-aviso>
+  <h2 class="sr-only" id="recreo-titulo">Recreo</h2>
+  <div class="recreo-tablero" data-recreo-tablero tabindex="-1">
+    <canvas class="recreo-lienzo" data-recreo-lienzo role="img" aria-label="La cuadrícula donde caen las piezas"></canvas>
+    <div class="recreo-aviso" data-recreo-aviso>
+      <div class="recreo-aviso-caja">
         <p class="recreo-aviso-titulo" data-recreo-aviso-titulo></p>
         <p class="recreo-aviso-texto" data-recreo-aviso-texto></p>
         <button type="button" class="boton boton-principal" data-recreo-seguir></button>
       </div>
     </div>
-    <div class="recreo-lado">
-      <div class="recreo-caja"><p class="recreo-rotulo">Siguiente</p><canvas data-recreo-siguiente aria-hidden="true"></canvas></div>
-      <div class="recreo-caja"><p class="recreo-rotulo">Guardada</p><canvas data-recreo-guardada aria-hidden="true"></canvas></div>
-      <dl class="recreo-datos">
-        <div><dt>Puntaje</dt><dd data-recreo-puntaje>0</dd></div>
-        <div><dt>Líneas</dt><dd data-recreo-lineas>0</dd></div>
-        <div><dt>Nivel</dt><dd data-recreo-nivel>1</dd></div>
-        <div><dt>Récord</dt><dd data-recreo-record>0</dd></div>
-      </dl>
+  </div>
+  <div class="recreo-izq">
+    <div class="recreo-caja recreo-guardada">
+      <p class="recreo-rotulo">Guardada</p>
+      <div class="recreo-marco" data-recreo-marco-guardada><canvas data-recreo-guardada role="img"></canvas></div>
+    </div>
+    <dl class="recreo-caja recreo-marcador">
+      <div class="recreo-dato recreo-dato-puntaje"><dt>Puntaje</dt><dd data-recreo-puntaje>0</dd></div>
+      <div class="recreo-dato"><dt>Nivel</dt><dd data-recreo-nivel>1</dd></div>
+      <div class="recreo-dato"><dt>Líneas</dt><dd data-recreo-lineas>0</dd></div>
+      <div class="recreo-dato recreo-dato-record"><dt>Récord</dt><dd data-recreo-record>0</dd></div>
+    </dl>
+    <p class="recreo-jugada" data-recreo-jugada aria-hidden="true"><span class="recreo-jugada-nombre"></span><span class="recreo-jugada-extra"></span></p>
+  </div>
+  <div class="recreo-der">
+    <div class="recreo-caja recreo-siguiente">
+      <p class="recreo-rotulo">Siguiente</p>
+      <div class="recreo-marco" data-recreo-marco-siguiente><canvas data-recreo-siguiente role="img"></canvas></div>
+    </div>
+    <div class="recreo-teclas" id="recreo-ayuda">
+      <p class="recreo-rotulo">Controles</p>
+      <ul class="recreo-lista">${ayuda}</ul>
+    </div>
+    <div class="recreo-acciones">
+      <button type="button" class="recreo-accion" data-recreo-pausa disabled><kbd class="recreo-tecla" aria-hidden="true">P</kbd><span data-recreo-pausa-texto>Pausa</span></button>
+      <button type="button" class="recreo-accion" data-recreo-cerrar><kbd class="recreo-tecla" aria-hidden="true">Esc</kbd><span>Salir</span></button>
     </div>
   </div>
   <div class="recreo-controles" data-recreo-controles>${botones}</div>
-  <p class="recreo-ayuda" id="recreo-ayuda"><span><kbd>←</kbd> <kbd>→</kbd> mover</span> · <span><kbd>↑</kbd> girar</span> · <span><kbd>↓</kbd> bajar</span> · <span><kbd>Espacio</kbd> soltar</span> · <span><kbd>C</kbd> guardar</span> · <span><kbd>P</kbd> pausa</span> · <span><kbd>Esc</kbd> salir</span></p>
   <p class="sr-only" aria-live="polite" data-recreo-voz></p>
 </div>
 <canvas class="recreo-vuelo" data-recreo-vuelo aria-hidden="true"></canvas>`;
@@ -655,19 +785,22 @@
     const guardada = $("[data-recreo-guardada]");
     const vuelo = $("[data-recreo-vuelo]");
     const fondo = document.createElement("canvas");
+    const jugada = $("[data-recreo-jugada]");
     const v = {
       dialogo,
       hoja: $("[data-recreo-hoja]"),
       tablero: $("[data-recreo-tablero]"),
       lienzo,
       ctx: lienzo.getContext("2d"),
-      fondo, // la cuadrícula y las casillas fijas, que cambian sólo al fijar una pieza o borrar filas
+      fondo, // la cuadrícula y las piezas fijas, que cambian sólo al fijar una pieza o borrar filas
       ctxFondo: fondo.getContext("2d"),
       fondoDe: "",
       siguiente,
       ctxSiguiente: siguiente.getContext("2d"),
+      marcoSiguiente: $("[data-recreo-marco-siguiente]"),
       guardada,
       ctxGuardada: guardada.getContext("2d"),
+      marcoGuardada: $("[data-recreo-marco-guardada]"),
       lienzoVuelo: vuelo,
       ctxVuelo: vuelo.getContext("2d"),
       aviso: $("[data-recreo-aviso]"),
@@ -675,9 +808,14 @@
       avisoTexto: $("[data-recreo-aviso-texto]"),
       seguir: $("[data-recreo-seguir]"),
       pausa: $("[data-recreo-pausa]"),
+      pausaTexto: $("[data-recreo-pausa-texto]"),
       cerrar: $("[data-recreo-cerrar]"),
       controles: $("[data-recreo-controles]"),
       voz: $("[data-recreo-voz]"),
+      jugada,
+      jugadaNombre: jugada.firstElementChild,
+      jugadaExtra: jugada.lastElementChild,
+      jugadaFin: 0,
       datos: { puntaje: $("[data-recreo-puntaje]"), lineas: $("[data-recreo-lineas]"), nivel: $("[data-recreo-nivel]"), record: $("[data-recreo-record]") },
       quieto: window.matchMedia("(prefers-reduced-motion: reduce)"),
       juego: null,
@@ -685,7 +823,8 @@
       artes: [], // una por lámina: { lienzo, mapa, recortes }
       vuelo: null,
       c: 24, // lado de una casilla, en px CSS
-      m: 14, // lado de una casilla de las piezas de al costado
+      disp: { cuantas: 4, s: 40, m: 14, W: 100, H: 160 }, // las que siguen: cuántas, cada cuánto y de qué lado
+      dispGuardada: { W: 100, H: 40 },
       dpr: 1,
       raf: 0,
       antes: 0,
@@ -767,16 +906,23 @@
   }
 
   /** Abre el recreo con las láminas de la página: { img, recorte, x, y, lado, filtro, sombra } de cada una; la primera
-      es la del doble clic. Con transformar, las toma donde están, las recorta en piezas y en el aire se dan vuelta a su
-      figura; si no, el juego aparece de una vez. alCerrar se llama al cerrarse, por el botón, Escape o el navegador. */
+      es la del doble clic. Cada pieza lleva la obra de una lámina. Con transformar, las toma donde están, las recorta y
+      vuelan a su lugar; si no, el juego aparece de una vez. alCerrar se llama al cerrarse, por el botón, Escape o el
+      navegador. */
   function abrir({ laminas = [], transformar = false, alCerrar = null } = {}) {
     if (!vista) vista = armar();
     if (vista.dialogo.open) return;
     vista.alCerrar = alCerrar;
     const tomadas = laminas.filter((l) => l.img?.naturalWidth > 0);
     const conVuelo = transformar && tomadas.length > 0 && !vista.quieto.matches;
-    // La obra de cada lámina sólo hace falta para el vuelo: en el juego las piezas son figuras
-    vista.artes = conVuelo ? tomadas.map(arte) : [];
+    vista.artes = [];
+    for (const l of tomadas) {
+      try {
+        vista.artes.push(arte(l));
+      } catch {
+        // Una imagen que no se deja dibujar no da piezas
+      }
+    }
     nuevoJuego();
     const raiz = document.documentElement;
     // Sin la barra de desplazamiento la página no se corre: el ancho que deja libre se devuelve como relleno
@@ -788,7 +934,7 @@
     vista.dialogo.showModal();
     medir();
     vista.vuelo = null;
-    if (conVuelo) prepararVuelo(tomadas);
+    if (conVuelo && vista.artes.length === tomadas.length) prepararVuelo(tomadas);
     vista.hoja.toggleAttribute("data-vuelo", Boolean(vista.vuelo));
     actualizar();
     vista.seguir.focus();
@@ -941,27 +1087,33 @@
     if (accion === "izquierda" || accion === "derecha" || accion === "bajar") control(accion, false);
   }
 
-  /** El lado de la casilla sale del espacio que la hoja le deja al tablero (inicio.css lo calcula con la pantalla). Se
-      mide sin transformaciones: la hoja puede venir entrando. */
+  /** El lado de la casilla sale del lugar que inicio.css le da al tablero según la pantalla, redondeado a píxeles
+      enteros: el tablero se ajusta a la cuadrícula justa y los costados toman lo que queda. Se mide sin
+      transformaciones: la hoja puede venir entrando. */
   function medir() {
-    const { clientWidth: ancho, clientHeight: alto } = vista.tablero;
-    const c = Math.max(8, Math.floor(Math.min(ancho / COLUMNAS, alto / FILAS)));
+    const { tablero } = vista;
+    tablero.style.removeProperty("width");
+    tablero.style.removeProperty("height");
+    const c = Math.max(8, Math.floor(Math.min(tablero.clientWidth / COLUMNAS, tablero.clientHeight / FILAS)));
+    tablero.style.width = `${c * COLUMNAS}px`;
+    tablero.style.height = `${c * FILAS}px`;
     const dpr = Math.min(3, window.devicePixelRatio || 1);
-    const m = Math.max(8, Math.round(c * 0.46));
     const lienzo = (canvas, w, h) => {
-      canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(h * dpr);
+      canvas.width = Math.max(1, Math.round(w * dpr));
+      canvas.height = Math.max(1, Math.round(h * dpr));
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
     };
     lienzo(vista.lienzo, c * COLUMNAS, c * FILAS);
     vista.fondo.width = vista.lienzo.width;
     vista.fondo.height = vista.lienzo.height;
-    lienzo(vista.siguiente, m * 4.5, m * 9);
-    lienzo(vista.guardada, m * 4.5, m * 3);
+    const marco = (el) => ({ W: el.clientWidth, H: el.clientHeight });
+    const sig = marco(vista.marcoSiguiente);
+    const gua = marco(vista.marcoGuardada);
+    lienzo(vista.siguiente, sig.W, sig.H);
+    lienzo(vista.guardada, gua.W, gua.H);
     lienzo(vista.lienzoVuelo, window.innerWidth, window.innerHeight);
-    vista.hoja.style.setProperty("--recreo-mini", `${m * 4.5}px`);
-    Object.assign(vista, { c, m, dpr, mostrado: "", fondoDe: "" });
+    Object.assign(vista, { c, dpr, disp: disponer(sig.W, sig.H, c), dispGuardada: gua, mostrado: "", fondoDe: "" });
     vista.sucio = true;
     dibujar();
   }
@@ -981,12 +1133,48 @@
     if (seguir) vista.raf = requestAnimationFrame(cuadro);
   }
 
-  /** Lo que pasó en el motor se cuenta al lector de pantalla y al récord. */
+  const FILAS_DE = ["", " simple", " doble", " triple"];
+  /** El nombre de una jugada, como lo dicen los que juegan. */
+  function nombreJugada({ filas, giro, combo }) {
+    if (giro === "t") return `T-spin${FILAS_DE[filas]}`;
+    if (giro === "mini") return `Mini T-spin${FILAS_DE[filas]}`;
+    if (filas === 4) return "Cuatro líneas";
+    return `Combo ×${combo + 1}`;
+  }
+
+  /** La jugada aparece bajo el marcador y se va sola. */
+  function mostrarJugada(nombre, extra) {
+    const { jugada } = vista;
+    vista.jugadaNombre.textContent = nombre;
+    vista.jugadaExtra.textContent = extra;
+    vista.voz.textContent = `${nombre}${extra ? `. ${extra}` : ""}.`;
+    clearTimeout(vista.jugadaFin);
+    jugada.getAnimations?.().forEach((anim) => anim.cancel());
+    if (vista.quieto.matches || !jugada.animate) {
+      jugada.style.opacity = "1";
+      vista.jugadaFin = setTimeout(() => (jugada.style.opacity = ""), 1800);
+      return;
+    }
+    jugada.animate(
+      [
+        { opacity: 0, transform: "translateY(8px) scale(.96)" },
+        { opacity: 1, transform: "none", offset: 0.1 },
+        { opacity: 1, transform: "none", offset: 0.78 },
+        { opacity: 0, transform: "translateY(-4px)" },
+      ],
+      { duration: 1900, easing: "cubic-bezier(.2,.7,.2,1)" },
+    );
+  }
+
+  /** Lo que pasó en el motor se cuenta: las jugadas y el nivel bajo el marcador, el fin y todo al lector de pantalla. */
   function contar() {
     const { juego } = vista;
     if (!juego.eventos.length) return;
+    let jugada = null;
+    let nivel = 0;
     for (const evento of juego.eventos.splice(0)) {
-      if (evento.tipo === "nivel") vista.voz.textContent = `Nivel ${evento.nivel}.`;
+      if (evento.tipo === "jugada") jugada = evento;
+      if (evento.tipo === "nivel") nivel = evento.nivel;
       if (evento.tipo === "fin") {
         vista.finEn = performance.now();
         vista.recordNuevo = evento.record;
@@ -994,14 +1182,23 @@
         vista.voz.textContent = `Fin del recreo. Puntaje ${numero(evento.puntaje)}.`;
       }
     }
+    if (jugada) {
+      const extra = [
+        jugada.seguidas ? "seguidas, ×1,5" : "",
+        (jugada.giro || jugada.filas === 4) && jugada.combo > 0 ? `combo ×${jugada.combo + 1}` : "",
+        `+${numero(jugada.puntos)}`,
+        nivel ? `nivel ${nivel}` : "",
+      ];
+      mostrarJugada(nombreJugada(jugada), extra.filter(Boolean).join(" · "));
+    } else if (nivel) mostrarJugada(`Nivel ${nivel}`, "Las piezas caen más rápido");
     actualizar();
   }
 
-  /** Aviso sobre la hoja, botón de pausa y marcador, según el estado. */
+  /** Aviso sobre la cuadrícula, botón de pausa y marcador, según el estado. */
   function actualizar() {
     const { juego } = vista;
     const textos = {
-      listo: ["Completa filas", "Cada diez líneas, las piezas caen más rápido.", "Empezar"],
+      listo: ["Recreo", "Completa filas. Cada diez líneas, las piezas caen más rápido.", "Empezar"],
       pausa: ["En pausa", "", "Seguir"],
       fin: ["Fin del recreo", `Puntaje ${numero(juego.puntaje)}${vista.recordNuevo ? " · récord nuevo" : ""}`, "Otra vez"],
     }[juego.estado];
@@ -1014,7 +1211,7 @@
       if (!estaba && document.activeElement === vista.tablero) vista.seguir.focus();
     }
     vista.pausa.disabled = juego.estado !== "jugando" && juego.estado !== "pausa";
-    vista.pausa.textContent = juego.estado === "pausa" ? "Seguir" : "Pausa";
+    vista.pausaTexto.textContent = juego.estado === "pausa" ? "Seguir" : "Pausa";
     vista.sucio = true;
   }
 
@@ -1034,7 +1231,7 @@
       una sola vez: el sobrante (la lámina sin la pieza) con su sombra, la sombra de la pieza y, si la lámina venía con
       filtro, la pieza filtrada. En cada cuadro sólo se mueven esas imágenes. */
   function prepararVuelo(laminas) {
-    const { juego, dpr } = vista;
+    const { juego } = vista;
     vista.vuelo = {
       inicio: performance.now(),
       llegaron: new Set(),
@@ -1056,27 +1253,25 @@
         cs.beginPath();
         silueta(cs, r.ox * l.lado, r.oy * l.lado);
         cs.fill();
-        // Las sombras, del sobrante y de la pieza: una silueta desenfocada no necesita la densidad de la pantalla. La
-        // silueta se dibuja fuera del canvas y sólo su sombra cae adentro
-        const sombraDe = (w, h, dibujar) => {
+        // Las sombras, del sobrante y de la pieza: una silueta desenfocada no necesita la densidad de la pantalla
+        const sombraHecha = (w, h, dibujar) => {
           const [lienzo, cp] = hoja(w + 2 * borde, h + 2 * borde, DENSIDAD_SOMBRA);
-          const lejos = 10000;
           cp.shadowColor = `rgba(31,42,61,${l.sombra.opacidad})`;
           cp.shadowBlur = l.sombra.desenfoque * 2 * DENSIDAD_SOMBRA;
-          cp.shadowOffsetX = lejos * DENSIDAD_SOMBRA;
-          cp.translate(borde - lejos, borde);
+          cp.shadowOffsetX = LEJOS * DENSIDAD_SOMBRA;
+          cp.translate(borde - LEJOS, borde);
           dibujar(cp);
           return lienzo;
         };
-        const sombraSobrante = sombraDe(l.lado, l.lado, (cp) => cp.drawImage(sobrante, 0, 0, l.lado, l.lado));
-        const sombraPieza = sombraDe(r.w * t0, r.h * t0, (cp) => {
+        const sombraSobrante = sombraHecha(l.lado, l.lado, (cp) => cp.drawImage(sobrante, 0, 0, l.lado, l.lado));
+        const sombraPieza = sombraHecha(r.w * t0, r.h * t0, (cp) => {
           cp.fillStyle = "#000";
           cp.beginPath();
           silueta(cp, 0, 0);
           cp.fill();
         });
 
-        // La pieza con el filtro de su lámina, para soltarlo en el aire
+        // La pieza con el filtro de su lámina, que se suelta en el aire
         let filtrada = null;
         if (filtro) {
           const [lienzo, cf] = hoja(r.w * t0, r.h * t0);
@@ -1096,14 +1291,15 @@
           r,
           t0,
           borde,
-          x0: l.x + r.ox * l.lado,
-          y0: l.y + r.oy * l.lado,
+          // La esquina de la caja en que gira la pieza, sobre la lámina
+          ox0: l.x + r.ox * l.lado - r.x0 * t0,
+          oy0: l.y + r.oy * l.lado - r.y0 * t0,
           sobrante,
           sombraSobrante,
           sombraPieza,
           filtrada,
           contorno: contorno(entrada.tipo),
-          destino: i === 0 ? "tablero" : i <= 3 ? i - 1 : "pila",
+          destino: i === 0 ? "tablero" : i <= vista.disp.cuantas ? i - 1 : "pila",
           giro: (i % 2 ? 1 : -1) * (5 + (i % 3) * 4),
           lado: l.x + l.lado / 2 < window.innerWidth / 2 ? -1 : 1,
           fin: false,
@@ -1126,7 +1322,7 @@
 
   function dibujarVuelo(ahora) {
     const v = vista.vuelo;
-    const { ctxVuelo: ctx, dpr, c, m } = vista;
+    const { ctxVuelo: ctx, dpr, c } = vista;
     const W = window.innerWidth;
     const H = window.innerHeight;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -1164,50 +1360,59 @@
       let dy;
       let dt;
       let alfa = 1;
+      let sombraFin = SOMBRA.costado;
       if (p.destino === "tablero") {
         const pos = nacimiento(entrada.tipo);
         dt = c;
-        dx = tablero.left + (pos.x + r.x0) * c;
-        dy = tablero.top + (pos.y + r.y0 - OCULTAS) * c;
+        dx = tablero.left + pos.x * c;
+        dy = tablero.top + (pos.y - OCULTAS) * c;
+        sombraFin = SOMBRA.cae;
       } else {
-        const [mx, my] = posMini(entrada.tipo, p.destino === "pila" ? 2 : p.destino, m);
+        const [mx, my, m] = posSiguiente(entrada.tipo, p.destino === "pila" ? vista.disp.cuantas - 1 : p.destino);
         dt = m;
         dx = costado.left + mx;
         dy = costado.top + my;
         if (p.destino === "pila") {
+          // Más chica, detrás de la última, y se desvanece al llegar
           dt = m * 0.7;
-          dy += m * 1.4;
-          dx += (r.w * m * 0.3) / 2;
+          dx += (r.x0 + r.w / 2) * (m - dt);
+          dy += (r.y0 + r.h / 2) * (m - dt) + m * 0.6;
           alfa = 1 - smooth(span(e, 0.45, 1));
         }
       }
       const ts = lerp(p.t0, dt, e);
       const k = ts / p.t0;
-      const x = lerp(p.x0, dx, e);
-      const y = lerp(p.y0, dy, e) - Math.sin(Math.PI * e) * Math.min(140, H * 0.14);
+      const ox = lerp(p.ox0, dx, e);
+      const oy = lerp(p.oy0, dy, e) - Math.sin(Math.PI * e) * Math.min(140, H * 0.14);
+      // La esquina de la obra (la caja de la pieza sin sus filas y columnas vacías)
+      const ax = ox + r.x0 * ts;
+      const ay = oy + r.y0 * ts;
       const alto = 1 - e + Math.sin(Math.PI * e) * 0.7; // altura sobre la mesa: aleja la sombra
-      // En el aire la lámina se da vuelta, como las de la portada: detrás está su figura, la pieza del juego
-      const vuelta = span(e, 0.12, 0.52);
-      const cara = vuelta < 0.5;
+      // Al llegar, la sombra de la lámina se vuelve la de su lugar
+      const llega = smooth(span(e, 0.72, 1));
       ctx.save();
       ctx.globalAlpha = alfa;
-      const mx = x + (r.w * ts) / 2;
-      const my = y + (r.h * ts) / 2;
-      ctx.translate(mx, my);
+      const cx = ax + (r.w * ts) / 2;
+      const cy = ay + (r.h * ts) / 2;
+      ctx.translate(cx, cy);
       ctx.rotate((Math.sin(Math.PI * e) * p.giro * Math.PI) / 180);
-      ctx.scale(Math.max(0.02, Math.abs(Math.cos(Math.PI * vuelta))), 1);
-      ctx.translate(-mx, -my);
-      if (alto > 0.02) {
+      ctx.translate(-cx, -cy);
+      if (llega < 1) {
         ctx.save();
-        ctx.globalAlpha = alfa * Math.min(1, alto);
+        ctx.globalAlpha = alfa * (1 - llega);
         const sx = l.sombra.x * alto;
         const sy = l.sombra.y * alto;
-        ctx.drawImage(p.sombraPieza, x + sx - borde * k, y + sy - borde * k, (r.w * p.t0 + 2 * borde) * k, (r.h * p.t0 + 2 * borde) * k);
+        ctx.drawImage(p.sombraPieza, ax + sx - borde * k, ay + sy - borde * k, (r.w * p.t0 + 2 * borde) * k, (r.h * p.t0 + 2 * borde) * k);
         ctx.restore();
       }
-      dibujarCasillas(ctx, casillasDe(entrada), ts, x, y, cara ? 0 : 1, cara);
-      // Las láminas del fondo llevan su filtro hasta darse vuelta
-      if (p.filtrada && cara) ctx.drawImage(p.filtrada, x, y, r.w * ts, r.h * ts);
+      figura(ctx, entrada, ox, oy, ts, { sombra: llega > 0 ? sombraDe(sombraFin, ts, llega) : null });
+      // Las láminas del fondo llevan su filtro: en el aire se lo sacan
+      const filtro = 1 - smooth(span(e, 0.1, 0.6));
+      if (p.filtrada && filtro > 0) {
+        ctx.globalAlpha = alfa * filtro;
+        ctx.drawImage(p.filtrada, ax, ay, r.w * ts, r.h * ts);
+        ctx.globalAlpha = alfa;
+      }
       // La línea del recorte, a tinta, que se dibuja de una vez alrededor de la pieza y se borra al partir
       const tinta = 1 - smooth(span(e, 0, 0.35));
       if (corte > 0 && tinta > 0) {
@@ -1221,8 +1426,8 @@
         p.contorno.forEach(([px, py], n) => {
           const [qx, qy] = p.contorno[(n + 1) % p.contorno.length];
           largo += Math.hypot(qx - px, qy - py) * ts;
-          if (n) ctx.lineTo(x + px * ts, y + py * ts);
-          else ctx.moveTo(x + px * ts, y + py * ts);
+          if (n) ctx.lineTo(ax + px * ts, ay + py * ts);
+          else ctx.moveTo(ax + px * ts, ay + py * ts);
         });
         ctx.closePath();
         ctx.setLineDash([largo * corte, largo]);
@@ -1240,34 +1445,50 @@
     if (!quedan) terminarVuelo();
   }
 
-  /* ——— Dibujo del tablero ——— */
+  /* ——— Dibujo ——— */
+  /** La cuadrícula y las piezas fijas, en el canvas de fondo: sólo cambian al fijar una pieza o borrar filas. */
   function pintarFondo() {
     const { juego, ctxFondo: ctx, c, dpr } = vista;
-    const ancho = c * COLUMNAS;
-    const alto = c * FILAS;
+    const { width, height } = vista.fondo;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, width, height);
+    // Las rayas, de un píxel CSS justo en píxeles de la pantalla; los bordes los pone la tarjeta
+    ctx.fillStyle = CUADRICULA;
+    const grosor = Math.max(1, Math.round(dpr));
+    for (let x = 1; x < COLUMNAS; x += 1) ctx.fillRect(Math.round(x * c * dpr) - Math.floor(grosor / 2), 0, grosor, height);
+    for (let y = 1; y < FILAS; y += 1) ctx.fillRect(0, Math.round(y * c * dpr) - Math.floor(grosor / 2), width, grosor);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, ancho, alto);
-    // La cuadrícula, sola sobre la mesa: sus bordes son las paredes
-    ctx.strokeStyle = LINEA;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    for (let x = 0; x <= COLUMNAS; x += 1) {
-      const px = Math.min(ancho - 0.5, x * c + 0.5);
-      ctx.moveTo(px, 0);
-      ctx.lineTo(px, alto);
-    }
-    for (let y = 0; y <= FILAS; y += 1) {
-      const py = Math.min(alto - 0.5, y * c + 0.5);
-      ctx.moveTo(0, py);
-      ctx.lineTo(ancho, py);
-    }
-    ctx.stroke();
     ctx.imageSmoothingQuality = "high";
-    const fijas = [];
-    for (let y = OCULTAS; y < OCULTAS + FILAS; y += 1) {
-      juego.tablero[y].forEach((celda, x) => celda && fijas.push([x, y - OCULTAS, celda.tipo, celda.n, celda.k, celda.giro]));
+    const sombra = sombraDe(SOMBRA.fija, c);
+    for (const g of grupos(juego.tablero)) figura(ctx, g, g.ox * c, g.oy * c, c, { casillas: g.casillas, sombra });
+  }
+
+  /** Las que siguen y la guardada (apagada mientras no se puede cambiar). */
+  function dibujarCostado() {
+    const { juego, disp, dispGuardada, dpr, ctxSiguiente, ctxGuardada } = vista;
+    const siguen = juego.cola.slice(juego.estado === "listo" ? 1 : 0).slice(0, disp.cuantas);
+    const mostrado = `${vista.partida}|${siguen.map((e) => (llego(e.n) ? e.n : "·")).join(",")}|${juego.guardada?.n}|${juego.puedeGuardar}|${disp.m},${disp.cuantas},${disp.W},${disp.H}|${dispGuardada.W},${dispGuardada.H}|${dpr}`;
+    if (mostrado === vista.mostrado) return;
+    vista.mostrado = mostrado;
+    ctxSiguiente.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctxSiguiente.clearRect(0, 0, disp.W, disp.H);
+    ctxSiguiente.imageSmoothingQuality = "high";
+    siguen.forEach((entrada, j) => {
+      if (!llego(entrada.n)) return;
+      const [x, y, m] = posSiguiente(entrada.tipo, j);
+      figura(ctxSiguiente, entrada, x, y, m, { sombra: sombraDe(SOMBRA.costado, m) });
+    });
+    vista.siguiente.setAttribute("aria-label", `Siguen: ${siguen.map((e) => e.tipo).join(", ")}`);
+    ctxGuardada.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctxGuardada.clearRect(0, 0, dispGuardada.W, dispGuardada.H);
+    ctxGuardada.imageSmoothingQuality = "high";
+    if (juego.guardada) {
+      const [x, y, m] = posGuardada(juego.guardada.tipo);
+      ctxGuardada.globalAlpha = juego.puedeGuardar ? 1 : 0.4;
+      figura(ctxGuardada, juego.guardada, x, y, m, { sombra: sombraDe(SOMBRA.costado, m) });
+      ctxGuardada.globalAlpha = 1;
     }
-    dibujarCasillas(ctx, fijas, c);
+    vista.guardada.setAttribute("aria-label", juego.guardada ? `Guardada: ${juego.guardada.tipo}` : "Ninguna guardada");
   }
 
   function dibujar() {
@@ -1275,73 +1496,58 @@
     if (!juego) return;
     vista.sucio = false;
     const ancho = c * COLUMNAS;
-    const clave = `${vista.partida}|${juego.cambios}|${c}|${dpr}`;
+    const clave = `${vista.partida}|${juego.cambios}|${c}|${dpr}|${vista.artes.length}`;
     if (clave !== vista.fondoDe) {
       pintarFondo();
       vista.fondoDe = clave;
     }
-    // Sin hoja detrás el canvas es transparente: se borra el cuadro anterior antes de poner la cuadrícula
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, vista.lienzo.width, vista.lienzo.height);
     ctx.drawImage(vista.fondo, 0, 0);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.imageSmoothingQuality = "high";
 
-    // Las filas completas se marcan con el destacador antes de irse: un trazo que barre de izquierda a derecha
+    // Las filas completas se van como papel que se levanta: un velo blanco las barre de izquierda a derecha
     if (juego.limpiando) {
-      const avance = vista.quieto.matches ? 1 : Math.min(1, (1 - juego.limpiando.resta / juego.pausaLineas) * 1.8);
+      const avance = vista.quieto.matches ? 1 : Math.min(1, (1 - juego.limpiando.resta / juego.pausaLineas) * 1.5);
+      const frente = ancho * avance;
       ctx.save();
-      ctx.globalCompositeOperation = "multiply";
-      ctx.fillStyle = LAPIZ;
       juego.limpiando.filas.forEach((y) => {
-        if (y >= OCULTAS) ctx.fillRect(0, (y - OCULTAS) * c + c * 0.08, ancho * avance, c * 0.84);
+        if (y < OCULTAS) return;
+        const py = (y - OCULTAS) * c;
+        const velo = ctx.createLinearGradient(frente - c * 2, 0, frente, 0);
+        velo.addColorStop(0, "rgba(255,255,255,.92)");
+        velo.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = "rgba(255,255,255,.92)";
+        ctx.fillRect(0, py, Math.max(0, frente - c * 2), c);
+        ctx.fillStyle = velo;
+        ctx.fillRect(Math.max(0, frente - c * 2), py, Math.min(frente, c * 2), c);
       });
       ctx.restore();
       vista.sucio = true;
     }
 
+    const sombra = sombraDe(SOMBRA.cae, c);
     if (juego.pieza) {
-      // Dónde caería: el contorno a lápiz
-      const sombra = fantasma(juego);
-      if (sombra && sombra.y !== juego.pieza.y) {
-        ctx.save();
-        ctx.strokeStyle = GRAFITO;
-        ctx.lineWidth = Math.max(1, c / 22);
-        ctx.setLineDash([Math.max(2, c / 6), Math.max(2, c / 8)]);
-        const g = Math.max(2, Math.round(c / 8));
-        celdas(sombra).forEach(([x, y]) => y >= OCULTAS && ctx.strokeRect(x * c + g, (y - OCULTAS) * c + g, c - 2 * g, c - 2 * g));
-        ctx.restore();
-      }
-      dibujarPieza(ctx, juego.pieza, c);
+      const abajo = fantasma(juego);
+      if (abajo && abajo.y !== juego.pieza.y) dibujarFantasma(ctx, abajo, c);
+      dibujarPieza(ctx, juego.pieza, c, sombra);
     } else if (juego.estado === "listo" && llego(juego.cola[0].n)) {
       // Antes de empezar, la primera pieza espera donde va a nacer
-      dibujarPieza(ctx, { ...juego.cola[0], giro: 0, ...nacimiento(juego.cola[0].tipo) }, c);
+      dibujarPieza(ctx, { ...juego.cola[0], giro: 0, ...nacimiento(juego.cola[0].tipo) }, c, sombra);
     }
 
-    // Al costado: las tres que siguen y la guardada (apagada mientras no se puede cambiar)
-    const { m, ctxSiguiente, ctxGuardada } = vista;
-    const siguen = juego.cola.slice(juego.estado === "listo" ? 1 : 0).slice(0, 3);
-    const mostrado = `${vista.partida}|${siguen.map((e) => (llego(e.n) ? e.n : "·")).join(",")}|${juego.guardada?.n}|${juego.puedeGuardar}|${m}|${dpr}`;
-    if (mostrado !== vista.mostrado) {
-      vista.mostrado = mostrado;
-      ctxSiguiente.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctxSiguiente.clearRect(0, 0, m * 4.5, m * 9);
-      ctxSiguiente.imageSmoothingQuality = "high";
-      siguen.forEach((entrada, j) => llego(entrada.n) && mini(ctxSiguiente, entrada, j, m));
-      ctxGuardada.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctxGuardada.clearRect(0, 0, m * 4.5, m * 3);
-      if (juego.guardada) {
-        ctxGuardada.globalAlpha = juego.puedeGuardar ? 1 : 0.35;
-        mini(ctxGuardada, juego.guardada, 0, m);
-        ctxGuardada.globalAlpha = 1;
-      }
-    }
+    dibujarCostado();
     const { datos } = vista;
-    datos.puntaje.textContent = numero(juego.puntaje);
-    datos.lineas.textContent = numero(juego.lineas);
-    datos.nivel.textContent = numero(juego.nivel);
-    datos.record.textContent = numero(Math.max(juego.record, juego.puntaje));
+    const poner = (el, valor) => el.textContent !== valor && (el.textContent = valor);
+    poner(datos.puntaje, numero(juego.puntaje));
+    poner(datos.lineas, numero(juego.lineas));
+    poner(datos.nivel, numero(juego.nivel));
+    poner(datos.record, numero(Math.max(juego.record, juego.puntaje)));
   }
 
-  window.pteronRecreo = { motor, abrir, cerrar: () => vista && cerrar() };
+  // Lo que se dibuja sin documento también se prueba sin navegador
+  const dibujo = { grupos, contornos, disponer };
+
+  window.pteronRecreo = { motor, dibujo, abrir, cerrar: () => vista && cerrar() };
 })();

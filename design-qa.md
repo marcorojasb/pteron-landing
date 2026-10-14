@@ -63,7 +63,41 @@ dibujada, los colores de las hojas) y con el recorrido de bienvenida de la rama 
   por límite de la API pública de GitHub que pide `release-data.js`).
 - `npm run verify`: sintaxis y `wrangler deploy --dry-run`, 400 pruebas y la prueba de humo contra `wrangler dev`.
 
+- Unido con `main` (el recreo rehecho, ya en producción con la revisión 2026-10-14.1): la revisión sube a
+  2026-10-14.2 para que la caché no sirva los archivos anteriores con el mismo número. Los generadores de las hojas
+  y la ventana dan el mismo `index.html`, `npm run verify` pasa con 407 pruebas y el recreo se abre con dos clics.
+
 Final result: passed (pendiente: Safari en iPhone y verla en el sitio real; nada se desplegó)
+
+## El recreo, rehecho como la referencia — 2026-10-14
+
+Pedido: que el juego sea de verdad y se vea como la captura de referencia (tablero en una tarjeta con cuadrícula,
+piezas con la obra de las láminas y sombra, «Siguiente» con cuatro piezas y «Controles» como teclas).
+
+Verificado en Chromium (Playwright) con un servidor estático de `public/`, a 1440 × 900 y 1366 × 650 (puntero),
+680 × 860 (ventana angosta), 390 × 844 y 844 × 390 (teléfono) y 820 × 1180 (tableta):
+
+- Tablero: tarjeta de cartón claro con filo de luz y sombra, cuadrícula fina, esquinas redondeadas que recortan las
+  piezas del borde. El lado de la casilla es entero y la tarjeta calza justo con la cuadrícula.
+- Piezas: cada una con el trozo de su lámina, al derecho aunque gire (el texto de las láminas se lee), sin costuras
+  entre casillas, con un filo apenas oscuro y sombra; la que cae flota más que las fijas. Las láminas con calados van
+  sobre papel. Al borrar una fila del medio de una pieza, cada parte conserva su trozo de la obra.
+- Costados: «Siguiente» con cuatro piezas (menos si no caben bien), «Guardada», marcador con puntaje, nivel, líneas y
+  récord; «Controles» bajo una línea punteada, con teclas; Pausa y Salir son botones con su tecla.
+- Jugadas: cuatro líneas, T-spin, combos y jugadas seguidas aparecen bajo el marcador (sobre la cuadrícula en el
+  teléfono) y se van solas; las filas completas se blanquean de izquierda a derecha antes de irse.
+- Vuelo: las láminas se recortan y las piezas vuelan con su obra a la cuadrícula y a «Siguiente»; al llegar, la sombra
+  de la lámina se vuelve la de su lugar, sin saltos.
+- Estados: inicio, pausa (velo con desenfoque), fin con récord, cierre (la portada vuelve) y movimiento reducido (el
+  juego aparece de una vez, con las piezas ya recortadas y la página tapada por la mesa).
+- Desborde: 0 px en todas las medidas. Consola: sin errores propios.
+
+Producción: desplegado a mano con `wrangler` desde `main` (`b81189f`, versión `b373de57`) tras `npm ci` y
+`npm run verify`. En pteron.patagua.dev la portada carga la revisión 2026-10-14.1, `recreo.js`, `inicio.js`,
+`inicio.css`, `styles.css` y la portada son idénticos a los del repositorio, `/api/health` responde `{"ok":true}`, y
+el doble clic, el vuelo y el juego funcionan en escritorio (1440 × 900) y teléfono (390 × 844) sin errores ni desborde.
+
+Final result: passed (pendiente: Safari en iPhone y un teléfono de gama baja)
 
 ## El recreo (huevo de pascua de la portada) — 2026-10-13
 

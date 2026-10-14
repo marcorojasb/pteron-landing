@@ -158,23 +158,26 @@ html.no-js .aviso{display:none}
 .titular-palabra{white-space:nowrap}
 .titular-letra{display:inline-block}
 
-/* ——— El recreo (recreo.js): dos clics seguidos en una lámina y las láminas se vuelven piezas. El juego va suelto sobre la
-   mesa, sin hoja detrás: la cuadrícula, el marcador y los botones. --c es el lado de una casilla: lo que deja la
-   pantalla para veinte filas y diez columnas, descontado lo demás (cabeza, marcador, ayuda o botones). recreo.js lo
-   redondea a píxeles enteros. ——— */
+/* ——— El recreo (recreo.js): dos clics seguidos en una lámina y las láminas se vuelven piezas. Sobre la mesa, tarjetas
+   de cartón claro con su sombra: la cuadrícula al centro; a la izquierda la guardada y el marcador; a la derecha las que
+   siguen y los controles. --c es el lado de una casilla: lo que deja la pantalla para veinte filas y diez columnas,
+   descontados los costados. recreo.js lo redondea a píxeles enteros. ——— */
 html.con-recreo{overflow:hidden}
 html.con-recreo body{padding-right:var(--barra,0px)}
-.recreo{--c:clamp(12px,min((100vh - 150px) / 20,(100vw - 200px) / 10),36px);--c:clamp(12px,min((100dvh - 150px) / 20,(100vw - 200px) / 10),36px);
-  --lado:6.75rem;position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;
-  padding:max(12px,env(safe-area-inset-top,0px)) 12px max(12px,env(safe-area-inset-bottom,0px));border:0;background:transparent;color:var(--tinta);
+.recreo{--izq:9.75rem;--der:13.75rem;--hueco:clamp(16px,2.4vw,36px);
+  --c:clamp(12px,min((100vh - 48px) / 20,(100vw - 48px - var(--izq) - var(--der) - 2 * var(--hueco)) / 10),40px);
+  --c:clamp(12px,min((100dvh - 48px) / 20,(100vw - 48px - var(--izq) - var(--der) - 2 * var(--hueco)) / 10),40px);
+  --carton:color-mix(in srgb,var(--hoja) 46%,var(--mesa));--raya:color-mix(in srgb,var(--linea) 72%,var(--hoja));
+  --relieve:0 0 0 1px rgb(var(--sombra)/.035),0 1px 2px rgb(var(--sombra)/.06),0 16px 36px -14px rgb(var(--sombra)/.26);
+  position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;
+  padding:max(24px,env(safe-area-inset-top,0px)) 24px max(24px,env(safe-area-inset-bottom,0px));border:0;background:transparent;color:var(--tinta);
   overflow:auto;overscroll-behavior:contain;touch-action:manipulation}
 .recreo[open]{display:grid;place-items:center}
-/* La página queda detrás de la mesa. Con el vuelo, la mesa llega cuando las letras ya cayeron: mientras tanto se ven
-   pasar por detrás de la cuadrícula */
-.recreo::backdrop{background:color-mix(in srgb,var(--mesa) 92%,transparent)}
+/* La página queda tapada por la mesa. Con el vuelo, la mesa llega cuando las letras ya cayeron: mientras tanto se ven
+   pasar por detrás de las tarjetas */
+.recreo::backdrop{background:var(--mesa)}
 .recreo-vuelo{position:fixed;inset:0;pointer-events:none}
-/* Lo que rodea la cuadrícula va chico: el juego es la cuadrícula */
-.recreo-hoja{display:flex;flex-direction:column;gap:12px;padding:12px 16px}
+.recreo-hoja{display:grid;grid-template-columns:var(--izq) auto var(--der);grid-template-areas:"izq tablero der";align-items:start;column-gap:var(--hueco)}
 .recreo[open] .recreo-hoja{animation:recreo-sube .5s var(--curva) backwards}
 .recreo[open]::backdrop{animation:recreo-fondo .3s ease backwards}
 .recreo[open][data-transforma]::backdrop{animation:recreo-fondo .6s ease 1.4s backwards}
@@ -183,60 +186,116 @@ html.con-recreo body{padding-right:var(--barra,0px)}
 @keyframes recreo-sube{from{opacity:0;transform:translateY(24px)}}
 @keyframes recreo-baja{to{opacity:0;transform:translateY(24px)}}
 @keyframes recreo-fondo{from{opacity:0}}
-.recreo-cabeza{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:36px}
-.recreo-titulo{font-size:1.125rem;font-stretch:116%;letter-spacing:-.015em;line-height:1}
-.recreo-acciones{display:flex;gap:6px}
-/* Botones chicos; su área táctil igual llega a 44 px de alto */
-.recreo-boton{position:relative;min-height:36px;padding:0 14px;border:var(--borde) solid var(--linea);border-radius:999px;background:var(--hoja);color:var(--azul);
-  font-weight:620;font-size:.8125rem;transition:border-color .2s}
-.recreo-boton::after{content:"";position:absolute;inset:-4px -2px}
-.recreo-boton:hover{border-color:color-mix(in srgb,var(--azul) 45%,var(--linea))}
-.recreo-boton:disabled{color:var(--grafito);opacity:.6;cursor:default}
-.recreo-cuerpo{display:flex;align-items:flex-start;gap:20px}
-.recreo-tablero{position:relative;flex:none;display:grid;place-items:center;width:calc(var(--c) * 10);height:calc(var(--c) * 20)}
-.recreo-aviso{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:8px;padding:16px;text-align:center;
-  background:color-mix(in srgb,var(--mesa) 90%,transparent);transition:opacity .4s var(--curva)}
-/* Antes de empezar la cuadrícula está vacía: el aviso va sin velo, bajo la primera pieza. Mientras vuelan las láminas no
-   se ve */
-.recreo-aviso[data-estado="listo"]{background:none}
+.recreo-izq{grid-area:izq;display:flex;flex-direction:column;gap:14px}
+.recreo-der{grid-area:der;align-self:stretch;display:flex;flex-direction:column;gap:14px;min-height:0}
+
+/* Las tarjetas y la cuadrícula: cartón claro, un filo de luz y la sombra de una hoja sobre la mesa */
+.recreo-caja,.recreo-tablero{position:relative;border-radius:16px;background:var(--carton);box-shadow:var(--relieve)}
+.recreo-caja::after,.recreo-tablero::after{content:"";position:absolute;inset:0;z-index:2;border-radius:inherit;box-shadow:inset 0 0 0 1px rgb(255 255 255/.7);pointer-events:none}
+.recreo-tablero{grid-area:tablero;flex:none;width:calc(var(--c) * 10);height:calc(var(--c) * 20);border-radius:clamp(10px,calc(var(--c) * .4),16px);overflow:hidden;outline:none}
+.recreo-lienzo{position:absolute;inset:0;display:block}
+.recreo-rotulo{margin:0;font-size:.6875rem;font-weight:620;line-height:1;letter-spacing:.2em;text-transform:uppercase;color:var(--grafito)}
+.recreo-siguiente,.recreo-guardada{display:flex;flex-direction:column;padding:16px 18px 14px}
+.recreo-siguiente{flex:1 1 0;min-height:0}
+.recreo-siguiente>.recreo-rotulo,.recreo-guardada>.recreo-rotulo{padding-bottom:12px;border-bottom:1px solid var(--raya)}
+.recreo-marco{position:relative;flex:1 1 0;min-height:0}
+.recreo-marco canvas{position:absolute;inset:0;display:block}
+.recreo-guardada .recreo-marco{flex:none;height:max(44px,calc(var(--c) * 2.1))}
+.recreo-marcador{display:grid;grid-template-columns:1fr 1fr;gap:14px 10px;margin:0;padding:16px 18px}
+.recreo-dato{min-width:0}
+.recreo-dato dt{font-size:.625rem;font-weight:620;line-height:1;letter-spacing:.18em;text-transform:uppercase;color:var(--grafito)}
+.recreo-dato dd{margin:7px 0 0;font-size:1.125rem;font-weight:650;font-stretch:104%;font-variant-numeric:tabular-nums;line-height:1;color:var(--tinta)}
+.recreo-dato-puntaje,.recreo-dato-record{grid-column:1 / -1}
+.recreo-dato-puntaje dd{font-size:1.5rem;font-stretch:110%;letter-spacing:-.015em;color:var(--azul)}
+.recreo-dato-record{padding-top:12px;border-top:1px solid var(--raya)}
+.recreo-dato-record dd{font-size:.9375rem;color:var(--grafito)}
+/* La jugada (cuatro líneas, un giro de la T, un combo) aparece bajo el marcador y se va sola */
+.recreo-jugada{display:grid;align-content:start;gap:5px;min-height:3.5rem;margin:0;padding:2px 4px;opacity:0;pointer-events:none}
+.recreo-jugada-nombre{font-size:1.125rem;font-weight:720;font-stretch:110%;letter-spacing:-.01em;line-height:1.1;color:var(--azul);text-wrap:balance}
+.recreo-jugada-extra{font-size:.75rem;line-height:1.35;color:var(--grafito)}
+
+/* Los controles, como teclas, bajo una línea punteada */
+.recreo-teclas{padding:20px 4px 0;background:linear-gradient(90deg,var(--linea) 0 4px,transparent 4px) 0 0/8px 1px repeat-x}
+.recreo-teclas>.recreo-rotulo{margin-bottom:14px}
+.recreo-lista{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:8px 14px;margin:0;padding:0;list-style:none}
+.recreo-lista li{display:contents}
+.recreo-lista li>span:last-child{font-size:.875rem;color:var(--grafito)}
+.recreo-teclas-de{display:flex;gap:6px}
+.recreo-tecla{display:inline-grid;place-items:center;min-width:30px;height:30px;padding:0 8px;border:1px solid color-mix(in srgb,var(--linea) 70%,var(--hoja));border-radius:8px;
+  background:var(--hoja);box-shadow:0 1px 0 rgb(var(--sombra)/.05),0 4px 10px -5px rgb(var(--sombra)/.3);color:var(--tinta);font:620 .75rem/1 var(--letra);transition:border-color .2s}
+.recreo-tecla-ancha{padding:0 14px}
+.recreo-tecla svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* Pausa y salir son botones con su tecla; su área táctil llega a 40 px de alto */
+.recreo-acciones{display:flex;flex-wrap:wrap;gap:4px 18px;padding:0 4px}
+.recreo-accion{display:inline-flex;align-items:center;gap:10px;min-height:40px;padding:0;border:0;border-radius:8px;background:none;color:var(--grafito);font:inherit;font-size:.875rem;cursor:pointer;transition:color .2s}
+.recreo-accion:hover:not(:disabled){color:var(--azul)}
+.recreo-accion:hover:not(:disabled) .recreo-tecla{border-color:color-mix(in srgb,var(--azul) 40%,var(--linea))}
+.recreo-accion:disabled{opacity:.5;cursor:default}
+
+/* El aviso, en una tarjeta sobre la cuadrícula. Antes de empezar va sin velo, bajo la primera pieza; mientras vuelan las
+   láminas no se ve */
+.recreo-aviso{position:absolute;inset:0;z-index:1;display:grid;place-items:center;padding:16px;background:color-mix(in srgb,var(--carton) 62%,transparent);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);transition:opacity .4s var(--curva)}
+.recreo-aviso[data-estado="listo"]{background:none;-webkit-backdrop-filter:none;backdrop-filter:none}
 .recreo-hoja[data-vuelo] .recreo-aviso{opacity:0;pointer-events:none}
-.recreo-aviso-titulo{color:var(--azul);font-size:1.125rem;font-weight:720;font-stretch:110%;letter-spacing:-.01em;line-height:1.15;text-wrap:balance}
-.recreo-aviso-texto{max-width:24ch;color:var(--grafito);font-size:.8125rem;line-height:1.4}
-.recreo-aviso .boton{min-height:40px;margin-top:4px;padding:.5em 1.15em;font-size:.9375rem}
-.recreo-lado{display:grid;align-content:start;gap:14px;width:max(var(--lado),var(--recreo-mini,0px))}
-.recreo-rotulo,.recreo-datos dt{font-size:.75rem;font-weight:620;font-stretch:94%;color:var(--azul)}
-.recreo-rotulo{margin-bottom:6px}
-.recreo-datos{display:grid;gap:8px}
-.recreo-datos div{padding-top:6px;border-top:var(--borde) solid var(--linea)}
-.recreo-datos dd{margin:0;font-size:1rem;font-weight:650;font-stretch:104%;font-variant-numeric:tabular-nums;line-height:1.3;color:var(--tinta)}
-/* La ayuda y los botones toman el ancho del juego sin agrandarlo */
-.recreo-ayuda,.recreo-controles{width:0;min-width:100%}
-.recreo-ayuda{font-size:.75rem;line-height:1.8;color:var(--grafito);text-align:center;text-wrap:balance}
-.recreo-ayuda span{white-space:nowrap}
-.recreo-ayuda kbd{padding:0 4px;border:var(--borde) solid var(--linea);border-radius:4px;background:var(--hoja);color:var(--tinta);font:inherit;font-weight:620}
-.recreo-controles{display:none}
-.recreo-control{display:grid;place-items:center;min-height:48px;padding:0;border:var(--borde) solid var(--linea);border-radius:10px;background:var(--hoja);color:var(--azul);
-  touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
-.recreo-control:active{background:var(--mesa-honda);border-color:color-mix(in srgb,var(--azul) 45%,var(--linea))}
+.recreo-aviso-caja{display:grid;justify-items:center;gap:8px;width:min(100%,16.5rem);padding:20px 20px 18px;border-radius:14px;
+  background:color-mix(in srgb,var(--hoja) 94%,transparent);box-shadow:var(--relieve);text-align:center}
+.recreo-aviso-titulo{color:var(--azul);font-size:1.25rem;font-weight:720;font-stretch:112%;letter-spacing:-.01em;line-height:1.15;text-wrap:balance}
+.recreo-aviso-texto{color:var(--grafito);font-size:.8125rem;line-height:1.45;text-wrap:balance}
+.recreo-aviso .boton{min-height:40px;margin-top:6px;padding:.5em 1.2em;font-size:.9375rem}
+
+/* Los botones táctiles, como teclas grandes */
+.recreo-controles{grid-area:controles;display:none}
+.recreo-control{display:grid;place-items:center;min-height:50px;padding:0;border:1px solid color-mix(in srgb,var(--linea) 70%,var(--hoja));border-radius:12px;background:var(--hoja);color:var(--tinta);
+  box-shadow:0 1px 0 rgb(var(--sombra)/.05),0 6px 14px -8px rgb(var(--sombra)/.4);touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.recreo-control:active{background:var(--mesa-honda);box-shadow:none;transform:translateY(1px)}
 .recreo-control svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-/* En pantallas táctiles, botones bajo el tablero en vez de la ayuda del teclado: las flechas a la izquierda, girar y
-   soltar a la derecha */
-@media (hover:none) and (pointer:coarse){
-  .recreo{--lado:4.75rem;--c:clamp(12px,min((100vh - 165px) / 20,(100vw - 140px) / 10),36px);--c:clamp(12px,min((100dvh - 165px) / 20,(100vw - 140px) / 10),36px)}
-  .recreo-hoja{gap:10px;padding:10px 12px}
-  .recreo-cuerpo{gap:12px}
-  .recreo-titulo{font-size:1rem}
-  .recreo-datos dd{font-size:.9375rem}
-  .recreo-controles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
-  .recreo-ayuda{display:none}
+
+/* En pantallas táctiles (o angostas): la cuadrícula y un costado con todo lo demás, los botones abajo y sin la lista de
+   teclas. La jugada aparece sobre la cuadrícula */
+@media (hover:none) and (pointer:coarse),(max-width:719px){
+  .recreo{--lado:max(76px,calc(var(--c) * 3));
+    --c:clamp(12px,min((100vh - 92px) / 20,(100vw - 36px) / 13,(100vw - 112px) / 10),40px);
+    --c:clamp(12px,min((100dvh - 92px) / 20,(100vw - 36px) / 13,(100vw - 112px) / 10),40px);
+    padding:max(12px,env(safe-area-inset-top,0px)) 12px max(12px,env(safe-area-inset-bottom,0px))}
+  .recreo-hoja{grid-template-columns:auto var(--lado);grid-template-rows:1fr auto auto auto auto;align-items:stretch;gap:8px 12px;
+    grid-template-areas:"tablero siguiente" "tablero guardada" "tablero marcador" "tablero acciones" "controles controles"}
+  .recreo-izq,.recreo-der{display:contents}
+  .recreo-tablero{align-self:start}
+  .recreo-siguiente{grid-area:siguiente}
+  .recreo-guardada{grid-area:guardada}
+  .recreo-marcador{grid-area:marcador}
+  .recreo-acciones{grid-area:acciones}
+  .recreo-teclas{display:none}
+  .recreo-caja{border-radius:12px}
+  .recreo-siguiente,.recreo-guardada,.recreo-marcador{padding:10px 8px}
+  .recreo-rotulo,.recreo-dato dt{font-size:.5625rem;letter-spacing:.08em}
+  .recreo-siguiente>.recreo-rotulo,.recreo-guardada>.recreo-rotulo{padding-bottom:8px}
+  .recreo-guardada .recreo-marco{height:max(36px,calc(var(--c) * 2))}
+  /* El marcador, apretado: el puntaje arriba y lo demás con su valor al lado */
+  .recreo-marcador{grid-template-columns:1fr;gap:7px}
+  .recreo-dato:not(.recreo-dato-puntaje){display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 4px}
+  .recreo-dato dd{margin:0;font-size:.8125rem}
+  .recreo-dato-puntaje{margin-bottom:2px}
+  .recreo-dato-puntaje dd{margin-top:4px;font-size:1rem}
+  .recreo-dato-record{padding-top:7px}
+  .recreo-dato-record dd{font-size:.75rem}
+  .recreo-acciones{flex-direction:column;align-self:end;gap:6px;padding:0}
+  .recreo-accion{justify-content:center;min-height:36px;border:1px solid color-mix(in srgb,var(--linea) 70%,var(--hoja));border-radius:999px;background:var(--hoja);
+    color:var(--azul);font-weight:620;font-size:.8125rem;box-shadow:0 4px 10px -6px rgb(var(--sombra)/.35)}
+  .recreo-accion .recreo-tecla{display:none}
+  .recreo-jugada{grid-area:tablero;z-index:3;align-self:start;justify-self:center;justify-items:center;min-height:0;max-width:calc(var(--c) * 9);margin-top:calc(var(--c) * 6);
+    padding:10px 16px;border-radius:14px;background:color-mix(in srgb,var(--hoja) 92%,transparent);box-shadow:var(--relieve);text-align:center}
+  .recreo-jugada-nombre{font-size:1rem}
+  .recreo-controles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-top:4px}
 }
-/* Un teléfono acostado: los botones van al costado, en dos columnas */
+/* Un teléfono acostado: pausa y salir arriba y los botones abajo, en una columna al costado */
 @media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:540px){
-  .recreo{--c:clamp(10px,(100vh - 96px) / 20,36px);--c:clamp(10px,(100dvh - 96px) / 20,36px)}
-  .recreo-hoja{display:grid;grid-template-columns:auto auto;grid-template-areas:"cabeza cabeza" "cuerpo controles";align-items:start;column-gap:20px}
-  .recreo-cabeza{grid-area:cabeza}
-  .recreo-cuerpo{grid-area:cuerpo}
-  .recreo-controles{grid-area:controles;width:auto;min-width:0;grid-template-columns:repeat(2,56px);align-self:end}
+  .recreo{--c:clamp(10px,(100vh - 24px) / 20,36px);--c:clamp(10px,(100dvh - 24px) / 20,36px)}
+  .recreo-hoja{grid-template-columns:auto var(--lado) auto;grid-template-rows:1fr auto auto;column-gap:16px;
+    grid-template-areas:"tablero siguiente acciones" "tablero guardada controles" "tablero marcador controles"}
+  .recreo-acciones{align-self:start}
+  .recreo-controles{grid-template-columns:repeat(2,56px);align-self:end;margin:0}
 }
 
 /* ——— Anchos ——— */
