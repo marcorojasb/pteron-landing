@@ -67,7 +67,15 @@ dibujada, los colores de las hojas) y con el recorrido de bienvenida de la rama 
   2026-10-14.2 para que la caché no sirva los archivos anteriores con el mismo número. Los generadores de las hojas
   y la ventana dan el mismo `index.html`, `npm run verify` pasa con 407 pruebas y el recreo se abre con dos clics.
 
-Final result: passed (pendiente: Safari en iPhone y verla en el sitio real; nada se desplegó)
+Producción: desplegado a mano con `wrangler` desde `main` (`1f8a334`, versión `613892a0`) tras `npm ci` y
+`npm run verify`. En pteron.patagua.dev la portada carga la revisión 2026-10-14.2. Son idénticos a los del
+repositorio la portada, /marca, /planes, /descargar, /cuenta, `inicio.js`, `inicio.css`, `pteron-ventana.js`,
+`pteron-app.css`, `pteron-hoja.css`, `recreo.js`, `styles.css`, `docs/content.js` y `pt-icons.svg`. Las capturas
+nuevas responden 200 y `/api/health` responde `{"ok":true}`. En escritorio (1440 × 900) y teléfono (390 × 844) se ven
+la portada armada, la ventana en marcha, «La hoja» con sus dos versiones y docs con sus figuras, sin errores, sin
+imágenes rotas y sin desborde.
+
+Final result: passed (pendiente: Safari en iPhone)
 
 ## El recreo, rehecho como la referencia — 2026-10-14
 
