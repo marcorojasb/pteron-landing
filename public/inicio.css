@@ -123,6 +123,7 @@
 .no-js .hoja-seccion:has(input[value="docente"]:checked) .pteron-document[data-audiencia="docente"]{opacity:1;visibility:visible}
 .no-js .hoja-seccion:has(input[value="fotocopia"]:checked) .hoja-papel{filter:grayscale(1) contrast(1.08)}
 .no-js .ventana{display:none}
+.no-js .pedir-rejilla{grid-template-columns:minmax(0,1fr)}
 .no-js .pasos button{pointer-events:none}
 
 /* ——— En tu computador ——— */

@@ -92,15 +92,31 @@ function figuraSVG(pedido, prefijo, style) {
 }
 
 // Hojas: cada material pasa por el mismo camino que una guía de pteron.
-const PNG = (id) => `data:image/png;base64,UFRFUk9O${Buffer.from(id).toString("base64").replace(/=+$/, "")}`;
+// La figura entra como el PNG que guarda la app, aunque sólo con su cabecera: de ella lee pteron la proporción para
+// decidir si la figura va junto al enunciado y cuánto ocupa en la hoja. Tras la cabecera va la clave de la figura,
+// que después se reemplaza por su SVG.
+function PNG(id, pedido) {
+  const { ancho, alto } = render(pedido, {});
+  const cabecera = Buffer.alloc(24);
+  Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]).copy(cabecera);
+  cabecera.writeUInt32BE(13, 8);
+  cabecera.write("IHDR", 12, "latin1");
+  cabecera.writeUInt32BE(Math.round(ancho * 2), 16);
+  cabecera.writeUInt32BE(Math.round(alto * 2), 20);
+  return `data:image/png;base64,${Buffer.concat([cabecera, Buffer.from(`PTERON${id}`)]).toString("base64")}`;
+}
 const pedidos = new Map();
+const pngs = new Map();
 const hojas = new Map();
 for (const material of MATERIALES) {
   const bloques = material.bloques.map(({ figura, ...block }) => {
     if (!figura) return block;
     const pedido = pedidoDe(figura);
-    pedidos.set(`${material.id}/${block.id}`, pedido);
-    return { ...block, designFigure: { kitVersion: FIGURE_KIT_VERSION, pedido, png: PNG(`${material.id}/${block.id}`) } };
+    const key = `${material.id}/${block.id}`;
+    const png = PNG(key, pedido);
+    pedidos.set(key, pedido);
+    pngs.set(png, key);
+    return { ...block, designFigure: { kitVersion: FIGURE_KIT_VERSION, pedido, png } };
   });
   const writer = blocksToWriter(material.titulo, bloques, new Map());
   if (writer.pages.length !== 1) throw new Error(`${material.id} ocupa ${writer.pages.length} hojas: debe caber en una`);
@@ -111,7 +127,7 @@ for (const material of MATERIALES) {
     article.setAttribute("data-material", material.id);
     article.setAttribute("data-audiencia", audiencia);
     for (const img of article.querySelectorAll("img[data-pteron-design-figure]")) {
-      const key = [...pedidos.keys()].find((id) => img.getAttribute("src") === PNG(id));
+      const key = pngs.get(img.getAttribute("src"));
       if (!key) throw new Error(`Figura sin pedido en ${material.id}`);
       const holder = page.createElement("template");
       holder.innerHTML = figuraSVG(pedidos.get(key), `${material.id}-${audiencia}-${key.split("/")[1]}-`, img.getAttribute("style"));
@@ -147,7 +163,10 @@ function hojaCSS(css) {
       .map((sel) => sel.trim().replaceAll(SHEET, ".pteron-document"))
       .filter((sel) => !sel.includes(".meridian-editor"))
       // Lo que vive dentro de la hoja sin nombrarla (el pie de página) se acota igual
-      .map((sel) => (sel.includes(".pteron-document") ? sel : `.pteron-document ${sel}`));
+      .map((sel) => (sel.includes(".pteron-document") ? sel : `.pteron-document ${sel}`))
+      // En Write la figura es la imagen del motor; aquí, su SVG (figuraSVG): las reglas de la imagen —el centrado de la
+      // figura y su caja— valen también para él
+      .map((sel) => sel.replace(/:has\(>img\)/g, ":has(>img,>svg.pteron-figura)").replace(/\]>img(?![\w-])/g, "]>:is(img,svg.pteron-figura)"));
     if (selectors.length) out.push(`${selectors.join(",")}{${body.trim()}}`);
   }
   return out.join("\n");
@@ -172,6 +191,9 @@ const css = `/* pteron · la hoja de Write (pteron ${origen || "sin git"}; kit d
 ${fuentes}
 ${hojaCSS(hojas.get("matematica/estudiante").css)}
 .pteron-document .pteron-figura{display:inline-block;vertical-align:top}
+/* La figura sola en su pregunta va centrada, como la deja el Word de pteron (io-docx-pptx: alineación center): en la
+   hoja de Write es inline-block y su margin:auto no la mueve. Al costado del texto o en V/F mandan sus reglas. */
+.pteron-document [data-pteron-sheet="item"]:not([data-pteron-layout]):not([data-pteron-vf-group])>[data-pteron-kind="figure"]:has(>svg.pteron-figura){display:block;margin-inline:auto}
 `;
 writeFileSync(path.join(root, "public/pteron-hoja.css"), css);
 

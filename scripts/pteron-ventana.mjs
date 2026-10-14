@@ -1,11 +1,11 @@
 /**
  * Escribe en public/index.html la ventana de pteron en reposo (la Home), con las mismas plantillas que usa
- * public/pteron-ventana.js para la secuencia de «Cómo se pide»: una sola fuente para el marcado de la ventana.
+ * public/pteron-ventana.js para la secuencia de «Cómo funciona»: una sola fuente para el marcado de la ventana.
  *
  *   node scripts/pteron-ventana.mjs
  *
- * El HTML queda entre <!-- ventana:inicio --> y <!-- ventana:fin -->. Sin JavaScript o con movimiento reducido,
- * la página ya muestra la ventana; la secuencia la toma desde ahí.
+ * El HTML queda entre <!-- ventana:inicio --> y <!-- ventana:fin -->: la página carga con la Home en reposo y la
+ * secuencia la toma desde ahí (con movimiento reducido, el script la cambia por el encargo terminado).
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";

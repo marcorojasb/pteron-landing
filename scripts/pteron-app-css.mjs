@@ -4,12 +4,14 @@
  *   node scripts/pteron-app-css.mjs [ruta del repositorio de pteron]   (por omisión ../pteron o $PTERON_DIR)
  *
  * Lee las hojas que importa app-styles.ts en el mismo orden, toma las reglas de los componentes que la web
- * muestra (barra superior, pestañas, Home, recuadro, conversación, tarjetas de material, marca de actividad)
- * y las acota a `.pt-app`, que hace de `body` de la app. La ventana mide 1440 × 880 como las capturas, así
+ * muestra (el índice, la franja de arriba, Home con la marca, el recuadro, la conversación, el plan, la hojita,
+ * la hoja que se escribe y las tarjetas de material) y las acota a `.pt-app`, que hace de `body` de la app. La ventana mide 1440 × 880 como las capturas, así
  * que vw y vh se fijan a esa medida; quedan fuera el tema oscuro y las consultas de ancho. Las reglas globales
  * de elementos (styles.css y meridian-office.css) entran con el mismo prefijo, de modo que la cascada de la
  * app se conserva. Al final se agrega scripts/pteron-app/aislamiento.css (escrito a mano): devuelve dentro de
- * la ventana los valores que el sitio reinicia, dibuja el wordmark y los semáforos.
+ * la ventana los valores que el sitio reinicia y dibuja los semáforos. La letra es Archivo, la de la web: la app
+ * carga los mismos archivos (src/renderer/src/fonts), así que la sirve styles.css; la de lo técnico (--font-mono),
+ * IBM Plex Mono, va al comienzo de esta hoja.
  */
 import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
@@ -36,11 +38,10 @@ const GLOBAL_SEL = /^(\*|body|button|input|select|textarea|svg\.icon|button \.ch
 const KEEP = new RegExp(
   "\\.(" +
     [
-      "app-shell", "shell-topbar", "topbar-", "session-tab", "session-history", "workspace-menu-trigger", "shell-main",
-      "shell-corner-controls", "footer-right", "footer-circle-btn", "home-", "type-tile", "filter-bar", "filter-field",
-      "composer", "context-select", "chat-", "message", "material-card", "quiet-action", "btn\\b", "btn-",
-      "activity-mark", "run-details-toggle", "run-step", "pteron-icon", "workspace-surface", "workspace-main", "md-body",
-      "md-chat", "live-", "contextual-suggestion", "icon-action", "privacy-consent",
+      "app-shell", "shell-", "footer-right", "footer-circle-btn", "home-", "type-tile", "filter-bar", "filter-field",
+      "composer", "context-select", "chat-", "message", "material-card", "quiet-action", "btn\\b", "btn-", "status-pill",
+      "plan-", "activity-mark", "run-details-toggle", "run-step", "pteron-icon", "pteron-marca", "workspace-surface",
+      "workspace-main", "md-body", "md-chat", "live-", "contextual-suggestion", "icon-action", "privacy-consent",
     ].join("|") +
     ")",
 );
@@ -157,21 +158,10 @@ try {
 const header = `/* pteron · la interfaz de la app (${origin}), regla por regla, para dibujar su ventana y sus piezas en la web.
    Generado por scripts/pteron-app-css.mjs desde src/renderer/src (styles.css, meridian-office.css, pteron.css,
    ui/controls.css, composer.css, chat.css) acotado a .pt-app; vw y vh fijados a una ventana de 1440 × 880.
-   No editar a mano: se regenera con cada versión de pteron. Letras: IBM Plex (OFL 1.1, /assets/fonts). */
+   No editar a mano: se regenera con cada versión de pteron. Letras: Archivo, la de styles.css, e IBM Plex Mono (OFL 1.1, /assets/fonts). */
 `;
-const fonts = [
-  ["IBM Plex Sans", "normal", 400, "ibm-plex-sans-latin-400-normal"],
-  ["IBM Plex Sans", "italic", 400, "ibm-plex-sans-latin-400-italic"],
-  ["IBM Plex Sans", "normal", 500, "ibm-plex-sans-latin-500-normal"],
-  ["IBM Plex Sans", "normal", 600, "ibm-plex-sans-latin-600-normal"],
-  ["IBM Plex Sans", "italic", 600, "ibm-plex-sans-latin-600-italic"],
-  ["IBM Plex Serif", "normal", 400, "ibm-plex-serif-latin-400-normal"],
-  ["IBM Plex Serif", "italic", 400, "ibm-plex-serif-latin-400-italic"],
-  ["IBM Plex Serif", "normal", 600, "ibm-plex-serif-latin-600-normal"],
-  ["IBM Plex Mono", "normal", 400, "ibm-plex-mono-latin-400-normal"],
-]
-  .map(([family, style, weight, file]) => `@font-face{font-family:"${family}";font-style:${style};font-weight:${weight};font-display:swap;src:url(/assets/fonts/${file}.woff2) format("woff2")}`)
-  .join("\n");
+// La app carga sólo IBM Plex Mono de @fontsource (app-styles.ts), para el texto técnico como la vista previa del aviso
+const mono = `@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/ibm-plex-mono-latin-400-normal.woff2) format("woff2")}`;
 const shell = readFileSync(path.join(root, "scripts/pteron-app/aislamiento.css"), "utf8");
-writeFileSync(path.join(root, "public/pteron-app.css"), `${header}${fonts}\n${compact(css)}\n${keyframes}\n${shell}`);
+writeFileSync(path.join(root, "public/pteron-app.css"), `${header}${mono}\n${compact(css)}\n${keyframes}\n${shell}`);
 console.log(`${out.length} reglas · ${used.length} keyframes · pteron ${origin} → public/pteron-app.css`);

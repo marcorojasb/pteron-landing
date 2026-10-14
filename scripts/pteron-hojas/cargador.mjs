@@ -49,6 +49,8 @@ export async function resolve(specifier, context, next) {
     const url = fromFile(base);
     if (url) return next(url, context);
   }
+  // Un paquete resuelve sus dependencias como Node, con las versiones anidadas en su propio node_modules
+  if (context.parentURL?.includes("/node_modules/")) return next(specifier, context);
   if (!/^(node:|file:|\.|\/|data:)/.test(specifier)) {
     const url = fromPackage(specifier);
     if (url) return next(url, context);
