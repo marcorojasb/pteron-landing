@@ -248,3 +248,251 @@ test("la cuota del período: la del plan, la de prueba o un cuarto si el catálo
   assert.equal(cuenta.periodLimit({ ai_units_limit: null }, false), null);
   assert.equal(cuenta.periodLimit(null, false), null);
 });
+
+/* ---------- La página, sobre un documento de mentira ---------- */
+
+// Lo justo del DOM para seguir el foco. Como en el navegador, un nodo que se deshabilita u oculta con el foco encima
+// lo suelta a <body>, y focus() no hace nada sobre él. Cada selector es un solo nodo, que se crea al pedirlo.
+class Nodo {
+  constructor(documento, selector = "") {
+    this.documento = documento;
+    this.selector = selector;
+    this.attrs = new Map();
+    this.estilo = new Map();
+    this.oyentes = new Map();
+    this.dataset = {};
+    this.hijos = [];
+    this.textContent = "";
+    this.estado = { disabled: false, hidden: false };
+    this.style = { setProperty: (k, v) => this.estilo.set(k, String(v)) };
+    const clases = new Set();
+    this.classList = { add: (c) => clases.add(c), remove: (c) => clases.delete(c), contains: (c) => clases.has(c) };
+  }
+  get disabled() {
+    return this.estado.disabled;
+  }
+  set disabled(valor) {
+    this.estado.disabled = Boolean(valor);
+    this.soltar();
+  }
+  get hidden() {
+    return this.estado.hidden;
+  }
+  set hidden(valor) {
+    this.estado.hidden = Boolean(valor);
+    this.soltar();
+  }
+  soltar() {
+    if ((this.estado.disabled || this.estado.hidden) && this.documento.activeElement === this) this.documento.activeElement = this.documento.body;
+  }
+  focus() {
+    if (!this.estado.disabled && !this.estado.hidden) this.documento.activeElement = this;
+  }
+  getAttribute(nombre) {
+    return this.attrs.has(nombre) ? this.attrs.get(nombre) : null;
+  }
+  setAttribute(nombre, valor) {
+    this.attrs.set(nombre, String(valor));
+  }
+  removeAttribute(nombre) {
+    this.attrs.delete(nombre);
+  }
+  toggleAttribute(nombre, force = !this.attrs.has(nombre)) {
+    if (force) this.attrs.set(nombre, "");
+    else this.attrs.delete(nombre);
+    return Boolean(force);
+  }
+  querySelector(selector) {
+    return this.documento.querySelector(selector);
+  }
+  querySelectorAll(selector) {
+    return this.documento.querySelectorAll(selector);
+  }
+  addEventListener(tipo, fn) {
+    if (!this.oyentes.has(tipo)) this.oyentes.set(tipo, []);
+    this.oyentes.get(tipo).push(fn);
+  }
+  /** Dispara un evento y espera a sus manejadores, que en cuenta.js son asíncronos. */
+  disparar(tipo) {
+    const evento = { type: tipo, preventDefault() {} };
+    return Promise.all((this.oyentes.get(tipo) ?? []).map((fn) => fn(evento)));
+  }
+  replaceChildren(...hijos) {
+    this.hijos = hijos;
+  }
+  append(...hijos) {
+    this.hijos.push(...hijos);
+  }
+  scrollIntoView() {}
+  contains(nodo) {
+    return nodo === this;
+  }
+}
+
+const SESION = JSON.stringify({ access_token: "acceso", refresh_token: "renovar" });
+const CODIGO = "ab".repeat(16);
+const enPrueba = () => {
+  const fin = new Date(Date.now() + 5 * DAY).toISOString();
+  return account({ subscriptions: [{ plan_id: "basic", status: "trialing", provider: "flow", trial_ends_at: fin, current_period_end: fin }] });
+};
+
+// Deja correr las promesas pendientes (la carga de /api/account al abrir la página)
+async function asentar() {
+  for (let i = 0; i < 5; i++) await new Promise((resolve) => setImmediate(resolve));
+}
+
+/**
+ * /cuenta sobre el documento de mentira. `api` responde por ruta con { status, body } o una función que lo devuelve;
+ * /api/account entrega `datos`. El aviso mide 77 px a la vista y 0 oculto.
+ */
+async function pagina({ url = "https://pteron.patagua.dev/cuenta", sesion = false, datos = account(), api = {}, observador = true } = {}) {
+  const nodos = new Map();
+  const documento = {
+    listas: {},
+    querySelector: (selector) => {
+      if (!nodos.has(selector)) nodos.set(selector, new Nodo(documento, selector));
+      return nodos.get(selector);
+    },
+    querySelectorAll: (selector) => documento.listas[selector] ?? [],
+    createElement: (etiqueta) => new Nodo(documento, etiqueta),
+  };
+  const $ = documento.querySelector;
+  documento.body = new Nodo(documento, "body");
+  documento.documentElement = new Nodo(documento, "html");
+  documento.activeElement = documento.body;
+  // Lo que el HTML trae oculto
+  for (const selector of ["[data-account-notice]", "[data-link-sent]", "[data-dashboard]", "[data-checkout-summary]", "[data-cancel-subscription]", "[data-activation-result]", "[data-activation-pending]"]) {
+    $(selector).hidden = true;
+  }
+  Object.defineProperty($("[data-account-notice]"), "offsetHeight", { get() { return this.hidden ? 0 : 77; } });
+  $('[data-checkout-plan="basic"]').dataset.checkoutPlan = "basic";
+  documento.listas["[data-checkout-plan]"] = [$('[data-checkout-plan="basic"]')];
+  $("#account-email").value = "profe@colegio.cl";
+
+  const storage = fakeStorage();
+  if (sesion) storage.setItem("pteron-account-session", SESION);
+  const observadores = [];
+  const direccion = new URL(url);
+  const window = {
+    location: { href: url, hash: "", pathname: direccion.pathname, search: direccion.search, reload() {} },
+    history: { replaceState() {} },
+    localStorage: storage,
+    addEventListener() {},
+    matchMedia: () => ({ matches: false }),
+    confirm: () => true,
+    setTimeout,
+  };
+  if (observador) {
+    window.ResizeObserver = class {
+      constructor(fn) {
+        this.medir = fn;
+        observadores.push(this);
+      }
+      observe(nodo) {
+        this.nodo = nodo;
+      }
+    };
+  }
+  const fetch = async (ruta) => {
+    const definida = api[ruta] ?? (ruta === "/api/account" ? { body: datos } : { status: 404, body: { error: "not_found" } });
+    const { status = 200, body = {} } = typeof definida === "function" ? definida() : definida;
+    return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
+  };
+  vm.runInNewContext(source, { window, document: documento, URL, URLSearchParams, Headers, fetch, console });
+  await asentar();
+  return { $, documento, observadores };
+}
+
+test("tras pedir el enlace, el foco va al aviso de envío; con un correo rechazado vuelve al campo, marcado inválido", async () => {
+  const html = readFileSync(new URL("../public/cuenta/index.html", import.meta.url), "utf8");
+  assert.match(html, /<div class="acceso-enviado" data-link-sent role="status" tabindex="-1" hidden>/, "sin tabindex el aviso no recibe el foco");
+  let respuesta = { body: { ok: true } };
+  const { $, documento } = await pagina({ api: { "/api/auth/request-magic-link": () => respuesta } });
+  const [form, boton, campo, enviado] = [$("[data-login-form]"), $("button"), $("#account-email"), $("[data-link-sent]")];
+  boton.focus();
+  await form.disparar("submit");
+  assert.equal(enviado.hidden, false);
+  assert.equal(documento.activeElement, enviado);
+  assert.equal(campo.getAttribute("aria-invalid"), null);
+
+  respuesta = { status: 400, body: { error: "invalid_email", message: "Escribe un correo válido." } };
+  boton.focus();
+  await form.disparar("submit");
+  assert.equal(documento.activeElement, campo);
+  assert.equal(campo.getAttribute("aria-invalid"), "true");
+  assert.equal($("[data-login-message]").textContent, "Escribe un correo válido.");
+  assert.equal(boton.disabled, false);
+
+  // Una caída del servicio no hace inválido el correo: el foco vuelve al campo, sin la marca del intento anterior
+  respuesta = { status: 502, body: { error: "upstream_error", message: "No pudimos enviar el enlace." } };
+  boton.focus();
+  await form.disparar("submit");
+  assert.equal(documento.activeElement, campo);
+  assert.equal(campo.getAttribute("aria-invalid"), null);
+});
+
+test("al autorizar el equipo el foco pasa a «Abrir pteron»; si falla, vuelve a «Autorizar equipo»", async () => {
+  const url = `https://pteron.patagua.dev/cuenta?activate=${CODIGO}`;
+  const deepLink = `pteron://activate?code=${CODIGO}`;
+  const lista = await pagina({ url, sesion: true, datos: enPrueba(), api: { "/api/activation/complete": { body: { deepLink } } } });
+  const autorizar = lista.$("[data-confirm-activation]");
+  assert.equal(lista.$("[data-activation-pending]").hidden, false);
+  autorizar.focus();
+  await autorizar.disparar("click");
+  assert.equal(lista.$("[data-activation-result]").hidden, false);
+  assert.equal(lista.documento.activeElement, lista.$("[data-open-app]"));
+  assert.equal(lista.$("[data-open-app]").href, deepLink);
+
+  const error = { status: 500, body: { error: "server_error", message: "No pudimos autorizar el equipo." } };
+  const falla = await pagina({ url, sesion: true, datos: enPrueba(), api: { "/api/activation/complete": error } });
+  const otra = falla.$("[data-confirm-activation]");
+  otra.focus();
+  await otra.disparar("click");
+  assert.equal(falla.documento.activeElement, otra);
+  assert.equal(otra.disabled, false);
+});
+
+test("si Flow o la cancelación fallan, el foco vuelve al botón que hizo la petición", async () => {
+  const flow = { status: 502, body: { error: "flow_error", message: "Flow no respondió." } };
+  const compra = await pagina({ sesion: true, api: { "/api/billing/checkout": flow } });
+  await compra.$('[data-checkout-plan="basic"]').disparar("click");
+  assert.equal(compra.$("[data-checkout-summary]").hidden, false);
+  compra.$("[data-terms-accept]").checked = true;
+  const registrar = compra.$("[data-checkout-confirm]");
+  registrar.focus();
+  await compra.$("[data-summary-form]").disparar("submit");
+  assert.equal(compra.documento.activeElement, registrar);
+  assert.equal(registrar.disabled, false);
+  assert.equal(compra.$("[data-summary-error]").textContent, "Flow no respondió.");
+
+  const baja = await pagina({ sesion: true, datos: enPrueba(), api: { "/api/billing/cancel": flow } });
+  const cancelar = baja.$("[data-cancel-subscription]");
+  assert.equal(cancelar.hidden, false);
+  cancelar.focus();
+  await cancelar.disparar("click");
+  assert.equal(baja.documento.activeElement, cancelar);
+  assert.equal(cancelar.disabled, false);
+});
+
+test("el alto del aviso queda en --aviso-alto, con el que cuenta.css aparta el foco y alarga el colofón", async () => {
+  const url = "https://pteron.patagua.dev/cuenta?billing=cancelled";
+  const { $, documento, observadores } = await pagina({ url });
+  const aviso = $("[data-account-notice]");
+  assert.equal(aviso.hidden, false);
+  assert.equal(observadores.length, 1);
+  assert.equal(observadores[0].nodo, aviso);
+  observadores[0].medir();
+  assert.equal(documento.documentElement.estilo.get("--aviso-alto"), "77px");
+  await $("[data-account-notice-close]").disparar("click");
+  observadores[0].medir();
+  assert.equal(documento.documentElement.estilo.get("--aviso-alto"), "0px");
+  // Sin ResizeObserver la página sigue igual: el CSS usa 0 y queda el relleno de siempre
+  const sin = await pagina({ url, observador: false });
+  assert.equal(sin.$("[data-account-notice]").hidden, false);
+  assert.equal(sin.documento.documentElement.estilo.has("--aviso-alto"), false);
+  // Sólo en pantalla y hasta 820 px, donde el aviso va abajo, y sólo mientras se ve
+  const css = readFileSync(new URL("../public/cuenta/cuenta.css", import.meta.url), "utf8");
+  const bloque = css.slice(css.indexOf("@media screen and (max-width:820px){"));
+  assert.match(bloque, /^@media screen and \(max-width:820px\)\{\s*html:has\(\.cuenta-aviso:not\(\[hidden\]\)\)\{scroll-padding-bottom:calc\(var\(--aviso-alto,0px\)/);
+  assert.match(bloque, /body:has\(\.cuenta-aviso:not\(\[hidden\]\)\) \.colofon\{\s*padding-bottom:max\(calc\(clamp\(40px,6vw,72px\) \+ 64px\),calc\(var\(--aviso-alto,0px\)/);
+});

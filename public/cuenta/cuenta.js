@@ -480,6 +480,11 @@
   notice?.querySelector("[data-account-notice-close]")?.addEventListener("click", () => {
     notice.hidden = true;
   });
+  // Hasta 820 px el aviso va abajo y tapa el final de la ventana: con su alto (0 mientras está oculto), cuenta.css
+  // aparta de él lo que recibe el foco y alarga el colofón para que sus últimos enlaces queden a la vista
+  if (notice && "ResizeObserver" in window) {
+    new window.ResizeObserver(() => document.documentElement.style.setProperty("--aviso-alto", `${notice.offsetHeight}px`)).observe(notice);
+  }
 
   function showLoginMessage(message) {
     if (loginMessage) loginMessage.textContent = message || "";
@@ -698,7 +703,9 @@
     const input = loginForm.querySelector("#account-email");
     const button = loginForm.querySelector("button");
     showLoginMessage("");
+    input.removeAttribute("aria-invalid");
     button.disabled = true;
+    // El botón deshabilitado suelta el foco: al responder, va al aviso de envío (que así se lee) o de vuelta al campo
     try {
       await api("/api/auth/request-magic-link", {
         method: "POST",
@@ -706,8 +713,12 @@
       });
       linkSent.hidden = false;
       showLoginMessage("");
+      linkSent.focus();
     } catch (error) {
       showLoginMessage(error.message);
+      // Un 400 es el correo que no sirve; una caída del servicio no lo hace inválido
+      if (error.status === 400) input.setAttribute("aria-invalid", "true");
+      input.focus();
     } finally {
       button.disabled = false;
     }
@@ -797,6 +808,8 @@
       }
       setSummaryError(message);
       showNotice(message, "error");
+      // El botón deshabilitado soltó el foco: vuelve a él, para intentarlo de nuevo
+      summaryConfirm.focus();
     }
   }
 
@@ -819,6 +832,7 @@
     } catch (error) {
       showNotice(error.message, "error");
       button.disabled = false;
+      button.focus();
     }
   }
 
@@ -845,6 +859,8 @@
       document.querySelector("[data-activation-result]").hidden = false;
       dropActivation();
       showNotice("Equipo autorizado. Abre pteron para guardar la licencia.", "success");
+      // El botón se ocultó con el foco encima: el foco pasa a lo que sigue, abrir pteron
+      openApp.focus();
     } catch (error) {
       button.disabled = false;
       if (error.status === 410) {
@@ -855,6 +871,7 @@
         return;
       }
       showNotice(error.message, "error");
+      button.focus();
     }
   }
 

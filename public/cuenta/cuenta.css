@@ -17,6 +17,14 @@
   .cuenta-aviso{top:auto;bottom:max(14px,env(safe-area-inset-bottom,0px))}
   @keyframes aviso-entra{from{opacity:0;translate:-50% 8px}}
 }
+/* Abajo, el aviso queda hasta que se cierra: lo que recibe el foco se detiene sobre él (--aviso-alto lo pone
+   cuenta.js) y el colofón crece para que su última línea se pueda subir por encima. El mínimo es el relleno de
+   styles.css. Sólo en pantalla: impreso no hay aviso que esquivar. */
+@media screen and (max-width:820px){
+  html:has(.cuenta-aviso:not([hidden])){scroll-padding-bottom:calc(var(--aviso-alto,0px) + max(14px,env(safe-area-inset-bottom,0px)) + 14px)}
+  body:has(.cuenta-aviso:not([hidden])) .colofon{
+    padding-bottom:max(calc(clamp(40px,6vw,72px) + 64px),calc(var(--aviso-alto,0px) + max(14px,env(safe-area-inset-bottom,0px)) + 14px))}
+}
 
 /* Estados: con una sesión guardada, mientras llega la cuenta, el esqueleto; si la sesión falla, cuenta.js quita
    has-session y vuelve el formulario (aunque se cierre el aviso) */
