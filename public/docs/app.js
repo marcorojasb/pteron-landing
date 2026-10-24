@@ -29,6 +29,13 @@
 
   const pageUrl = slug => slug === "inicio" ? "/docs" : `/docs?pagina=${encodeURIComponent(slug)}`;
 
+  // Cada página declara su propia URL canónica (la forma ?pagina= del sitemap y de llms.txt) y su entrada como
+  // descripción; la portada de la documentación conserva la descripción del HTML
+  const canonical = document.querySelector('link[rel="canonical"]') ||
+    document.head.appendChild(Object.assign(document.createElement("link"), { rel: "canonical" }));
+  const description = document.querySelector('meta[name="description"]');
+  const hubDescription = description?.content || "";
+
   // Si el índice tiene su propio desplazamiento, el enlace activo queda a la vista.
   const mostrarActivo = () => {
     const scroller = nav.closest(".docs-indice");
@@ -280,13 +287,15 @@
   const resolveSlug = slug =>
     docs.pages[slug] ? slug : (docs.aliases && docs.aliases[slug]) || "inicio";
 
-  const renderPage = (slug, push = false) => {
+  const renderPage = (slug, push = false, moveFocus = push) => {
     const resolvedSlug = resolveSlug(slug);
     renderedSlug = resolvedSlug;
     const page = docs.pages[resolvedSlug];
     if (push) history.pushState({ slug: resolvedSlug }, "", pageUrl(resolvedSlug));
     else if (resolvedSlug !== slug) history.replaceState({ slug: resolvedSlug }, "", pageUrl(resolvedSlug));
     document.title = `${page.title} · pteron`;
+    canonical.href = new URL(pageUrl(resolvedSlug), "https://pteron.patagua.dev").href;
+    if (description) description.content = resolvedSlug === "inicio" ? hubDescription : plainText(page.lead).trim();
     article.innerHTML = `
       <header class="docs-cabeza">
         <p>${page.eyebrow}</p>
@@ -304,6 +313,13 @@
     if (anchor && article.contains(anchor)) anchor.scrollIntoView();
     else window.scrollTo({ top: 0, behavior: "auto" });
     setIndexOpen(false);
+    // Al cambiar de página sin recargar, el foco pasa al título nuevo: el lector de pantalla lo anuncia y el siguiente
+    // Tab sigue desde ahí. Al llegar, el foco queda donde lo deja el navegador
+    if (moveFocus) {
+      const titulo = article.querySelector("h1");
+      titulo?.setAttribute("tabindex", "-1");
+      titulo?.focus({ preventScroll: true });
+    }
   };
 
   // El nombre accesible contiene el texto visible («Menú» / «Cerrar»), como pide WCAG 2.5.3.
@@ -411,7 +427,7 @@
   window.addEventListener("popstate", () => {
     const slug = slugFromLocation();
     if (resolveSlug(slug) === renderedSlug) return;
-    renderPage(slug);
+    renderPage(slug, false, true);
   });
   search.addEventListener("input", () => showSearchResults(search.value));
   search.addEventListener("keydown", event => {

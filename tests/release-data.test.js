@@ -133,6 +133,29 @@ test("una API que no responde no bloquea el catálogo incluido", async () => {
   assert.equal(catalog.latest.version, "1.2.4");
 });
 
+test("un cuerpo que no termina no bloquea el catálogo incluido", async () => {
+  const bundled = { releases: [completeRelease("1.2.4")] };
+  const catalog = await releases.loadReleaseCatalog({
+    timeoutMs: 20,
+    // La API manda sus cabeceras y el cuerpo nunca llega
+    fetchImpl: async url => url.startsWith("/docs/")
+      ? { ok: true, json: async () => bundled }
+      : { ok: true, json: () => new Promise(() => {}) },
+  });
+  assert.equal(catalog.latest.version, "1.2.4");
+});
+
+test("el JSON incluido se revalida con la caché del navegador en vez de bajarse entero cada vez", async () => {
+  const requests = new Map();
+  await releases.loadReleaseCatalog({
+    fetchImpl: async (url, options) => {
+      requests.set(url, options);
+      return { ok: false, status: 503 };
+    },
+  });
+  assert.equal(requests.get(releases.BUNDLED_RELEASES_URL).cache, "no-cache");
+});
+
 test("las notas remotas se conservan como texto acotado para render seguro", () => {
   const normalized = releases.normalizeRelease({
     tag_name: "v1.2.4",

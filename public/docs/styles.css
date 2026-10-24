@@ -57,6 +57,10 @@ html:not(.js) :is(.docs-lado,.docs-toc){visibility:hidden}
   box-shadow:0 1px 2px rgb(var(--sombra)/.08),0 30px 60px -36px rgb(var(--sombra)/.45)}
 .docs-hoja:focus{outline:none}
 .docs-hoja>*{animation:docs-entra .5s var(--curva)}
+/* Mientras app.js no pinta (la hoja sólo trae su <noscript> y el índice está vacío), ambos ocupan la pantalla: el colofón
+   no se asoma arriba para saltar después. Ya pintada la página, o sin JavaScript, no reservan nada */
+.js .docs-hoja:not(:has(> :not(noscript))){min-height:calc(100svh - 40px)}
+.js [data-docs-nav]:empty{min-height:100svh}
 .docs-sin-script{display:grid;gap:16px}
 .docs-sin-script h1{font-size:clamp(2.2rem,1.5rem + 2.4vw,3.6rem);font-stretch:114%;line-height:1}
 .docs-cabeza{display:grid;justify-items:start;gap:14px;padding-bottom:clamp(24px,3vw,36px);border-bottom:var(--borde) solid var(--regla)}

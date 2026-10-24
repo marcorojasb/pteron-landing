@@ -321,7 +321,8 @@
         timeout,
       ]);
       if (!response?.ok) throw new Error(`Release data unavailable: ${response?.status || "network"}`);
-      return response.json();
+      // El plazo cubre también el cuerpo: una respuesta que se queda a medias no deja la página en «Cargando…»
+      return await Promise.race([response.json(), timeout]);
     } finally {
       clearTimeout(timeoutId);
     }
@@ -335,7 +336,8 @@
   } = {}) => {
     if (!fetchImpl) return buildReleaseCatalog([]);
     const results = await Promise.allSettled([
-      fetchJson(fetchImpl, bundledUrl, { cache: "no-store" }, timeoutMs),
+      // El JSON incluido cambia sólo al desplegar: se revalida con su ETag (un 304) en vez de bajarlo entero cada vez
+      fetchJson(fetchImpl, bundledUrl, { cache: "no-cache" }, timeoutMs),
       fetchJson(fetchImpl, apiUrl, {
         cache: "no-store",
         headers: { Accept: "application/vnd.github+json" },
