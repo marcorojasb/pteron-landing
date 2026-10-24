@@ -53,13 +53,20 @@ test("handleError traduce HttpError y oculta los errores internos", async () => 
   assert.equal(known.status, 409);
   assert.deepEqual(await known.json(), { error: "conflicto", message: "Ya existe." });
   const originalError = console.error;
-  console.error = () => {};
+  const registro = [];
+  console.error = (...args) => registro.push(args);
   try {
-    const unknown = handleError(new Error("detalle interno con secreto"));
+    const interno = new Error("detalle interno con secreto");
+    const unknown = handleError(interno);
     assert.equal(unknown.status, 500);
     const payload = await unknown.json();
     assert.equal(payload.error, "server_error");
     assert.doesNotMatch(JSON.stringify(payload), /secreto/);
+    // El registro lleva la pila (con source maps, la línea del código); el cliente nunca.
+    assert.deepEqual(registro, [["pteron api error", interno.stack]]);
+    assert.match(registro[0][1], /\n\s+at /);
+    handleError("algo que no es un Error");
+    assert.deepEqual(registro[1], ["pteron api error", "algo que no es un Error"]);
   } finally {
     console.error = originalError;
   }

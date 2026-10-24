@@ -298,25 +298,91 @@ test("el handler scheduled del Worker corre la sincronización del Cron dentro d
     { match: matches.supabase("subscriptions", "PATCH"), respond: { body: [] } },
     { match: matches.supabase("billing_checkout_intents", "GET"), respond: { body: [] } },
   ]);
-  await withFetch(network.fetch, async () => {
-    const ctx = fakeExecution();
-    await worker.scheduled({ cron: "17 12 * * *", scheduledTime: Date.now() }, env, ctx);
-    assert.equal(ctx.promises.length, 1);
-    assert.deepEqual(await ctx.promises[0], {
-      sincronizadas: 0,
-      fallidas: 0,
-      correosEnviados: 0,
-      correosOmitidos: 0,
-      correosFallidos: 0,
-      checkoutsVencidos: 0,
-      cortesiasVencidas: 0,
-      checkoutsConciliados: 0,
-      checkoutsSinSuscripcion: 0,
-      checkoutsPendientes: 0,
+  const resumen = {
+    sincronizadas: 0,
+    fallidas: 0,
+    correosEnviados: 0,
+    correosOmitidos: 0,
+    correosFallidos: 0,
+    checkoutsVencidos: 0,
+    cortesiasVencidas: 0,
+    checkoutsConciliados: 0,
+    checkoutsSinSuscripcion: 0,
+    checkoutsPendientes: 0,
+  };
+  const lineas = [];
+  const consoleLog = console.log;
+  console.log = (...args) => lineas.push(args);
+  try {
+    await withFetch(network.fetch, async () => {
+      const ctx = fakeExecution();
+      await worker.scheduled({ cron: "17 12 * * *", scheduledTime: Date.now() }, env, ctx);
+      assert.equal(ctx.promises.length, 1);
+      assert.deepEqual(await ctx.promises[0], resumen);
+      // El último GET es la búsqueda de pruebas por terminar, de los avisos por correo.
+      assert.deepEqual(network.calls.map((call) => call.method), ["GET", "PATCH", "PATCH", "GET", "GET"]);
     });
-    // El último GET es la búsqueda de pruebas por terminar, de los avisos por correo.
-    assert.deepEqual(network.calls.map((call) => call.method), ["GET", "PATCH", "PATCH", "GET", "GET"]);
-  });
+  } finally {
+    console.log = consoleLog;
+  }
+  // El resumen queda en Workers Logs: una línea JSON, sólo cuentas.
+  assert.equal(lineas.length, 1);
+  assert.equal(lineas[0].length, 1);
+  assert.deepEqual(JSON.parse(lineas[0][0]), { event: "pteron_cron", ...resumen });
+});
+
+test("si vencer los checkouts o las cortesías falla, el Cron sigue: concilia, avisa el fin de prueba y el resumen lo muestra en null", async () => {
+  for (const caido of ["billing_checkout_intents", "cortesias"]) {
+    const network = fakeNetwork([
+      { match: matches.supabase("subscriptions", "GET"), respond: { body: [] } },
+      { match: matches.supabase("billing_checkout_intents", "PATCH"), respond: caido === "billing_checkout_intents" ? { status: 500, body: { message: "caído" } } : { body: [{ id: "i1" }] } },
+      { match: matches.supabase("subscriptions", "PATCH"), respond: caido === "cortesias" ? { status: 500, body: { message: "caído" } } : { body: [{ id: "cortesia-1" }] } },
+      { match: matches.supabase("billing_checkout_intents", "GET"), respond: { body: [] } },
+    ]);
+    const errores = [];
+    const consoleError = console.error;
+    console.error = (...args) => errores.push(args);
+    let resumen;
+    try {
+      resumen = await withFetch(network.fetch, () => syncDueSubscriptions(testServices(env), new Date("2026-10-20T12:17:00Z")));
+    } finally {
+      console.error = consoleError;
+    }
+    assert.equal(resumen.checkoutsVencidos, caido === "billing_checkout_intents" ? null : 1, caido);
+    assert.equal(resumen.cortesiasVencidas, caido === "cortesias" ? null : 1, caido);
+    assert.equal(resumen.sincronizadas, 0);
+    // Después del paso caído corren los dos PATCH, la conciliación y la búsqueda de pruebas por terminar.
+    assert.deepEqual(network.calls.map((call) => call.method), ["GET", "PATCH", "PATCH", "GET", "GET"], caido);
+    assert.ok(network.calls.at(-1).url.includes("/rest/v1/subscriptions") && network.calls.at(-1).url.includes("trial_ends_at"), "el aviso de fin de prueba se buscó igual");
+    assert.equal(errores.length, 1);
+    assert.equal(errores[0][0], "pteron cron");
+    assert.deepEqual(errores[0][1], { paso: caido === "cortesias" ? "cortesias_vencidas" : "checkouts_vencidos", error: "caído" });
+  }
+});
+
+test("si la búsqueda de suscripciones del Cron falla, igual vence, concilia y avisa; sincronizadas y fallidas quedan en null", async () => {
+  const network = fakeNetwork([
+    { match: (url, m) => matches.supabase("subscriptions", "GET")(url, m) && url.includes("provider_subscription_id=not.is.null"), respond: { status: 500, body: { message: "caído" } } },
+    { match: matches.supabase("subscriptions", "GET"), respond: { body: [] } },
+    { match: matches.supabase("billing_checkout_intents", "PATCH"), respond: { body: [] } },
+    { match: matches.supabase("subscriptions", "PATCH"), respond: { body: [] } },
+    { match: matches.supabase("billing_checkout_intents", "GET"), respond: { body: [] } },
+  ]);
+  const errores = [];
+  const consoleError = console.error;
+  console.error = (...args) => errores.push(args);
+  let resumen;
+  try {
+    resumen = await withFetch(network.fetch, () => syncDueSubscriptions(testServices(env), new Date("2026-10-20T12:17:00Z")));
+  } finally {
+    console.error = consoleError;
+  }
+  assert.equal(resumen.sincronizadas, null);
+  assert.equal(resumen.fallidas, null);
+  assert.equal(resumen.checkoutsVencidos, 0);
+  assert.deepEqual(network.calls.map((call) => call.method), ["GET", "PATCH", "PATCH", "GET", "GET"]);
+  assert.ok(network.calls.at(-1).url.includes("trial_ends_at"));
+  assert.deepEqual(errores, [["pteron cron", { paso: "suscripciones", error: "caído" }]]);
 });
 
 test("la base de Flow no tiene valor por defecto y el sitio de producción sólo cobra en la API de producción", () => {

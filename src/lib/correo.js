@@ -41,6 +41,8 @@ const LIMITE_REINTENTOS = 20;
 const ESPERA_RECIBIDO = 30 * 60_000;
 const VENTANA_FIN_DE_PRUEBA = 48 * HORA;
 const LIMITE_AVISOS = 100;
+// Ids de evento por consulta al buscar los ya atendidos (recuperarSinEvento).
+const TANDA_EVENTOS = 50;
 const CAMPOS_SUSCRIPCION = "id,user_id,plan_id,provider,status,trial_ends_at,current_period_start,current_period_end,cancel_at_period_end,terms_version";
 const CAMPOS_PLAN = "id,display_name,monthly_price_clp,trial_period_days,ai_units_limit,trial_ai_units_limit";
 const SITIO = "https://pteron.patagua.dev";
@@ -366,8 +368,16 @@ export function createCorreo(env, supabase, execution = null) {
       };
       const ids = Object.entries(candidatas).flatMap(([tipo, filas]) => filas.flatMap((fila) => [idDeEvento(tipo, fila.id), `${idDeEvento(tipo, fila.id)}:skipped`]));
       if (!ids.length) return;
-      const lista = ids.map((id) => codificar(`"${id}"`)).join(",");
-      const existentes = new Set(((await supabase.select("billing_events", `external_event_id=in.(${lista})&select=external_event_id&limit=${ids.length}`, { admin: true })) || []).map((evento) => evento.external_event_id));
+      // En tandas: con todas las ids en una sola URL, unas cien ventas en tres
+      // días pasan el tope de largo de URL frente a Supabase (unos 16 KB) y esta
+      // recuperación deja de correr sin aviso. 50 ids son unos 3,7 KB.
+      const existentes = new Set();
+      for (let i = 0; i < ids.length; i += TANDA_EVENTOS) {
+        const tanda = ids.slice(i, i + TANDA_EVENTOS);
+        const lista = tanda.map((id) => codificar(`"${id}"`)).join(",");
+        const eventos = (await supabase.select("billing_events", `external_event_id=in.(${lista})&select=external_event_id&limit=${tanda.length}`, { admin: true })) || [];
+        for (const evento of eventos) existentes.add(evento.external_event_id);
+      }
       let restan = LIMITE_REINTENTOS;
       for (const [tipo, filas] of Object.entries(candidatas)) {
         for (const fila of filas) {

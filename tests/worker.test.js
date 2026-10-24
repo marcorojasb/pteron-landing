@@ -305,6 +305,48 @@ test("la cuota se reserva antes de llamar al proveedor y el gasto que cruza el t
   assert.equal(finishes()[0].p_units, 900, "400 de entrada + 100 ×5: el gasto real completo, aunque pase el tope");
 });
 
+test("los .txt de /docs salen declarados en UTF-8: el llms.txt no se lee como latin-1", async () => {
+  const texto = "guías, rúbricas y Configuración › Modelo de IA";
+  // Como los assets de Cloudflare: text/plain sin charset, con su ETag y la caché.
+  const assets = {
+    calls: [],
+    async fetch(request) {
+      const { pathname } = new URL(request.url);
+      this.calls.push(pathname);
+      const archivos = {
+        "/docs/llms.txt": [texto, "text/plain"],
+        "/docs/latin.txt": ["hola", "text/plain; charset=iso-8859-1"],
+        "/docs/data/notas.txt": [texto, "text/plain"],
+        "/docs/data/releases.json": ["{}", "application/json"],
+      };
+      if (!Object.hasOwn(archivos, pathname)) return new Response("<h1>404</h1>", { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
+      const [cuerpo, tipo] = archivos[pathname];
+      return new Response(request.method === "HEAD" ? null : cuerpo, { headers: { "content-type": tipo, etag: '"llms"', "cache-control": "public, max-age=0, must-revalidate" } });
+    },
+  };
+  const bound = { ...env, ASSETS: assets };
+  const llms = await worker.fetch(new Request("https://pteron.test/docs/llms.txt"), bound, fakeExecution());
+  assert.equal(llms.status, 200);
+  assert.equal(llms.headers.get("content-type"), "text/plain; charset=utf-8");
+  assert.equal(llms.headers.get("etag"), '"llms"', "las demás cabeceras siguen iguales");
+  assert.equal(llms.headers.get("cache-control"), "public, max-age=0, must-revalidate");
+  assert.equal(await llms.text(), texto);
+  assert.deepEqual(assets.calls, ["/docs/llms.txt"], "un archivo que existe no cae a la página de docs");
+
+  const head = await worker.fetch(new Request("https://pteron.test/docs/llms.txt", { method: "HEAD" }), bound, fakeExecution());
+  assert.equal(head.headers.get("content-type"), "text/plain; charset=utf-8");
+  assert.equal(await head.text(), "");
+
+  const anidado = await worker.fetch(new Request("https://pteron.test/docs/data/notas.txt"), bound, fakeExecution());
+  assert.equal(anidado.headers.get("content-type"), "text/plain; charset=utf-8");
+  const declarado = await worker.fetch(new Request("https://pteron.test/docs/latin.txt"), bound, fakeExecution());
+  assert.equal(declarado.headers.get("content-type"), "text/plain; charset=iso-8859-1", "un charset que ya viene no se toca");
+  const json = await worker.fetch(new Request("https://pteron.test/docs/data/releases.json"), bound, fakeExecution());
+  assert.equal(json.headers.get("content-type"), "application/json");
+  const pagina = await worker.fetch(new Request("https://pteron.test/docs/no-existe.txt"), { ...env, ASSETS: fakeAssets({ "/docs": "<html>docs</html>" }) }, fakeExecution());
+  assert.equal(pagina.headers.get("content-type"), "text/html; charset=utf-8", "la página de docs no cambia de tipo");
+});
+
 test("la sonda de /docs/:slug ignora una 404 cacheada y la página de docs sí acepta 304 y HEAD", async () => {
   const assets = fakeAssetsWithEtags({ "/docs": { body: "<html>docs</html>", etag: '"docs-etag"' } });
   const bound = { ...env, ASSETS: assets };

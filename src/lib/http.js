@@ -166,6 +166,7 @@ export function handleError(error) {
   if (error instanceof HttpError) {
     return json(error.status, { error: error.code, message: error.message });
   }
-  console.error("pteron api error", error instanceof Error ? error.message : error);
+  // La pila sólo trae lugares del código, y con upload_source_maps Workers Logs la lleva a la línea.
+  console.error("pteron api error", error instanceof Error ? error.stack || error.message : error);
   return json(500, { error: "server_error", message: "No pudimos completar la solicitud." });
 }

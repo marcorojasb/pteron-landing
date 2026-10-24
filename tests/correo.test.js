@@ -289,7 +289,7 @@ test("sendEmail convierte cualquier fallo en un resultado tipado y nunca lanza",
 
 const VENDEDOR_TEXTO = { nombre: "Ana Pérez", rut: "11.111.111-1", domicilio: "Av. Uno 1, Santiago", correo: "ana@vendedor.test", representante: "" };
 const compuesto = (tipo, cambios = {}) => componerCorreo(tipo, { suscripcion: enPrueba(), plan: BASIC, vendedor: VENDEDOR_TEXTO, base: "https://pteron.patagua.dev", destinatario: "profe@escuela.cl", enPrueba: true, copiaAdjunta: false, ...cambios });
-const LOGO = "https://pteron.patagua.dev/assets/correo/pteron-banda-correo.png";
+const LOGO = "https://pteron.patagua.dev/assets/correo/pteron-banda-correo-v1.png";
 const sinPrueba = (cambios = {}) => enPrueba({ status: "active", trial_ends_at: null, current_period_start: "2026-10-13T03:00:00.000Z", current_period_end: "2026-11-13T03:00:00.000Z", ...cambios });
 // Una fila de la ficha: la etiqueta en su párrafo y, debajo, el valor en el suyo (no dos columnas).
 const fila = (etiqueta, valor) => new RegExp(`<p class="dk-mut"[^>]*>${etiqueta}</p><p class="dk-t"[^>]*>${valor}</p>`);
@@ -364,7 +364,13 @@ test("los correos tienen la hoja del diseño: banda con el logo publicado, ficha
     assert.doesNotMatch(html, /url\(|@import/i, "el <style> no trae recursos");
     assert.ok(Buffer.byteLength(html) < 60_000, "lejos del recorte de Gmail");
   }
-  assert.ok(existsSync(new URL("../public/assets/correo/pteron-banda-correo.png", import.meta.url)), "el logo se publica con el sitio");
+  assert.ok(existsSync(new URL("../public/assets/correo/pteron-banda-correo-v1.png", import.meta.url)), "el logo se publica con el sitio");
+  // /assets/* es inmutable por un año: el logo lleva versión en el nombre y el
+  // de antes sigue publicado, igual byte a byte, para los correos ya enviados
+  // y las plantillas de Supabase Auth.
+  const anterior = new URL("../public/assets/correo/pteron-banda-correo.png", import.meta.url);
+  assert.ok(existsSync(anterior), "el logo sin versión sigue publicado");
+  assert.ok(readFileSync(anterior).equals(readFileSync(new URL("../public/assets/correo/pteron-banda-correo-v1.png", import.meta.url))));
 });
 
 test("ningún correo sale con marcadores «por definir» ni corchetes, y el texto plano está completo", () => {
@@ -779,7 +785,11 @@ test("card-callback: si Resend falla, la base falla o no hay configuración, el 
   assert.equal(w.aResend().length, 0);
 });
 
-test("cancel: responde como siempre y envía la confirmación de cancelación una sola vez", async () => {
+test("cancel: responde como siempre y envía la confirmación de cancelación una sola vez", async (t) => {
+  // La ruta sincroniza con Flow usando la hora del reloj. Pasado el fin de la
+  // prueba del ejemplo (20 de octubre), cancelar al cierre la deja cancelada y
+  // el segundo pedido ya no encuentra plan: el reloj se fija en AHORA, dentro de la prueba.
+  t.mock.timers.enable({ apis: ["Date"], now: AHORA });
   const env = envCorreo();
   const w = mundo({ subs: [enPrueba()], flowSub: basicEnPrueba({ cancel_at_period_end: 1 }) });
   const execution = fakeExecution();
@@ -992,6 +1002,29 @@ test("el Cron envía la compra y la cancelación que nunca llegaron a anotar eve
   // Otra corrida no repite nada.
   await withFetch(w.network.fetch, () => syncDueSubscriptions(testServices(env), AHORA));
   assert.equal(claves().length, 2);
+});
+
+test("la recuperación busca los eventos ya anotados en tandas de 50: con muchas ventas ninguna URL pasa de 8 KB y ninguna tanda se pierde", async () => {
+  const dia = 24 * HORA;
+  const hace = (ms) => new Date(AHORA.getTime() - ms).toISOString();
+  // Ids con la forma de las reales (uuid), para que el largo de la URL sea el de producción.
+  const uuid = (n) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
+  const compras = Array.from({ length: 100 }, (_, i) => enPrueba({ id: uuid(i), created_at: hace(2 * dia), updated_at: hace(2 * dia) }));
+  const cancelaciones = Array.from({ length: 100 }, (_, i) => enPrueba({ id: uuid(1000 + i), created_at: hace(5 * dia), updated_at: hace(2 * dia), cancel_at_period_end: true }));
+  // Todas ya atendidas (con su evento o su omitido), menos una compra de la tercera tanda y una cancelación de la última.
+  const [perdidaCompra, perdidaCancelacion] = [compras[60].id, cancelaciones[90].id];
+  const eventos = [...compras.map((fila) => ["purchase", fila]), ...cancelaciones.map((fila) => ["cancellation", fila])]
+    .filter(([, fila]) => fila.id !== perdidaCompra && fila.id !== perdidaCancelacion)
+    .map(([tipo, fila], i) => (i % 2
+      ? { external_event_id: `email:${tipo}:${fila.id}`, event_type: `${tipo}_email`, status: "processed" }
+      : { external_event_id: `email:${tipo}:${fila.id}:skipped`, event_type: `${tipo}_email_skipped`, status: "ignored" }));
+  const w = mundo({ subs: [...compras, ...cancelaciones], eventos });
+  const env = envCorreo();
+  await withFetch(w.network.fetch, () => createCorreo(env, testServices(env).supabase).recuperarSinEvento(AHORA));
+  const busquedas = w.network.calls.filter((call) => call.method === "GET" && call.url.includes("/rest/v1/billing_events?external_event_id=in."));
+  assert.equal(busquedas.length, 8, "400 ids (compra y omitido por suscripción) en tandas de 50");
+  for (const busqueda of busquedas) assert.ok(busqueda.url.length < 8_000, `URL de ${busqueda.url.length} caracteres`);
+  assert.deepEqual(w.aResend().map((llamada) => llamada.headers["Idempotency-Key"]), [`email:purchase:${perdidaCompra}`, `email:cancellation:${perdidaCancelacion}`]);
 });
 
 test("la recuperación de correos sin evento espera a tener configuración, se acota a 20 por corrida y un fallo de lectura no lanza", async () => {

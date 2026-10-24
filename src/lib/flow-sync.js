@@ -410,12 +410,28 @@ async function correosDelCron(services, now, antes) {
 }
 
 /**
+ * Un paso del Cron que no detiene a los demás: si lanza, queda en el registro
+ * con su nombre y devuelve null, que el resumen muestra como «no se sabe».
+ */
+async function paso(nombre, trabajo) {
+  try {
+    return await trabajo();
+  } catch (error) {
+    console.error("pteron cron", { paso: nombre, error: error instanceof Error ? error.message : String(error) });
+    return null;
+  }
+}
+
+/**
  * Corrida del Cron diario: filas Flow vigentes cuyo período pagado termina
  * entre hace 4 días y dentro de 2, sin período todavía, que cancelan al cierre
  * o que no se sincronizan hace más de 7 días (o nunca). Hasta 100, las menos
  * recientes primero. También vence los checkouts que nadie completó y concilia
  * los que quedaron sin saber si Flow creó la suscripción. Al final envía los
- * avisos de fin de prueba y reintenta los correos fallidos.
+ * avisos de fin de prueba y reintenta los correos fallidos. Cada paso corre
+ * aunque el anterior falle: el aviso de fin de prueba tiene dos corridas para
+ * salir y perder una lo deja a menos de 24 horas del cobro. Lo que no se pudo
+ * contar va en null.
  */
 export async function syncDueSubscriptions(services, now = new Date()) {
   const { supabase } = services;
@@ -426,29 +442,31 @@ export async function syncDueSubscriptions(services, now = new Date()) {
   const pendientes = encodeURIComponent(
     `(and(current_period_end.gte.${citado(desde)},current_period_end.lte.${citado(hasta)}),current_period_end.is.null,cancel_at_period_end.is.true,last_synced_at.is.null,last_synced_at.lt.${citado(antiguo)})`,
   );
-  const filas = await supabase.select(
-    "subscriptions",
-    `provider=eq.flow&${SINCRONIZABLES}&provider_subscription_id=not.is.null&or=${pendientes}&${CAMPOS}&order=last_synced_at.asc.nullsfirst&limit=100`,
-    { admin: true },
-  );
-  const resultado = await sincronizarFilas(services, filas || [], now);
+  const resultado = await paso("suscripciones", async () => {
+    const filas = await supabase.select(
+      "subscriptions",
+      `provider=eq.flow&${SINCRONIZABLES}&provider_subscription_id=not.is.null&or=${pendientes}&${CAMPOS}&order=last_synced_at.asc.nullsfirst&limit=100`,
+      { admin: true },
+    );
+    return sincronizarFilas(services, filas || [], now);
+  });
   // Sólo los que nunca volvieron de Flow. Uno en subscription_pending pudo
   // crear la suscripción allá: se concilia más abajo.
-  const vencidos = await supabase.update(
+  const vencidos = await paso("checkouts_vencidos", () => supabase.update(
     "billing_checkout_intents",
     `status=eq.card_registration_pending&expires_at=lt.${encodeURIComponent(now.toISOString())}&select=id`,
     { status: "expired" },
     { admin: true },
-  );
+  ));
   // Una cortesía no tiene a quién preguntarle: vence sola al terminar su período. Si
   // no, queda vigente para siempre y el índice de una suscripción vigente por cuenta
   // impide comprar un plan. La licencia ya no se emitía; esto ordena la fila.
-  const cortesias = await supabase.update(
+  const cortesias = await paso("cortesias_vencidas", () => supabase.update(
     "subscriptions",
     `provider=eq.comp&status=in.(trialing,active,past_due)&current_period_end=lt.${encodeURIComponent(now.toISOString())}&select=id`,
     { status: "expired" },
     { admin: true },
-  );
+  ));
   // Aparte: si la conciliación falla, la sincronización de arriba ya corrió.
   let conciliacion = { conciliados: 0, sinSuscripcion: 0, pendientes: 0 };
   try {
@@ -460,13 +478,13 @@ export async function syncDueSubscriptions(services, now = new Date()) {
   // ya corrió y un fallo de envío nunca la afecta (el servicio no lanza).
   const correos = await correosDelCron(services, now, correosAntes);
   return {
-    sincronizadas: resultado.sincronizadas,
-    fallidas: resultado.fallidas,
+    sincronizadas: resultado?.sincronizadas ?? null,
+    fallidas: resultado?.fallidas ?? null,
     correosEnviados: correos.enviados,
     correosOmitidos: correos.omitidos,
     correosFallidos: correos.fallidos,
-    checkoutsVencidos: vencidos.length,
-    cortesiasVencidas: cortesias.length,
+    checkoutsVencidos: vencidos?.length ?? null,
+    cortesiasVencidas: cortesias?.length ?? null,
     checkoutsConciliados: conciliacion.conciliados,
     checkoutsSinSuscripcion: conciliacion.sinSuscripcion,
     checkoutsPendientes: conciliacion.pendientes,

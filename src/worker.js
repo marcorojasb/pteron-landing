@@ -70,6 +70,20 @@ async function handleApi(request, env, execution) {
 const DOCS_PAGE = /^\/docs\/[^/]+$/;
 
 /**
+ * Los assets sirven un .txt como `text/plain` sin charset, y el navegador o un
+ * cliente HTTP lo leen entonces como latin-1: «guÃ­as» en /docs/llms.txt. Lo
+ * que pasa por el Worker (/docs/*) sale declarado en UTF-8, que es como está
+ * escrito; un charset que ya venga no se toca.
+ */
+function textoEnUtf8(response, pathname) {
+  const tipo = response.headers.get("content-type") || "";
+  if (!pathname.endsWith(".txt") || !/^text\/plain\s*(;|$)/i.test(tipo) || /charset=/i.test(tipo)) return response;
+  const copia = new Response(response.body, response);
+  copia.headers.set("content-type", "text/plain; charset=utf-8");
+  return copia;
+}
+
+/**
  * Los assets resuelven URLs limpias y la 404 por sí solos. Lo único que el
  * Worker añade es /docs/:slug → docs/index.html, porque la documentación es
  * una página única que lee el slug del navegador.
@@ -81,14 +95,14 @@ async function handleAssets(request, env) {
     url.pathname = url.pathname.replace(/\/+$/, "");
     return new Response(null, { status: 308, headers: { Location: url.toString(), ...SECURITY_HEADERS } });
   }
-  if (!DOCS_PAGE.test(url.pathname) || !navigation) return env.ASSETS.fetch(request);
+  if (!DOCS_PAGE.test(url.pathname) || !navigation) return textoEnUtf8(await env.ASSETS.fetch(request), url.pathname);
   // La sonda va sin cabeceras condicionales: si el navegador guardó la 404 de
   // este slug, un 304 la haría pasar por página válida. El 404 real decide.
   const probeHeaders = new Headers(request.headers);
   probeHeaders.delete("if-none-match");
   probeHeaders.delete("if-modified-since");
   const response = await env.ASSETS.fetch(new Request(request.url, { method: request.method, headers: probeHeaders }));
-  if (response.status !== 404) return response;
+  if (response.status !== 404) return textoEnUtf8(response, url.pathname);
   // Aquí sí se reenvían las condicionales: un 304 de la página de docs es tan válido como el 200.
   const page = await env.ASSETS.fetch(new Request(new URL("/docs", url), { method: request.method, headers: request.headers }));
   return page.ok || page.status === 304 ? page : response;
@@ -102,8 +116,12 @@ export default {
   },
   // Cron diario (triggers.crons en wrangler.jsonc): pone al día con Flow las
   // suscripciones cerca del fin de lo pagado, aunque el aviso de pago no llegue
-  // y el docente no abra la app.
+  // y el docente no abra la app. El resumen (sólo cuentas, ningún dato
+  // personal) queda en Workers Logs como una línea `pteron_cron`.
   async scheduled(controller, env, ctx) {
-    ctx.waitUntil(syncDueSubscriptions(createServices(env), new Date()));
+    ctx.waitUntil(syncDueSubscriptions(createServices(env), new Date()).then((resumen) => {
+      console.log(JSON.stringify({ event: "pteron_cron", ...resumen }));
+      return resumen;
+    }));
   },
 };

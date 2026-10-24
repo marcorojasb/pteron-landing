@@ -21,8 +21,10 @@ const SITIO = "https://pteron.patagua.dev";
 // La marca en blanco sobre un fondo opaco del mismo azul de la banda (311×96, se
 // muestra a 104×32): si un cliente pierde el bgcolor, queda una placa azul
 // legible. Con las imágenes bloqueadas se lee el alt «pteron» en blanco.
-// public/assets/correo/pteron-banda-correo.png.
-export const LOGO_URL = `${SITIO}/assets/correo/pteron-banda-correo.png`;
+// public/assets/correo/pteron-banda-correo-v1.png. /assets/* se guarda en caché
+// un año como inmutable: un logo nuevo va con otro número (-v2) y el anterior se
+// queda publicado, porque los correos ya enviados lo siguen pidiendo.
+export const LOGO_URL = `${SITIO}/assets/correo/pteron-banda-correo-v1.png`;
 
 const C = {
   mesa: "#E9EDF1", hoja: "#FFFFFF", banda: "#162F70", tinta: "#1F2A3D", azul: "#1E3F94", grafito: "#5B6B82",
