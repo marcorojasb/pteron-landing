@@ -298,7 +298,10 @@ hay datos que conservar, ese día se decide cómo cambiarlos sin borrarlos.
 ## Administración
 
 `/admin` usa la misma sesión que `/cuenta` y sólo responde a los correos de
-`ADMIN_EMAILS`. Muestra el resumen (cuentas, pagos, cortesías, unidades del
+`ADMIN_EMAILS` que Supabase tenga confirmados (`email_confirmed_at`); un correo
+de la lista sin confirmar recibe el mismo 403 que cualquier otra cuenta. El
+panel no se abre hasta que `GET /api/admin/sesion` responde: una cuenta que no
+administra ve sólo el aviso, sin pestañas ni tablas vacías. Muestra el resumen (cuentas, pagos, cortesías, unidades del
 mes, licencias vigentes, planes a la venta y si la IA incluida está en pausa),
 la lista y el detalle de cada cuenta (suscripciones, licencias, activaciones,
 consumo del período, peticiones de IA y eventos de cobro), el consumo por mes,
@@ -431,7 +434,8 @@ del Worker, nunca en el repositorio ni en la interfaz del navegador:
   y en la aplicación de escritorio.
 - `ANTHROPIC_API_KEY`: clave de Anthropic del gateway de IA incluida.
 - `ADMIN_EMAILS`: correos autorizados para `/admin` y `/api/admin/*`, separados
-  por comas. Sin esta variable, la administración responde 503.
+  por comas; cada uno debe tener ya una cuenta con el correo confirmado. Sin esta
+  variable, la administración responde 503.
 - `RESEND_API_KEY`: clave de Resend del Worker para los correos al cliente (ver
   «Correos»). Sin ella no se envía ninguno.
 

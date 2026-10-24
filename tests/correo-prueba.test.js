@@ -17,7 +17,7 @@ const CORREO = {
   SELLER_EMAIL: "contacto@vendedor.test",
 };
 const TERMINOS = readFileSync(new URL("../public/terminos/2026-10-13.html", import.meta.url), "utf8");
-const admins = Array.from({ length: 8 }, (_, i) => ({ id: `aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa${i}`, email: `admin${i}@patagua.dev` }));
+const admins = Array.from({ length: 8 }, (_, i) => ({ id: `aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa${i}`, email: `admin${i}@patagua.dev`, email_confirmed_at: "2026-01-01T00:00:00.000Z" }));
 const profe = { id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", email: "profe@escuela.cl" };
 
 const envPrueba = (cambios = {}) => testEnv({

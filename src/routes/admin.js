@@ -20,12 +20,18 @@ function adminEmails(env) {
     .filter(Boolean);
 }
 
+/**
+ * El correo sólo prueba que la cuenta es de quien administra si Supabase lo
+ * confirmó: sin email_confirmed_at, alguien con la clave publicable podría
+ * registrar directo en Supabase un correo de la lista que aún no tiene cuenta.
+ * Un correo sin confirmar recibe el mismo 403, sin revelar que está en la lista.
+ */
 export async function requireAdmin({ request, env, services }) {
   const emails = adminEmails(env);
   if (!emails.length) throw new HttpError(503, "admin_not_configured", "La administración todavía no está configurada.");
   const user = await services.supabase.authUser(requireAuth(request));
   const email = String(user.email || "").toLowerCase();
-  if (!email || !emails.includes(email)) throw new HttpError(403, "forbidden", "Esta cuenta no administra pteron.");
+  if (!email || !emails.includes(email) || !user.email_confirmed_at) throw new HttpError(403, "forbidden", "Esta cuenta no administra pteron.");
   return user;
 }
 
@@ -435,6 +441,8 @@ export async function admin(ctx, rest) {
   const adminUser = await requireAdmin(ctx);
   const { request } = ctx;
   const parts = rest.split("/").filter(Boolean);
+  // /admin abre el panel sólo cuando esta ruta responde: que haya sesión no basta.
+  if (parts.length === 1 && parts[0] === "sesion" && request.method === "GET") return json(200, { email: adminUser.email });
   if (parts.length === 1 && parts[0] === "resumen" && request.method === "GET") return resumen(ctx);
   if (parts.length === 1 && parts[0] === "salud" && request.method === "GET") return salud(ctx);
   if (parts.length === 1 && parts[0] === "ajustes") return actualizarAjustes(ctx);

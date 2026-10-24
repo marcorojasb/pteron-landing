@@ -6,7 +6,7 @@ import { faltaParaVender } from "../src/routes/health.js";
 import { fakeExecution, fakeNetwork, jsonRequest, matches, testEnv, testKeyPair, testServices, withFetch } from "./helpers/fakes.js";
 
 const env = testEnv({ ADMIN_EMAILS: "Marco@Patagua.dev, otro@patagua.dev" });
-const admin = { id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", email: "marco@patagua.dev", created_at: "2026-01-01T00:00:00.000Z" };
+const admin = { id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", email: "marco@patagua.dev", email_confirmed_at: "2026-01-01T00:05:00.000Z", created_at: "2026-01-01T00:00:00.000Z" };
 const profe = { id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", email: "profe@escuela.cl", created_at: "2026-09-10T00:00:00.000Z", last_sign_in_at: "2026-10-01T10:00:00.000Z" };
 const usersRoute = { match: (url) => url.includes("/auth/v1/admin/users?"), respond: { body: { users: [admin, profe] } } };
 const userRoute = { match: (url) => url.includes(`/auth/v1/admin/users/${profe.id}`), respond: { body: profe } };
@@ -47,13 +47,40 @@ test("sin ADMIN_EMAILS responde 503; sin sesión 401; con un correo no autorizad
   assert.equal(anonymous.status, 401);
   const network = fakeNetwork([meRoute(profe)]);
   await withFetch(network.fetch, async () => {
-    for (const request of [get("/api/admin/resumen"), get("/api/admin/salud"), send(`/api/admin/cuentas/${profe.id}/terminar`, "POST", { motivo: "x" }), send("/api/admin/ajustes", "PATCH", { included_ai_paused: true })]) {
+    for (const request of [get("/api/admin/sesion"), get("/api/admin/resumen"), get("/api/admin/salud"), send(`/api/admin/cuentas/${profe.id}/terminar`, "POST", { motivo: "x" }), send("/api/admin/ajustes", "PATCH", { included_ai_paused: true })]) {
       const forbidden = await run(request);
       assert.equal(forbidden.status, 403);
       assert.equal((await forbidden.json()).error, "forbidden");
     }
     assert.ok(network.calls.every((call) => call.url.includes("/auth/v1/user")), "sólo se consultó la sesión");
   });
+});
+
+test("un correo de ADMIN_EMAILS sin confirmar en Supabase recibe el mismo 403, sin leer datos", async () => {
+  const { email_confirmed_at: _, ...sinConfirmar } = admin;
+  for (const usuario of [sinConfirmar, { ...admin, email_confirmed_at: null }, { ...admin, email_confirmed_at: "" }]) {
+    const network = fakeNetwork([meRoute(usuario)]);
+    await withFetch(network.fetch, async () => {
+      for (const request of [get("/api/admin/sesion"), get("/api/admin/resumen"), send("/api/admin/ajustes", "PATCH", { included_ai_paused: true })]) {
+        const forbidden = await run(request);
+        assert.equal(forbidden.status, 403);
+        assert.deepEqual(await forbidden.json(), { error: "forbidden", message: "Esta cuenta no administra pteron." });
+      }
+      assert.ok(network.calls.every((call) => call.url.includes("/auth/v1/user")), "sólo se consultó la sesión");
+    });
+  }
+});
+
+test("sesion responde el correo del administrador y nada más; /admin abre el panel con ella", async () => {
+  const network = fakeNetwork([meRoute(admin)]);
+  await withFetch(network.fetch, async () => {
+    const res = await run(get("/api/admin/sesion"));
+    assert.equal(res.status, 200);
+    assert.deepEqual(await res.json(), { email: "marco@patagua.dev" });
+    const post = await run(send("/api/admin/sesion", "POST", {}));
+    assert.equal(post.status, 404);
+  });
+  assert.ok(network.calls.every((call) => call.url.includes("/auth/v1/user")), "sólo se consultó la sesión");
 });
 
 test("resumen cuenta pagos, cortesías, pruebas, ingreso recurrente, IA del mes en unidades, venta y pausa", async () => {

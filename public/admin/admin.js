@@ -5,6 +5,7 @@
   const notice = $("[data-admin-notice]");
   const login = $("[data-admin-login]");
   const app = $("[data-admin-app]");
+  const noaccess = $("[data-admin-noaccess]");
 
   function loadSession() {
     try {
@@ -129,10 +130,15 @@
   window.addEventListener("popstate", () => showTab(location.hash.replace("#", "") || "resumen", false));
 
   function fail(error) {
-    if (error.status === 401) {
-      app.hidden = true;
-      login.hidden = false;
-      show("Tu sesión expiró. Entra de nuevo desde tu cuenta.", "error");
+    if (error.status === 401 || error.status === 403) {
+      // Con el panel abierto, se recarga: nada de lo cargado queda a la vista y start() decide de nuevo.
+      if (!app.hidden) {
+        location.reload();
+        return;
+      }
+      login.hidden = error.status === 403;
+      noaccess.hidden = error.status === 401;
+      show(error.status === 401 ? "Tu sesión expiró. Entra de nuevo desde tu cuenta." : "Esta cuenta no administra pteron.", "error");
       return;
     }
     show(error.message || "No pudimos completar la solicitud.", "error");
@@ -590,22 +596,41 @@
   }
   $("[data-salud-revisar]").addEventListener("click", () => loadSalud().catch(fail));
 
+  // La cuenta del sujeto del token; sólo para notar que otra pestaña cambió de cuenta, no para autorizar.
+  function subject(session) {
+    try {
+      const payload = session.access_token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+      return JSON.parse(atob(payload)).sub || null;
+    } catch {
+      return null;
+    }
+  }
+
   async function start() {
     const session = loadSession();
+    // Si /cuenta, en otra pestaña, entra, sale o cambia de cuenta, /admin vuelve a decidir con esa sesión.
+    // Renovar el token de la misma cuenta no cambia el sujeto y no recarga.
+    const owner = session ? subject(session) : null;
+    window.addEventListener("storage", (event) => {
+      if (event.key !== SESSION_KEY && event.key !== null) return;
+      const current = loadSession();
+      if ((current ? subject(current) : null) !== owner) location.reload();
+    });
     if (!session) {
       login.hidden = false;
       return;
     }
+    // Sólo el servidor dice quién administra: el panel se abre cuando /api/admin/sesion responde.
     try {
-      const me = await api("/api/auth/me");
-      $("[data-admin-email]").textContent = me.user?.email || "";
+      const admin = await api("/api/admin/sesion");
+      $("[data-admin-email]").textContent = admin.email || "";
       login.hidden = true;
+      noaccess.hidden = true;
       app.hidden = false;
       showTab(location.hash.replace("#", "") || "resumen", false);
     } catch (error) {
-      if (error.status === 403) show("Esta cuenta no administra pteron.", "error");
       fail(error);
-      if (error.status !== 401) login.hidden = false;
+      if (error.status !== 401 && error.status !== 403) noaccess.hidden = false;
     }
   }
   start();
