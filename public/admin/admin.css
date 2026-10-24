@@ -12,7 +12,7 @@
   font-size:var(--t-chico)}
 .admin-notice[data-tone="error"]{border-color:color-mix(in srgb,var(--error) 30%,transparent);background:var(--error-papel);color:var(--error)}
 .admin-notice[data-tone="success"]{border-color:color-mix(in srgb,var(--ok) 30%,transparent);background:var(--ok-papel);color:var(--ok)}
-/* Sin permiso (403): sólo el aviso y la salida; admin.js no abre el panel hasta que /api/admin/sesion responde */
+/* Sin permiso (403) o sin respuesta del servidor: sólo el aviso y la salida; admin.js no abre el panel hasta que /api/admin/sesion responde */
 .admin-noaccess{margin-bottom:18px}
 
 /* Sin sesión */

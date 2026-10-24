@@ -7,7 +7,8 @@ import { fakeExecution, fakeNetwork, jsonRequest, matches, testEnv, testKeyPair,
 
 const env = testEnv({ ADMIN_EMAILS: "Marco@Patagua.dev, otro@patagua.dev" });
 const admin = { id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", email: "marco@patagua.dev", email_confirmed_at: "2026-01-01T00:05:00.000Z", created_at: "2026-01-01T00:00:00.000Z" };
-const profe = { id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", email: "profe@escuela.cl", created_at: "2026-09-10T00:00:00.000Z", last_sign_in_at: "2026-10-01T10:00:00.000Z" };
+// profe tiene el correo confirmado: su 403 sólo puede venir de ADMIN_EMAILS.
+const profe = { id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", email: "profe@escuela.cl", email_confirmed_at: "2026-09-10T00:05:00.000Z", created_at: "2026-09-10T00:00:00.000Z", last_sign_in_at: "2026-10-01T10:00:00.000Z" };
 const usersRoute = { match: (url) => url.includes("/auth/v1/admin/users?"), respond: { body: { users: [admin, profe] } } };
 const userRoute = { match: (url) => url.includes(`/auth/v1/admin/users/${profe.id}`), respond: { body: profe } };
 const meRoute = (user) => ({ match: matches.auth("user"), respond: { body: user } });

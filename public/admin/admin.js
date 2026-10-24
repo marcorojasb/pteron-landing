@@ -44,7 +44,11 @@
     if (current?.access_token) headers.set("Authorization", `Bearer ${current.access_token}`);
     const response = await fetch(path, { ...options, headers });
     if (response.status === 401 && retry && current?.refresh_token) {
-      await refreshSession();
+      // Un token de renovación que Supabase ya no acepta llega como 502: para quien mira, la sesión venció.
+      await refreshSession().catch((error) => {
+        if (error.status) error.status = 401;
+        throw error;
+      });
       return api(path, options, false);
     }
     return readResponse(response);
@@ -448,7 +452,7 @@
       } catch (error) {
         // El mensaje del Worker ya dice qué falta (409) o cuánto esperar (429).
         salida.replaceChildren(el("p", { class: "admin-prueba-error", text: error.message || "No se pudo enviar." }));
-        if (error.status === 401) fail(error);
+        if (error.status === 401 || error.status === 403) fail(error);
       } finally {
         boton.disabled = false;
       }
@@ -609,12 +613,15 @@
   async function start() {
     const session = loadSession();
     // Si /cuenta, en otra pestaña, entra, sale o cambia de cuenta, /admin vuelve a decidir con esa sesión.
-    // Renovar el token de la misma cuenta no cambia el sujeto y no recarga.
+    // Con el panel abierto, renovar el token de la misma cuenta no cambia el sujeto y no recarga;
+    // cerrado, cualquier sesión nueva recarga, también volver a entrar con la misma cuenta.
     const owner = session ? subject(session) : null;
+    const seen = session?.refresh_token ?? null;
     window.addEventListener("storage", (event) => {
       if (event.key !== SESSION_KEY && event.key !== null) return;
       const current = loadSession();
-      if ((current ? subject(current) : null) !== owner) location.reload();
+      const changed = app.hidden ? (current?.refresh_token ?? null) !== seen : (current ? subject(current) : null) !== owner;
+      if (changed) location.reload();
     });
     if (!session) {
       login.hidden = false;

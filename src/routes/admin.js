@@ -22,8 +22,10 @@ function adminEmails(env) {
 
 /**
  * El correo sólo prueba que la cuenta es de quien administra si Supabase lo
- * confirmó: sin email_confirmed_at, alguien con la clave publicable podría
- * registrar directo en Supabase un correo de la lista que aún no tiene cuenta.
+ * confirmó. Supabase no suele dar sesión a un correo sin confirmar; esta es la
+ * segunda capa por si alguna vez lo permite (un proveedor que no verifica el
+ * correo, por ejemplo). Con «Confirm email» apagado, Supabase confirma al
+ * registrar: por eso cada correo de ADMIN_EMAILS debe tener ya su cuenta.
  * Un correo sin confirmar recibe el mismo 403, sin revelar que está en la lista.
  */
 export async function requireAdmin({ request, env, services }) {
