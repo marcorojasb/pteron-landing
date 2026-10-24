@@ -430,8 +430,9 @@ async function paso(nombre, trabajo) {
  * los que quedaron sin saber si Flow creó la suscripción. Al final envía los
  * avisos de fin de prueba y reintenta los correos fallidos. Cada paso corre
  * aunque el anterior falle: el aviso de fin de prueba tiene dos corridas para
- * salir y perder una lo deja a menos de 24 horas del cobro. Lo que no se pudo
- * contar va en null.
+ * salir y perder una lo deja a menos de 24 horas del cobro. Si falla la
+ * búsqueda de suscripciones o uno de los vencimientos, su cuenta va en null;
+ * la conciliación y los correos llevan su propio registro y cuentan cero.
  */
 export async function syncDueSubscriptions(services, now = new Date()) {
   const { supabase } = services;

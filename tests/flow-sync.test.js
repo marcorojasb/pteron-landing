@@ -331,6 +331,34 @@ test("el handler scheduled del Worker corre la sincronización del Cron dentro d
   assert.deepEqual(JSON.parse(lineas[0][0]), { event: "pteron_cron", ...resumen });
 });
 
+test("si un paso del Cron queda sin dato, el handler scheduled corre los demás, deja el resumen y termina en error", async () => {
+  const network = fakeNetwork([
+    { match: matches.supabase("subscriptions", "GET"), respond: { body: [] } },
+    { match: matches.supabase("billing_checkout_intents", "PATCH"), respond: { status: 500, body: { message: "caído" } } },
+    { match: matches.supabase("subscriptions", "PATCH"), respond: { body: [] } },
+    { match: matches.supabase("billing_checkout_intents", "GET"), respond: { body: [] } },
+  ]);
+  const lineas = [];
+  const consoleLog = console.log;
+  const consoleError = console.error;
+  console.log = (...args) => lineas.push(args);
+  console.error = () => {};
+  try {
+    await withFetch(network.fetch, async () => {
+      const ctx = fakeExecution();
+      await worker.scheduled({ cron: "17 12 * * *", scheduledTime: Date.now() }, env, ctx);
+      await assert.rejects(ctx.promises[0], /pteron cron: quedaron sin dato checkoutsVencidos/);
+      // Igual buscó las pruebas por terminar, para los avisos por correo.
+      assert.match(decodeURIComponent(network.calls.at(-1).url), /trial_ends_at/);
+    });
+  } finally {
+    console.log = consoleLog;
+    console.error = consoleError;
+  }
+  assert.equal(lineas.length, 1, "el resumen queda en el registro antes del error");
+  assert.equal(JSON.parse(lineas[0][0]).checkoutsVencidos, null);
+});
+
 test("si vencer los checkouts o las cortesías falla, el Cron sigue: concilia, avisa el fin de prueba y el resumen lo muestra en null", async () => {
   for (const caido of ["billing_checkout_intents", "cortesias"]) {
     const network = fakeNetwork([

@@ -364,6 +364,26 @@ test("la sonda de /docs/:slug ignora una 404 cacheada y la página de docs sí a
   assert.equal(assets.calls.at(-1).method, "HEAD");
 });
 
+test("un archivo real de /docs (app.js, llms.txt) responde 304 a su ETag; sin condicionales se pide una sola vez", async () => {
+  const assets = fakeAssetsWithEtags({
+    "/docs": { body: "<html>docs</html>", etag: '"docs-etag"' },
+    "/docs/app.js": { body: "/* app */", etag: '"app-etag"' },
+  });
+  const bound = { ...env, ASSETS: assets };
+  const vigente = await worker.fetch(new Request("https://pteron.test/docs/app.js?v=1", { headers: { "if-none-match": '"app-etag"' } }), bound, fakeExecution());
+  assert.equal(vigente.status, 304, "el navegador ya tiene app.js: no lo baja entero");
+  assert.deepEqual(assets.calls.map((call) => call.ifNoneMatch), [null, '"app-etag"'], "la sonda va sin condicionales y el archivo real con ellas");
+
+  const cambiado = await worker.fetch(new Request("https://pteron.test/docs/app.js?v=1", { headers: { "if-none-match": '"viejo"' } }), bound, fakeExecution());
+  assert.equal(cambiado.status, 200);
+  assert.equal(await cambiado.text(), "/* app */");
+
+  assets.calls.length = 0;
+  const primera = await worker.fetch(new Request("https://pteron.test/docs/app.js?v=1"), bound, fakeExecution());
+  assert.equal(await primera.text(), "/* app */");
+  assert.equal(assets.calls.length, 1, "sin condicionales basta la sonda");
+});
+
 test("las respuestas del Worker llevan las mismas cabeceras de seguridad que los assets", async () => {
   const res = await worker.fetch(new Request("https://pteron.test/api/nada"), env, fakeExecution());
   assert.equal(res.headers.get("x-frame-options"), "DENY");

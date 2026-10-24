@@ -287,12 +287,15 @@
   const resolveSlug = slug =>
     docs.pages[slug] ? slug : (docs.aliases && docs.aliases[slug]) || "inicio";
 
-  const renderPage = (slug, push = false, moveFocus = push) => {
+  // hash: el ancla de un enlace de la documentación (/docs?pagina=modelos-permisos#ia-incluida); al llegar o al
+  // volver atrás, la de la dirección
+  const renderPage = (slug, push = false, moveFocus = push, hash = "") => {
     const resolvedSlug = resolveSlug(slug);
     renderedSlug = resolvedSlug;
     const page = docs.pages[resolvedSlug];
-    if (push) history.pushState({ slug: resolvedSlug }, "", pageUrl(resolvedSlug));
-    else if (resolvedSlug !== slug) history.replaceState({ slug: resolvedSlug }, "", pageUrl(resolvedSlug));
+    const ancla = push ? hash : location.hash;
+    if (push) history.pushState({ slug: resolvedSlug }, "", pageUrl(resolvedSlug) + ancla);
+    else if (resolvedSlug !== slug) history.replaceState({ slug: resolvedSlug }, "", pageUrl(resolvedSlug) + ancla);
     document.title = `${page.title} · pteron`;
     canonical.href = new URL(pageUrl(resolvedSlug), "https://pteron.patagua.dev").href;
     if (description) description.content = resolvedSlug === "inicio" ? hubDescription : plainText(page.lead).trim();
@@ -308,17 +311,18 @@
     renderIndiceDocs(resolvedSlug);
     renderToc();
     renderReleaseData();
-    // Al llegar con un ancla (/docs?pagina=trabajo-local#licencia) se va a esa sección; si no, al comienzo
-    const anchor = !push && location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
-    if (anchor && article.contains(anchor)) anchor.scrollIntoView();
+    // Con un ancla (/docs?pagina=trabajo-local#licencia) se va a esa sección; si no, al comienzo
+    const anchor = ancla ? document.getElementById(decodeURIComponent(ancla.slice(1))) : null;
+    const enSeccion = Boolean(anchor && article.contains(anchor));
+    if (enSeccion) anchor.scrollIntoView();
     else window.scrollTo({ top: 0, behavior: "auto" });
     setIndexOpen(false);
-    // Al cambiar de página sin recargar, el foco pasa al título nuevo: el lector de pantalla lo anuncia y el siguiente
-    // Tab sigue desde ahí. Al llegar, el foco queda donde lo deja el navegador
+    // Al cambiar de página sin recargar, el foco pasa al título nuevo (o a la sección del ancla): el lector de
+    // pantalla lo anuncia y el siguiente Tab sigue desde ahí. Al llegar, el foco queda donde lo deja el navegador
     if (moveFocus) {
-      const titulo = article.querySelector("h1");
-      titulo?.setAttribute("tabindex", "-1");
-      titulo?.focus({ preventScroll: true });
+      const destino = enSeccion ? anchor : article.querySelector("h1");
+      destino?.setAttribute("tabindex", "-1");
+      destino?.focus({ preventScroll: true });
     }
   };
 
@@ -420,7 +424,7 @@
     if (url.origin !== location.origin) return;
     event.preventDefault();
     setSearchOpen(false);
-    renderPage(url.searchParams.get("pagina") || url.pathname.split("/").filter(Boolean).pop() || "inicio", true);
+    renderPage(url.searchParams.get("pagina") || url.pathname.split("/").filter(Boolean).pop() || "inicio", true, true, url.hash);
   });
 
   // Un salto a un ancla de la misma página no vuelve a pintarla (ni a pedir los datos de versión).

@@ -96,20 +96,32 @@ function abrir(direccion) {
     activeElement: cuerpo,
     head: { appendChild: (nodo) => (cabeza.push(nodo), nodo) },
     createElement: (etiqueta) => ({ etiqueta }),
-    getElementById: () => null,
+    getElementById: (id) => secciones.get(id) ?? null,
     addEventListener: escuchar("document"),
   };
-  // El artículo guarda su título: el h1 de lo último que se pintó, que puede recibir el foco
+  // El artículo guarda su título y sus secciones con id: lo último que se pintó, que puede recibir el foco
   let titulo = null;
-  const articulo = elemento({ querySelector: (sel) => (sel === "h1" ? titulo : null) });
+  let secciones = new Map();
+  let desplazado = null;
+  const enfocable = (props) =>
+    elemento({
+      ...props,
+      focus() {
+        documento.activeElement = this;
+      },
+      scrollIntoView() {
+        desplazado = this;
+      },
+    });
+  const articulo = elemento({
+    querySelector: (sel) => (sel === "h1" ? titulo : null),
+    contains: (nodo) => [...secciones.values()].includes(nodo),
+  });
   Object.defineProperty(articulo, "innerHTML", {
     set(contenidoHtml) {
-      titulo = elemento({
-        textContent: /<h1>(.*?)<\/h1>/.exec(contenidoHtml)?.[1],
-        focus() {
-          documento.activeElement = this;
-        },
-      });
+      titulo = enfocable({ textContent: /<h1>(.*?)<\/h1>/.exec(contenidoHtml)?.[1] });
+      secciones = new Map([...contenidoHtml.matchAll(/<h[23] id="([^"]+)">/g)].map(([, id]) => [id, enfocable({ id })]));
+      desplazado = null;
     },
   });
   const porSelector = {
@@ -145,6 +157,8 @@ function abrir(direccion) {
     cabeza,
     canonica: () => cabeza[0]?.href,
     descripcion: () => descripcion.content,
+    /** La sección a la que se desplazó la última página pintada, si fue a un ancla. */
+    desplazado: () => desplazado,
     /** Un clic simple en un enlace de la documentación. */
     clic(href) {
       const enlace = { href: new URL(href, location.href).href, target: "" };
@@ -204,4 +218,25 @@ test("al seguir un enlace y al volver atrás cambian la canónica y la descripci
   assert.equal(pagina.descripcion(), descripcionPortada);
   assert.equal(enfocado().textContent, docs.pages.inicio.title);
   assert.equal(pagina.cabeza.length, 1, "la canónica se reutiliza, no se suma otra");
+});
+
+test("un enlace con ancla lleva a esa sección y deja ahí el foco; la dirección conserva el ancla", () => {
+  const pagina = abrir("/docs?pagina=preguntas");
+  pagina.clic("/docs?pagina=modelos-permisos#ia-incluida");
+  assert.equal(pagina.location.search, "?pagina=modelos-permisos");
+  assert.equal(pagina.location.hash, "#ia-incluida");
+  assert.equal(pagina.desplazado()?.id, "ia-incluida");
+  assert.equal(pagina.documento.activeElement.id, "ia-incluida", "el foco va a la sección pedida, no al título");
+  assert.equal(pagina.documento.activeElement.getAttribute("tabindex"), "-1");
+  assert.equal(pagina.canonica(), urlCanonica("modelos-permisos"), "la canónica no lleva el ancla");
+
+  // Un ancla que no existe en la página nueva deja el foco en el título
+  pagina.clic("/docs?pagina=requisitos#no-existe");
+  assert.equal(pagina.desplazado(), null);
+  assert.equal(pagina.documento.activeElement.textContent, docs.pages.requisitos.title);
+
+  // Al llegar por un alias, la dirección pasa a la página nueva sin perder el ancla
+  const alias = abrir("/docs?pagina=rubricas#criterios");
+  assert.equal(alias.location.search, "?pagina=evaluar");
+  assert.equal(alias.location.hash, "#criterios");
 });

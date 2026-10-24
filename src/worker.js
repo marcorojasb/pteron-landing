@@ -102,7 +102,12 @@ async function handleAssets(request, env) {
   probeHeaders.delete("if-none-match");
   probeHeaders.delete("if-modified-since");
   const response = await env.ASSETS.fetch(new Request(request.url, { method: request.method, headers: probeHeaders }));
-  if (response.status !== 404) return textoEnUtf8(response, url.pathname);
+  if (response.status !== 404) {
+    // Es un archivo real (/docs/app.js, /docs/llms.txt): su 304 sí vale, así que se vuelve a pedir con las condicionales.
+    if (!request.headers.has("if-none-match") && !request.headers.has("if-modified-since")) return textoEnUtf8(response, url.pathname);
+    await response.body?.cancel();
+    return textoEnUtf8(await env.ASSETS.fetch(request), url.pathname);
+  }
   // Aquí sí se reenvían las condicionales: un 304 de la página de docs es tan válido como el 200.
   const page = await env.ASSETS.fetch(new Request(new URL("/docs", url), { method: request.method, headers: request.headers }));
   return page.ok || page.status === 304 ? page : response;
@@ -117,10 +122,14 @@ export default {
   // Cron diario (triggers.crons en wrangler.jsonc): pone al día con Flow las
   // suscripciones cerca del fin de lo pagado, aunque el aviso de pago no llegue
   // y el docente no abra la app. El resumen (sólo cuentas, ningún dato
-  // personal) queda en Workers Logs como una línea `pteron_cron`.
+  // personal) queda en Workers Logs como una línea `pteron_cron`. Cada paso
+  // corre aunque otro falle, pero la corrida no se da por buena: si un paso
+  // quedó sin dato (null), la invocación termina en error en Cron Events.
   async scheduled(controller, env, ctx) {
     ctx.waitUntil(syncDueSubscriptions(createServices(env), new Date()).then((resumen) => {
       console.log(JSON.stringify({ event: "pteron_cron", ...resumen }));
+      const sinDato = Object.keys(resumen).filter((clave) => resumen[clave] === null);
+      if (sinDato.length) throw new Error(`pteron cron: quedaron sin dato ${sinDato.join(", ")}`);
       return resumen;
     }));
   },
