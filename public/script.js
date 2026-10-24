@@ -359,21 +359,42 @@
       .catch(() => {});
   }
 
-  /* ——— Descargar en la esquina: aparece cuando el botón de la página sale de la vista ——— */
+  /* ——— Descargar en la esquina: aparece cuando el botón de la página sale de la vista, y se aparta donde la página ya
+     ofrece la descarga (la sección «Descargar» y el pie) ——— */
   const corner = document.querySelector(".esquina-descargar");
   const own = $$("main [data-descargar], main .boton-principal").find((node) => node !== corner);
   if (corner) {
+    const zonas = [document.getElementById("descargar"), document.getElementById("colofon")].filter(Boolean);
     if (own && "IntersectionObserver" in window) {
-      const vigia = new IntersectionObserver(([entry]) => {
-        // Una página que maneja la esquina por su cuenta (el inicio) lo marca con data-control
+      let propio = false; // el botón de la página está a la vista o todavía más abajo
+      const enZona = new Set();
+      const decidir = () => {
+        // Una página que maneja la esquina por su cuenta (el inicio con su escena viva) lo marca con data-control
         if (corner.dataset.control) return;
-        corner.toggleAttribute("data-oculto", entry.isIntersecting || entry.boundingClientRect.top > 0);
+        corner.toggleAttribute("data-oculto", propio || enZona.size > 0);
+      };
+      const vigia = new IntersectionObserver(([entry]) => {
+        propio = entry.isIntersecting || entry.boundingClientRect.top > 0;
+        decidir();
       });
+      // Una zona cuenta desde que entra al 70 % de arriba de la pantalla, como en la escena del inicio
+      const zona = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => (entry.isIntersecting ? enZona.add(entry.target) : enZona.delete(entry.target)));
+          decidir();
+        },
+        { rootMargin: "0px 0px -30% 0px" },
+      );
       vigia.observe(own);
-      // Si el inicio suelta la esquina (su escena falló y la página quedó quieta), se vuelve a mirar el botón desde cero
+      zonas.forEach((node) => zona.observe(node));
+      // Si el inicio suelta la esquina (su escena falló y la página quedó quieta), se vuelve a mirar todo desde cero
       document.addEventListener("pteron:esquina", () => {
         vigia.unobserve(own);
         vigia.observe(own);
+        zonas.forEach((node) => {
+          zona.unobserve(node);
+          zona.observe(node);
+        });
       });
     } else corner.removeAttribute("data-oculto");
   }

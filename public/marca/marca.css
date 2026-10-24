@@ -122,7 +122,7 @@
 .tabla-archivos th,.tabla-archivos td{padding:12px 16px;text-align:left;vertical-align:middle}
 .tabla-archivos thead th{background:var(--mesa);color:var(--grafito);font-size:var(--t-rotulo);font-weight:650}
 .tabla-archivos tbody tr+tr :is(th,td){border-top:var(--borde) solid var(--regla)}
-.tabla-archivos tbody th{color:var(--tinta);font-weight:650}
+.tabla-archivos tbody th{color:var(--tinta);font-weight:650;white-space:nowrap}
 .tabla-archivos td{color:var(--grafito);font-size:var(--t-chico)}
 .tabla-archivos td:last-child{white-space:nowrap;text-align:right}
 .tabla-archivos td a{display:inline-flex;align-items:center;min-height:40px;margin-left:12px;font-weight:650}

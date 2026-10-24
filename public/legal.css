@@ -98,3 +98,15 @@
   .legal-sigue a{grid-template-columns:minmax(0,1fr)}
   .credito,.creditos-lista--propias .credito{grid-template-columns:minmax(0,1fr)}
 }
+/* Impreso: sin «Sigue leyendo» (es navegación) ni el aire de pantalla al pie, para que la línea legal no quede sola en
+   una hoja más. La hoja va en bloque: partida entre dos páginas, la rejilla montaba el título de una cláusula sobre el
+   final de la anterior; por lo mismo cada crédito queda entero. Los títulos piden seguir junto a su texto. */
+@media print{
+  .legal-sigue{display:none}
+  .legal{padding-bottom:0}
+  .creditos{padding-block:28px 0}
+  .legal-hoja{display:block}
+  .legal-hoja>section+section{margin-top:clamp(26px,3vw,36px)}
+  .legal-hoja h2,.creditos h3{break-after:avoid}
+  .credito{break-inside:avoid}
+}

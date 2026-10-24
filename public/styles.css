@@ -213,7 +213,7 @@ html.con-indice body{padding-right:var(--barra,0px)}
 .colofon-creditos{font-size:var(--t-chico);color:var(--grafito);max-width:56ch}
 .colofon-creditos p+p{margin-top:10px}
 .colofon-legal{margin-top:clamp(36px,5vw,56px);padding-top:18px;border-top:var(--borde) solid var(--regla);display:flex;flex-wrap:wrap;gap:8px 24px;
-  justify-content:space-between;font-size:var(--t-chico);color:var(--grafito)}
+  justify-content:space-between;align-items:baseline;font-size:var(--t-chico);color:var(--grafito)}
 .colofon-legal a{display:inline-flex;align-items:center;min-height:44px;color:var(--grafito)}
 .colofon-legal a[aria-current="page"]{color:var(--azul);font-weight:650}
 
@@ -283,9 +283,11 @@ input::placeholder,textarea::placeholder{color:var(--suave)}
   .indice-capitulos a{font-size:1.125rem}
 }
 /* Sin movimiento: sin transiciones (como la app). Con una duración mínima, cada cambio de estilo se volvería una
-   transición —la propiedad por omisión es «all»— y lo medido justo después del cambio sería el valor anterior. */
+   transición —la propiedad por omisión es «all»— y lo medido justo después del cambio sería el valor anterior.
+   El fondo de los diálogos (::backdrop) no cae en «*»: sin esto se aclararía de a poco bajo una hoja ya abierta. */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important;scroll-behavior:auto!important}
+  ::backdrop{animation:none!important}
 }
 /* Impreso: papel blanco con márgenes, sin sombras ni láminas decorativas; del colofón queda la línea legal */
 @page{margin:14mm 14mm 16mm}

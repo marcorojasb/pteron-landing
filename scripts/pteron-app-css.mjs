@@ -160,8 +160,11 @@ const header = `/* pteron · la interfaz de la app (${origin}), regla por regla,
    ui/controls.css, composer.css, chat.css) acotado a .pt-app; vw y vh fijados a una ventana de 1440 × 880.
    No editar a mano: se regenera con cada versión de pteron. Letras: Archivo, la de styles.css, e IBM Plex Mono (OFL 1.1, /assets/fonts). */
 `;
-// La app carga sólo IBM Plex Mono de @fontsource (app-styles.ts), para el texto técnico como la vista previa del aviso
-const mono = `@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/ibm-plex-mono-latin-400-normal.woff2) format("woff2")}`;
+// La app carga sólo IBM Plex Mono de @fontsource (app-styles.ts), para el texto técnico como la vista previa del aviso.
+// /assets se sirve como inmutable: la letra lleva la revisión del sitio, la misma que index.html pone a styles.css.
+const version = /\/styles\.css\?v=([^"&]+)/.exec(readFileSync(path.join(root, "public/index.html"), "utf8"))?.[1];
+if (!version) throw new Error("index.html no enlaza /styles.css?v=…: no sé qué versión poner a la letra");
+const mono = `@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/ibm-plex-mono-latin-400-normal.woff2?v=${version}) format("woff2")}`;
 const shell = readFileSync(path.join(root, "scripts/pteron-app/aislamiento.css"), "utf8");
 writeFileSync(path.join(root, "public/pteron-app.css"), `${header}${mono}\n${compact(css)}\n${keyframes}\n${shell}`);
 console.log(`${out.length} reglas · ${used.length} keyframes · pteron ${origin} → public/pteron-app.css`);
