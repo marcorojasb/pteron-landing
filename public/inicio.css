@@ -74,7 +74,8 @@
   box-shadow:0 2px 2px rgb(var(--sombra)/.06),0 30px 60px -28px rgb(var(--sombra)/.45)}
 .escena[data-viva] .mesa-hoja>.pteron-document{transform:none}
 .escena[data-viva] .mesa-rotulos{display:block;position:absolute;inset:0;margin:0}
-.escena[data-viva] .mesa-rotulos li{position:absolute;left:0;top:0;opacity:0;white-space:nowrap}
+/* inicio.js le da a cada rótulo el ancho que la hoja siguiente no tapa: el que no cabe pasa a dos líneas */
+.escena[data-viva] .mesa-rotulos li{position:absolute;left:0;top:0;opacity:0;white-space:normal}
 .escena[data-viva] .mesa-pie{position:absolute;left:50%;bottom:clamp(18px,3.5vh,34px);margin:0;transform:translateX(-50%);opacity:0;width:min(62ch,90vw)}
 .escena[data-viva] .portada{will-change:transform,opacity}
 .escena[data-viva] .lamina-cuerpo{transition:none}

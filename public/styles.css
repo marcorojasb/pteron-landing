@@ -245,6 +245,8 @@ html.con-indice body{padding-right:var(--barra,0px)}
 @media (hover:hover) and (pointer:fine){.pieza:hover .pieza-cuerpo{transform:rotateY(180deg)}}
 .pieza-cara,.pieza-reverso{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .pieza-cara img{width:100%;height:100%;-webkit-user-drag:none;user-select:none}
+/* La imagen va en un <picture> que bajo 560 px pide un GIF vacío (la pieza no se muestra): la caja es la de la img */
+.pieza-cara picture{display:contents}
 .pieza-reverso{transform:rotateY(180deg);display:grid;gap:3.5%;padding:5.5%;color:var(--tinta);container-type:inline-size}
 .pieza-reverso::before{content:"";position:absolute;inset:0;background:linear-gradient(160deg,var(--hoja) 0%,var(--reverso) 100%)}
 .pieza .reverso-figura,.pieza .reverso-pie{position:relative}

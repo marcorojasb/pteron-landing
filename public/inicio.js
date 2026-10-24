@@ -482,6 +482,11 @@
     H = fija.clientHeight;
     movil = narrow.matches;
     layout.hojas = sheetLayout();
+    // Cada rótulo cabe en el trecho de su hoja que la siguiente no tapa: en una tableta vertical las hojas son angostas y
+    // el rótulo largo pasa a dos líneas en vez de montarse sobre el siguiente
+    hojas.forEach((hoja, i) => {
+      if (hoja.rotulo && layout.hojas[i]) hoja.rotulo.style.maxWidth = `${layout.hojas[i].sw * 0.9 - 8}px`;
+    });
 
     // Hojas: la figura en coordenadas de la hoja (816 × 1248)
     hojas.forEach((hoja) => {
@@ -501,8 +506,8 @@
       lamina.oculta = getComputedStyle(lamina.node).display === "none";
       if (lamina.oculta) return null;
       const h = home(lamina);
-      lamina.node.style.left = "0px";
-      lamina.node.style.top = "0px";
+      // La lámina sigue en el left y top del CSS (h.x, h.y): sólo cambia su transform, que el navegador no cuenta
+      // como un salto del diseño (CLS)
       lamina.node.style.width = `${h.L}px`;
       lamina.node.style.transform = "none";
       lamina.cuerpo.style.transform = "none";
@@ -763,7 +768,8 @@
       }
 
       lamina.node.toggleAttribute("data-arriba", flip > 0.04 || (lamina.vuelo && p > lamina.vuelo[0]));
-      lamina.node.style.transform = `translate3d(${x - L.L / 2}px, ${y - L.L / 2}px, 0) rotate(${r}deg) scale(${s})`;
+      // El transform parte del left y top del CSS (L.x, L.y) y lleva la esquina de la lámina a su lugar del cuadro
+      lamina.node.style.transform = `translate3d(${x - L.L / 2 - L.x}px, ${y - L.L / 2 - L.y}px, 0) rotate(${r}deg) scale(${s})`;
       lamina.node.style.opacity = alpha < 1 ? String(alpha) : "";
       lamina.node.style.setProperty("--papel", papel < 1 ? String(papel) : "1");
       lamina.node.style.setProperty("--pie", pie < 1 ? String(pie) : "1");

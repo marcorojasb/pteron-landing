@@ -56,6 +56,19 @@ test("cada marca de la web usa la caja del símbolo de marca.svg", () => {
   }
 });
 
+test("el inicio lleva el símbolo de marca.svg en la página: la marca de la portada no espera a las láminas", () => {
+  const simbolo = /<symbol id="pteron"[\s\S]*?<\/symbol>/.exec(read("assets/marca.svg"))[0];
+  const inicio = read("index.html");
+  const bloque = /<!-- marca:inicio -->([\s\S]*?)<!-- marca:fin -->/.exec(inicio)?.[1] || "";
+  assert.equal(bloque, `<svg width="0" height="0" style="position:absolute" aria-hidden="true">${simbolo}</svg>`, "copiado tal cual por scripts/sitio.mjs");
+  assert.equal(inicio.split('<symbol id="pteron"').length, 2, "un solo símbolo");
+  assert.match(inicio, /<a class="marca portada-marca" href="\/" aria-label="pteron"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="#pteron"\/><\/svg><\/a>/);
+  // Las demás páginas no tienen el símbolo: piden la marca a marca.svg
+  for (const page of ALL.filter((page) => page !== "index.html")) {
+    assert.doesNotMatch(read(page), /<symbol id="pteron"|<use href="#pteron"/, `${page}: la marca, desde marca.svg`);
+  }
+});
+
 test("los archivos de la marca están al día con marca.svg (node scripts/marca.mjs)", () => {
   execFileSync(process.execPath, [path.join(root, "scripts/marca.mjs"), "--revisar"], { stdio: "pipe" });
   assert.ok(existsSync(path.join(pub, "favicon.ico")), "favicon.ico en la raíz");

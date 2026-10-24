@@ -14,7 +14,8 @@
  *
  * Los bloques pasan por blocksToWriter, writerForAudience y writerHTML de pteron; las figuras, por el motor de
  * pteron-design (renderDetallado). Requiere los paquetes de pteron: su node_modules o la carpeta de PTERON_DEPS
- * (jsdom, @xmldom/xmldom, temml y mathml2omml). El contenido vive en scripts/pteron-hojas/materiales.mjs.
+ * (jsdom, @xmldom/xmldom, temml y mathml2omml). El contenido vive en scripts/pteron-hojas/materiales.mjs, y las
+ * imágenes de las láminas y de la pieza, en scripts/pteron-hojas/imagenes.mjs.
  */
 import { spawnSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
@@ -47,6 +48,7 @@ const { writerHTML } = await from("src/shared/office/renderer.ts");
 const { FIGURE_KIT_VERSION } = await from("src/shared/design-figures.ts");
 const kit = await from("src/vendor/pteron-design/library/render.mjs");
 const { MATERIALES, LAMINAS } = await import(pathToFileURL(path.join(root, "scripts/pteron-hojas/materiales.mjs")).href);
+const { imagenLamina, imagenPieza } = await import(pathToFileURL(path.join(root, "scripts/pteron-hojas/imagenes.mjs")).href);
 
 const indexPath = path.join(root, "public/index.html");
 let index = readFileSync(indexPath, "utf8");
@@ -282,13 +284,14 @@ const laminas = LAMINAS.map((lamina) => {
   const [x, y, w, capa, giro] = lamina.escritorio;
   const vars = [`--x:${x}`, `--y:${y}`, `--w:${w}`, `--r:${giro}`];
   if (lamina.movil) vars.push(`--xm:${lamina.movil[0]}`, `--ym:${lamina.movil[1]}`, `--wm:${lamina.movil[2]}`, `--rm:${lamina.movil[4]}`);
-  const src = (size) => `/assets/atlas/${lamina.archivo}-${size}.webp?v=${version}`;
+  // La sombra y la cara, con la misma imagen: un solo archivo por lámina
+  const imagen = imagenLamina(lamina, version);
   const pie = zona.pie
     ? `<p class="reverso-pie" style="grid-area:${zona.pie}"><b>${escape(pedido.titulo)}</b> <span>${credito(lamina)}</span></p>`
     : "";
   return `<div class="lamina" data-lamina="${lamina.archivo}" data-capa="${capa}"${lamina.hoja ? ` data-hoja="${lamina.hoja}" data-bloque="${lamina.bloque}"` : ""}${lamina.movil ? "" : " data-solo-escritorio"} style="${vars.join(";")}">`
-    + `<div class="lamina-sombra"><img src="${src(300)}" alt="" decoding="async" draggable="false"></div>`
-    + `<div class="lamina-cuerpo"><div class="lamina-cara"><img src="${src(600)}" srcset="${src(300)} 300w, ${src(600)} 600w" sizes="(max-width: 760px) 36vw, 24vw" alt="" decoding="async" draggable="false"></div>`
+    + `<div class="lamina-sombra">${imagen}</div>`
+    + `<div class="lamina-cuerpo"><div class="lamina-cara">${imagen}</div>`
     + `<div class="lamina-reverso" style="clip-path:${contorno(reflejo)};grid-template:${zona.grid}"><div class="reverso-figura" style="grid-area:${zona.figura}">${figura}</div>${pie}</div></div></div>`;
 });
 
@@ -336,12 +339,11 @@ for (const [pagina, archivo, giro] of CABEZAS) {
   const { svg, ancho, alto } = render(pedido, { prefijoIds: `pieza-${archivo}-` });
   const zona = zonas(reflejo, ancho / alto);
   const figura = svg.replace(/^<svg\b([^>]*)>/, (_, attrs) => `<svg${attrs.replace(/\s(width|height)="[^"]*"/g, "")} class="pteron-figura" focusable="false">`);
-  const src = (size) => `/assets/atlas/${lamina.archivo}-${size}.webp?v=${version}`;
   const pie = zona.pie
     ? `<p class="reverso-pie" style="grid-area:${zona.pie}"><b>${escape(pedido.titulo)}</b> <span>${credito(lamina)}</span></p>`
     : "";
   const markup = `<div class="pieza" data-pieza aria-hidden="true" style="--giro:${giro}deg"><div class="pieza-cuerpo">`
-    + `<div class="pieza-cara"><img src="${src(600)}" srcset="${src(300)} 300w, ${src(600)} 600w" sizes="(max-width: 760px) 120px, 240px" width="600" height="600" alt="" decoding="async" draggable="false"></div>`
+    + `<div class="pieza-cara">${imagenPieza(lamina, version)}</div>`
     + `<div class="pieza-reverso" style="clip-path:${contorno(reflejo)};grid-template:${zona.grid}"><div class="reverso-figura" style="grid-area:${zona.figura}">${figura}</div>${pie}</div>`
     + `</div></div>`;
   const ruta = path.join(root, "public", pagina);

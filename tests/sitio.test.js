@@ -74,6 +74,17 @@ test("todas las páginas usan la misma versión de caché y ninguna carga letras
   assert.equal(versions.size, 1, `una sola versión: ${[...versions].join(", ")}`);
 });
 
+test("el inicio se presenta a los buscadores como el sitio pteron, sin datos de producto ni de precio", () => {
+  const html = read("index.html");
+  const bloques = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
+  assert.equal(bloques.length, 1, "un solo bloque de datos estructurados");
+  const canonica = /<link rel="canonical" href="([^"]+)">/.exec(html)[1];
+  assert.deepEqual(bloques[0], { "@context": "https://schema.org", "@type": "WebSite", name: "pteron", url: canonica, inLanguage: "es-CL" });
+  for (const page of ALL.filter((page) => page !== "index.html")) {
+    assert.doesNotMatch(read(page), /application\/ld\+json/, `${page}: sólo el inicio`);
+  }
+});
+
 test("la 404 dice qué pasó y es noindex", () => {
   const html = read("404.html");
   assert.match(html, /<h1>Página no encontrada<\/h1>/);

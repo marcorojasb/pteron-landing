@@ -119,7 +119,18 @@ function cargar({ ancho = 1440, alto = 900, estilos = null, quieto = false } = {
   capa.listas.set(".lamina", laminas);
   escena.hijos.set("[data-portada]", portada);
   escena.hijos.set(".escena-fija", fija);
-  escena.hijos.set("[data-mesa]", new Nodo());
+  // Las cuatro hojas de la mesa, cada una con su rótulo
+  const mesa = new Nodo();
+  const hojas = ["ciencias", "historia", "matematica", "lenguaje"].map((id) => {
+    const node = new Nodo();
+    node.dataset.hoja = id;
+    node.hijos.set(".pteron-document", new Nodo());
+    mesa.hijos.set(`[data-rotulo="${id}"]`, new Nodo());
+    return node;
+  });
+  mesa.listas.set(".mesa-hoja", hojas);
+  const rotulos = hojas.map((node) => mesa.hijos.get(`[data-rotulo="${node.dataset.hoja}"]`));
+  escena.hijos.set("[data-mesa]", mesa);
   escena.hijos.set(".mesa-pie", new Nodo());
   const corner = new Nodo();
   corner.toggleAttribute("data-oculto", true);
@@ -183,6 +194,7 @@ function cargar({ ancho = 1440, alto = 900, estilos = null, quieto = false } = {
     escena,
     laminas,
     originales,
+    rotulos,
     corner,
     indice,
     raiz,
@@ -206,6 +218,44 @@ function cargar({ ancho = 1440, alto = 900, estilos = null, quieto = false } = {
   };
 }
 const pose = (page) => page.laminas.filter((node) => node.style.transform === "none").length;
+/** Dónde queda la esquina de una lámina en la mesa: su left y top del CSS (--x % y --y % de la mesa) más el transform
+    que escribe la escena. */
+function esquina(page, node) {
+  const [, x, y] = /translate3d\((-?[\d.]+)px, (-?[\d.]+)px/.exec(node.style.transform).map(Number);
+  const v = (nombre) => parseFloat(node.style.getPropertyValue(nombre));
+  return { x: (v("--x") / 100) * page.vista.ancho + x, y: (v("--y") / 100) * page.vista.alto + y };
+}
+
+test("la escena mueve las láminas sólo con transform: left y top quedan los del CSS y no hay salto de diseño", () => {
+  const page = cargar();
+  page.cuadro();
+  for (const node of page.laminas) {
+    assert.equal(node.style.left, "", "sin left en línea");
+    assert.equal(node.style.top, "", "sin top en línea");
+    // Arriba de la escena la lámina flota alrededor de su lugar del CSS: su centro, a unos pocos píxeles
+    const { x, y } = esquina(page, node);
+    const lado = parseFloat(node.style.width);
+    const v = (nombre) => parseFloat(node.style.getPropertyValue(nombre));
+    assert.ok(Math.abs(x + lado / 2 - (v("--x") / 100) * 1440) < 30, `x: ${node.style.transform}`);
+    assert.ok(Math.abs(y + lado / 2 - (v("--y") / 100) * 900) < 30, `y: ${node.style.transform}`);
+  }
+});
+
+test("cada rótulo cabe en lo que se ve de su hoja: en una tableta vertical no se monta sobre el siguiente", () => {
+  for (const [ancho, alto] of [[768, 1024], [820, 1180], [1440, 900]]) {
+    const page = cargar({ ancho, alto });
+    const izquierda = page.rotulos.map((node) => Number(/translate3d\((-?[\d.]+)px/.exec(node.style.transform)[1]));
+    const anchos = page.rotulos.map((node) => parseFloat(node.style.maxWidth));
+    for (let i = 0; i < 3; i += 1) {
+      assert.ok(anchos[i] > 100, `${ancho}×${alto}: el rótulo ${i} mide ${anchos[i]} px`);
+      assert.ok(izquierda[i] + anchos[i] <= izquierda[i + 1] - 4, `${ancho}×${alto}: el rótulo ${i} llega al siguiente`);
+    }
+    // Si la escena queda quieta, el rótulo vuelve a su estilo de origen
+    page.vista.falla = true;
+    page.cuadro();
+    assert.ok(page.rotulos.every((node) => node.getAttribute("style") === null));
+  }
+});
 
 test("la escena se mide y se dibuja al cargar: la esquina queda oculta y ninguna lámina en la pose de medir", () => {
   const page = cargar();
@@ -286,7 +336,7 @@ test("si la mesa cambia de tamaño sin resize (pestaña de fondo, caché), el cu
   // Arriba de todo la esquina sigue oculta y las láminas reposan dentro de la pantalla nueva
   assert.ok(page.corner.hasAttribute("data-oculto"));
   for (const node of page.laminas) {
-    const [, x, y] = /translate3d\((-?[\d.]+)px, (-?[\d.]+)px/.exec(node.style.transform).map(Number);
+    const { x, y } = esquina(page, node);
     assert.ok(x > -200 && x < 1440 && y > -200 && y < 900, `lámina fuera de la pantalla: ${node.style.transform}`);
   }
 });
@@ -309,7 +359,7 @@ test("con hojas de estilo pendientes (Safari corre los defer sin esperarlas), la
   assert.equal(page.corner.dataset.control, "inicio");
   assert.ok(page.corner.hasAttribute("data-oculto"), "arriba de todo la esquina sigue oculta");
   for (const node of page.laminas) {
-    const [, x, y] = /translate3d\((-?[\d.]+)px, (-?[\d.]+)px/.exec(node.style.transform).map(Number);
+    const { x, y } = esquina(page, node);
     assert.ok(x > -200 && x < 1440 && y > -200 && y < 900, `lámina fuera de la pantalla: ${node.style.transform}`);
   }
   page.cuadro();
@@ -380,7 +430,7 @@ test("el recreo toma las láminas quietas y derechas, la del doble clic primero;
   assert.equal(ocultas(page), 4);
   page.cuadro(16);
   assert.equal(ocultas(page), 0);
-  assert.ok(page.laminas.some((node) => Number(/translate3d\((-?[\d.]+)px, (-?[\d.]+)px/.exec(node.style.transform)[2]) > 900), "parten bajo la pantalla");
+  assert.ok(page.laminas.some((node) => esquina(page, node).y > 900), "parten bajo la pantalla");
   for (let i = 0; i < 120; i += 1) page.cuadro(16);
   page.laminas.forEach((node, i) => {
     const y = (t) => Number(/translate3d\((-?[\d.]+)px, (-?[\d.]+)px/.exec(t)[2]);

@@ -6,6 +6,8 @@
  *   node scripts/sitio.mjs --revisar  sólo comprueba que estén al día (lo usa la prueba)
  *
  * Marcadores: <!-- esquina:inicio --> … <!-- esquina:fin -->, <!-- colofon:inicio --> … y <!-- indice:inicio --> ….
+ * La página que lleva <!-- marca:inicio --> … <!-- marca:fin --> (el inicio) recibe ahí el símbolo de
+ * public/assets/marca.svg, copiado tal cual.
  */
 import { readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -37,6 +39,12 @@ function routeOf(file) {
   if (rel.endsWith("/index.html")) return `/${rel.slice(0, -"/index.html".length)}`;
   return `/${rel.replace(/\.html$/, "")}`;
 }
+
+// En el inicio la marca de la portada es lo primero que se lee: va con el símbolo en la misma página, para que no
+// espere a marca.svg detrás de las láminas. Las demás marcas (el colofón, las otras páginas) lo piden a marca.svg
+const SIMBOLO = /<symbol id="pteron"[\s\S]*?<\/symbol>/.exec(readFileSync(path.join(pub, "assets/marca.svg"), "utf8"))?.[0];
+if (!SIMBOLO) throw new Error("public/assets/marca.svg no tiene el <symbol id=\"pteron\">");
+const simbolo = () => `<svg width="0" height="0" style="position:absolute" aria-hidden="true">${SIMBOLO}</svg>`;
 
 function marca(version, label = "pteron, inicio") {
   return `<a class="marca" href="/" aria-label="${label}"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=${version}#pteron"/></svg></a>`;
@@ -144,6 +152,12 @@ for (const file of pages(pub)) {
     const b = html.indexOf(end);
     if (a < 0 || b < a) throw new Error(`${route} no tiene los marcadores de ${name}`);
     html = `${html.slice(0, a + start.length)}${markup}${html.slice(b)}`;
+  }
+  if (html.includes("<!-- marca:inicio -->")) {
+    const a = html.indexOf("<!-- marca:inicio -->") + "<!-- marca:inicio -->".length;
+    const b = html.indexOf("<!-- marca:fin -->");
+    if (b < a) throw new Error(`${route} no cierra el bloque de la marca`);
+    html = `${html.slice(0, a)}${simbolo()}${html.slice(b)}`;
   }
   if (html !== before) {
     stale += 1;
