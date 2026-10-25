@@ -1,5 +1,24 @@
 # Design QA
 
+## Planes según la venta, salto temprano de la portada y CSP — 2026-10-25
+
+- /planes: cada plan de pago parte con «Disponible pronto» (deshabilitado, atenuado como en /cuenta) y `script.js`
+  muestra «Elegir Basic/Pro» sólo para el plan que `GET /api/plans` dice a la venta. Verificado a 390 y 1280 px con
+  la venta cerrada, con Basic abierto, con la API caída y lenta (1,5 s): CLS 0 en todos, y sin JavaScript queda
+  «Disponible pronto».
+- Portada: si el visitante bajó más de 8 px antes de que corriera inicio.js, la escena queda quieta (como con
+  movimiento reducido) en vez de fijarse y cambiarle lo que leía. Medido con Fast 3G y CPU 4x bajando a 400, 1100 y
+  2000 px: CLS 0–0,003 y los títulos en el mismo lugar antes y después (antes, CLS 0,54). Sin bajar, la escena abre
+  igual; #hojas, recargar y volver atrás también.
+- Content-Security-Policy en todo el sitio (`public/_headers`). Recorridos en Chromium con las cabeceras de
+  `_headers`: portada con escena, índice y recreo (el tablero y sus piezas se pintan), docs con búsqueda, siguiente,
+  versiones y sin sus scripts, cuenta con y sin sesión, admin, descargar, planes, marca, privacidad, términos y 404:
+  ninguna violación. Una prueba de control con un hash menos sí las detecta.
+- Privacidad, versión 2026-10-25: lo que se dice de Anthropic calza con su política (borra lo de la API dentro de
+  30 días).
+- Barrido final: 12 páginas a 390 y 1280 px (portada y docs también con movimiento reducido), sin peticiones
+  fallidas, errores, desborde ni imágenes rotas. 466 pruebas pasan.
+
 ## Rendimiento, accesibilidad, documentación y pulido — 2026-10-25
 
 Pedido: revisar qué más mejorar y optimizar en la landing. Una auditoría en seis frentes (rendimiento,
