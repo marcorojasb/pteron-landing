@@ -6,7 +6,6 @@
   const releaseData = window.PTERON_RELEASES;
   const $ = (selector) => document.querySelector(selector);
   const links = { windows: $("[data-download-windows]"), macos: $("[data-download-macos]"), linux: $("[data-download-linux]") };
-  const labels = { windows: $("[data-download-windows-label]"), macos: $("[data-download-macos-label]"), linux: $("[data-download-linux-label]") };
   const releaseLink = $("[data-download-release]");
   const status = $("[data-download-status]");
   const releasesPageUrl = releaseData?.RELEASES_PAGE_URL || "https://github.com/marcorojasb/pteron-beta/releases";
@@ -26,11 +25,7 @@
     );
   };
 
-  const PLATFORM = {
-    windows: ["windowsExe", (version) => `Windows 11 · x64 · versión ${version}`],
-    macos: ["macosDmg", (version) => `Chip M1 o posterior · versión ${version}`],
-    linux: ["linuxAppImage", (version) => `x86_64 · AppImage · versión ${version}`],
-  };
+  const PLATFORM = { windows: "windowsExe", macos: "macosDmg", linux: "linuxAppImage" };
 
   const loadLatestRelease = async () => {
     if (!releaseData) return;
@@ -39,11 +34,10 @@
       announceUnavailable();
       return;
     }
-    Object.entries(PLATFORM).forEach(([platform, [kind, label]]) => {
+    Object.entries(PLATFORM).forEach(([platform, kind]) => {
       const asset = releaseData.findAsset(latest, kind);
       if (!asset || !links[platform]) return;
       links[platform].href = movil ? latest.url || releasesPageUrl : asset.url;
-      if (labels[platform]) labels[platform].textContent = label(latest.version);
     });
     Object.entries({ linuxDeb: "[data-download-linux-deb]", linuxRpm: "[data-download-linux-rpm]", linuxTar: "[data-download-linux-tar]" }).forEach(([kind, selector]) => {
       const link = $(selector);

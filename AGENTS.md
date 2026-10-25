@@ -64,6 +64,9 @@ Cada una de esas acciones requiere autorización específica.
 - Debe transmitir seguridad, conocimiento y oficio, sin grandilocuencia.
 - El profesor mantiene siempre su criterio.
 - La interfaz y el discurso deben ser sobrios, concretos y breves.
+- Sin etiquetas ni descripciones secundarias innecesarias: el diseño hace la
+  explicación. No son secundarios el texto legal, lo que se cobra y cuándo, ni el
+  aviso antes de una acción que no se deshace; ese aviso va en la acción misma.
 - Una sección tiene una idea dominante y una acción clara.
 - No prometer capacidades que el producto actual no pueda demostrar.
 - Respetar accesibilidad, legibilidad y `prefers-reduced-motion`.

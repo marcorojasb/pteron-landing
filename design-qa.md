@@ -1,5 +1,37 @@
 # Design QA
 
+## Sin etiquetas ni descripciones secundarias — 2026-10-25
+
+- Principio, en toda la interfaz: el diseño hace la explicación (queda en `AGENTS.md`). Se quitaron:
+  - las bajadas bajo el título de Planes, Descargar, Cuenta, Marca, Administración y la 404;
+  - el rótulo sobre cada título de la documentación, los rótulos y el pie de las hojas de la portada y la nota de la
+    beta en el índice de la documentación;
+  - las descripciones bajo cada enlace (por dónde empezar, «Sigue leyendo», la 404, las plataformas del inicio), los
+    pies de las capturas de la documentación, la ayuda de teclado del buscador y el grupo de cada resultado, y
+    «Siguiente» en la tarjeta de la página siguiente;
+  - en Descargar, el chip «Tu equipo» (el botón de tu sistema ya es el principal), los nombres de archivo repetidos y
+    las notas que repetían la documentación; en Cuenta, las notas de la sesión, la activación y los planes, y la ayuda
+    al pie; en Marca, la leyenda del espacio libre, la nota de formatos y la columna «Para» de los archivos.
+- Pasan a ser sólo para lectores de pantalla: «En esta página», «Páginas», «Sigue leyendo», «Huella», «Qué hoja»,
+  «Impresión», «Ver» y los rótulos del correo, la búsqueda y el mes.
+- El diseño explica en vez del texto: en Marca, el gris de cada color aparece sólo al verla en fotocopia. El colofón
+  queda en la marca, la frase y las páginas; los créditos de las láminas viven en /privacidad#creditos, enlazados
+  desde la línea legal de cada página («Créditos»).
+- Lo que un pie de captura decía y el párrafo no pasó al texto: la alternativa sugerida va primero, Adjuntar no envía
+  nada y «Qué hoja» al imprimir. En /admin, las reglas de los paneles pasaron a la acción que las necesita: abrir la
+  venta recuerda revisar el plan de Flow, pausar la IA dice que las cuotas y la clave no cambian y terminar un plan
+  dice que revoca las licencias.
+- Sin tocar: el texto legal de Privacidad y Términos (con sus bajadas) y la copia fija de los Términos; las
+  condiciones de la prueba y del cobro en Planes y en el resumen antes de Flow; el aviso de SmartScreen; los créditos;
+  las confirmaciones; el recreo.
+- Verificado en Chromium a 1280 y 390 px: las diez páginas y sus estados (Cuenta sin plan, con plan y con un plan
+  pedido; Administración con datos, una cuenta y los planes; una guía de instalación, la última página de la
+  documentación y el buscador abierto; Marca en fotocopia). Sin errores de consola ni violaciones de CSP.
+- Pruebas: la de los rótulos de la portada se fue con ellos; la de los créditos ahora exige que cada lámina que se ve
+  tenga su crédito y que cada pie lleve ahí; la de precios exige además que ningún precio nombrado sea otro que los
+  del catálogo. Cinco mutantes de esas dos pruebas, todos detectados.
+- Revisión del sitio 2026-10-25.6. 503 pruebas, humo y `sitio.mjs --revisar` en verde.
+
 ## Entrar con Google y Apple, listo y oculto — 2026-10-25
 
 - /cuenta: «Continuar con Google» y «Continuar con Apple» arriba de la hoja de entrada, de papel y a lo ancho, con la

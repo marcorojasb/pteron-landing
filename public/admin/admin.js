@@ -154,11 +154,11 @@
       stat("Cuentas", num.format(resumen.cuentas)),
       stat("Pagando", num.format(resumen.pagando), `${num.format(resumen.en_prueba)} en prueba`),
       stat("Cortesías", num.format(resumen.cortesias)),
-      stat("CLP / mes recurrente", `$${clp.format(resumen.clp_mes_recurrente)}`, "a precio de catálogo"),
+      stat("CLP / mes recurrente", `$${clp.format(resumen.clp_mes_recurrente)}`),
       stat(`Consumo de IA, ${monthName(resumen.mes)}`, usd(resumen.unidades_mes), `${num.format(resumen.unidades_mes)} unidades · ${num.format(resumen.cuentas_con_uso)} cuentas con uso`),
       stat("Licencias vigentes", num.format(resumen.licencias_vigentes)),
-      stat("Venta", resumen.a_la_venta.length ? "Abierta" : "Cerrada", resumen.a_la_venta.length ? resumen.a_la_venta.join(", ") : "ningún plan a la venta"),
-      stat("IA incluida", resumen.ia_incluida_pausada ? "En pausa" : "Activa", resumen.ia_incluida_pausada ? "se reanuda en Salud" : null),
+      stat("Venta", resumen.a_la_venta.length ? "Abierta" : "Cerrada", resumen.a_la_venta.length ? resumen.a_la_venta.join(", ") : null),
+      stat("IA incluida", resumen.ia_incluida_pausada ? "En pausa" : "Activa"),
     );
     fillTable($("[data-resumen-recientes]"), cuentas.cuentas.slice(0, 8), (row) => el("tr", {}, [
       cell(el("button", { class: "button-link", type: "button", text: row.email || row.id, onclick: () => openCuenta(row.id) })),
@@ -232,7 +232,7 @@
         show("Escribe el motivo: queda en el registro de cobros.", "error");
         return;
       }
-      if (!window.confirm(`¿Terminar ahora el plan de ${cuenta.email}? Se cancela en Flow en el acto y se corta la IA incluida. El reembolso, si corresponde, se hace aparte en Flow.`)) return;
+      if (!window.confirm(`¿Terminar ahora el plan de ${cuenta.email}? Se cancela en Flow en el acto, se corta la IA incluida y se revocan sus licencias. El reembolso, si corresponde, se hace aparte en Flow.`)) return;
       try {
         const result = await api(`/api/admin/cuentas/${encodeURIComponent(cuenta.id)}/terminar`, { method: "POST", body: JSON.stringify({ motivo }) });
         show(result.flow_cancelada
@@ -281,11 +281,6 @@
           } catch (error) { fail(error); }
         } })
         : null];
-    // Lo irreversible lleva el aviso marcado; lo demás, una nota.
-    const ayuda = paga
-      ? el("p", { class: "help", text: "Terminar ahora cancela la suscripción en Flow sin esperar el cierre del período, corta la IA incluida y revoca las licencias. No reembolsa: eso se hace en el panel de Flow. Para darle una cortesía, termina antes su plan." })
-      : el("p", { class: "muted small", text: "Una cortesía reemplaza a la cortesía vigente; quitarla revoca las licencias de la cuenta." });
-
     const maxUnits = Math.max(1, ...consumo.map((row) => Number(row.ai_units_used) || 0));
     const bars = el("div", { class: "bars" }, consumo.map((row) => el("div", { class: "bar" }, [
       el("span", { text: `${fmtDate(row.period_start)} – ${fmtDate(row.period_end)}` }),
@@ -302,16 +297,15 @@
 
     detalle.replaceChildren(
       el("div", { class: "panel-row" }, [
-        el("div", {}, [el("p", { class: "eyebrow", text: "Cuenta" }), el("h2", { text: cuenta.email || cuenta.id }), el("p", { class: "muted small", text: `Alta ${fmtDate(cuenta.created_at)} · último acceso ${fmtDateTime(cuenta.last_sign_in_at)} · ${cuenta.id}` })]),
+        el("div", {}, [el("h2", { text: cuenta.email || cuenta.id }), el("p", { class: "muted small", text: `Alta ${fmtDate(cuenta.created_at)} · último acceso ${fmtDateTime(cuenta.last_sign_in_at)} · ${cuenta.id}` })]),
         el("button", { class: "button button-outline", type: "button", text: "Volver a la lista", onclick: closeCuenta }),
       ]),
       el("div", { class: "panel" }, [
         el("div", { class: "panel-head" }, [el("h3", { text: "Plan" }), el("p", { text: describePlan(actual) })]),
         el("div", { class: "actions" }, acciones),
-        ayuda,
       ]),
       el("div", { class: "account-grid" }, [
-        el("div", { class: "panel" }, [el("div", { class: "panel-head" }, [el("h3", { text: "Consumo de IA por período" }), el("p", { text: "Unidades usadas / cuota del período" })]), consumo.length ? bars : el("p", { class: "muted small", text: "Sin consumo registrado." })]),
+        el("div", { class: "panel" }, [el("div", { class: "panel-head" }, el("h3", { text: "Consumo de IA por período" })), consumo.length ? bars : el("p", { class: "muted small", text: "Sin consumo registrado." })]),
         el("div", { class: "panel" }, [el("div", { class: "panel-head" }, el("h3", { text: "Licencias" })), table(["Plan", "Estado", "Emitida", "Vence", "Clave"], licencias, (row) => el("tr", {}, [cell(row.plan_id), cell(row.status), cell(fmtDate(row.issued_at)), cell(fmtDate(row.expires_at)), cell(row.key_id)]))]),
       ]),
       el("div", { class: "panel" }, [el("div", { class: "panel-head" }, el("h3", { text: "Suscripciones" })), table(["Plan", "Origen", "Estado", "Inicio", "Pagado hasta", "Próximo cobro", "Revisada en Flow", "Creada"], suscripciones, (row) => el("tr", {}, [
@@ -336,7 +330,7 @@
     const data = await api(`/api/admin/consumo${mes ? `?mes=${encodeURIComponent(mes)}` : ""}`);
     $("#admin-mes").value = data.mes;
     $("[data-consumo-stats]").replaceChildren(
-      stat(`Consumo de IA, ${monthName(data.mes)}`, usd(data.total_unidades), `${num.format(data.total_unidades)} unidades, a precio de lista`),
+      stat(`Consumo de IA, ${monthName(data.mes)}`, usd(data.total_unidades), `${num.format(data.total_unidades)} unidades`),
       stat("Peticiones", num.format(data.total_peticiones)),
       stat("Cuentas con uso", num.format(data.cuentas.filter((row) => row.unidades > 0).length)),
     );
@@ -395,7 +389,7 @@
           el("button", { class: "button button-small button-outline", type: "button", text: row.for_sale ? "Cerrar la venta" : "Abrir la venta", "aria-label": `${row.for_sale ? "Cerrar" : "Abrir"} la venta de ${name}`, onclick: () => {
             const abrir = !row.for_sale;
             const pregunta = abrir
-              ? `¿Abrir la venta de ${name}? El checkout empezará a cobrar $${clp.format(row.monthly_price_clp)} al mes con Flow.`
+              ? `¿Abrir la venta de ${name}? El checkout empezará a cobrar $${clp.format(row.monthly_price_clp)} al mes con Flow: revisa antes en Salud que su plan de Flow cobre lo mismo.`
               : `¿Cerrar la venta de ${name}? Quien ya paga sigue igual; sólo se detienen las compras nuevas.`;
             if (window.confirm(pregunta)) savePlan(row, { for_sale: abrir }, abrir ? `${name} quedó a la venta.` : `${name} ya no se vende.`);
           } }),
@@ -562,7 +556,9 @@
 
   $("[data-ia-boton]").addEventListener("click", async (event) => {
     const pausar = event.currentTarget.dataset.paused !== "true";
-    if (!window.confirm(pausar ? "¿Pausar la IA incluida para todas las cuentas?" : "¿Reanudar la IA incluida para todas las cuentas?")) return;
+    if (!window.confirm(pausar
+      ? "¿Pausar la IA incluida para todas las cuentas? Las cuotas y la clave de Anthropic no cambian, y cada docente sigue con el motor local o con su propia clave."
+      : "¿Reanudar la IA incluida para todas las cuentas?")) return;
     try {
       const data = await api("/api/admin/ajustes", { method: "PATCH", body: JSON.stringify({ included_ai_paused: pausar }) });
       renderPausa(data.included_ai_paused);

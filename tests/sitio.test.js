@@ -137,14 +137,19 @@ test("precio, prueba y cuota de los planes: los mismos en el inicio, /planes, /c
   assert.match(planes, /\$9\.990 <small>CLP al mes, IVA incluido<\/small>/);
   assert.ok(planes.includes(`<span class="destacado">7 días gratis.</span> ${PRUEBA}`), "/planes: la prueba y la renovación juntas");
   assert.match(planes, /Una prueba por persona\./);
-  assert.match(planes, /6\.000\.000 unidades de IA por período \(1\.500\.000 durante la prueba\)\. Se renueva con tu cobro\./);
-  assert.match(planes, /30\.000\.000 unidades de IA por período, cinco veces Basic/);
-  assert.match(planes, /En preparación: memoria pedagógica avanzada y elección del modelo\./);
-  assert.match(planes, /Lo publicaremos cuando lo midamos con docentes\./, "la equivalencia en materiales no se inventa");
+  assert.match(planes, /<li>6\.000\.000 unidades de IA por período \(1\.500\.000 durante la prueba\)<\/li>/);
+  assert.match(planes, /<li>30\.000\.000 unidades de IA por período<\/li>/);
+  assert.match(planes, /El período se renueva con tu cobro/);
+  assert.doesNotMatch(planes, /\d+ (guías|pruebas|materiales|planificaciones) (al|por) (mes|período)/, "la equivalencia en materiales no se inventa");
   assert.doesNotMatch(planes, /Conexión prioritaria/);
-  assert.match(read("index.html"), /parten en \$2\.990 al mes, IVA incluido\./);
   assert.ok(read("terminos.html").includes(`7 días gratis. ${PRUEBA}`), "Términos: la prueba con las mismas palabras");
-  assert.ok(read("cuenta/index.html").includes(PRUEBA), "/cuenta, antes de entrar: la prueba con las mismas palabras");
+  // Un precio que se nombre en cualquier página es uno de los del catálogo; el de /cuenta, antes de Flow, lo arma
+  // cuenta.js desde el catálogo (tests/cuenta.test.js)
+  for (const page of ALL.filter((page) => !page.startsWith("admin/"))) {
+    for (const [, cifra] of read(page).matchAll(/\$\s?(\d{1,3}(?:\.\d{3})+)/g)) {
+      assert.ok(["2.990", "9.990"].includes(cifra), `${page}: $${cifra} no es un precio del catálogo`);
+    }
+  }
 });
 
 test("/cuenta parte con la venta cerrada y pide aceptar los Términos vigentes antes de Flow", () => {

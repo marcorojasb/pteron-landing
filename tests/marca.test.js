@@ -158,14 +158,15 @@ test("las cabeceras de planes, descargar y cuenta llevan una lámina con su figu
   }
 });
 
-test("el colofón da los créditos completos de las láminas sólo donde se ven", () => {
-  const completo = /Láminas de dominio público: una carta portulana/;
-  assert.match(read("index.html"), completo);
-  assert.match(read("marca/index.html"), completo);
-  for (const page of ["planes/index.html", "cuenta/index.html", "privacidad.html", "404.html"]) {
+test("cada lámina que se ve tiene su crédito en /privacidad#creditos, y el pie de cada página lleva ahí", () => {
+  const laminas = (html) => new Set([...html.matchAll(/\/assets\/atlas\/([a-z0-9-]+?)-\d+\.webp/g)].map((m) => m[1]));
+  const privacidad = read("privacidad.html");
+  const creditos = laminas(privacidad.slice(privacidad.indexOf('id="creditos"')));
+  for (const page of ["index.html", "planes/index.html", "descargar/index.html", "cuenta/index.html", "marca/index.html", "docs/index.html", "admin/index.html", "privacidad.html", "terminos.html", "404.html"]) {
     const html = read(page);
-    assert.doesNotMatch(html.match(/<footer class="colofon"[\s\S]*?<\/footer>/)[0], completo, `${page}`);
-    assert.match(html, /sus créditos están en <a href="\/privacidad#creditos">Privacidad<\/a>/, `${page}: enlace a los créditos`);
+    for (const lamina of laminas(html)) assert.ok(creditos.has(lamina), `${page}: ${lamina} sin crédito`);
+    const pie = html.match(/<footer class="colofon"[\s\S]*?<\/footer>/)[0];
+    assert.match(pie, /<a href="\/privacidad#creditos">Créditos<\/a>/, `${page}: el pie lleva a los créditos`);
   }
 });
 

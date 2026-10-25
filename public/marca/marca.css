@@ -2,7 +2,7 @@
    La marca, el icono, los colores, la letra, las láminas y la voz, cada uno en su bloque numerado como las preguntas de
    una hoja de pteron. Las muestras son los archivos reales: lo que se ve es lo que se descarga. */
 
-@font-face{font-family:"Playwrite CL";font-style:normal;font-weight:100 400;font-display:swap;src:url(/assets/fonts/playwrite-cl-wght-normal.woff2?v=2026-10-25.5) format("woff2")}
+@font-face{font-family:"Playwrite CL";font-style:normal;font-weight:100 400;font-display:swap;src:url(/assets/fonts/playwrite-cl-wght-normal.woff2?v=2026-10-25.6) format("woff2")}
 
 /* ——— Bloques ——— */
 .bloque{padding-block:clamp(56px,8vw,112px)}
@@ -34,7 +34,6 @@
 .aire{--h:clamp(56px,8vw,112px);justify-self:center;max-width:100%;padding:calc(var(--h) * .57);border:1.5px dashed color-mix(in srgb,var(--azul) 35%,var(--linea));
   border-radius:2px;background:repeating-linear-gradient(135deg,transparent 0 7px,color-mix(in srgb,var(--lapiz) 22%,transparent) 7px 8px)}
 .aire-marca{display:block;width:auto;height:var(--h);max-width:100%;color:var(--azul);background:var(--hoja);outline:1px dashed color-mix(in srgb,var(--azul) 30%,transparent)}
-.lamina-marca figcaption{text-align:center}
 .variantes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .variante{display:grid;gap:8px;align-content:start}
 .variante-fondo{display:grid;place-items:center;aspect-ratio:16/10;padding:12%;border-radius:6px;border:var(--borde) solid var(--regla)}
@@ -56,14 +55,15 @@
 
 /* ——— 3. Color: las muestras y su fotocopia ——— */
 .colores{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.color{display:grid;grid-template-rows:auto auto 1fr auto;gap:6px;padding-bottom:12px;border-bottom:var(--borde) solid var(--regla)}
+.color{display:grid;grid-template-rows:auto auto 1fr;gap:6px;padding-bottom:12px;border-bottom:var(--borde) solid var(--regla)}
 .color-muestra{aspect-ratio:16/10;border-radius:6px;background:var(--c);box-shadow:inset 0 0 0 1px rgb(var(--sombra)/.10);transition:filter .45s var(--curva)}
 .color-nombre{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 10px;margin-top:6px;font-weight:700;font-stretch:106%;color:var(--tinta)}
 .hex{font-weight:500;font-stretch:96%;color:var(--grafito);font-variant-numeric:tabular-nums;letter-spacing:.01em}
 .color-uso{color:var(--tinta);font-size:var(--t-chico);line-height:1.45}
-.color-gris{color:var(--grafito);font-size:var(--t-rotulo);font-weight:600;font-stretch:96%}
+/* El gris de la fotocopia sólo aparece al verla en fotocopia */
+.color-gris{display:none;color:var(--azul);font-size:var(--t-rotulo);font-weight:600;font-stretch:96%}
 .bloque:has(input[value="fotocopia"]:checked) .color-muestra{filter:grayscale(1) contrast(1.08)}
-.bloque:has(input[value="fotocopia"]:checked) .color-gris{color:var(--azul)}
+.bloque:has(input[value="fotocopia"]:checked) .color-gris{display:block}
 
 /* ——— 4. Letra ——— */
 .especimen{display:grid;gap:18px;padding:clamp(22px,3vw,40px);border-radius:6px;background:var(--mesa)}
@@ -120,11 +120,9 @@
 .tabla-archivos{width:100%;border-collapse:collapse;overflow:hidden;border-radius:6px;background:var(--hoja);outline:var(--borde) solid var(--regla);
   box-shadow:0 1px 2px rgb(var(--sombra)/.08),0 24px 48px -34px rgb(var(--sombra)/.45)}
 .tabla-archivos th,.tabla-archivos td{padding:12px 16px;text-align:left;vertical-align:middle}
-.tabla-archivos thead th{background:var(--mesa);color:var(--grafito);font-size:var(--t-rotulo);font-weight:650}
 .tabla-archivos tbody tr+tr :is(th,td){border-top:var(--borde) solid var(--regla)}
 .tabla-archivos tbody th{color:var(--tinta);font-weight:650;white-space:nowrap}
-.tabla-archivos td{color:var(--grafito);font-size:var(--t-chico)}
-.tabla-archivos td:last-child{white-space:nowrap;text-align:right}
+.tabla-archivos td{font-size:var(--t-chico);white-space:nowrap;text-align:right}
 .tabla-archivos td a{display:inline-flex;align-items:center;min-height:40px;margin-left:12px;font-weight:650}
 
 @media (max-width:980px){
@@ -137,13 +135,6 @@
   .variante-fondo{grid-row:span 2}
   .otras-letras{grid-template-columns:minmax(0,1fr)}
   .par{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
-  .tabla-archivos thead{display:none}
-  .tabla-archivos tr{display:grid;grid-template-columns:minmax(0,1fr) auto;padding:12px 16px}
-  .tabla-archivos tbody tr+tr{border-top:var(--borde) solid var(--regla)}
-  .tabla-archivos tbody tr+tr :is(th,td){border-top:0}
-  .tabla-archivos th,.tabla-archivos td{padding:0}
-  .tabla-archivos td:nth-child(2){grid-row:2;grid-column:1}
-  .tabla-archivos td:last-child{grid-row:1 / span 2;grid-column:2;align-self:center}
 }
 @media (max-width:420px){
   .voz p{grid-template-columns:minmax(0,1fr);gap:2px}

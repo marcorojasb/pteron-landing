@@ -14,11 +14,11 @@
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v4.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <script>document.documentElement.classList.replace("no-js", "js");</script>
-  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-25.5" crossorigin>
-  <link rel="stylesheet" href="/styles.css?v=2026-10-25.5">
-  <link rel="stylesheet" href="/admin/admin.css?v=2026-10-25.5">
-  <script src="/script.js?v=2026-10-25.5" defer></script>
-  <script src="/admin/admin.js?v=2026-10-25.5" defer></script>
+  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-25.6" crossorigin>
+  <link rel="stylesheet" href="/styles.css?v=2026-10-25.6">
+  <link rel="stylesheet" href="/admin/admin.css?v=2026-10-25.6">
+  <script src="/script.js?v=2026-10-25.6" defer></script>
+  <script src="/admin/admin.js?v=2026-10-25.6" defer></script>
 </head>
 <body class="admin-pagina">
   <a class="saltar" href="#contenido">Saltar al contenido</a>
@@ -32,9 +32,8 @@
   <main id="contenido" class="admin">
     <div class="contenedor">
       <header class="admin-cabeza">
-        <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.5#pteron"/></svg></a>
+        <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.6#pteron"/></svg></a>
         <h1>Administración</h1>
-        <p class="texto">Quién paga, quién tiene cortesía, cuánta IA incluida se usa, qué está a la venta y si el servicio está en orden. Sólo para los correos autorizados.</p>
       </header>
 
       <p class="admin-notice" data-admin-notice role="status" aria-live="polite" hidden></p>
@@ -43,8 +42,7 @@
 
       <!-- Sin sesión (o sesión vencida): la misma sesión de /cuenta -->
       <section class="admin-login" data-admin-login aria-labelledby="admin-login-title" hidden>
-        <h2 id="admin-login-title">Entra primero con tu cuenta</h2>
-        <p>La administración usa la misma sesión de la cuenta web. Entra en <a href="/cuenta">/cuenta</a> con un correo autorizado y vuelve aquí.</p>
+        <h2 id="admin-login-title">Entra con tu cuenta</h2>
         <a class="button" href="/cuenta">Ir a mi cuenta</a>
       </section>
       <div class="admin-app" data-admin-app hidden>
@@ -56,7 +54,7 @@
             <button type="button" role="tab" id="tab-planes" aria-controls="vista-planes" aria-selected="false" data-tab="planes">Planes</button>
             <button type="button" role="tab" id="tab-salud" aria-controls="vista-salud" aria-selected="false" data-tab="salud">Salud</button>
           </div>
-          <p class="admin-session">Sesión de <strong data-admin-email></strong></p>
+          <p class="admin-session"><strong data-admin-email></strong></p>
         </div>
 
         <!-- Resumen -->
@@ -73,7 +71,7 @@
           <div class="panel admin-list" data-cuentas-lista>
             <form class="toolbar admin-search" role="search" data-cuentas-buscar>
               <div class="field">
-                <label for="admin-q">Buscar por correo</label>
+                <label class="sr-only" for="admin-q">Buscar por correo</label>
                 <div class="admin-input-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="admin-q" name="q" type="search" placeholder="profe@colegio.cl" autocomplete="off"></div>
               </div>
               <button class="button button-outline" type="submit">Buscar</button>
@@ -88,13 +86,13 @@
         <section class="admin-view" id="vista-consumo" role="tabpanel" aria-labelledby="tab-consumo" data-view="consumo" hidden>
           <div class="admin-period">
             <form class="toolbar" data-consumo-form>
-              <div class="field"><label for="admin-mes">Mes</label><input id="admin-mes" name="mes" type="month" placeholder="AAAA-MM"></div>
+              <div class="field"><label class="sr-only" for="admin-mes">Mes</label><input id="admin-mes" name="mes" type="month" placeholder="AAAA-MM"></div>
               <button class="button button-outline" type="submit">Ver</button>
             </form>
             <div class="stats stats-3" data-consumo-stats></div>
           </div>
           <div class="panel">
-            <div class="panel-head"><h2>Por modelo</h2><p>Unidades a precio de lista: 10.000.000 unidades = US$1.</p></div>
+            <div class="panel-head"><h2>Por modelo</h2></div>
             <div class="bars" data-consumo-modelos></div>
           </div>
           <div class="panel">
@@ -106,11 +104,7 @@
         <!-- Planes: catálogo editable, venta y cuotas -->
         <section class="admin-view" id="vista-planes" role="tabpanel" aria-labelledby="tab-planes" data-view="planes" hidden>
           <div class="panel">
-            <div class="panel-head">
-              <h2>Catálogo, venta y cuota de IA</h2>
-              <p>Las cuotas son unidades por período de cada cuenta: una unidad vale US$0,0000001 a precio de lista, así que 10.000.000 unidades son US$1. Una cuota nueva rige desde el período siguiente; el período en curso conserva la que tenía al empezar. Sin cuota de prueba, la prueba recibe un cuarto de la cuota.</p>
-            </div>
-            <p class="admin-aviso">Abrir la venta exige un plan visible, con precio, cuota y licencia. Antes de abrirla, revisa en Salud que su plan de Flow cobre lo mismo.</p>
+            <div class="panel-head"><h2>Catálogo</h2></div>
             <div class="table-wrap"><table class="table" data-planes-tabla><thead><tr><th>Plan</th><th class="num">CLP / mes</th><th class="num">Prueba</th><th>Licencia</th><th>Visible</th><th>Venta</th><th>Cuota por período</th><th>Cuota de prueba</th><th><span class="sr-only">Guardar</span></th></tr></thead><tbody></tbody></table></div>
           </div>
         </section>
@@ -118,7 +112,7 @@
         <!-- Salud: el interruptor de la IA incluida y los chequeos de configuración -->
         <section class="admin-view" id="vista-salud" role="tabpanel" aria-labelledby="tab-salud" data-view="salud" hidden>
           <div class="panel">
-            <div class="panel-head"><h2>IA incluida</h2><p>En pausa, el gateway responde «no disponible» a todas las cuentas sin tocar la clave de Anthropic ni las cuotas. Cada docente sigue con el motor local o con su propia clave.</p></div>
+            <div class="panel-head"><h2>IA incluida</h2></div>
             <div class="actions admin-ia">
               <p class="admin-ia-estado" data-ia-estado role="status">Revisando…</p>
               <button class="button button-outline" type="button" data-ia-boton hidden></button>
@@ -133,11 +127,11 @@
             <div class="table-wrap"><table class="table table-salud" data-salud-tabla><thead><tr><th>Chequeo</th><th>Resultado</th></tr></thead><tbody></tbody></table></div>
           </div>
           <div class="panel">
-            <div class="panel-head"><h2>Planes y Flow</h2><p>Los planes de pago se comparan con su plan de Flow aunque no estén a la venta: monto, CLP, mensual, activo y aviso de pago a este sitio.</p></div>
+            <div class="panel-head"><h2>Planes y Flow</h2></div>
             <div class="table-wrap"><table class="table table-salud" data-salud-planes><thead><tr><th>Plan</th><th>A la venta</th><th>Visible</th><th>Precio</th><th>Cuota</th><th>Licencia</th><th>Plan de Flow</th></tr></thead><tbody></tbody></table></div>
           </div>
           <div class="panel">
-            <div class="panel-head"><h2>Secretos y variables</h2><p>Sólo si están cargados; sus valores nunca salen del Worker.</p></div>
+            <div class="panel-head"><h2>Secretos y variables</h2></div>
             <div class="table-wrap"><table class="table table-salud" data-salud-secretos><thead><tr><th>Nombre</th><th>Cargado</th></tr></thead><tbody></tbody></table></div>
           </div>
         </section>
@@ -150,9 +144,8 @@
     <div class="contenedor">
       <div class="colofon-rejilla">
         <div>
-          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.5#pteron"/></svg></a>
+          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.6#pteron"/></svg></a>
           <p class="colofon-lema">Construido por profes, para profes.</p>
-          <p class="colofon-lugar">Hecho en Chile.</p>
         </div>
         <nav aria-label="Páginas">
           <ul>
@@ -163,14 +156,10 @@
             <li><a href="/cuenta">Cuenta</a></li>
           </ul>
         </nav>
-        <div class="colofon-creditos">
-          <p>Compuesto en Archivo, de Omnibus-Type; la marca, sobre Outfit. Las hojas se arman con Write, el editor de pteron, y las figuras, con su motor.</p>
-          <p>Las láminas del sitio son obras de dominio público y piezas propias; sus créditos están en <a href="/privacidad#creditos">Privacidad</a>.</p>
-        </div>
       </div>
       <div class="colofon-legal">
         <span>© <span data-year>2026</span> Patagua.dev SpA · RUT 78.418.149-9</span>
-        <span><a href="/privacidad">Privacidad</a> · <a href="/terminos">Términos</a> · <a href="/marca">Marca</a> · <a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></span>
+        <span><a href="/privacidad">Privacidad</a> · <a href="/terminos">Términos</a> · <a href="/marca">Marca</a> · <a href="/privacidad#creditos">Créditos</a> · <a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></span>
       </div>
     </div>
   </footer>
@@ -183,11 +172,11 @@
         <button class="indice-cerrar" type="button" data-indice-cerrar>Cerrar</button>
       </div>
       <nav class="indice-bloque" aria-labelledby="indice-aqui" data-indice-capitulos hidden>
-        <h3 class="indice-rotulo" id="indice-aqui">En esta página</h3>
+        <h3 class="sr-only" id="indice-aqui">En esta página</h3>
         <ol class="indice-capitulos" role="list"></ol>
       </nav>
       <nav class="indice-bloque" aria-labelledby="indice-paginas">
-        <h3 class="indice-rotulo" id="indice-paginas">Páginas</h3>
+        <h3 class="sr-only" id="indice-paginas">Páginas</h3>
         <ul class="indice-paginas" role="list">
           <li><a href="/">Inicio</a></li>
           <li><a href="/planes">Planes</a></li>
@@ -196,7 +185,7 @@
           <li><a href="/cuenta">Cuenta</a></li>
         </ul>
       </nav>
-      <p class="indice-pie"><a href="/privacidad">Privacidad</a><a href="/terminos">Términos</a><a href="/marca">Marca</a><a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></p>
+      <p class="indice-pie"><a href="/privacidad">Privacidad</a><a href="/terminos">Términos</a><a href="/marca">Marca</a><a href="/privacidad#creditos">Créditos</a><a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></p>
     </div>
   </dialog>
   <!-- indice:fin -->

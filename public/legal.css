@@ -7,7 +7,7 @@
   padding-bottom:clamp(56px,8vw,104px)}
 
 /* Índice de la página: fijo al costado mientras se lee */
-.legal-indice{position:sticky;top:24px;display:grid;gap:12px}
+.legal-indice{position:sticky;top:24px;display:grid}
 .legal-indice ol{margin:0;display:grid}
 .legal-indice a{display:grid;grid-template-columns:1.6em minmax(0,1fr);align-items:baseline;align-content:center;gap:6px;min-height:44px;padding:7px 0;color:var(--tinta);font-size:var(--t-chico);
   line-height:1.35;text-decoration:none;border-top:var(--borde) solid var(--regla)}
@@ -27,13 +27,12 @@
 .legal-lista{grid-column:2;display:grid;gap:8px;max-width:62ch;margin:0;padding-left:1.2em;color:var(--tinta)}
 
 /* Sigue leyendo */
-.legal-sigue{display:grid;gap:10px}
+.legal-sigue{display:grid}
 .legal-sigue ul{margin:0;display:grid}
-.legal-sigue a{display:grid;grid-template-columns:minmax(0,14rem) minmax(0,1fr);gap:4px 24px;align-items:baseline;padding:14px 2px;color:var(--tinta);
+.legal-sigue a{display:block;padding:14px 2px;color:var(--tinta);
   text-decoration:none;border-top:var(--borde) solid var(--linea)}
 .legal-sigue li:last-child a{border-bottom:var(--borde) solid var(--linea)}
 .legal-sigue strong{color:var(--azul);font-weight:680}
-.legal-sigue a>span{color:var(--grafito);font-size:var(--t-chico)}
 .legal-sigue a:hover strong{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.22em}
 
 /* Créditos: cada lámina tal como flota en el inicio, con su ficha */
@@ -65,10 +64,9 @@
 .perdida-texto h1{margin-top:clamp(28px,6vw,80px);font-size:clamp(2.6rem,1.5rem + 4vw,5.2rem)}
 .perdida-acciones{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
 .perdida-lista{margin:8px 0 0;display:grid;max-width:30rem}
-.perdida-lista a{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:baseline;padding:12px 2px;color:var(--azul);font-weight:650;
+.perdida-lista a{display:block;padding:12px 2px;color:var(--azul);font-weight:650;
   text-decoration:none;border-top:var(--borde) solid var(--linea)}
 .perdida-lista li:last-child a{border-bottom:var(--borde) solid var(--linea)}
-.perdida-lista a>span{color:var(--grafito);font-weight:450;font-size:var(--t-chico)}
 .perdida-lista a:hover{text-decoration:underline}
 /* Una hoja oficio a la que le falta su lámina: queda el hueco con la forma de la pieza */
 .perdida-hoja{position:relative;aspect-ratio:215.9 / 330.2;width:min(100%,380px);justify-self:center;transform:rotate(2deg)}
@@ -95,7 +93,6 @@
   .legal-indice ol{grid-template-columns:minmax(0,1fr)}
   .legal-indice li:nth-last-child(2) a{border-bottom:0}
   .legal-hoja section{grid-template-columns:1.8rem minmax(0,1fr)}
-  .legal-sigue a{grid-template-columns:minmax(0,1fr)}
   .credito,.creditos-lista--propias .credito{grid-template-columns:minmax(0,1fr)}
 }
 /* Impreso: sin «Sigue leyendo» (es navegación) ni el aire de pantalla al pie, para que la línea legal no quede sola en

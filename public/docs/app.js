@@ -102,13 +102,13 @@
 
   let renderedSlug = "";
 
-  // Las guías de instalación abren con la ficha de su sistema, la misma fila que en /descargar.
+  // Las guías de instalación abren con la ficha de su sistema, que lleva a su fila en /descargar.
   const PLATAFORMAS = { mac: ["macos", "Mac con chip M1 o posterior"], win: ["windows", "Windows 11"], linux: ["linux", "Linux x86_64"] };
-  const platformCard = ([variant, , caption]) => {
+  const platformCard = variant => {
     const [id, name] = PLATAFORMAS[variant] || [];
     if (!id) return "";
     return `
-        <a class="docs-plataforma" href="/descargar#${id}"><strong>${name}</strong><span>${caption}</span><span class="docs-plataforma-accion">Ir a la descarga</span></a>`;
+        <a class="docs-plataforma" href="/descargar#${id}"><strong>${name}</strong><span class="docs-plataforma-accion">Ir a la descarga</span></a>`;
   };
 
   let tocObserver = null;
@@ -305,12 +305,11 @@
     if (description) description.content = resolvedSlug === "inicio" ? hubDescription : plainText(page.lead).trim();
     article.innerHTML = `
       <header class="docs-cabeza">
-        <p>${page.eyebrow}</p>
         <h1>${page.title}</h1>
         <div>${page.lead}</div>${page.platform ? platformCard(page.platform) : ""}
       </header>
       ${page.html}
-      <nav class="docs-siguiente" aria-label="Siguiente página">${nextPageLink(resolvedSlug)}</nav>`;
+      ${nextPageLink(resolvedSlug)}`;
     renderNav(resolvedSlug);
     renderIndiceDocs(resolvedSlug);
     renderToc();
@@ -342,7 +341,9 @@
   const nextPageLink = slug => {
     const index = allPages.findIndex(page => page.slug === slug);
     const next = allPages[index + 1];
-    return next ? `<span>Siguiente</span><a href="${pageUrl(next.slug)}">${next.title}</a>` : `<span>Ayuda</span><a href="mailto:pteron@patagua.dev">Escribir a pteron</a>`;
+    return next
+      ? `<nav class="docs-siguiente" aria-label="Siguiente página"><a href="${pageUrl(next.slug)}">${next.title}</a></nav>`
+      : `<nav class="docs-siguiente" aria-label="Ayuda"><a href="mailto:pteron@patagua.dev">Escribir a pteron</a></nav>`;
   };
 
   let searchCursor = -1;
@@ -379,7 +380,7 @@
       ...allPages.filter(page => !inSummary(page) && bodyText.get(page.slug)?.includes(query)),
     ].slice(0, 7);
     results.innerHTML = matches.length
-      ? matches.map((page, index) => `<a id="docs-resultado-${index}" role="option" aria-selected="false" href="${pageUrl(page.slug)}"><span>${page.title}</span><small>${page.group}</small></a>`).join("")
+      ? matches.map((page, index) => `<a id="docs-resultado-${index}" role="option" aria-selected="false" href="${pageUrl(page.slug)}"><span>${page.title}</span></a>`).join("")
       : '<p role="presentation">No encontramos una página con esas palabras.</p>';
     results.hidden = false;
     search.setAttribute("aria-expanded", String(matches.length > 0));

@@ -29,6 +29,7 @@ const PIE = [
   ["/privacidad", "Privacidad"],
   ["/terminos", "Términos"],
   ["/marca", "Marca"],
+  ["/privacidad#creditos", "Créditos"],
   ["mailto:pteron@patagua.dev", "pteron@patagua.dev"],
 ];
 
@@ -65,33 +66,22 @@ function esquina(route) {
   `;
 }
 
-// El colofón dice cómo está hecha la página; los créditos completos de las láminas van donde las láminas se ven (el
-// inicio y /marca), y en las demás, un enlace a ellos.
-const CREDITOS = "Láminas de dominio público: una carta portulana de hacia 1500, Hirschvogel (1543), Yciar (1564), Ercilla (1574), Ovalle (1646), Westtown (1801), Byrne (1847), Gay (1854), Trouvelot (1875 y 1878), Haeckel (1904) y una fotografía de la NASA (2019). Vienen de The Metropolitan Museum of Art, la Library of Congress, la NASA e Internet Archive.";
-const CON_LAMINAS = ["/", "/marca"];
-
+// El colofón es la marca, su lema (no en el inicio, donde es el título) y las páginas; la línea legal lleva a los
+// créditos de las láminas, en Privacidad
 function colofon(route, version) {
-  const laminas = CON_LAMINAS.includes(route)
-    ? `<p>${CREDITOS} Créditos completos en <a href="/privacidad#creditos">Privacidad</a>.</p>`
-    : `<p>Las láminas del sitio son obras de dominio público y piezas propias; sus créditos están en <a href="/privacidad#creditos">Privacidad</a>.</p>`;
   return `
   <footer class="colofon" id="colofon">
     <div class="contenedor">
       <div class="colofon-rejilla">
         <div>
-          ${marca(version)}
-          ${route === "/" ? "" : `<p class="colofon-lema">Construido por profes, para profes.</p>
-          `}<p class="colofon-lugar">Hecho en Chile.</p>
+          ${marca(version)}${route === "/" ? "" : `
+          <p class="colofon-lema">Construido por profes, para profes.</p>`}
         </div>
         <nav aria-label="Páginas">
           <ul>
             ${PAGINAS.map(([href, name]) => `<li><a href="${href}"${current(route, href)}>${name}</a></li>`).join("\n            ")}
           </ul>
         </nav>
-        <div class="colofon-creditos">
-          <p>Compuesto en Archivo, de Omnibus-Type; la marca, sobre Outfit. Las hojas se arman con Write, el editor de pteron, y las figuras, con su motor.</p>
-          ${laminas}
-        </div>
       </div>
       <div class="colofon-legal">
         <span>© <span data-year>2026</span> Patagua.dev SpA · RUT 78.418.149-9</span>
@@ -113,11 +103,11 @@ function indice(route) {
         <button class="indice-cerrar" type="button" data-indice-cerrar>Cerrar</button>
       </div>
       <nav class="indice-bloque" aria-labelledby="indice-aqui" data-indice-capitulos hidden>
-        <h3 class="indice-rotulo" id="indice-aqui">En esta página</h3>
+        <h3 class="sr-only" id="indice-aqui">En esta página</h3>
         <ol class="indice-capitulos" role="list"></ol>
       </nav>
       <nav class="indice-bloque" aria-labelledby="indice-paginas">
-        <h3 class="indice-rotulo" id="indice-paginas">Páginas</h3>
+        <h3 class="sr-only" id="indice-paginas">Páginas</h3>
         <ul class="indice-paginas" role="list">
           ${PAGINAS.map(([href, name]) => `<li><a href="${href}"${current(route, href)}>${name}</a></li>`).join("\n          ")}
         </ul>

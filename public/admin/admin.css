@@ -1,6 +1,6 @@
 /* pteron · /admin (2026-10-12.12). Panel interno sobre la mesa: las tablas y los indicadores son hojas blancas.
    admin.js genera .stat, .bar, .panel, .panel-head, .panel-row, .account-grid, .toolbar, .field, .button(-outline, -small,
-   -link, -peligro), .muted, .small, .eyebrow, .help, .actions, .resultado, .cuota, .equivalente y .venta; aquí viven todos. */
+   -link, -peligro), .muted, .small, .actions, .resultado, .cuota, .equivalente y .venta; aquí viven todos. */
 
 .admin{--mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
   padding-bottom:clamp(64px,8vw,104px)}
@@ -19,7 +19,6 @@
 .admin-login{display:grid;justify-items:start;gap:12px;max-width:40rem;padding:clamp(22px,3vw,34px);border-radius:6px;background:var(--hoja);
   box-shadow:0 1px 2px rgb(var(--sombra)/.08),0 30px 60px -36px rgb(var(--sombra)/.45)}
 .admin-login h2{font-size:var(--t-h3)}
-.admin-login p{color:var(--grafito)}
 
 /* Botones que genera admin.js */
 .button{display:inline-flex;align-items:center;justify-content:center;gap:.5em;min-height:44px;padding:.55em 1.15em;border:var(--borde) solid transparent;border-radius:999px;
@@ -36,7 +35,6 @@
 .button-peligro:hover{background:color-mix(in srgb,var(--error) 82%,black)}
 .muted{color:var(--grafito)}
 .small{font-size:.875rem}
-.eyebrow{font-size:var(--t-rotulo);font-weight:650;color:var(--grafito)}
 
 /* Pestañas y sesión */
 .admin-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 24px;margin-bottom:clamp(18px,2vw,24px)}
@@ -109,7 +107,6 @@
 .cuota{display:grid;gap:4px;min-width:10rem}
 .equivalente{font-size:.8125rem;color:var(--grafito)}
 .venta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
-.admin-aviso{padding:12px 16px;border:var(--borde) solid var(--aviso-borde);border-radius:10px;background:var(--aviso-papel);color:var(--tinta);font-size:var(--t-chico)}
 
 /* Salud: el interruptor de la IA incluida */
 .admin-ia{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px}
@@ -144,9 +141,6 @@
 .admin-detail .actions{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px}
 /* El motivo de Terminar ahora queda en el registro de cobros: un campo que se lee entero */
 .admin-terminar{flex:1 1 30rem;max-width:44rem}
-.admin-detail .help{display:flex;gap:8px;align-items:flex-start;color:var(--error);font-size:var(--t-chico)}
-.admin-detail .help::before{content:"!";flex:none;display:grid;place-items:center;width:18px;height:18px;margin-top:1px;border-radius:50%;background:var(--error);color:#fff;
-  font-weight:700;font-size:.75rem}
 
 @media (max-width:980px){
   .admin-period,.account-grid{grid-template-columns:minmax(0,1fr)}

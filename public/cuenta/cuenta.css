@@ -33,7 +33,7 @@
 .has-session .cuenta-main:has([data-dashboard][hidden]) .esqueleto{display:grid}
 
 /* Acceso */
-.acceso{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.85fr);gap:clamp(24px,5vw,72px);align-items:start}
+.acceso{display:grid;grid-template-columns:minmax(0,1fr);align-items:start}
 .acceso-hoja{display:grid;gap:16px;max-width:520px;padding:clamp(24px,3vw,40px);border-radius:6px;background:var(--hoja);
   box-shadow:0 1px 2px rgb(var(--sombra)/.08),0 30px 60px -36px rgb(var(--sombra)/.45)}
 .acceso-hoja h2{font-size:clamp(1.6rem,1.3rem + 1vw,2.2rem)}
@@ -56,11 +56,6 @@
 /* La pregunta ante un enlace que no se pidió aquí; un correo largo se parte donde haga falta */
 .acceso-acciones{display:flex;flex-wrap:wrap;gap:12px}
 [data-link-title],[data-link-current-email]{overflow-wrap:anywhere}
-.acceso-hechos{display:grid;gap:0;align-content:start}
-.acceso-hechos div{padding:16px 0;border-top:var(--borde) solid var(--linea)}
-.acceso-hechos div:last-child{border-bottom:var(--borde) solid var(--linea)}
-.acceso-hechos dt{font-weight:700;color:var(--azul)}
-.acceso-hechos dd{margin:4px 0 0;color:var(--grafito);font-size:var(--t-chico)}
 
 /* Esqueleto */
 .esqueleto{gap:20px}
@@ -101,7 +96,7 @@
 .subscription-estado{font-size:var(--t-chico);color:var(--tinta)}
 .subscription-uso{display:grid;gap:2px;justify-self:stretch;padding-top:12px;border-top:var(--borde) solid var(--regla);font-size:var(--t-chico);
   color:var(--tinta);font-variant-numeric:tabular-nums}
-.planes-cuenta-pie,.planes-cuenta-aviso{max-width:80ch}
+.planes-cuenta-aviso{max-width:80ch}
 
 /* El resumen antes de ir a Flow: lo que se contrata, cuánto y cuándo, y la casilla de los Términos */
 .resumen{display:grid;gap:12px;max-width:760px;scroll-margin-top:24px}
@@ -125,9 +120,8 @@
 .license-row-status{padding:2px 10px;border-radius:999px;background:var(--ok-papel);color:var(--ok)!important;font-weight:650}
 .license-row-status[data-estado="off"]{background:var(--mesa);color:var(--grafito)!important}
 .account-muted{color:var(--grafito)}
-.ayuda{display:grid;gap:8px;max-width:62ch;margin-block:clamp(48px,7vw,88px) clamp(56px,8vw,96px);padding-top:18px;border-top:2px solid var(--azul)}
-.ayuda h2{font-size:1.25rem}
-.ayuda p{color:var(--grafito)}
+/* El aire antes del colofón */
+.cuenta-main>.contenedor{padding-bottom:clamp(56px,8vw,96px)}
 
 @media (max-width:900px){
   .acceso,.activar,.planes-cuenta-rejilla{grid-template-columns:minmax(0,1fr)}

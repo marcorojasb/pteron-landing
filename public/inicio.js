@@ -96,7 +96,6 @@
   const portada = $("[data-portada]", escena);
   const fija = $(".escena-fija", escena);
   const mesa = $("[data-mesa]", escena);
-  const pie = $(".mesa-pie", escena);
   const laminas = $$(".lamina", capa).map((node, index) => ({
     node,
     index,
@@ -123,7 +122,6 @@
     i,
     id: node.dataset.hoja,
     doc: $(".pteron-document", node),
-    rotulo: $(`[data-rotulo="${node.dataset.hoja}"]`, mesa),
   }));
 
   /* Volteo al pasar el cursor (escritorio) o al tocar (pantalla táctil). */
@@ -181,7 +179,7 @@
   // suben en el orden inverso y el titular queda como estaba
   const titular = portada && $("h1", portada);
   const titularOriginal = titular?.innerHTML ?? "";
-  const restoPortada = portada ? [".portada-marca", ".portada-texto", ".portada-acciones", ".portada-nota"].map((sel) => $(sel, portada)).filter(Boolean) : [];
+  const restoPortada = portada ? [".portada-marca", ".portada-texto", ".portada-acciones"].map((sel) => $(sel, portada)).filter(Boolean) : [];
   let letras = null;
   const irseLetras = () => {
     if (letras || !titular || typeof titular.animate !== "function") return;
@@ -351,8 +349,8 @@
   // Lo que la escena escribe en línea, tal como venía en el HTML: si algo falla, se devuelve tal cual y la página queda
   // como la dibuja el CSS
   const escritos = new Map();
-  [portada, pie, ...laminas.flatMap((lamina) => [lamina.node, lamina.cuerpo, lamina.sombra])]
-    .concat(hojas.flatMap((hoja) => [hoja.node, hoja.doc, hoja.rotulo, ...$$("svg[data-figura]", hoja.node)]))
+  [portada, ...laminas.flatMap((lamina) => [lamina.node, lamina.cuerpo, lamina.sombra])]
+    .concat(hojas.flatMap((hoja) => [hoja.node, hoja.doc, ...$$("svg[data-figura]", hoja.node)]))
     .forEach((node) => node && escritos.set(node, node.getAttribute("style")));
   const corner = $(".esquina-descargar");
   let watcher = null;
@@ -488,11 +486,6 @@
     H = fija.clientHeight;
     movil = narrow.matches;
     layout.hojas = sheetLayout();
-    // Cada rótulo cabe en el trecho de su hoja que la siguiente no tapa: en una tableta vertical las hojas son angostas y
-    // el rótulo largo pasa a dos líneas en vez de montarse sobre el siguiente
-    hojas.forEach((hoja, i) => {
-      if (hoja.rotulo && layout.hojas[i]) hoja.rotulo.style.maxWidth = `${layout.hojas[i].sw * 0.9 - 8}px`;
-    });
 
     // Hojas: la figura en coordenadas de la hoja (816 × 1248)
     hojas.forEach((hoja) => {
@@ -542,8 +535,6 @@
     portada: [0.015, 0.11],
     hoja: (i) => [0.05 + i * 0.03, 0.24 + i * 0.03],
     imprime: (i) => [0.14 + i * 0.03, 0.42 + i * 0.03],
-    rotulos: [0.66, 0.76],
-    pie: [0.72, 0.82],
   };
   // Orden de caída: por hoja y, dentro de cada hoja, de arriba abajo; sólo las láminas que esta pantalla muestra y que
   // tienen dónde calzar
@@ -675,13 +666,7 @@
       hoja.node.style.transform = `translate3d(${L.x}px, ${y}px, 0) rotate(${r}deg) scale(${L.s})`;
       const k = span(p, ...T.imprime(i));
       hoja.doc.style.clipPath = k >= 1 ? "" : `inset(0 0 ${(1 - smooth(k)) * 100}% 0)`;
-      if (hoja.rotulo) {
-        const kr = smooth(span(p, ...T.rotulos));
-        hoja.rotulo.style.opacity = String(kr);
-        hoja.rotulo.style.transform = `translate3d(${L.x + 4}px, ${L.y + L.sh + 14 + (1 - kr) * 8}px, 0)`;
-      }
     });
-    if (pie) pie.style.opacity = String(smooth(span(p, ...T.pie)));
 
     // Volteo de demostración: una lámina se da vuelta sola una vez, al poco de cargar
     if (demoFlip) {
@@ -793,7 +778,7 @@
 
     // La descarga de la esquina aparece cuando la portada ya se fue
     if (corner && !cornerQuiet) corner.toggleAttribute("data-oculto", p < 0.1 && escenaAbajo > H);
-    // Pasadas las hojas (rótulos y pie ya puestos) no queda nada en movimiento: el ciclo se detiene hasta el próximo
+    // Pasadas las hojas no queda nada en movimiento: el ciclo se detiene hasta el próximo
     // desplazamiento o volteo
     const volteando = laminas.some((lamina) => Math.abs(lamina.volteo - Math.max(lamina.quiere, lamina.demo || 0)) > 0.002);
     // Con las láminas en manos del recreo no queda nada que mover

@@ -17,18 +17,6 @@
 .plan-incluye li{position:relative;padding:10px 0 10px 22px;border-top:var(--borde) solid var(--regla);font-size:var(--t-chico);color:var(--tinta)}
 .plan-incluye li::before{content:"";position:absolute;left:2px;top:1.05em;width:9px;height:5px;border-left:2px solid var(--azul);border-bottom:2px solid var(--azul);
   transform:rotate(-45deg)}
-.plan-nota{margin-top:auto;padding-top:10px;font-size:.875rem;color:var(--suave)}
-.tarifa-pie{max-width:76ch;margin-top:18px;font-size:.875rem;color:var(--grafito)}
-
-/* La IA incluida: la cuota, cuándo se renueva, qué cuenta y adónde viaja lo que se pide, como las preguntas: el título
-   a la izquierda y los datos en renglones */
-.ia-incluida{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr);gap:clamp(24px,5vw,72px);padding-top:clamp(72px,10vw,128px)}
-.ia-incluida-cabeza{display:grid;gap:16px;align-content:start}
-.ia-incluida-datos{display:grid}
-.ia-incluida-datos div{display:grid;grid-template-columns:minmax(0,10rem) minmax(0,1fr);gap:4px 24px;padding:14px 2px;border-top:var(--borde) solid var(--linea)}
-.ia-incluida-datos div:last-child{border-bottom:var(--borde) solid var(--linea)}
-.ia-incluida-datos dt{font-weight:650;color:var(--tinta)}
-.ia-incluida-datos dd{max-width:62ch;margin:0;color:var(--grafito)}
 
 .preguntas{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr);gap:clamp(24px,5vw,72px);padding-block:clamp(72px,10vw,128px) clamp(56px,8vw,96px)}
 .preguntas-cabeza{display:grid;gap:16px;align-content:start}
@@ -46,8 +34,5 @@
   .tarifa{grid-template-columns:minmax(0,1fr)}
   .plan+.plan{border-left:0;border-top:var(--borde) solid var(--regla)}
   .plan-condicion{min-height:0}
-  .preguntas,.ia-incluida{grid-template-columns:minmax(0,1fr)}
-}
-@media (max-width:560px){
-  .ia-incluida-datos div{grid-template-columns:minmax(0,1fr)}
+  .preguntas{grid-template-columns:minmax(0,1fr)}
 }

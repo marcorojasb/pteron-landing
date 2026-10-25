@@ -120,19 +120,16 @@ function cargar({ ancho = 1440, alto = 900, estilos = null, quieto = false, scro
   capa.listas.set(".lamina", laminas);
   escena.hijos.set("[data-portada]", portada);
   escena.hijos.set(".escena-fija", fija);
-  // Las cuatro hojas de la mesa, cada una con su rótulo
+  // Las cuatro hojas de la mesa
   const mesa = new Nodo();
   const hojas = ["ciencias", "historia", "matematica", "lenguaje"].map((id) => {
     const node = new Nodo();
     node.dataset.hoja = id;
     node.hijos.set(".pteron-document", new Nodo());
-    mesa.hijos.set(`[data-rotulo="${id}"]`, new Nodo());
     return node;
   });
   mesa.listas.set(".mesa-hoja", hojas);
-  const rotulos = hojas.map((node) => mesa.hijos.get(`[data-rotulo="${node.dataset.hoja}"]`));
   escena.hijos.set("[data-mesa]", mesa);
-  escena.hijos.set(".mesa-pie", new Nodo());
   const corner = new Nodo();
   corner.toggleAttribute("data-oculto", true);
   const indice = new Nodo();
@@ -196,7 +193,6 @@ function cargar({ ancho = 1440, alto = 900, estilos = null, quieto = false, scro
     escena,
     laminas,
     originales,
-    rotulos,
     corner,
     indice,
     raiz,
@@ -241,28 +237,6 @@ test("la escena mueve las láminas sólo con transform: left y top quedan los de
     assert.ok(Math.abs(x + lado / 2 - (v("--x") / 100) * 1440) < 30, `x: ${node.style.transform}`);
     assert.ok(Math.abs(y + lado / 2 - (v("--y") / 100) * 900) < 30, `y: ${node.style.transform}`);
   }
-});
-
-test("cada rótulo cabe en lo que se ve de su hoja: en una tableta vertical no se monta sobre el siguiente", () => {
-  for (const [ancho, alto] of [[768, 1024], [820, 1180], [1440, 900]]) {
-    const page = cargar({ ancho, alto });
-    const izquierda = page.rotulos.map((node) => Number(/translate3d\((-?[\d.]+)px/.exec(node.style.transform)[1]));
-    const anchos = page.rotulos.map((node) => parseFloat(node.style.maxWidth));
-    for (let i = 0; i < 3; i += 1) {
-      assert.ok(anchos[i] > 100, `${ancho}×${alto}: el rótulo ${i} mide ${anchos[i]} px`);
-      assert.ok(izquierda[i] + anchos[i] <= izquierda[i + 1] - 4, `${ancho}×${alto}: el rótulo ${i} llega al siguiente`);
-    }
-    // Si la escena queda quieta, el rótulo vuelve a su estilo de origen
-    page.vista.falla = true;
-    page.cuadro();
-    assert.ok(page.rotulos.every((node) => node.getAttribute("style") === null));
-  }
-  // El ancho sólo sirve si el texto puede partirse: con nowrap el rótulo se sale de su caja y vuelve a montarse
-  const css = readFileSync(new URL("../public/inicio.css", import.meta.url), "utf8");
-  const regla = /\.escena\[data-viva\] \.mesa-rotulos li\{([^}]*)\}/.exec(css)?.[1];
-  assert.ok(regla, "inicio.css tiene la regla de los rótulos en la escena viva");
-  assert.match(regla, /white-space:normal/);
-  assert.doesNotMatch(regla, /nowrap/);
 });
 
 test("la escena se mide y se dibuja al cargar: la esquina queda oculta y ninguna lámina en la pose de medir", () => {

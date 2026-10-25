@@ -27,10 +27,10 @@
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v4.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <script>document.documentElement.classList.replace("no-js", "js");</script>
-  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-25.5" crossorigin>
-  <link rel="stylesheet" href="/styles.css?v=2026-10-25.5">
-  <link rel="stylesheet" href="/legal.css?v=2026-10-25.5">
-  <script src="/script.js?v=2026-10-25.5" defer></script>
+  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-25.6" crossorigin>
+  <link rel="stylesheet" href="/styles.css?v=2026-10-25.6">
+  <link rel="stylesheet" href="/legal.css?v=2026-10-25.6">
+  <script src="/script.js?v=2026-10-25.6" defer></script>
 </head>
 <body class="legal-pagina">
   <a class="saltar" href="#contenido">Saltar al contenido</a>
@@ -43,7 +43,7 @@
 
   <main id="contenido">
     <header class="pagina-cabeza contenedor">
-      <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.5#pteron"/></svg></a>
+      <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.6#pteron"/></svg></a>
       <h1 id="titulo">Términos de uso</h1>
       <p class="texto-grande">Estos términos regulan el uso de pteron durante su beta pública y la contratación de los planes Basic y Pro.</p>
       <p class="legal-fecha">Versión 2026-10-13</p>
@@ -51,7 +51,7 @@
 
     <div class="contenedor legal">
       <nav class="legal-indice" aria-labelledby="indice-pagina">
-        <p class="rotulo" id="indice-pagina">En esta página</p>
+        <p class="sr-only" id="indice-pagina">En esta página</p>
         <ol role="list">
           <li><a href="#naturaleza"><span>1</span>Naturaleza del servicio</a></li>
           <li><a href="#disponibilidad"><span>2</span>Disponibilidad</a></li>
@@ -131,12 +131,12 @@
         </article>
 
         <nav class="legal-sigue" aria-labelledby="sigue-titulo">
-          <h2 class="rotulo" id="sigue-titulo">Sigue leyendo</h2>
+          <h2 class="sr-only" id="sigue-titulo">Sigue leyendo</h2>
           <ul role="list">
-            <li><a href="/privacidad"><strong>Privacidad</strong><span>Cómo pteron protege tus archivos y datos.</span></a></li>
-            <li><a href="/planes"><strong>Planes y licencias</strong><span>El núcleo local es gratis; Basic y Pro incluyen IA.</span></a></li>
-            <li><a href="/docs?pagina=requisitos"><strong>Requisitos</strong><span>Mac con chip M1 o posterior, Windows 11 y Linux x86_64.</span></a></li>
-            <li><a href="/docs?pagina=instalar-windows"><strong>Instalar en Windows</strong><span>Qué hacer si SmartScreen pide confirmación.</span></a></li>
+            <li><a href="/privacidad"><strong>Privacidad</strong></a></li>
+            <li><a href="/planes"><strong>Planes y licencias</strong></a></li>
+            <li><a href="/docs?pagina=requisitos"><strong>Requisitos</strong></a></li>
+            <li><a href="/docs?pagina=instalar-windows"><strong>Instalar en Windows</strong></a></li>
           </ul>
         </nav>
       </div>
@@ -148,9 +148,8 @@
     <div class="contenedor">
       <div class="colofon-rejilla">
         <div>
-          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.5#pteron"/></svg></a>
+          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.6#pteron"/></svg></a>
           <p class="colofon-lema">Construido por profes, para profes.</p>
-          <p class="colofon-lugar">Hecho en Chile.</p>
         </div>
         <nav aria-label="Páginas">
           <ul>
@@ -161,14 +160,10 @@
             <li><a href="/cuenta">Cuenta</a></li>
           </ul>
         </nav>
-        <div class="colofon-creditos">
-          <p>Compuesto en Archivo, de Omnibus-Type; la marca, sobre Outfit. Las hojas se arman con Write, el editor de pteron, y las figuras, con su motor.</p>
-          <p>Las láminas del sitio son obras de dominio público y piezas propias; sus créditos están en <a href="/privacidad#creditos">Privacidad</a>.</p>
-        </div>
       </div>
       <div class="colofon-legal">
         <span>© <span data-year>2026</span> Patagua.dev SpA · RUT 78.418.149-9</span>
-        <span><a href="/privacidad">Privacidad</a> · <a href="/terminos" aria-current="page">Términos</a> · <a href="/marca">Marca</a> · <a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></span>
+        <span><a href="/privacidad">Privacidad</a> · <a href="/terminos" aria-current="page">Términos</a> · <a href="/marca">Marca</a> · <a href="/privacidad#creditos">Créditos</a> · <a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></span>
       </div>
     </div>
   </footer>
@@ -181,11 +176,11 @@
         <button class="indice-cerrar" type="button" data-indice-cerrar>Cerrar</button>
       </div>
       <nav class="indice-bloque" aria-labelledby="indice-aqui" data-indice-capitulos hidden>
-        <h3 class="indice-rotulo" id="indice-aqui">En esta página</h3>
+        <h3 class="sr-only" id="indice-aqui">En esta página</h3>
         <ol class="indice-capitulos" role="list"></ol>
       </nav>
       <nav class="indice-bloque" aria-labelledby="indice-paginas">
-        <h3 class="indice-rotulo" id="indice-paginas">Páginas</h3>
+        <h3 class="sr-only" id="indice-paginas">Páginas</h3>
         <ul class="indice-paginas" role="list">
           <li><a href="/">Inicio</a></li>
           <li><a href="/planes">Planes</a></li>
@@ -194,7 +189,7 @@
           <li><a href="/cuenta">Cuenta</a></li>
         </ul>
       </nav>
-      <p class="indice-pie"><a href="/privacidad">Privacidad</a><a href="/terminos" aria-current="page">Términos</a><a href="/marca">Marca</a><a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></p>
+      <p class="indice-pie"><a href="/privacidad">Privacidad</a><a href="/terminos" aria-current="page">Términos</a><a href="/marca">Marca</a><a href="/privacidad#creditos">Créditos</a><a href="mailto:pteron@patagua.dev">pteron@patagua.dev</a></p>
     </div>
   </dialog>
   <!-- indice:fin -->
