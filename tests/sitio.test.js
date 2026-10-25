@@ -168,6 +168,15 @@ test("/cuenta parte con la venta cerrada y pide aceptar los Términos vigentes a
   assert.match(privacidad, new RegExp(`<p>Esta es la versión ${version} de la política\\.</p>`));
 });
 
+test("/planes parte con «Disponible pronto»: «Elegir» queda oculto hasta que /api/plans diga que se vende", () => {
+  const planes = read("planes/index.html");
+  for (const [id, nombre, estilo] of [["basic", "Basic", "boton-tinta"], ["pro", "Pro", "boton-papel"]]) {
+    assert.ok(planes.includes(`<a class="boton ${estilo} plan-accion" href="/cuenta?plan=${id}" data-plan-venta="${id}" hidden>Elegir ${nombre}</a>`), `${id}: el enlace parte oculto`);
+    assert.ok(planes.includes(`<button class="boton ${estilo} plan-accion" type="button" data-plan-pronto="${id}" disabled>Disponible pronto</button>`), `${id}: sin catálogo no se vende`);
+  }
+  assert.match(read("planes/planes.css"), /\.plan-accion:disabled\{opacity:\.7;cursor:default\}/);
+});
+
 test("lo que se dice de Anthropic calza con su política: borra lo de la API dentro de 30 días", () => {
   // Anthropic borra entradas y salidas de la API dentro de 30 días; «por defecto, no lo guarda» no era cierto
   for (const ruta of ["privacidad.html", "planes/index.html", "docs/content.js"]) {

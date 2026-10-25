@@ -536,3 +536,22 @@ test("account informa trialEligible, termsVersion y el uso del período que cont
   assert.match(query("/rest/v1/usage_periods"), /user_id=eq\.user-1&period_start=lte\.[^&]+&select=period_start,period_end,ai_units_used,ai_units_limit&order=period_start\.desc/);
   assert.ok(network.calls.filter((call) => call.url.includes("/rest/v1/")).every((call) => call.headers.Authorization === "Bearer sesion"), "todo con la sesión del profesor");
 });
+
+test("GET /api/plans dice qué planes se venden: sin sesión, con la clave publicable y caché de un minuto", async () => {
+  const network = fakeNetwork([
+    { match: matches.supabase("plan_catalog"), respond: { body: [{ id: "free", for_sale: false }, { id: "basic", for_sale: true }, { id: "pro", for_sale: false }] } },
+  ]);
+  await withFetch(network.fetch, async () => {
+    const res = await worker.fetch(new Request("https://pteron.test/api/plans"), env, fakeExecution());
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get("cache-control"), "public, max-age=60");
+    assert.deepEqual(await res.json(), { plans: [{ id: "free", forSale: false }, { id: "basic", forSale: true }, { id: "pro", forSale: false }] });
+    assert.equal(network.calls.length, 1);
+    // La política pública de plan_catalog decide qué filas salen: activos y listados, sin la service role
+    assert.match(network.calls[0].url, /\/rest\/v1\/plan_catalog\?active=eq\.true&listed=eq\.true&select=id,for_sale&/);
+    assert.equal(network.calls[0].headers.Authorization, "Bearer publishable-fake");
+
+    const post = await worker.fetch(new Request("https://pteron.test/api/plans", { method: "POST" }), env, fakeExecution());
+    assert.equal(post.status, 405);
+  });
+});

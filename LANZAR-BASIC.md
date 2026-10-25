@@ -264,7 +264,9 @@ Sólo con 0.8.0 publicada (sección 7).
 1. Resuelve `LEGAL-PENDIENTE.md`: quién vende (con RUT y domicilio), retracto y devoluciones,
    confirmación escrita, boleta por cada cobro y encargo de datos. Los borradores están en
    `BORRADORES-LEGALES.md`. Llena los `SELLER_*` (1b; `SELLER_REPRESENTATIVE` es opcional).
-2. `/admin` › Planes: abre la venta de Basic, y la de Pro si corresponde.
+2. `/admin` › Planes: abre la venta de Basic, y la de Pro si corresponde. `/planes` cambia sola
+   «Disponible pronto» por «Elegir Basic» (lee `GET /api/plans`, con un minuto de caché):
+   compruébalo en https://pteron.patagua.dev/planes.
 3. Primera compra real con tu tarjeta:
    - la suscripción queda en prueba;
    - al séptimo día, Flow cobra y la licencia se extiende sola;

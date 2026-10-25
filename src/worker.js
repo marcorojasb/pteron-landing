@@ -13,6 +13,7 @@ import { account } from "./routes/account.js";
 import { messages, models } from "./routes/ai.js";
 import { admin } from "./routes/admin.js";
 import { health } from "./routes/health.js";
+import { plans } from "./routes/plans.js";
 
 /**
  * Worker de pteron-landing. La web estática la sirve Cloudflare como assets
@@ -24,6 +25,7 @@ const ACTION_ROUTES = { auth, billing, activation, license };
 const EXACT_ROUTES = {
   "/api/account": account,
   "/api/health": health,
+  "/api/plans": plans,
   "/api/ai/v1/models": models,
   "/api/ai/v1/messages": messages,
 };

@@ -72,7 +72,8 @@
           <h2 id="plan-basic">Basic</h2>
           <p class="plan-precio">$2.990 <small>CLP al mes, IVA incluido</small></p>
           <p class="plan-condicion"><span class="destacado">7 días gratis.</span> Registras tu tarjeta en Flow y no se cobra nada durante la prueba. Si no cancelas antes, se cobran $2.990 al terminar los 7 días y luego cada mes, hasta que canceles.</p>
-          <a class="boton boton-tinta plan-accion" href="/cuenta?plan=basic">Elegir Basic</a>
+          <a class="boton boton-tinta plan-accion" href="/cuenta?plan=basic" data-plan-venta="basic" hidden>Elegir Basic</a>
+          <button class="boton boton-tinta plan-accion" type="button" data-plan-pronto="basic" disabled>Disponible pronto</button>
           <ul class="plan-incluye" role="list">
             <li>Todo el núcleo local</li>
             <li>IA incluida, sin claves ni configuración técnica</li>
@@ -85,7 +86,8 @@
           <h2 id="plan-pro">Pro</h2>
           <p class="plan-precio">$9.990 <small>CLP al mes, IVA incluido</small></p>
           <p class="plan-condicion">Sin prueba: el primer cobro es al contratar y luego cada mes, hasta que canceles.</p>
-          <a class="boton boton-papel plan-accion" href="/cuenta?plan=pro">Elegir Pro</a>
+          <a class="boton boton-papel plan-accion" href="/cuenta?plan=pro" data-plan-venta="pro" hidden>Elegir Pro</a>
+          <button class="boton boton-papel plan-accion" type="button" data-plan-pronto="pro" disabled>Disponible pronto</button>
           <ul class="plan-incluye" role="list">
             <li>Todo lo de Basic</li>
             <li>30.000.000 unidades de IA por período, cinco veces Basic</li>

@@ -11,6 +11,8 @@
 .plan-condicion{min-height:3em;color:var(--grafito);font-size:var(--t-chico)}
 .plan-condicion .destacado{margin-right:4px}
 .plan-accion{align-self:flex-start}
+/* Con la venta cerrada, «Disponible pronto» en vez de «Elegir», como en /cuenta; script.js lo cambia si el plan se vende */
+.plan-accion:disabled{opacity:.7;cursor:default}
 .plan-incluye{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:0}
 .plan-incluye li{position:relative;padding:10px 0 10px 22px;border-top:var(--borde) solid var(--regla);font-size:var(--t-chico);color:var(--tinta)}
 .plan-incluye li::before{content:"";position:absolute;left:2px;top:1.05em;width:9px;height:5px;border-left:2px solid var(--azul);border-bottom:2px solid var(--azul);

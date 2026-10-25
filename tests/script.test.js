@@ -169,3 +169,55 @@ test("esquina: sin IntersectionObserver queda siempre a la vista", () => {
   assert.equal(Vigia.todos.length, 0);
   assert.ok(!page.oculta());
 });
+
+/** /planes con sus dos planes de pago: el enlace «Elegir» oculto y «Disponible pronto» hasta saber qué se vende. */
+async function planes(respuesta) {
+  const nodos = {};
+  for (const id of ["basic", "pro"]) {
+    nodos[id] = { enlace: new Nodo({ hidden: true, dataset: { planVenta: id } }), pronto: new Nodo({ hidden: false, disabled: true }) };
+  }
+  const pedidos = [];
+  const documento = new Nodo({
+    readyState: "complete",
+    documentElement: new Nodo(),
+    querySelectorAll: (sel) => (sel === "[data-plan-venta]" ? [nodos.basic.enlace, nodos.pro.enlace] : []),
+    querySelector: (sel) => nodos[/^\[data-plan-pronto="(\w+)"\]$/.exec(sel)?.[1]]?.pronto ?? null,
+    getElementById: () => null,
+  });
+  const ventana = new Nodo({
+    document: documento,
+    navigator: { userAgent: "", maxTouchPoints: 0 },
+    matchMedia: () => ({ matches: false, addEventListener() {} }),
+    setTimeout,
+    clearTimeout,
+    fetch: async (url, init) => {
+      pedidos.push([url, init?.headers?.Accept]);
+      if (respuesta instanceof Error) throw respuesta;
+      return { ok: respuesta.status === undefined, json: async () => respuesta };
+    },
+  });
+  ventana.window = ventana;
+  vm.runInNewContext(source, ventana);
+  await new Promise((resolve) => setImmediate(resolve));
+  return { nodos, pedidos };
+}
+
+test("planes: «Elegir» aparece sólo para el plan que /api/plans dice a la venta; el otro sigue «Disponible pronto»", async () => {
+  const { nodos, pedidos } = await planes({ plans: [{ id: "free", forSale: false }, { id: "basic", forSale: true }, { id: "pro", forSale: false }] });
+  assert.deepEqual(pedidos, [["/api/plans", "application/json"]]);
+  assert.equal(nodos.basic.enlace.hidden, false);
+  assert.equal(nodos.basic.pronto.hidden, true);
+  assert.equal(nodos.pro.enlace.hidden, true);
+  assert.equal(nodos.pro.pronto.hidden, false);
+});
+
+test("planes: con la venta cerrada, una respuesta rara o sin red, nada se ofrece", async () => {
+  for (const respuesta of [{ plans: [{ id: "basic", forSale: false }, { id: "pro", forSale: false }] }, { plans: "basic" }, { status: 503 }, new Error("sin red")]) {
+    const { nodos } = await planes(respuesta);
+    for (const id of ["basic", "pro"]) {
+      assert.equal(nodos[id].enlace.hidden, true, `${id}: ${JSON.stringify(respuesta)}`);
+      assert.equal(nodos[id].pronto.hidden, false);
+    }
+  }
+});
+

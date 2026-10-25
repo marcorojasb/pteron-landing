@@ -399,6 +399,23 @@
     } else corner.removeAttribute("data-oculto");
   }
 
+  /* ——— Planes a la venta (/api/plans): «Elegir» sólo con el plan a la venta; si no, o sin respuesta, «Disponible pronto» ——— */
+  const ventas = $$("[data-plan-venta]");
+  if (ventas.length && typeof fetch === "function") {
+    fetch("/api/plans", { headers: { Accept: "application/json" } })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        const aLaVenta = new Set((Array.isArray(data?.plans) ? data.plans : []).filter((plan) => plan?.forSale === true).map((plan) => plan.id));
+        ventas.forEach((enlace) => {
+          if (!aLaVenta.has(enlace.dataset.planVenta)) return;
+          enlace.hidden = false;
+          const pronto = document.querySelector(`[data-plan-pronto="${enlace.dataset.planVenta}"]`);
+          if (pronto) pronto.hidden = true;
+        });
+      })
+      .catch(() => {});
+  }
+
   /* ——— Copiar: <button data-copy="texto"> o data-copy-target="#id" ——— */
   $$("[data-copy], [data-copy-target]").forEach((button) => {
     button.addEventListener("click", async () => {

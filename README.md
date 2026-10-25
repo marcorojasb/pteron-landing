@@ -14,7 +14,9 @@ Worker, con `wrangler` desde la rama `main` de este repositorio (ver «Despliegu
     Siguen «Cómo funciona» (la ventana de pteron, con las escenas del recorrido
     de bienvenida de la app: pedir, decidir, crear y guardar), la hoja en sus dos versiones,
     el aviso de datos de estudiantes y la descarga.
-  - `planes/index.html`: planes, precios y funcionamiento de las licencias.
+  - `planes/index.html`: planes, precios y funcionamiento de las licencias. Cada plan de pago
+    parte con «Disponible pronto»; `script.js` pregunta a `GET /api/plans` y muestra «Elegir» sólo
+    para el que está a la venta, como `/cuenta`.
   - `cuenta/`: cuenta web, acceso por enlace mágico, checkout y activación.
   - `descargar/`: descargas por plataforma, firmas y clave pública.
   - `docs/`: documentación en una sola página; `docs/data/releases.json` es el
@@ -195,7 +197,9 @@ localmente una licencia firmada con protección del sistema operativo.
 
 La cuenta web, Flow y la aplicación de escritorio llaman a `/api/auth/*`,
 `/api/billing/*`, `/api/activation/*`, `/api/license/*`, `/api/account` y
-`/api/ai/v1/*`. La firma Ed25519 de las licencias la produce Web Crypto y la
+`/api/ai/v1/*`. `/planes` llama a `GET /api/plans`, público y sin sesión: lee
+`plan_catalog` con la clave publicable (la política pública muestra los planes
+activos y listados) y responde sólo el id y si se vende, con un minuto de caché. La firma Ed25519 de las licencias la produce Web Crypto y la
 verifica `node:crypto` en la aplicación; una prueba lo comprueba en cada
 corrida. La única clave pública admitida es k2 y vive en `src/lib/license.js`
 (`PUBLIC_KEYS`); la privada que firma es el secreto `LICENSE_PRIVATE_KEY_PEM` y
