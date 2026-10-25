@@ -15,11 +15,17 @@
 .plan-accion:disabled{opacity:.7;cursor:default}
 .plan-incluye{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:0}
 .plan-incluye li{position:relative;padding:10px 0 10px 22px;border-top:var(--borde) solid var(--regla);font-size:var(--t-chico);color:var(--tinta)}
+/* La IA de cada plan a escala, bajo su cifra: Basic es un quinto de Pro */
+.plan-ia{display:block;margin-top:10px}
+.plan-ia i{display:block;width:calc(var(--ia) * 100%);height:10px;border-radius:999px;background:var(--azul);
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--azul) 30%,transparent)}
+.plan-ia::before{content:"";display:block;height:10px;margin-bottom:-10px;border-radius:999px;background:var(--mesa)}
 .plan-incluye li::before{content:"";position:absolute;left:2px;top:1.05em;width:9px;height:5px;border-left:2px solid var(--azul);border-bottom:2px solid var(--azul);
   transform:rotate(-45deg)}
 
 .preguntas{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr);gap:clamp(24px,5vw,72px);padding-block:clamp(72px,10vw,128px) clamp(56px,8vw,96px)}
 .preguntas-cabeza{display:grid;gap:16px;align-content:start}
+.preguntas-cabeza p{color:var(--grafito)}
 .preguntas-lista details{border-top:var(--borde) solid var(--linea)}
 .preguntas-lista details:last-child{border-bottom:var(--borde) solid var(--linea)}
 .preguntas-lista summary{display:flex;justify-content:space-between;gap:16px;align-items:center;min-height:56px;padding:14px 2px;cursor:pointer;list-style:none;

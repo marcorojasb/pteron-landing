@@ -16,12 +16,12 @@
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v4.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <script>document.documentElement.classList.replace("no-js", "js");</script>
-  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-25.7" crossorigin>
-  <link rel="stylesheet" href="/styles.css?v=2026-10-25.7">
-  <link rel="stylesheet" href="/descargar/descargar.css?v=2026-10-25.7">
-  <script src="/release-data.js?v=2026-10-25.7" defer></script>
-  <script src="/script.js?v=2026-10-25.7" defer></script>
-  <script src="/descargar/descarga.js?v=2026-10-25.7" defer></script>
+  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-25.8" crossorigin>
+  <link rel="stylesheet" href="/styles.css?v=2026-10-25.8">
+  <link rel="stylesheet" href="/descargar/descargar.css?v=2026-10-25.8">
+  <script src="/release-data.js?v=2026-10-25.8" defer></script>
+  <script src="/script.js?v=2026-10-25.8" defer></script>
+  <script src="/descargar/descarga.js?v=2026-10-25.8" defer></script>
 </head>
 <body class="descargar">
   <a class="saltar" href="#contenido">Saltar al contenido</a>
@@ -34,15 +34,25 @@
 
   <main id="contenido" data-descarga="linuxAppImage">
     <header class="pagina-cabeza contenedor">
-      <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.7#pteron"/></svg></a>
+      <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.8#pteron"/></svg></a>
       <h1>Instalar en Linux</h1>
     </header>
 
     <div class="contenedor instalar">
-      <ol class="instalar-pasos" role="list">
-        <li><span>Marca el archivo como ejecutable, desde sus propiedades o con <code>chmod +x</code>.</span></li>
-        <li><span>Abre el archivo <code>.AppImage</code>.</span></li>
-      </ol>
+      <div class="instalar-rejilla">
+        <ol class="instalar-pasos" role="list">
+          <li><span>Marca el archivo como ejecutable, desde sus propiedades o con <code>chmod +x</code>.</span></li>
+          <li><span>Abre el archivo <code>.AppImage</code>.</span></li>
+        </ol>
+        <!-- Las propiedades del archivo: ejecutable como programa -->
+        <div class="ilustra ilustra-linux" aria-hidden="true">
+          <div class="ilustra-barra ilustra-barra-gnome"><span>Propiedades</span></div>
+          <div class="linux-cuerpo">
+            <p class="linux-archivo"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/></svg><b data-descarga-nombre>pteron.AppImage</b></p>
+            <p class="linux-fila">Ejecutable como programa<span class="linux-interruptor"></span></p>
+          </div>
+        </div>
+      </div>
       <p class="instalar-acciones">
         <a class="boton boton-papel" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-descarga-boton>Descargar</a>
         <a href="/descargar#formatos">.deb, .rpm y .tar.gz</a>
@@ -55,7 +65,7 @@
     <div class="contenedor">
       <div class="colofon-rejilla">
         <div>
-          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.7#pteron"/></svg></a>
+          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.8#pteron"/></svg></a>
           <p class="colofon-lema">Construido por profes, para profes.</p>
         </div>
         <nav aria-label="Páginas">

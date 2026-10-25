@@ -75,11 +75,19 @@
 /* ——— Cómo se pide: la ventana de pteron ——— */
 .pedir{position:relative;padding-block:clamp(72px,10vw,140px);background:var(--hoja);border-block:var(--borde) solid var(--regla)}
 .pedir-rejilla{display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,1.38fr);gap:clamp(28px,4vw,64px);align-items:center}
-.pasos{list-style:none;margin:28px 0 0;padding:0;display:grid;gap:4px;counter-reset:paso}
-.pasos button{display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px;align-items:start;width:100%;padding:12px 12px 12px 8px;border:0;border-radius:12px;
-  background:none;text-align:left;color:var(--grafito);font-size:1rem;line-height:1.45;transition:background-color .2s,color .2s}
+/* Los pasos son una línea de tiempo: el número de cada uno se une al siguiente, y la línea se pinta de azul a medida
+   que la ventana avanza (pteron-ventana.js marca is-current e is-done) */
+.pasos{list-style:none;margin:32px 0 0;padding:0;display:grid;gap:6px;counter-reset:paso}
+.pasos li{position:relative}
+.pasos li:not(:last-child)::after{content:"";position:absolute;left:25px;top:52px;bottom:-18px;width:2px;border-radius:1px;background:var(--regla);
+  transition:background-color .4s var(--curva)}
+.pasos li:has(>.is-done)::after{background:var(--azul)}
+.pasos button{display:grid;grid-template-columns:36px minmax(0,1fr);gap:16px;align-items:start;width:100%;padding:14px 14px 14px 8px;border:0;border-radius:14px;
+  background:none;text-align:left;color:var(--grafito);font-size:clamp(1.0625rem,1rem + .35vw,1.3125rem);font-weight:600;line-height:1.35;letter-spacing:-.005em;
+  transition:background-color .2s,color .2s}
+.pasos button>span+span{padding-top:5px}
 .pasos button:hover{background:var(--mesa)}
-.paso-n{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;border:var(--borde) solid var(--linea);font-size:.8125rem;font-weight:700;
+.paso-n{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;border:var(--borde) solid var(--linea);background:var(--hoja);font-size:.9375rem;font-weight:700;
   color:var(--grafito);font-variant-numeric:tabular-nums;transition:background-color .25s,border-color .25s,color .25s}
 .pasos button.is-current{color:var(--tinta);background:var(--mesa)}
 .pasos button.is-current .paso-n{background:var(--azul);border-color:var(--azul);color:#fff}
@@ -100,10 +108,40 @@
 .hoja-rejilla{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(28px,5vw,80px);align-items:start}
 .hoja-texto{position:sticky;top:clamp(24px,8vh,80px)}
 .controles{display:grid;gap:18px;margin-top:28px}
-.hoja-marco{--s:.62;position:relative;width:calc(816px * var(--s));max-width:100%;justify-self:center}
-.hoja-papel{position:relative;width:calc(816px * var(--s));height:calc(1248px * var(--s));box-shadow:0 2px 3px rgb(var(--sombra)/.08),0 40px 80px -36px rgb(var(--sombra)/.5);
+/* La hoja oficio, el papel de las escuelas chilenas, a escala (816 × 1248 px a 96 ppp). Su medida se lee al costado y
+   debajo, como en un plano */
+.hoja-marco{--s:.62;--w:816;--h:1248;--ancho:"215,9 mm";--alto:"330,2 mm";position:relative;width:calc(var(--w) * 1px * var(--s));max-width:100%;justify-self:center}
+.hoja-papel{position:relative;width:calc(var(--w) * 1px * var(--s));height:calc(var(--h) * 1px * var(--s));box-shadow:0 2px 3px rgb(var(--sombra)/.08),0 40px 80px -36px rgb(var(--sombra)/.5);
   transition:filter .5s var(--curva)}
 .hoja-papel>.pteron-document{position:absolute;left:0;top:0;transform:scale(var(--s));transform-origin:0 0;transition:opacity .35s var(--curva)}
+/* Una cota de plano: los topes son los bordes de la caja y la línea, su fondo; la medida la interrumpe al centro */
+.hoja-medida{position:absolute;color:var(--grafito);font-size:.75rem;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.02em;pointer-events:none}
+.hoja-medida::after{position:absolute;left:50%;top:50%;padding:2px 6px;background:var(--mesa);white-space:nowrap}
+.hoja-medida-alto{top:0;left:-34px;width:9px;height:calc(var(--h) * 1px * var(--s));border-block:1px solid var(--linea);
+  background:linear-gradient(var(--linea),var(--linea)) center/1px 100% no-repeat}
+.hoja-medida-alto::after{content:var(--alto);transform:translate(-50%,-50%) rotate(-90deg)}
+.hoja-medida-ancho{left:0;top:calc(var(--h) * 1px * var(--s) + 20px);width:calc(var(--w) * 1px * var(--s));height:9px;border-inline:1px solid var(--linea);
+  background:linear-gradient(var(--linea),var(--linea)) center/100% 1px no-repeat}
+.hoja-medida-ancho::after{content:var(--ancho);transform:translate(-50%,-50%)}
+.hoja-version{display:none}
+/* En pantallas anchas, la hoja del estudiante y la versión docente van lado a lado y la diferencia (las respuestas) se
+   ve sin elegir; debajo de cada una, su nombre. El selector de hoja queda para las pantallas angostas (inicio.js
+   calcula la escala para dos hojas) */
+@media (min-width:1100px){
+  .hoja-rejilla{grid-template-columns:minmax(0,1fr);gap:clamp(28px,3vw,44px)}
+  .hoja-texto{position:static;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 40px}
+  .hoja-texto .controles{margin-top:0}
+  .controles .segmento:has(input[name="audiencia"]){display:none}
+  .hoja-marco{--g:64;width:calc((var(--w) * 2 + var(--g)) * 1px * var(--s));margin-bottom:44px}
+  .hoja-papel{width:calc((var(--w) * 2 + var(--g)) * 1px * var(--s));box-shadow:none}
+  .hoja-papel>.pteron-document{box-shadow:0 2px 3px rgb(var(--sombra)/.08),0 calc(40px / var(--s)) calc(80px / var(--s)) calc(-36px / var(--s)) rgb(var(--sombra)/.5)}
+  .hoja-marco[data-audiencia] .hoja-papel>.pteron-document[data-audiencia]{opacity:1;visibility:visible}
+  .hoja-papel>.pteron-document[data-audiencia="docente"]{left:calc((var(--w) + var(--g)) * 1px * var(--s))}
+  .hoja-medida-ancho{display:none}
+  .hoja-version{display:block;position:absolute;left:0;top:calc(var(--h) * 1px * var(--s) + 20px);width:calc(var(--w) * 1px * var(--s));text-align:center;
+    color:var(--grafito);font-size:var(--t-chico);font-weight:600}
+  .hoja-version-docente{left:calc((var(--w) + var(--g)) * 1px * var(--s))}
+}
 .hoja-marco[data-audiencia="estudiante"] .pteron-document[data-audiencia="docente"],
 .hoja-marco[data-audiencia="docente"] .pteron-document[data-audiencia="estudiante"]{opacity:0;visibility:hidden}
 .hoja-marco[data-impresion="fotocopia"] .hoja-papel{filter:grayscale(1) contrast(1.08)}
@@ -118,8 +156,11 @@
 /* ——— En tu computador ——— */
 .local{padding-block:clamp(72px,10vw,140px);background:var(--hoja);border-block:var(--borde) solid var(--regla)}
 .local-rejilla{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,80px);align-items:start}
-.hechos{list-style:none;margin:30px 0 0;padding:0;display:grid;gap:0;max-width:44ch}
-.hechos li{padding:16px 0;border-top:var(--borde) solid var(--regla);font-size:1.0625rem;color:var(--tinta)}
+.hechos{list-style:none;margin:30px 0 0;padding:0;display:grid;gap:0;max-width:30rem}
+.hechos li{display:grid;grid-template-columns:48px minmax(0,1fr);gap:18px;align-items:center;padding:18px 0;border-top:var(--borde) solid var(--regla);
+  font-size:clamp(1.0625rem,1rem + .3vw,1.25rem);line-height:1.4;color:var(--tinta)}
+.hecho-icono{width:48px;height:48px;padding:12px;border-radius:14px;background:var(--mesa);color:var(--azul);fill:none;stroke:currentColor;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
 .hechos li:last-child{border-bottom:var(--borde) solid var(--regla)}
 .aviso{display:grid;gap:12px;padding:clamp(20px,2.6vw,32px);border-radius:16px;background:var(--mesa)}
 /* Sin JavaScript el aviso no puede reaccionar: no se muestra una demostración que no responde */
@@ -304,6 +345,7 @@ html.con-recreo body{padding-right:var(--barra,0px)}
   .portada h1{font-size:clamp(2.6rem,1.4rem + 7vw,4rem)}
   .mesa-hojas{--s:.2;gap:12px}
   .hoja-marco{--s:.42}
+  .hoja-medida{display:none}
   /* La columna del chat, a un tamaño que se lee; pteron-ventana.js corre la vista a cada paso */
   .pt-frame{--pt-crop:760;aspect-ratio:760/620}
   .pt-frame>.pt-app{transition:transform .8s var(--curva)}

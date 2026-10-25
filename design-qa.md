@@ -1,5 +1,29 @@
 # Design QA
 
+## Llenar la web con diseño, no con etiquetas — 2026-10-25
+
+- Tras quitar las etiquetas y descripciones secundarias, varias páginas se veían vacías. Comparadas con las de antes a
+  1280 y 390 px, cada vacío se llenó con diseño:
+  - Inicio:
+    - «Cómo funciona» es una línea de tiempo: pasos más grandes, unidos por una línea que se pinta de azul a medida que
+      avanza la ventana;
+    - en «La hoja», a 1100 px o más, la hoja del estudiante y la versión docente van lado a lado con su nombre debajo,
+      y las respuestas esperadas se ven sin elegir. El selector de hoja queda para pantallas angostas, y la cota de la
+      hoja oficio (215,9 × 330,2 mm) se dibuja como en un plano;
+    - «En tu computador» lleva el icono de cada punto.
+  - /descargar: el archivo y su peso en cada sistema; pteron con una guía abierta en Write; y una franja con lo que da
+    confianza (firmado y notarizado en macOS, firma GPG en Linux, se actualiza sólo con tu permiso).
+  - /descargar/<sistema>: el momento de instalar, dibujado: la ventana del .dmg hacia Aplicaciones, SmartScreen con los
+    pasos 1 y 2 marcados, y «Ejecutable como programa». El nombre del archivo es el de la versión que baja.
+  - /cuenta: junto al acceso, una hoja con lo que trae la cuenta (el plan, la IA del período y el equipo activado).
+  - /planes: bajo cada cuota, su barra a escala (Basic es un quinto de Pro), y a quién escribir junto a las preguntas.
+- Descartado: un selector de papel (Oficio, Carta, A4). La hoja de ejemplo mide 1113 px a 96 ppp y no cabe en una
+  carta (1056): se saldría del papel.
+- Verificado en Chromium a 1440, 1280, 1100, 1024 y 390 px:
+  - sin desborde, errores ni violaciones de CSP;
+  - en el modo lado a lado, ninguna de las dos hojas queda inerte; en las pantallas angostas, sí la que no se ve.
+- Revisión del sitio 2026-10-25.8. 514 pruebas, humo y `sitio.mjs --revisar` en verde.
+
 ## Analítica de visitas que cuenta lo que importa — 2026-10-25
 
 - Privacidad ya no dice «Esta web no incorpora analítica»: dice que la web cuenta sus visitas con Cloudflare Web

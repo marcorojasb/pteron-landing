@@ -137,8 +137,9 @@ test("precio, prueba y cuota de los planes: los mismos en el inicio, /planes, /c
   assert.match(planes, /\$9\.990 <small>CLP al mes, IVA incluido<\/small>/);
   assert.ok(planes.includes(`<span class="destacado">7 días gratis.</span> ${PRUEBA}`), "/planes: la prueba y la renovación juntas");
   assert.match(planes, /Una prueba por persona\./);
-  assert.match(planes, /<li>6\.000\.000 unidades de IA por período \(1\.500\.000 durante la prueba\)<\/li>/);
-  assert.match(planes, /<li>30\.000\.000 unidades de IA por período<\/li>/);
+  // La barra que acompaña cada cuota es un dibujo (aria-hidden): la cifra la dice el texto
+  assert.match(planes, /<li>6\.000\.000 unidades de IA por período \(1\.500\.000 durante la prueba\)<span class="plan-ia" aria-hidden="true" style="--ia:\.2"><i><\/i><\/span><\/li>/);
+  assert.match(planes, /<li>30\.000\.000 unidades de IA por período<span class="plan-ia" aria-hidden="true" style="--ia:1"><i><\/i><\/span><\/li>/);
   assert.match(planes, /El período se renueva con tu cobro/);
   assert.doesNotMatch(planes, /\d+ (guías|pruebas|materiales|planificaciones) (al|por) (mes|período)/, "la equivalencia en materiales no se inventa");
   assert.doesNotMatch(planes, /Conexión prioritaria/);

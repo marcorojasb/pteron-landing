@@ -15,12 +15,14 @@ const DMG = "https://github.com/marcorojasb/pteron-beta/releases/download/v0.8.2
 async function abrir({ archivo = "macosDmg", tipo = "navigate", movil = false, catalogo, listo = true, conDatos = true } = {}) {
   const boton = { href: GITHUB, textContent: "Descargar" };
   const main = { dataset: { descarga: archivo } };
+  const nombres = [{ textContent: "pteron.dmg" }];
   const oyentes = new Map();
   const visitas = { assign: [], replace: [] };
   const documento = {
     readyState: listo ? "complete" : "interactive",
     documentElement: { dataset: movil ? { equipo: "movil" } : {} },
     querySelector: (sel) => ({ "[data-descarga]": main, "[data-descarga-boton]": boton })[sel] ?? null,
+    querySelectorAll: (sel) => (sel === "[data-descarga-nombre]" ? nombres : []),
   };
   const ventana = {
     document: documento,
@@ -32,7 +34,7 @@ async function abrir({ archivo = "macosDmg", tipo = "navigate", movil = false, c
     ventana.PTERON_RELEASES = {
       loadReleaseCatalog: async () => {
         if (catalogo instanceof Error) throw catalogo;
-        return catalogo ?? { latest: { version: "0.8.2", assets: [{ kind: "macosDmg", url: DMG }] } };
+        return catalogo ?? { latest: { version: "0.8.2", assets: [{ kind: "macosDmg", name: "pteron-0.8.2-arm64.dmg", url: DMG }] } };
       },
       findAsset: (latest, kind) => latest.assets.find((asset) => asset.kind === kind) ?? null,
     };
@@ -40,7 +42,7 @@ async function abrir({ archivo = "macosDmg", tipo = "navigate", movil = false, c
   ventana.window = ventana;
   vm.runInNewContext(source, ventana);
   await new Promise((resolve) => setTimeout(resolve, 10));
-  return { boton, visitas, cargar: async () => { oyentes.get("load")?.(); await new Promise((resolve) => setTimeout(resolve, 10)); } };
+  return { boton, nombres, visitas, cargar: async () => { oyentes.get("load")?.(); await new Promise((resolve) => setTimeout(resolve, 10)); } };
 }
 
 test("al llegar, la página baja el archivo de su sistema una vez y el botón queda para bajarlo otra vez", async () => {
@@ -48,6 +50,7 @@ test("al llegar, la página baja el archivo de su sistema una vez y el botón qu
   assert.deepEqual(pagina.visitas.assign, [DMG]);
   assert.equal(pagina.boton.href, DMG);
   assert.equal(pagina.boton.textContent, "Descargar otra vez");
+  assert.equal(pagina.nombres[0].textContent, "pteron-0.8.2-arm64.dmg", "el dibujo nombra el archivo que baja");
 });
 
 test("la descarga espera a que la página termine de cargar: la analítica alcanza a anotar la visita", async () => {

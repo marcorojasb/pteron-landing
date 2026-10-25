@@ -31,22 +31,31 @@
   /* ——— 3. La hoja ——— */
   const marco = $("[data-hoja-marco]");
   const angosta = window.matchMedia("(max-width: 760px)");
+  // A 1100 px o más, la hoja del estudiante y la versión docente van lado a lado (inicio.css): dos hojas y su espacio
+  const doble = window.matchMedia("(min-width: 1100px)");
   if (marco) {
     const papel = $(".hoja-papel", marco);
+    const marcarInertes = () => papel?.querySelectorAll(".pteron-document").forEach((sheet) => {
+      sheet.toggleAttribute("inert", !doble.matches && sheet.dataset.audiencia !== marco.dataset.audiencia);
+    });
     const fitSheet = () => {
       const column = marco.parentElement.clientWidth;
-      const s = Math.min(0.86, column / 816, Math.max(0.38, (window.innerHeight * 0.92) / 1248));
-      marco.style.setProperty("--s", String(Math.min(s, column / 816)));
+      const ancho = doble.matches ? 816 * 2 + 64 : 816;
+      const s = Math.min(0.86, column / ancho, Math.max(0.38, (window.innerHeight * 0.92) / 1248));
+      marco.style.setProperty("--s", String(Math.min(s, column / ancho)));
     };
     fitSheet();
     window.addEventListener("resize", fitSheet, { passive: true });
+    doble.addEventListener?.("change", () => {
+      fitSheet();
+      marcarInertes();
+    });
     $$("[data-controles-hoja] input").forEach((input) => {
       input.addEventListener("change", () => {
         if (!input.checked) return;
-        marco.dataset[input.name === "audiencia" ? "audiencia" : "impresion"] = input.value;
-        papel?.querySelectorAll(".pteron-document").forEach((sheet) => {
-          sheet.toggleAttribute("inert", sheet.dataset.audiencia !== marco.dataset.audiencia);
-        });
+        // audiencia o impresion: el CSS cambia la hoja según data-audiencia y data-impresion
+        marco.dataset[input.name] = input.value;
+        marcarInertes();
         // En el teléfono la hoja queda bajo el texto: si no está a la vista, se trae para ver el cambio
         const caja = marco.getBoundingClientRect();
         if (angosta.matches && (caja.top > window.innerHeight * 0.5 || caja.bottom < 120)) {
@@ -54,7 +63,7 @@
         }
       });
     });
-    papel?.querySelectorAll(".pteron-document").forEach((sheet) => sheet.toggleAttribute("inert", sheet.dataset.audiencia !== "estudiante"));
+    marcarInertes();
   }
 
   /* ——— 4. El aviso de datos de estudiantes ——— */

@@ -8,9 +8,19 @@
 .plataforma-nombre{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
 .plataforma-nombre h2{font-size:clamp(1.5rem,1.2rem + 1vw,2.1rem);font-stretch:110%}
 .plataforma-datos{display:grid;gap:4px;color:var(--tinta)}
+/* El archivo que baja y su peso (script.js los pone desde la versión publicada) */
+.plataforma-archivo{font:500 .8125rem/1.4 ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;color:var(--grafito);overflow-wrap:anywhere}
 .descargar-estado:not(:empty){margin-top:16px;padding:12px 16px;border-radius:10px;background:var(--hoja);color:var(--tinta);font-size:var(--t-chico)}
 .descargar-enlaces{list-style:none;margin:22px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 22px;font-weight:560}
 .descargar-enlaces a{display:inline-flex;min-height:44px;align-items:center}
+/* Lo que se baja: pteron con una guía abierta, en su ventana */
+.descargar-app{margin:clamp(40px,6vw,72px) 0 0;border-radius:12px;overflow:hidden;background:#f6f5f2;
+  box-shadow:0 0 0 1px rgb(var(--sombra)/.12),0 2px 6px rgb(var(--sombra)/.06),0 40px 80px -40px rgb(var(--sombra)/.55)}
+.descargar-app img{display:block;width:100%;height:auto}
+.descargar-confianza{list-style:none;margin:clamp(24px,3vw,32px) 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px clamp(16px,3vw,32px)}
+.descargar-confianza li{display:flex;align-items:center;gap:14px;color:var(--tinta);font-weight:600;line-height:1.35}
+.descargar-confianza svg{flex:none;width:44px;height:44px;padding:11px;border-radius:12px;background:var(--hoja);color:var(--azul);fill:none;stroke:currentColor;
+  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
 .firmas{padding-block:clamp(72px,10vw,128px) clamp(56px,8vw,96px)}
 .firmas-rejilla{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(20px,3vw,40px);margin-top:clamp(28px,4vw,48px);align-items:start}
@@ -48,10 +58,50 @@ code,pre{font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;font
 .instalar-pasos li::before{content:counter(paso);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--azul);color:#fff;
   font-size:.875rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
 .instalar-pasos code{white-space:nowrap}
+.instalar-rejilla{display:grid;grid-template-columns:minmax(0,46rem) minmax(0,1fr);gap:clamp(28px,5vw,72px);align-items:center;width:100%}
+
+/* Cada sistema, el momento de instalar dibujado como lo muestra: la ventana del .dmg, SmartScreen o las propiedades del
+   archivo. Los números marcan el orden de los pasos */
+.ilustra{justify-self:center;width:min(100%,400px);border-radius:12px;overflow:hidden;background:var(--hoja);color:#1d1d1f;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  box-shadow:0 0 0 1px rgb(var(--sombra)/.12),0 2px 6px rgb(var(--sombra)/.06),0 36px 70px -36px rgb(var(--sombra)/.55)}
+.ilustra-barra{display:flex;align-items:center;gap:7px;height:34px;padding:0 12px;background:#ececec;border-bottom:1px solid #d9d9d9;font-size:.8125rem;font-weight:600;color:#4a4a4a}
+.ilustra-barra i{width:11px;height:11px;border-radius:50%;background:#ff5f57}
+.ilustra-barra i+i{background:#febc2e}
+.ilustra-barra i+i+i{background:#28c840}
+.ilustra-barra span{flex:1;margin-right:40px;text-align:center}
+.ilustra-dmg{display:flex;align-items:center;justify-content:space-around;gap:8px;padding:34px 18px 30px}
+.ilustra-icono{display:grid;justify-items:center;gap:8px;font-size:.8125rem}
+.ilustra-icono img,.ilustra-carpeta{width:72px;height:72px}
+.ilustra-carpeta{height:60px;margin-block:6px}
+.ilustra-carpeta path{fill:#6cb6f5;stroke:#3d8fd8;stroke-width:1.5}
+.ilustra-carpeta .ilustra-carpeta-a{fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.ilustra-flecha{width:80px;height:24px;fill:none;stroke:var(--azul);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.ilustra-marca{display:inline-grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:var(--lapiz);color:var(--azul-hondo);
+  font:700 .75rem/1 var(--letra);box-shadow:0 0 0 3px rgb(255 255 255/.7)}
+.ilustra-win{display:grid;gap:10px;padding:22px 22px 18px;background:#1b62b3;color:#fff;font-family:"Segoe UI",system-ui,sans-serif;font-size:.875rem;line-height:1.4}
+.win-titulo{font-size:1.375rem;font-weight:300;line-height:1.2}
+.win-mas{display:flex;align-items:center;gap:8px}
+.win-mas u{text-underline-offset:3px}
+.win-datos{color:rgb(255 255 255/.85)}
+.win-botones{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.win-boton{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid rgb(255 255 255/.75);font-size:.8125rem;white-space:nowrap}
+.win-boton-si{border-color:#fff;box-shadow:0 0 0 2px var(--lapiz)}
+.ilustra-barra-gnome{justify-content:center;background:#f6f5f4;border-bottom-color:#e0dedb}
+.ilustra-barra-gnome span{margin:0;flex:none}
+.linux-cuerpo{display:grid;gap:14px;padding:22px}
+.linux-archivo{display:flex;align-items:center;gap:10px;min-width:0;font-size:.875rem}
+.linux-archivo svg{flex:none;width:30px;height:30px;fill:none;stroke:#5e5c64;stroke-width:1.5;stroke-linejoin:round}
+.linux-archivo b{font-weight:600;overflow-wrap:anywhere}
+.linux-fila{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:10px;background:#f6f5f4;font-size:.875rem;
+  box-shadow:0 0 0 2px var(--lapiz)}
+.linux-interruptor{position:relative;flex:none;width:42px;height:24px;border-radius:999px;background:#3584e4}
+.linux-interruptor::after{content:"";position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgb(0 0 0/.25)}
 .instalar-acciones{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;font-weight:560}
 
 @media (max-width:900px){
   .plataforma{grid-template-columns:minmax(0,1fr)}
   .plataforma .boton{justify-self:start}
   .firmas-rejilla{grid-template-columns:minmax(0,1fr)}
+  .descargar-confianza{grid-template-columns:minmax(0,1fr)}
+  .instalar-rejilla{grid-template-columns:minmax(0,1fr)}
 }

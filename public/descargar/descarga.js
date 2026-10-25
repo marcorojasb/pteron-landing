@@ -24,6 +24,8 @@
     .then(async ({ latest }) => {
       const archivo = latest && releaseData.findAsset(latest, main.dataset.descarga);
       if (!archivo) return;
+      // El dibujo de la instalación nombra el archivo que baja
+      document.querySelectorAll("[data-descarga-nombre]").forEach((nodo) => (nodo.textContent = archivo.name));
       boton.href = archivo.url;
       boton.textContent = "Descargar otra vez";
       if (!llegada) return;

@@ -16,12 +16,12 @@
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v4.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <script>document.documentElement.classList.replace("no-js", "js");</script>
-  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-25.7" crossorigin>
-  <link rel="stylesheet" href="/styles.css?v=2026-10-25.7">
-  <link rel="stylesheet" href="/descargar/descargar.css?v=2026-10-25.7">
-  <script src="/release-data.js?v=2026-10-25.7" defer></script>
-  <script src="/script.js?v=2026-10-25.7" defer></script>
-  <script src="/descargar/descarga.js?v=2026-10-25.7" defer></script>
+  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-25.8" crossorigin>
+  <link rel="stylesheet" href="/styles.css?v=2026-10-25.8">
+  <link rel="stylesheet" href="/descargar/descargar.css?v=2026-10-25.8">
+  <script src="/release-data.js?v=2026-10-25.8" defer></script>
+  <script src="/script.js?v=2026-10-25.8" defer></script>
+  <script src="/descargar/descarga.js?v=2026-10-25.8" defer></script>
 </head>
 <body class="descargar">
   <a class="saltar" href="#contenido">Saltar al contenido</a>
@@ -34,16 +34,27 @@
 
   <main id="contenido" data-descarga="macosDmg">
     <header class="pagina-cabeza contenedor">
-      <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.7#pteron"/></svg></a>
+      <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.8#pteron"/></svg></a>
       <h1>Instalar en macOS</h1>
     </header>
 
     <div class="contenedor instalar">
-      <ol class="instalar-pasos" role="list">
-        <li><span>Abre el archivo <code>.dmg</code>.</span></li>
-        <li><span>Arrastra pteron a la carpeta Aplicaciones.</span></li>
-        <li><span>Abre pteron desde Aplicaciones.</span></li>
-      </ol>
+      <div class="instalar-rejilla">
+        <ol class="instalar-pasos" role="list">
+          <li><span>Abre el archivo <code>.dmg</code>.</span></li>
+          <li><span>Arrastra pteron a la carpeta Aplicaciones.</span></li>
+          <li><span>Abre pteron desde Aplicaciones.</span></li>
+        </ol>
+        <!-- La ventana del .dmg: arrastrar pteron a Aplicaciones -->
+        <div class="ilustra ilustra-mac" aria-hidden="true">
+          <div class="ilustra-barra"><i></i><i></i><i></i><span>pteron</span></div>
+          <div class="ilustra-dmg">
+            <span class="ilustra-icono"><img src="/assets/icono-v4.svg" alt="" width="72" height="72">pteron</span>
+            <svg class="ilustra-flecha" viewBox="0 0 96 24"><path d="M4 12h80M72 3l12 9-12 9"/></svg>
+            <span class="ilustra-icono"><svg class="ilustra-carpeta" viewBox="0 0 72 60"><path d="M4 12a6 6 0 0 1 6-6h16l6 6h30a6 6 0 0 1 6 6v32a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6Z"/><path class="ilustra-carpeta-a" d="M28 44l8-20 8 20M31 37h10"/></svg>Aplicaciones</span>
+          </div>
+        </div>
+      </div>
       <p class="instalar-acciones">
         <a class="boton boton-papel" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-descarga-boton>Descargar</a>
       </p>
@@ -55,7 +66,7 @@
     <div class="contenedor">
       <div class="colofon-rejilla">
         <div>
-          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.7#pteron"/></svg></a>
+          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.8#pteron"/></svg></a>
           <p class="colofon-lema">Construido por profes, para profes.</p>
         </div>
         <nav aria-label="Páginas">

@@ -16,12 +16,12 @@
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v4.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <script>document.documentElement.classList.replace("no-js", "js");</script>
-  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-25.7" crossorigin>
-  <link rel="stylesheet" href="/styles.css?v=2026-10-25.7">
-  <link rel="stylesheet" href="/descargar/descargar.css?v=2026-10-25.7">
-  <script src="/release-data.js?v=2026-10-25.7" defer></script>
-  <script src="/script.js?v=2026-10-25.7" defer></script>
-  <script src="/descargar/descarga.js?v=2026-10-25.7" defer></script>
+  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-25.8" crossorigin>
+  <link rel="stylesheet" href="/styles.css?v=2026-10-25.8">
+  <link rel="stylesheet" href="/descargar/descargar.css?v=2026-10-25.8">
+  <script src="/release-data.js?v=2026-10-25.8" defer></script>
+  <script src="/script.js?v=2026-10-25.8" defer></script>
+  <script src="/descargar/descarga.js?v=2026-10-25.8" defer></script>
 </head>
 <body class="descargar">
   <a class="saltar" href="#contenido">Saltar al contenido</a>
@@ -34,16 +34,26 @@
 
   <main id="contenido" data-descarga="windowsExe">
     <header class="pagina-cabeza contenedor">
-      <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.7#pteron"/></svg></a>
+      <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.8#pteron"/></svg></a>
       <h1>Instalar en Windows</h1>
     </header>
 
     <div class="contenedor instalar">
-      <ol class="instalar-pasos" role="list">
-        <li><span>Abre el archivo <code>.exe</code>.</span></li>
-        <li><span>Si aparece SmartScreen, elige <strong>Más información</strong> y después <strong>Ejecutar de todas formas</strong>.</span></li>
-        <li><span>Completa el instalador y abre pteron desde el menú Inicio.</span></li>
-      </ol>
+      <div class="instalar-rejilla">
+        <ol class="instalar-pasos" role="list">
+          <li><span>Abre el archivo <code>.exe</code>.</span></li>
+          <li><span>Si aparece SmartScreen, elige <strong>Más información</strong> y después <strong>Ejecutar de todas formas</strong>.</span></li>
+          <li><span>Completa el instalador y abre pteron desde el menú Inicio.</span></li>
+        </ol>
+        <!-- SmartScreen: «Más información» y después «Ejecutar de todas formas» -->
+        <div class="ilustra ilustra-win" aria-hidden="true">
+          <p class="win-titulo">Windows protegió su PC</p>
+          <p>Microsoft Defender SmartScreen impidió el inicio de una aplicación no reconocida.</p>
+          <p class="win-mas"><span class="ilustra-marca">1</span><u>Más información</u></p>
+          <p class="win-datos">Aplicación: <span data-descarga-nombre>pteron.exe</span><br>Editor: Editor desconocido</p>
+          <div class="win-botones"><span class="win-boton win-boton-si"><span class="ilustra-marca">2</span>Ejecutar de todas formas</span><span class="win-boton">No ejecutar</span></div>
+        </div>
+      </div>
       <p class="instalar-acciones">
         <a class="boton boton-papel" href="https://github.com/marcorojasb/pteron-beta/releases/latest" data-descarga-boton>Descargar</a>
       </p>
@@ -55,7 +65,7 @@
     <div class="contenedor">
       <div class="colofon-rejilla">
         <div>
-          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.7#pteron"/></svg></a>
+          <a class="marca" href="/" aria-label="pteron, inicio"><svg viewBox="0 0 2872 886" aria-hidden="true"><use href="/assets/marca.svg?v=2026-10-25.8#pteron"/></svg></a>
           <p class="colofon-lema">Construido por profes, para profes.</p>
         </div>
         <nav aria-label="Páginas">
