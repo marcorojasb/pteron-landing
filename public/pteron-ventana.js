@@ -1,4 +1,4 @@
-/* pteron · la ventana de la app en la web (2026-10-14.2)
+/* pteron · la ventana de la app en la web (2026-10-25.1)
    1. Reconocimiento del pedido: copia fiel de pteron/src/shared/context-recognition.ts (ADR-161).
       Es local, sin modelo: el mismo diccionario del currículum chileno y las mismas reglas que la app.
    2. Aviso antes de la nube: copia fiel de pteron/src/shared/student-privacy.ts (ADR-049). El inicio lo usa en
