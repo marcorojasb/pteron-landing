@@ -378,8 +378,11 @@ Node lo use.
   si alguna tabla de datos ya tiene filas (salvo `--borrar-datos`), corre `esquema.sql`
   y comprueba el resultado; `--verificar` sólo comprueba.
 - `supabase-auth.mjs` (`SUPABASE_ACCESS_TOKEN`): Site URL, Redirect URLs (agrega,
-  no quita) y los correos de `supabase/correos/`. No toca el SMTP salvo con
-  `--smtp` y `RESEND_SMTP_KEY`; `--limite-correos N` cambia el límite por hora.
+  no quita; avisa de un comodín o de otro dominio) y los correos de
+  `supabase/correos/`. Deja la confirmación de correo obligatoria, sin cuentas
+  anónimas y con cambio de correo seguro: de eso depende que un correo de
+  `ADMIN_EMAILS` pruebe quién administra. No toca el SMTP salvo con `--smtp` y
+  `RESEND_SMTP_KEY`; `--limite-correos N` cambia el límite por hora.
 - `resend-dns.mjs` (`RESEND_API_KEY`, `CLOUDFLARE_API_TOKEN`): compara los registros
   de `patagua.dev` en Resend con los de Cloudflare y crea los que faltan; nunca
   modifica ni borra uno existente.

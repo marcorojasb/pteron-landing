@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import path from "node:path";
 import { RAIZ } from "../scripts/operador.mjs";
-import { SITE_URL, SMTP, entradasDeLista, fusionarLista, leerPlantilla, leerPlantillas, main, planear, plantillasQueDifieren } from "../scripts/supabase-auth.mjs";
+import { SEGURIDAD, SITE_URL, SMTP, entradasDeLista, entradasDudosas, fusionarLista, leerPlantilla, leerPlantillas, main, planear, plantillasQueDifieren } from "../scripts/supabase-auth.mjs";
 
 const TOKEN = "sbp_token_de_prueba_0123456789";
 const CLAVE_SMTP = "re_clave_smtp_de_prueba_9876543210";
@@ -135,6 +135,48 @@ test("agrega site_url y la dirección a uri_allow_list sin perder entradas", asy
   assert.equal(r.codigo, 0);
   assert.equal(r.patch.cuerpo.site_url, SITE_URL);
   assert.equal(r.patch.cuerpo.uri_allow_list, `https://pteron.patagua.dev,http://localhost:5173,${SITE_URL}`);
+});
+
+test("el correo prueba quién es la cuenta: --aplicar deja confirmación obligatoria, sin anónimas y con cambio de correo seguro", async () => {
+  const listas = { ...CONFIG_ACTUAL, ...Object.fromEntries(Object.entries(PLANTILLAS)) };
+  const inseguro = { ...listas, mailer_autoconfirm: true, mailer_allow_unverified_email_sign_ins: true, mailer_secure_email_change_enabled: false, external_anonymous_users_enabled: true };
+  const ensayo = await correr([], { config: inseguro });
+  assert.equal(ensayo.patch, undefined);
+  assert.match(ensayo.salida, /^  mailer_autoconfirm: true$/m);
+  assert.match(ensayo.salida, /mailer_autoconfirm: true -> false \(cada cuenta confirma su correo antes de entrar\)/);
+  assert.match(ensayo.salida, /external_anonymous_users_enabled: true -> false \(no hay cuentas anónimas\)/);
+
+  const r = await correr(["--aplicar"], { config: inseguro });
+  assert.equal(r.codigo, 0);
+  assert.deepEqual(r.patch.cuerpo, Object.fromEntries(SEGURIDAD.map(({ campo, valor }) => [campo, valor])));
+  assert.match(r.salida, /Comprobado/);
+
+  // Si Supabase no lo deja así, sale con 1 y dice cuál
+  const terco = await correr(["--aplicar"], { config: inseguro, ignorar: ["mailer_autoconfirm"] });
+  assert.equal(terco.codigo, 1);
+  assert.match(terco.salida, /DIFIERE tras aplicar: mailer_autoconfirm/);
+
+  // Ya seguro: nada que cambiar
+  const seguro = await correr(["--aplicar"], { config: { ...listas, ...Object.fromEntries(SEGURIDAD.map(({ campo, valor }) => [campo, valor])) } });
+  assert.equal(seguro.patch, undefined);
+  assert.match(seguro.salida, /mailer_autoconfirm: ya es false/);
+  assert.match(seguro.salida, /Nada que cambiar/);
+});
+
+test("un ajuste de seguridad que la API no devuelve no se envía: se informa para revisarlo en el panel", async () => {
+  const config = { ...CONFIG_ACTUAL, ...Object.fromEntries(Object.entries(PLANTILLAS)) };
+  const r = await correr(["--aplicar"], { config });
+  assert.equal(r.patch, undefined);
+  for (const { campo } of SEGURIDAD) assert.match(r.salida, new RegExp(`${campo}: \\(sin dato\\) no se envía`));
+});
+
+test("uri_allow_list: un comodín o un dominio ajeno se informa, sin quitarlo", async () => {
+  assert.deepEqual(entradasDudosas("https://pteron.patagua.dev/cuenta,http://localhost:8787,https://*.vercel.app/**,https://otro.example/cuenta"), ["https://*.vercel.app/**", "https://otro.example/cuenta"]);
+  assert.deepEqual(entradasDudosas("https://pteron.patagua.dev.otro.example/cuenta"), ["https://pteron.patagua.dev.otro.example/cuenta"]);
+  const config = { ...CONFIG_ACTUAL, uri_allow_list: `${SITE_URL},https://*.vercel.app/**` };
+  const r = await correr(["--aplicar"], { config });
+  assert.match(r.salida, /uri_allow_list: revisa https:\/\/\*\.vercel\.app\/\*\* \(un enlace mágico puede volver ahí con la sesión; el script no quita entradas\)/);
+  assert.ok(!("uri_allow_list" in (r.patch?.cuerpo ?? {})), "no se toca la lista");
 });
 
 test("--limite-correos cambia sólo ese campo; sin la bandera el límite no se toca", async () => {

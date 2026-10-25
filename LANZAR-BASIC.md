@@ -102,7 +102,8 @@ Los pasos 1 a 3 tienen dos variantes: con script (1b) o a mano.
    tabla (el esquema sólo lo crea si falta o difiere). Si alguna vez aplicaste migraciones con la CLI
    (`supabase db push`), no la vuelvas a usar para la base: este archivo la reemplaza.
 3. Authentication: **script** `node scripts/supabase-auth.mjs --aplicar` fija Site URL, Redirect URLs (conserva
-   las que haya) y los correos en español de `supabase/correos/`; **a mano:** Authentication › URL Configuration,
+   las que haya y avisa de un comodín o de otro dominio), los correos en español de `supabase/correos/` y la
+   confirmación de correo obligatoria, sin cuentas anónimas y con cambio de correo seguro; **a mano:** Authentication › URL Configuration,
    Site URL `https://pteron.patagua.dev/cuenta` y la misma en Redirect URLs, y en Emails › Templates pega esos
    HTML (asunto en su primera línea). Authentication › Emails › SMTP Settings: SMTP propio con tu dominio
    (SPF y DKIM); sin él, Supabase sólo envía el enlace mágico a miembros del equipo del proyecto. El script no
@@ -132,7 +133,7 @@ y el dominio `patagua.dev` verificado ya existen.
    | Script | Variables de entorno | Hace |
    |---|---|---|
    | `supabase-esquema.mjs` | `SUPABASE_ACCESS_TOKEN` | Esquema (sección 1). `--verificar` sólo comprueba; `--forzar` sigue pese a suscripciones vivas; `--aplicar` se niega si ya hay datos, salvo `--borrar-datos` (vacía todo pteron: sólo para rehacer un proyecto a propósito) |
-   | `supabase-auth.mjs` | `SUPABASE_ACCESS_TOKEN` (y `RESEND_SMTP_KEY` con `--smtp`) | Site URL, Redirect URLs y correos en español. `--limite-correos N` cambia el límite por hora (hoy 30) |
+   | `supabase-auth.mjs` | `SUPABASE_ACCESS_TOKEN` (y `RESEND_SMTP_KEY` con `--smtp`) | Site URL, Redirect URLs, correos en español y confirmación de correo obligatoria. `--limite-correos N` cambia el límite por hora (hoy 30) |
    | `resend-dns.mjs` | `RESEND_API_KEY` (de administración), `CLOUDFLARE_API_TOKEN` | Compara los registros DNS que pide Resend con Cloudflare y crea los que faltan; nunca modifica ni borra |
 
    ```bash

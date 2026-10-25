@@ -9,6 +9,12 @@
  *    mágico y de la confirmación de correo, que son los que /auth/v1/otp con
  *    create_user envía a una cuenta existente y a una nueva).
  *  - rate_limit_email_sent: se deja como está; sólo cambia con --limite-correos N.
+ *  - Lo que hace que el correo de una cuenta pruebe que es de su dueño (de eso depende quién administra, con
+ *    ADMIN_EMAILS): mailer_autoconfirm false, mailer_allow_unverified_email_sign_ins false,
+ *    mailer_secure_email_change_enabled true y external_anonymous_users_enabled false. Un campo que la API no
+ *    devuelve no se envía: se informa para revisarlo en el panel.
+ *  - Una entrada de uri_allow_list con comodín o de otro dominio se informa (un enlace mágico puede volver ahí con
+ *    la sesión), pero no se quita.
  *  - SMTP: NO se toca. Ya funciona con su propia clave de Resend. Sólo con
  *    --smtp (y RESEND_SMTP_KEY en el entorno) se vuelve a fijar: smtp.resend.com,
  *    465, usuario resend, esa clave y el remitente no-reply@patagua.dev / pteron.
@@ -103,6 +109,18 @@ export function plantillasQueDifieren(config, deseadas) {
   return PLANTILLAS.filter((p) => !mismo(config?.[p.asunto], deseadas[p.asunto]) || !mismo(config?.[p.contenido], deseadas[p.contenido])).map((p) => p.nombre);
 }
 
+// Los ajustes de Auth que hacen del correo una prueba de quién es la cuenta, con el valor seguro y para qué sirve.
+export const SEGURIDAD = [
+  { campo: "mailer_autoconfirm", valor: false, motivo: "cada cuenta confirma su correo antes de entrar" },
+  { campo: "mailer_allow_unverified_email_sign_ins", valor: false, motivo: "nadie entra con un correo sin confirmar" },
+  { campo: "mailer_secure_email_change_enabled", valor: true, motivo: "cambiar el correo exige confirmar las dos direcciones" },
+  { campo: "external_anonymous_users_enabled", valor: false, motivo: "no hay cuentas anónimas" },
+];
+
+/** Entradas de uri_allow_list con comodín o fuera de pteron.patagua.dev y de este equipo. */
+export const entradasDudosas = (lista) =>
+  entradasDeLista(lista).filter((e) => e.includes("*") || !/^https?:\/\/(pteron\.patagua\.dev|localhost|127\.0\.0\.1)(:\d+)?(\/|$)/.test(e));
+
 /** ¿Hay SMTP propio? Sólo mira si están los campos, no la clave. */
 export const hayCorreoPropio = (config) => Boolean(config?.smtp_host && config?.smtp_user && config?.smtp_admin_email);
 
@@ -147,6 +165,18 @@ export function planear(config, { plantillas, limiteCorreos, smtp, claveSmtp }) 
     plan.push(`rate_limit_email_sent: ${config.rate_limit_email_sent ?? "(sin dato)"} -> ${limiteCorreos}`);
   }
 
+  const dudosas = entradasDudosas(config.uri_allow_list);
+  if (dudosas.length) plan.push(`uri_allow_list: revisa ${dudosas.join(" , ")} (un enlace mágico puede volver ahí con la sesión; el script no quita entradas)`);
+
+  for (const { campo, valor, motivo } of SEGURIDAD) {
+    if (!(campo in config)) plan.push(`${campo}: (sin dato) no se envía; revísalo en el panel (${motivo})`);
+    else if (config[campo] === valor) plan.push(`${campo}: ya es ${valor}`);
+    else {
+      cuerpo[campo] = valor;
+      plan.push(`${campo}: ${config[campo]} -> ${valor} (${motivo})`);
+    }
+  }
+
   if (smtp) {
     Object.assign(cuerpo, SMTP, { smtp_pass: claveSmtp });
     plan.push(`SMTP: --smtp fija ${SMTP.smtp_host}:${SMTP.smtp_port}, usuario ${SMTP.smtp_user}, la clave de RESEND_SMTP_KEY y remitente ${SMTP.smtp_sender_name} <${SMTP.smtp_admin_email}>`);
@@ -166,6 +196,7 @@ function imprimirConfiguracion(salida, config, deseadas) {
   salida.linea(`  remitente: ${config.smtp_sender_name || "(sin nombre)"} <${config.smtp_admin_email || "sin correo"}>`);
   salida.linea(`  rate_limit_email_sent: ${config.rate_limit_email_sent ?? "(sin dato)"}`);
   salida.linea(`  correos que difieren de supabase/correos/: ${dif.length ? dif.join(", ") : "ninguno"}`);
+  for (const { campo } of SEGURIDAD) salida.linea(`  ${campo}: ${campo in config ? config[campo] : "(sin dato)"}`);
 }
 
 /**
@@ -221,6 +252,7 @@ export async function main({ argv = process.argv.slice(2), env = process.env, fe
       if ("site_url" in cuerpo && nueva?.site_url !== SITE_URL) faltas.push("site_url");
       if ("uri_allow_list" in cuerpo && !entradasDeLista(nueva?.uri_allow_list).includes(SITE_URL)) faltas.push("uri_allow_list");
       if ("rate_limit_email_sent" in cuerpo && nueva?.rate_limit_email_sent !== limiteCorreos) faltas.push("rate_limit_email_sent");
+      for (const { campo, valor } of SEGURIDAD) if (campo in cuerpo && nueva?.[campo] !== valor) faltas.push(campo);
       const enviadas = PLANTILLAS.filter((p) => p.asunto in cuerpo).map((p) => p.nombre);
       const sinCalzar = plantillasQueDifieren(nueva, plantillas).filter((n) => enviadas.includes(n));
       if (sinCalzar.length) faltas.push(`correos (${sinCalzar.join(", ")})`);
