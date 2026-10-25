@@ -1,5 +1,23 @@
 # Design QA
 
+## «Cómo funciona» con la app de hoy — 2026-10-25
+
+- La ventana del inicio refleja pteron main (b79850c):
+  - la Home sin rumbos;
+  - el pedido leído en una frase (Agregar todo · Tab);
+  - el plan con su decisión en el recuadro;
+  - la hoja que se escribe con la tarjeta de la corrida al pie;
+  - «Listo en …» al terminar.
+
+  Los relojes cuentan el tiempo de la app (22 s el plan, 55 s la guía), no el de la secuencia, que va más rápido. Los
+  pasos de la sección dicen lo que muestra la ventana.
+- Verificado en Chromium a 1440 y 390 px: el inicio, seis estados intermedios y el final. Sin errores de consola,
+  violaciones de CSP ni desborde. El CLS mientras corre es de 0,013 y 0,027, y queda dentro del cuadro de la ventana:
+  la página no se mueve. Con movimiento reducido se ve el final, fijo.
+- Pendiente, anterior a este cambio: si `pteron-ventana.js` no carga, la Home estática queda recortada (escala 0,6),
+  igual que en la versión publicada.
+- Revisión del sitio 2026-10-25.4. 484 pruebas, humo y `sitio.mjs --revisar` en verde.
+
 ## La documentación con pteron main y el despliegue verificado en producción — 2026-10-25
 
 - Capturas de la documentación tomadas de nuevo con pteron main (b79850c, 0.9 en curso), con el arnés de la app bajo
