@@ -336,7 +336,12 @@
       lamina.node.addEventListener("pointerleave", () => setTimeout(staticFlip, 700));
       lamina.node.addEventListener("click", staticFlip);
     });
-  if (quieta()) {
+  // Quien ya bajó antes de que esto corra (una red lenta) vería saltar la página: fijar la escena la alarga y cambia lo
+  // que tenía delante por las láminas a medio vuelo. Queda quieta, como la está leyendo. Llegar con #hojas, recargar o
+  // volver atrás también llegan bajados, pero a propósito: esos sí abren la escena
+  const navegacion = performance.getEntriesByType?.("navigation")[0]?.type;
+  const yaBajo = window.scrollY > 0 && location.hash !== "#hojas" && navegacion !== "reload" && navegacion !== "back_forward";
+  if (quieta() || yaBajo) {
     flipQuieto();
     return;
   }
@@ -864,7 +869,6 @@
   // Al llegar con #hojas (desde el índice o un enlace), la escena se abre con las hojas ya impresas
   const capitulo = $("#hojas", escena);
   const avance = Number.parseFloat(capitulo?.dataset.capituloAvance);
-  const navegacion = performance.getEntriesByType?.("navigation")[0]?.type;
   if (!caida && location.hash === "#hojas" && Number.isFinite(avance) && navegacion !== "reload" && navegacion !== "back_forward") {
     const alas = seguro(() => {
       window.scrollTo(0, escena.getBoundingClientRect().top + window.scrollY + (escena.offsetHeight - H) * avance);

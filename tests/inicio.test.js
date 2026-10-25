@@ -86,8 +86,8 @@ class Nodo {
 }
 
 /** Una página de inicio con cuatro láminas, una mesa de ancho × alto y un reloj y unos cuadros que avanzan a mano. */
-function cargar({ ancho = 1440, alto = 900, estilos = null, quieto = false } = {}) {
-  const vista = { ancho, alto, escena: alto * 4, scrollY: 0, falla: false };
+function cargar({ ancho = 1440, alto = 900, estilos = null, quieto = false, scrollY = 0, hash = "", navegacion } = {}) {
+  const vista = { ancho, alto, escena: alto * 4, scrollY, falla: false };
   let reloj = 0;
   let siguiente = 0;
   const cuadros = new Map();
@@ -157,8 +157,8 @@ function cargar({ ancho = 1440, alto = 900, estilos = null, quieto = false } = {
 
   const ventana = new Nodo({
     document: documento,
-    performance: { now: () => reloj, getEntriesByType: () => [] },
-    location: { hash: "" },
+    performance: { now: () => reloj, getEntriesByType: (tipo) => (tipo === "navigation" && navegacion ? [{ type: navegacion }] : []) },
+    location: { hash },
     console: { warn: (...args) => avisos.push(args), log() {}, error() {} },
     CustomEvent: class {
       constructor(type) {
@@ -272,6 +272,18 @@ test("la escena se mide y se dibuja al cargar: la esquina queda oculta y ninguna
   assert.ok(page.corner.hasAttribute("data-oculto"));
   page.cuadro();
   assert.equal(page.cuadros.size, 1, "arriba de la escena el ciclo sigue");
+});
+
+test("quien ya bajó antes de que la escena arranque la ve quieta, sin saltos; #hojas, recargar y volver atrás sí la abren", () => {
+  // Una red lenta: el visitante ya va por «Cómo funciona» cuando corre inicio.js
+  const bajado = cargar({ scrollY: 1100 });
+  assert.equal(bajado.escena.hasAttribute("data-viva"), false);
+  assert.equal(bajado.corner.dataset.control, undefined, "la esquina queda en manos de script.js");
+  assert.ok(bajado.laminas.every((node, i) => node.getAttribute("style") === bajado.originales[i]), "las láminas quedan como las dibuja el CSS");
+  assert.equal(bajado.cuadros.size, 0, "no corre el ciclo de la escena");
+  for (const opciones of [{ scrollY: 1100, hash: "#hojas" }, { scrollY: 1100, navegacion: "reload" }, { scrollY: 1100, navegacion: "back_forward" }, { navegacion: "navigate" }]) {
+    assert.ok(cargar(opciones).escena.hasAttribute("data-viva"), JSON.stringify(opciones));
+  }
 });
 
 test("un error al dibujar deja la página quieta: sin data-viva, estilos de origen y la esquina para script.js", () => {
