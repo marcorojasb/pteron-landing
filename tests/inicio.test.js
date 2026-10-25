@@ -281,7 +281,9 @@ test("quien ya bajó antes de que la escena arranque la ve quieta, sin saltos; #
   assert.equal(bajado.corner.dataset.control, undefined, "la esquina queda en manos de script.js");
   assert.ok(bajado.laminas.every((node, i) => node.getAttribute("style") === bajado.originales[i]), "las láminas quedan como las dibuja el CSS");
   assert.equal(bajado.cuadros.size, 0, "no corre el ciclo de la escena");
-  for (const opciones of [{ scrollY: 1100, hash: "#hojas" }, { scrollY: 1100, navegacion: "reload" }, { scrollY: 1100, navegacion: "back_forward" }, { navegacion: "navigate" }]) {
+  assert.equal(cargar({ scrollY: 40 }).escena.hasAttribute("data-viva"), false, "40 px ya saltarían a la vista");
+  // Unos pocos píxeles no se notan: la escena abre igual
+  for (const opciones of [{ scrollY: 1100, hash: "#hojas" }, { scrollY: 1100, navegacion: "reload" }, { scrollY: 1100, navegacion: "back_forward" }, { navegacion: "navigate" }, { scrollY: 1 }, { scrollY: 8 }]) {
     assert.ok(cargar(opciones).escena.hasAttribute("data-viva"), JSON.stringify(opciones));
   }
 });

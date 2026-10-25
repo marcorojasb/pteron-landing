@@ -427,7 +427,7 @@ transferencia y las garantías (art. 14 ter h).
 
 | Exigencia | Hoy en Privacidad | Falta |
 | --- | --- | --- |
-| a) Política, fecha y versión | Sí (2026-10-13) | — |
+| a) Política, fecha y versión | Sí (2026-10-25) | — |
 | b) Responsable y representante legal | No | Bloque del punto 1 |
 | c) Domicilio o correo para solicitudes | Correo, sí | Domicilio postal |
 | d) Datos, titulares, destinatarios, finalidades, base de licitud | Datos y finalidades, sí; destinatarios, incompleto | Bases de licitud; Resend como destinatario (hoy Privacidad §7 atribuye a Supabase el envío del enlace de acceso, que entrega Resend) |

@@ -1,6 +1,12 @@
 import { generateKeyPairSync } from "node:crypto";
 import { createServices } from "../../src/worker.js";
 
+// Ninguna prueba sale a la red: un fetch que nadie simuló falla aquí, en vez de llamar de verdad a Flow, Supabase o
+// Resend. withFetch pone su fetch falso encima y, al terminar, vuelve a este, no al real.
+globalThis.fetch = async (url) => {
+  throw new Error(`Una prueba quiso salir a la red sin simularla: ${url}`);
+};
+
 /** Par Ed25519 de pruebas, nunca la clave real. */
 export function testKeyPair() {
   const { publicKey, privateKey } = generateKeyPairSync("ed25519");

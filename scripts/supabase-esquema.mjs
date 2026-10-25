@@ -48,9 +48,13 @@ const SQL_CUENTAS = `select (select count(*) from auth.users) as cuentas, (selec
 // servidor (esquema.sql les quita los permisos de anon y authenticated) y las funciones SECURITY DEFINER, que saltan
 // RLS (esquema.sql les quita EXECUTE). Las dos consultas deben volver vacías.
 export const TABLAS_DEL_SERVIDOR = ["billing_customers", "app_settings", "ai_requests", "billing_events", "billing_checkout_intents"];
+// Cualquier permiso de tabla o de columna cuenta: un `grant select (columna)` abre filas igual que uno de tabla
+const PERMISOS_DE_TABLA = "SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER";
 const SQL_TABLAS_ABIERTAS = `select c.relname as tabla from pg_class c join pg_namespace n on n.oid = c.relnamespace
 where n.nspname = 'public' and c.relname in (${TABLAS_DEL_SERVIDOR.map((t) => `'${t}'`).join(", ")})
-  and (has_table_privilege('anon', c.oid, 'SELECT,INSERT,UPDATE,DELETE') or has_table_privilege('authenticated', c.oid, 'SELECT,INSERT,UPDATE,DELETE'))`;
+  and (${["anon", "authenticated"].map((rol) => `has_table_privilege('${rol}', c.oid, '${PERMISOS_DE_TABLA}') or has_any_column_privilege('${rol}', c.oid, 'SELECT,INSERT,UPDATE')`).join("\n    or ")})`;
+// Lo que sí debe quedar abierto: sin leer plan_catalog, GET /api/plans no sabe qué plan se vende y /planes no lo ofrece
+const SQL_CATALOGO_PUBLICO = "select has_table_privilege('anon', 'public.plan_catalog', 'SELECT') as anon_lee_catalogo";
 const SQL_FUNCIONES_ABIERTAS = `select p.oid::regprocedure::text as funcion from pg_proc p join pg_namespace n on n.oid = p.pronamespace
 where n.nspname = 'public' and p.prosecdef
   and (has_function_privilege('anon', p.oid, 'EXECUTE') or has_function_privilege('authenticated', p.oid, 'EXECUTE'))`;
@@ -131,6 +135,11 @@ export async function verificar(contexto) {
   const tablasAbiertas = await consulta(contexto, SQL_TABLAS_ABIERTAS, { soloLectura: true });
   resumen.push(`tablas del servidor abiertas ${tablasAbiertas.length}`);
   if (tablasAbiertas.length) diferencias.push(`anon o authenticated tienen permisos en tablas del servidor: ${tablasAbiertas.map((t) => t.tabla).join(", ")}`);
+
+  const [catalogo] = await consulta(contexto, SQL_CATALOGO_PUBLICO, { soloLectura: true });
+  const leeCatalogo = catalogo?.anon_lee_catalogo === true || catalogo?.anon_lee_catalogo === "true";
+  resumen.push(`anon lee el catálogo ${leeCatalogo}`);
+  if (!leeCatalogo) diferencias.push("anon no puede leer plan_catalog: GET /api/plans no sabría qué plan se vende y /planes no ofrecería ninguno");
 
   const funcionesAbiertas = await consulta(contexto, SQL_FUNCIONES_ABIERTAS, { soloLectura: true });
   resumen.push(`funciones SECURITY DEFINER abiertas ${funcionesAbiertas.length}`);

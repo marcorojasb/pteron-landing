@@ -569,6 +569,11 @@ revoke all on table public.billing_customers, public.app_settings, public.ai_req
 -- la API no se lo daría, y el Worker no podría leer ni escribir nada.
 grant select, insert, update, delete on all tables in schema public to service_role;
 
+-- /planes lee sin sesión qué plan se vende (GET /api/plans, con la clave publicable) y /cuenta lee el catálogo con
+-- la sesión del profesor. Ese permiso también se da aquí, sin depender de los privilegios por defecto; la política
+-- plan_catalog_public_read decide qué filas se ven.
+grant select on table public.plan_catalog to anon, authenticated;
+
 -- ── 12. Abrir una petición de IA ─────────────────────────────────────────
 -- El Worker calcula el período y su límite con la suscripción vigente; aquí
 -- se decide y se reserva en una sola transacción. Responde `paused`,

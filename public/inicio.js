@@ -337,10 +337,11 @@
       lamina.node.addEventListener("click", staticFlip);
     });
   // Quien ya bajó antes de que esto corra (una red lenta) vería saltar la página: fijar la escena la alarga y cambia lo
-  // que tenía delante por las láminas a medio vuelo. Queda quieta, como la está leyendo. Llegar con #hojas, recargar o
-  // volver atrás también llegan bajados, pero a propósito: esos sí abren la escena
+  // que tenía delante por las láminas a medio vuelo. Queda quieta, como la está leyendo. El salto mide casi lo que bajó:
+  // unos pocos píxeles no se notan y no justifican apagar la escena. Llegar con #hojas, recargar o volver atrás también
+  // llegan bajados, pero a propósito: esos sí abren la escena
   const navegacion = performance.getEntriesByType?.("navigation")[0]?.type;
-  const yaBajo = window.scrollY > 0 && location.hash !== "#hojas" && navegacion !== "reload" && navegacion !== "back_forward";
+  const yaBajo = window.scrollY > 8 && location.hash !== "#hojas" && navegacion !== "reload" && navegacion !== "back_forward";
   if (quieta() || yaBajo) {
     flipQuieto();
     return;

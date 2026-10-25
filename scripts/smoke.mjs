@@ -82,6 +82,10 @@ try {
   await expect("docs archivo real", { path: "/docs/app.js" }, (res) => (res.status === 200 && /javascript/.test(res.headers.get("content-type") || "") ? null : `status ${res.status}`));
   await expect("docs datos", { path: "/docs/data/releases.json" }, status(200));
   await expect("cabeceras assets", { path: "/" }, (res) => (res.headers.get("x-frame-options") === "DENY" ? null : "falta X-Frame-Options"));
+  // La CSP de _headers llega a una página de assets y a una que entrega el Worker desde ASSETS (/docs/:slug)
+  for (const ruta of ["/", "/docs/instalar-macos"]) {
+    await expect(`CSP en ${ruta}`, { path: ruta, headers: navigate }, (res) => (/script-src 'self' 'sha256-/.test(res.headers.get("content-security-policy") || "") ? null : `falta la CSP: ${res.headers.get("content-security-policy")}`));
+  }
   await expect("caché immutable", { path: "/assets/favicon-v5-32.png" }, (res) => (/immutable/.test(res.headers.get("cache-control") || "") ? null : `cache-control ${res.headers.get("cache-control")}`));
   await expect("api desconocida", { path: "/api/nada" }, jsonError("not_found", 404));
   await expect("api desconocida por navegación", { path: "/api/nada", headers: navigate }, jsonError("not_found", 404));

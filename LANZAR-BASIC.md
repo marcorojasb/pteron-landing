@@ -80,10 +80,13 @@ Los pasos 1 a 3 tienen dos variantes: con script (1b) o a mano.
    select key, value from public.app_settings;   -- included_ai_paused = false
    select tablename from pg_tables where schemaname = 'public' and not rowsecurity;   -- 0 filas
    select (select count(*) from auth.users) as cuentas, (select count(*) from public.profiles) as perfiles;   -- iguales
-   -- 0 filas: ninguna tabla del servidor abierta al navegador
+   -- 0 filas: ninguna tabla del servidor abierta al navegador (tampoco por columna)
    select c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace
    where n.nspname = 'public' and c.relname in ('billing_customers', 'app_settings', 'ai_requests', 'billing_events', 'billing_checkout_intents')
-     and (has_table_privilege('anon', c.oid, 'SELECT,INSERT,UPDATE,DELETE') or has_table_privilege('authenticated', c.oid, 'SELECT,INSERT,UPDATE,DELETE'));
+     and (has_table_privilege('anon', c.oid, 'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER') or has_any_column_privilege('anon', c.oid, 'SELECT,INSERT,UPDATE')
+       or has_table_privilege('authenticated', c.oid, 'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER') or has_any_column_privilege('authenticated', c.oid, 'SELECT,INSERT,UPDATE'));
+   -- true: /planes lee sin sesión qué plan se vende
+   select has_table_privilege('anon', 'public.plan_catalog', 'SELECT');
    -- 0 filas: ninguna función SECURITY DEFINER que el navegador pueda ejecutar
    select p.oid::regprocedure from pg_proc p join pg_namespace n on n.oid = p.pronamespace
    where n.nspname = 'public' and p.prosecdef
@@ -92,10 +95,12 @@ Los pasos 1 a 3 tienen dos variantes: con script (1b) o a mano.
 
    Un proyecto con el esquema anterior al 25 de octubre de 2026 deja a `billing_events` y
    `billing_checkout_intents` con los permisos por defecto de anon y authenticated (RLS sin políticas igual les
-   niega todo). Sin volver a correr el esquema, lo cierra esto, que no toca datos:
+   niega todo), y el permiso de anon para leer el catálogo depende de esos mismos valores por defecto. Sin volver a
+   correr el esquema, lo deja como el archivo esto, que no toca datos:
 
    ```sql
    revoke all on table public.billing_events, public.billing_checkout_intents from anon, authenticated;
+   grant select on table public.plan_catalog to anon, authenticated;
    ```
 
    Si el disparador de `auth.users` hubo que rehacerlo, debe correr el archivo quien sea dueño de esa
@@ -282,7 +287,7 @@ Sólo con 0.8.0 publicada (sección 7).
    confirmación escrita, boleta por cada cobro y encargo de datos. Los borradores están en
    `BORRADORES-LEGALES.md`. Llena los `SELLER_*` (1b; `SELLER_REPRESENTATIVE` es opcional).
 2. `/admin` › Planes: abre la venta de Basic, y la de Pro si corresponde. `/planes` cambia sola
-   «Disponible pronto» por «Elegir Basic» (lee `GET /api/plans`, con un minuto de caché):
+   «Disponible pronto» por «Elegir Basic» (lee `GET /api/plans`; un navegador que ya la abrió puede tardar un minuto):
    compruébalo en https://pteron.patagua.dev/planes.
 3. Primera compra real con tu tarjeta:
    - la suscripción queda en prueba;

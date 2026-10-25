@@ -45,8 +45,9 @@ test("la CSP vale para todo el sitio y cierra lo que no se usa", () => {
   assert.deepEqual(directivas["form-action"], ["'self'"]);
   assert.deepEqual(directivas["img-src"], ["'self'", "data:"]);
   assert.deepEqual(directivas["font-src"], ["'self'"]);
-  // Los estilos en línea quedan (las láminas de la portada llevan su posición en style); los scripts, no
+  // Los atributos style quedan (las láminas de la portada llevan su posición en style); un <style> inyectado, no
   assert.deepEqual(directivas["style-src"], ["'self'", "'unsafe-inline'"]);
+  assert.deepEqual(directivas["style-src-elem"], ["'self'"]);
   assert.equal(directivas["script-src"][0], "'self'");
   for (const prohibido of ["'unsafe-inline'", "'unsafe-eval'", "'unsafe-hashes'", "*", "https:", "data:"]) {
     assert.ok(!directivas["script-src"].includes(prohibido), `script-src sin ${prohibido}`);
@@ -66,11 +67,13 @@ test("ningún HTML ni el HTML que arma el JavaScript usa manejadores en línea n
     const html = readFileSync(ruta, "utf8");
     assert.doesNotMatch(html, /<[a-z][^>]*\son[a-z]+\s*=/i, `${relativa(ruta)}: un on…= en línea no corre con la CSP`);
     assert.doesNotMatch(html, /\b(href|src|action)\s*=\s*["']?\s*javascript:/i, relativa(ruta));
+    assert.doesNotMatch(html, /<style[\s>]/i, `${relativa(ruta)}: un <style> no corre con style-src-elem 'self'; va en una hoja`);
   }
   for (const ruta of scripts) {
     const codigo = readFileSync(ruta, "utf8");
     assert.doesNotMatch(codigo, /\son[a-z]+=\\?["']/i, `${relativa(ruta)}: arma HTML con un on…= en línea`);
     assert.doesNotMatch(codigo, /javascript:/i, relativa(ruta));
+    assert.doesNotMatch(codigo, /<style[\s>]/i, `${relativa(ruta)}: arma un <style>, que la CSP no deja`);
   }
 });
 

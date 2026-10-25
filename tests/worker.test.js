@@ -555,3 +555,27 @@ test("GET /api/plans dice qué planes se venden: sin sesión, con la clave publi
     assert.equal(post.status, 405);
   });
 });
+
+test("GET /api/plans sin respuesta de Supabase: 503 genérico y sin caché, y el motivo queda en el registro", async () => {
+  for (const [status, mensaje] of [[401, "Invalid API key"], [403, "permission denied for table plan_catalog"], [500, "boom"]]) {
+    const network = fakeNetwork([{ match: matches.supabase("plan_catalog"), respond: { status, body: { message: mensaje } } }]);
+    const errores = [];
+    const consoleError = console.error;
+    console.error = (...args) => errores.push(args);
+    try {
+      await withFetch(network.fetch, async () => {
+        const res = await worker.fetch(new Request("https://pteron.test/api/plans"), env, fakeExecution());
+        assert.equal(res.status, 503, String(status));
+        assert.equal(res.headers.get("cache-control"), "no-store");
+        const cuerpo = await res.json();
+        assert.deepEqual(cuerpo, { error: "plans_unavailable", message: "No pudimos leer los planes." });
+        assert.ok(!JSON.stringify(cuerpo).includes(mensaje), "el mensaje de Supabase no sale al público");
+      });
+    } finally {
+      console.error = consoleError;
+    }
+    assert.equal(errores.length, 1);
+    assert.equal(errores[0][0], "pteron plans");
+    assert.ok(JSON.stringify(errores[0][1]).includes(mensaje), "el motivo queda en Workers Logs");
+  }
+});

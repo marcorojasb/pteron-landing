@@ -20,7 +20,7 @@ const PLANES_OK = [
  * `estado` permite cambiar lo que devuelve cada consulta.
  */
 function simular(estado = {}) {
-  const e = { existeTabla: true, datos: {}, vivas: [], planes: PLANES_OK, ajustes: [{ key: "included_ai_paused", value: false }], sinRls: [], tablasAbiertas: [], funcionesAbiertas: [], cuentas: { cuentas: 5, perfiles: 5 }, ...estado };
+  const e = { existeTabla: true, datos: {}, vivas: [], planes: PLANES_OK, ajustes: [{ key: "included_ai_paused", value: false }], sinRls: [], tablasAbiertas: [], funcionesAbiertas: [], anonLeeCatalogo: true, cuentas: { cuentas: 5, perfiles: 5 }, ...estado };
   const llamadas = [];
   const fetch = async (url, init) => {
     const cuerpo = JSON.parse(init.body);
@@ -35,6 +35,7 @@ function simular(estado = {}) {
     else if (q.includes("from public.plan_catalog")) filas = e.planes;
     else if (q.includes("from public.app_settings")) filas = e.ajustes;
     else if (q.includes("pg_tables")) filas = e.sinRls;
+    else if (q.includes("anon_lee_catalogo")) filas = [{ anon_lee_catalogo: e.anonLeeCatalogo }];
     else if (q.includes("has_table_privilege")) filas = e.tablasAbiertas;
     else if (q.includes("prosecdef")) filas = e.funcionesAbiertas;
     else if (q.includes("auth.users")) filas = [e.cuentas];
@@ -73,8 +74,8 @@ test("--aplicar ejecuta supabase/esquema.sql entero en una sola llamada y luego 
   assert.equal(llamadas[0].auth, `Bearer ${TOKEN}`);
   assert.match(llamadas[0].cuerpo.query, /create table|create or replace function/i);
   const despues = r.llamadas.slice(r.llamadas.indexOf(llamadas[0]) + 1);
-  // Planes, ajustes, RLS, tablas del servidor, funciones SECURITY DEFINER y cuentas
-  assert.equal(despues.length, 6, "las comprobaciones corren después del esquema");
+  // Planes, ajustes, RLS, tablas del servidor, catálogo público, funciones SECURITY DEFINER y cuentas
+  assert.equal(despues.length, 7, "las comprobaciones corren después del esquema");
   assert.match(r.salida, /Esquema ejecutado/);
   assert.match(r.salida, /basic 2990\/7\/6000000\/1500000 \(for_sale false\)/);
 });
@@ -148,14 +149,30 @@ test("la verificación falla si el navegador puede tocar una tabla del servidor 
   assert.match(r.salida, /DIFIERE: anon o authenticated tienen permisos en tablas del servidor: billing_events, billing_checkout_intents/);
   assert.match(r.salida, /DIFIERE: anon o authenticated pueden ejecutar: admin_usage_by_account\(/);
   // Las consultas sólo leen: van con read_only, como el resto de la verificación
-  const permisos = r.llamadas.filter((l) => /has_table_privilege|prosecdef/.test(l.cuerpo.query));
+  const permisos = r.llamadas.filter((l) => /has_table_privilege|prosecdef/.test(l.cuerpo.query) && !l.cuerpo.query.includes("anon_lee_catalogo"));
   assert.equal(permisos.length, 2);
   assert.ok(permisos.every((l) => l.cuerpo.read_only === true));
   for (const tabla of TABLAS_DEL_SERVIDOR) assert.ok(permisos[0].cuerpo.query.includes(`'${tabla}'`), tabla);
+  // Un permiso de columna o un TRUNCATE también cuentan, para los dos roles
+  for (const rol of ["anon", "authenticated"]) {
+    assert.ok(permisos[0].cuerpo.query.includes(`has_any_column_privilege('${rol}', c.oid, 'SELECT,INSERT,UPDATE')`), rol);
+    assert.ok(permisos[0].cuerpo.query.includes(`has_table_privilege('${rol}', c.oid, 'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')`), rol);
+  }
   // Sin nada abierto, todo calza
   const bien = await correr(["--verificar"], {});
   assert.equal(bien.codigo, 0);
-  assert.match(bien.salida, /tablas del servidor abiertas 0 · funciones SECURITY DEFINER abiertas 0/);
+  assert.match(bien.salida, /tablas del servidor abiertas 0 · /);
+  assert.match(bien.salida, /funciones SECURITY DEFINER abiertas 0 · /);
+});
+
+test("la verificación falla si anon no puede leer el catálogo: /planes no ofrecería ningún plan", async () => {
+  const r = await correr(["--verificar"], { anonLeeCatalogo: false });
+  assert.equal(r.codigo, 1);
+  assert.match(r.salida, /DIFIERE: anon no puede leer plan_catalog/);
+  assert.match((await correr(["--verificar"], {})).salida, /anon lee el catálogo true/);
+  // esquema.sql da ese permiso explícito, como el de service_role
+  const sql = readFileSync(new URL("../supabase/esquema.sql", import.meta.url), "utf8");
+  assert.match(sql, /grant select on table public\.plan_catalog to anon, authenticated;/);
 });
 
 test("esquema.sql le quita a anon y authenticated cada tabla del servidor que la verificación revisa", () => {

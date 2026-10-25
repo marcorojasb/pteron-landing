@@ -8,7 +8,15 @@ import { json, method } from "../lib/http.js";
  */
 export async function plans({ request, services }) {
   method(request, "GET");
-  const rows = await services.supabase.select("plan_catalog", "active=eq.true&listed=eq.true&select=id,for_sale&order=monthly_price_clp.asc");
+  let rows;
+  try {
+    rows = await services.supabase.select("plan_catalog", "active=eq.true&listed=eq.true&select=id,for_sale&order=monthly_price_clp.asc");
+  } catch (error) {
+    // Sin respuesta, /planes queda en «Disponible pronto» aunque la venta esté abierta: que quede en Workers Logs, y
+    // que al público no le llegue el mensaje de Supabase (un permiso o una clave)
+    console.error("pteron plans", { status: error?.status ?? null, code: error?.code ?? null, message: error instanceof Error ? error.message : String(error) });
+    return json(503, { error: "plans_unavailable", message: "No pudimos leer los planes." });
+  }
   const planes = (Array.isArray(rows) ? rows : []).map((row) => ({ id: row.id, forSale: row.for_sale === true }));
   return json(200, { plans: planes }, { "Cache-Control": "public, max-age=60" });
 }

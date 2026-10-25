@@ -202,7 +202,8 @@ La cuenta web, Flow y la aplicación de escritorio llaman a `/api/auth/*`,
 `/api/billing/*`, `/api/activation/*`, `/api/license/*`, `/api/account` y
 `/api/ai/v1/*`. `/planes` llama a `GET /api/plans`, público y sin sesión: lee
 `plan_catalog` con la clave publicable (la política pública muestra los planes
-activos y listados) y responde sólo el id y si se vende, con un minuto de caché. La firma Ed25519 de las licencias la produce Web Crypto y la
+activos y listados) y responde sólo el id y si se vende; el navegador guarda la
+respuesta un minuto. Si Supabase no responde, devuelve 503 y lo deja en Workers Logs. La firma Ed25519 de las licencias la produce Web Crypto y la
 verifica `node:crypto` en la aplicación; una prueba lo comprueba en cada
 corrida. La única clave pública admitida es k2 y vive en `src/lib/license.js`
 (`PUBLIC_KEYS`); la privada que firma es el secreto `LICENSE_PRIVATE_KEY_PEM` y
