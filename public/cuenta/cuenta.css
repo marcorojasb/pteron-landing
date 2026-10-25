@@ -41,7 +41,15 @@
 .acceso-error:empty{display:none}
 .acceso-error{padding:10px 14px;border-radius:10px;background:var(--error-papel);color:var(--error);font-size:var(--t-chico)}
 .acceso-enviar{justify-self:start}
-.acceso-enviar:disabled,[data-checkout-plan]:disabled,[data-checkout-confirm]:disabled,[data-confirm-activation]:disabled,[data-cancel-subscription]:disabled{opacity:.7;cursor:default}
+/* Google y Apple antes del correo: botones de papel a lo ancho de la hoja, cada uno con su marca tal cual (sus guías la
+   piden sin cambios, sobre blanco) */
+.acceso-proveedores{display:grid;gap:10px}
+.acceso-proveedor{width:100%;background:var(--hoja);color:var(--tinta);border-color:color-mix(in srgb,var(--tinta) 40%,var(--linea))}
+.acceso-proveedor:hover{border-color:var(--tinta)}
+.acceso-proveedor svg{flex:none;width:20px;height:20px}
+.acceso-o{display:flex;align-items:center;gap:12px;margin-top:6px;color:var(--grafito);font-size:var(--t-chico)}
+.acceso-o::before,.acceso-o::after{content:"";flex:1;border-top:var(--borde) solid var(--regla)}
+.acceso-enviar:disabled,.acceso-proveedor:disabled,[data-checkout-plan]:disabled,[data-checkout-confirm]:disabled,[data-confirm-activation]:disabled,[data-cancel-subscription]:disabled{opacity:.7;cursor:default}
 .acceso-enviado{display:grid;gap:4px;padding:14px 16px;border-radius:10px;background:var(--ok-papel);color:var(--ok)}
 .acceso-enviado p{font-size:var(--t-chico)}
 .acceso:has([data-link-sent]:not([hidden])) .acceso-enviar{background:var(--hoja);color:var(--azul);box-shadow:0 0 0 1px var(--linea)}
@@ -128,5 +136,5 @@
   .resumen-filas div{grid-template-columns:minmax(0,1fr)}
 }
 /* Sin JavaScript el enlace no se puede pedir: el campo no lleva name, para que el correo nunca quede en la URL, y el
-   formulario cede su lugar a la nota */
-.no-js .acceso-hoja .campo,.no-js .acceso-enviar{display:none}
+   formulario cede su lugar a la nota. Google y Apple tampoco: el nonce lo arma cuenta.js */
+.no-js .acceso-hoja .campo,.no-js .acceso-enviar,.no-js .acceso-proveedores{display:none}

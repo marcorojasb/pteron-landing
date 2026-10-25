@@ -1,8 +1,8 @@
 (() => {
-  /* pteron · cuenta: entrada por enlace mágico, plan actual y uso de la IA incluida, resumen antes de Flow, retorno del
-     pago y autorización de equipos. Lo que no toca el DOM —fechas de Chile, estado del plan, uso, resumen, avisos del
-     retorno y lo guardado con vencimiento— va primero y queda en window.pteronCuenta, para probarlo sin navegador
-     (tests/cuenta.test.js). */
+  /* pteron · cuenta: entrada por enlace mágico o con Google y Apple, plan actual y uso de la IA incluida, resumen antes
+     de Flow, retorno del pago y autorización de equipos. Lo que no toca el DOM —fechas de Chile, estado del plan, uso,
+     resumen, avisos del retorno, el nonce de Google y Apple y lo guardado con vencimiento— va primero y queda en window.pteronCuenta, para
+     probarlo sin navegador (tests/cuenta.test.js). */
 
   const SESSION_KEY = "pteron-account-session";
   const PENDING_ACTIVATION_KEY = "pteron-pending-activation";
@@ -16,6 +16,10 @@
   const REQUESTED_PLAN_TTL = 60 * 60 * 1000;
   // El correo al que se pidió un enlace desde este navegador se recuerda lo que dura el enlace (una hora en Supabase)
   const LOGIN_REQUEST_TTL = 60 * 60 * 1000;
+  // La entrada con Google o Apple guarda el proveedor, su state y su nonce mientras dura la ida y vuelta
+  const OAUTH_KEY = "pteron-oauth";
+  const OAUTH_TTL = 30 * 60 * 1000;
+  const OAUTH_PROVIDERS = { google: "Google", apple: "Apple" };
   // Los estados con que el checkout responde «Ya tienes un plan en curso» (src/routes/billing.js)
   const CURRENT_STATUSES = ["incomplete", "trialing", "active", "past_due", "paused"];
   const PLAN_IDS = ["basic", "pro"];
@@ -327,6 +331,54 @@
     return !linkEmail || (linkEmail !== requestedEmail && linkEmail !== currentEmail);
   }
 
+  /** Bytes al azar en base64url sin relleno: el state y el nonce de una entrada con Google o Apple. */
+  function randomToken(size) {
+    return btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(size)))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+
+  /** El SHA-256 en hex: la huella del nonce que firma el proveedor y que Supabase compara con el nonce de aquí. */
+  async function sha256Hex(text) {
+    const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)));
+    return [...digest].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  }
+
+  /** El intento guardado al salir («proveedor.state.nonce»), o null si no es uno de los nuestros. */
+  function oauthAttempt(value) {
+    const [provider, state, nonce, ...rest] = String(value || "").split(".");
+    const random = /^[A-Za-z0-9_-]{22,128}$/;
+    return Object.hasOwn(OAUTH_PROVIDERS, provider) && random.test(state || "") && random.test(nonce || "") && !rest.length ? { provider, state, nonce } : null;
+  }
+
+  // Las únicas direcciones por las que se sale a cada proveedor
+  const AUTHORIZE = { google: "https://accounts.google.com/o/oauth2/v2/auth", apple: "https://appleid.apple.com/auth/authorize" };
+
+  /** La salida a Google o Apple, sólo si es la dirección de ese proveedor; otra no se abre. */
+  function authorizeLink(value, provider) {
+    try {
+      const url = new URL(String(value || ""));
+      return Object.hasOwn(AUTHORIZE, provider) && `${url.origin}${url.pathname}` === AUTHORIZE[provider] && !url.username && !url.password ? url.toString() : "";
+    } catch {
+      return "";
+    }
+  }
+
+  /**
+   * El aviso para el error con que vuelve el enlace por correo, Google o Apple (en la consulta o en el fragmento),
+   * dicho por nosotros: el texto de la URL no se muestra, porque cualquiera puede armar una. Quien cancela en Google o
+   * Apple vuelve al formulario sin aviso. `provider` es el del intento que salió de aquí, si hay uno.
+   */
+  function authErrorMessage(params, provider) {
+    const error = params.get("error") || "";
+    const code = params.get("error_code") || "";
+    if (!error && !code) return "";
+    if (code === "otp_expired") return "El enlace venció o ya se usó. Pide uno nuevo.";
+    const name = Object.hasOwn(OAUTH_PROVIDERS, provider || "") ? OAUTH_PROVIDERS[provider] : "";
+    if (!name) return "No pudimos abrir ese enlace. Pide uno nuevo.";
+    // Google responde access_denied sin más cuando el profe cancela; Apple, user_cancelled_authorize
+    if (error === "user_cancelled_authorize" || (error === "access_denied" && !code)) return "";
+    return `No pudimos completar la entrada con ${name}. Vuelve a intentarlo o entra con tu correo.`;
+  }
+
   window.pteronCuenta = {
     formatDate,
     formatLongDate,
@@ -344,6 +396,11 @@
     pendingActivationFrom,
     tokenEmail,
     linkNeedsConfirmation,
+    randomToken,
+    sha256Hex,
+    oauthAttempt,
+    authorizeLink,
+    authErrorMessage,
   };
 
   /* ---------- La página ---------- */
@@ -358,6 +415,8 @@
   const loginMessage = document.querySelector("[data-login-message]");
   const linkSent = document.querySelector("[data-link-sent]");
   const linkConfirm = document.querySelector("[data-link-confirm]");
+  const oauthButtons = [...document.querySelectorAll("[data-oauth-provider]")];
+  const oauthMessage = document.querySelector("[data-oauth-message]");
   const summaryPanel = document.querySelector("[data-checkout-summary]");
   const summaryForm = summaryPanel?.querySelector("[data-summary-form]");
   const termsAccept = summaryPanel?.querySelector("[data-terms-accept]");
@@ -366,15 +425,19 @@
   const CONFIRM_LABEL = "Registrar tarjeta en Flow";
 
   const pageUrl = new URL(window.location.href);
+  // El error con que puede volver el enlace por correo en la consulta se lee antes de limpiarla
+  const returnQuery = new URLSearchParams(pageUrl.search);
   let pendingActivation = pendingActivationFrom(pageUrl, storage, Date.now());
   let activationExpired = false;
   const requestedPlan = readRequestedPlan();
   let requestedPlanShown = false;
   let billingReturn = billingMessage(pageUrl.searchParams.get("billing"), pageUrl.searchParams.get("code"));
   const billingSucceeded = pageUrl.searchParams.get("billing") === "success";
-  // El código de activación y el aviso de Flow no se quedan en la URL: recargar no los repite y no viajan al compartirla
-  if (["activate", "billing", "code"].some((key) => pageUrl.searchParams.has(key))) {
-    ["activate", "billing", "code"].forEach((key) => pageUrl.searchParams.delete(key));
+  // El código de activación, el aviso de Flow y el error del enlace por correo no se quedan en la URL: recargar no los
+  // repite y no viajan al compartirla
+  const RETURN_PARAMS = ["activate", "billing", "code", "error", "error_code", "error_description"];
+  if (RETURN_PARAMS.some((key) => pageUrl.searchParams.has(key))) {
+    RETURN_PARAMS.forEach((key) => pageUrl.searchParams.delete(key));
     window.history.replaceState({}, "", `${pageUrl.pathname}${pageUrl.search}${window.location.hash}`);
   }
   let memorySession = null;
@@ -433,27 +496,108 @@
     window.location.reload();
   }
 
-  /** La sesión que trae el enlace mágico en el fragmento, que se borra de la URL en el acto; null si no trae una. */
-  function consumeAuthHash() {
+  /**
+   * Lo que trae la vuelta, que sale de la URL en el acto: la sesión del enlace mágico, el id_token de Google o Apple
+   * (los dos en el fragmento) o un error, ya como aviso nuestro. El intento con Google o Apple que salió de aquí se usa
+   * una sola vez, vuelva bien o mal, y sólo es suyo lo que vuelve con su state.
+   */
+  function consumeAuthReturn() {
     const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
     const accessToken = hash.get("access_token");
     const refreshToken = hash.get("refresh_token");
-    if (accessToken && refreshToken) {
+    const idToken = hash.get("id_token") || "";
+    // El enlace por correo puede escribir su error en la consulta y también en el fragmento; Google y Apple, en el fragmento
+    const hasError = (params) => params.has("error") || params.has("error_code");
+    const failed = [returnQuery, hash].find(hasError);
+    if ((accessToken && refreshToken) || idToken || hasError(hash)) {
       window.history.replaceState({}, "", `${window.location.pathname}${window.location.search}`);
+    }
+    if (accessToken && refreshToken) {
       return {
-        access_token: accessToken,
-        refresh_token: refreshToken,
-        expires_in: Number(hash.get("expires_in") || 3600),
-        expires_at: Date.now() + Number(hash.get("expires_in") || 3600) * 1000,
-        token_type: hash.get("token_type") || "bearer",
+        session: {
+          access_token: accessToken,
+          refresh_token: refreshToken,
+          expires_in: Number(hash.get("expires_in") || 3600),
+          expires_at: Date.now() + Number(hash.get("expires_in") || 3600) * 1000,
+          token_type: hash.get("token_type") || "bearer",
+        },
       };
     }
-    const error = hash.get("error_description") || hash.get("error");
-    if (error) {
-      showLoginMessage(decodeURIComponent(error.replace(/\+/g, " ")));
-      window.history.replaceState({}, "", `${window.location.pathname}${window.location.search}`);
+    if (!idToken && !failed) return {};
+    const attempt = oauthAttempt(recall(storage, OAUTH_KEY, Date.now())?.value);
+    forget(storage, OAUTH_KEY);
+    const ours = Boolean(attempt) && hash.get("state") === attempt.state && (!hash.has("provider") || hash.get("provider") === attempt.provider);
+    if (idToken) {
+      if (ours) return { idToken, attempt };
+      // Un id_token sin el state de aquí no se usa; si había un intento, se dice que no se completó
+      return { error: attempt ? `No pudimos completar la entrada con ${OAUTH_PROVIDERS[attempt.provider]}. Vuelve a intentarlo o entra con tu correo.` : "" };
     }
-    return null;
+    return { error: authErrorMessage(failed, ours ? attempt.provider : "") };
+  }
+
+  /** La vuelta de Google o Apple: el id_token, con el nonce que se guardó al salir, por una sesión de Supabase. */
+  async function enterWithIdToken(idToken, attempt) {
+    try {
+      const response = await fetch("/api/auth/id-token", {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ provider: attempt.provider, id_token: idToken, nonce: attempt.nonce }),
+      });
+      const data = await readResponse(response);
+      saveSession({ ...data, expires_at: Date.now() + Number(data.expires_in || 3600) * 1000 });
+    } catch (error) {
+      await start();
+      showNotice(error.status ? error.message : `No pudimos completar la entrada con ${OAUTH_PROVIDERS[attempt.provider]}. Vuelve a intentarlo.`, "error");
+      return false;
+    }
+    return start();
+  }
+
+  /** Los botones de Google y Apple, ocupados mientras se arma la salida (el elegido dice «Abriendo…») o de nuevo libres. */
+  function setOAuthBusy(provider) {
+    oauthButtons.forEach((button) => {
+      const name = OAUTH_PROVIDERS[button.dataset.oauthProvider];
+      button.disabled = Boolean(provider);
+      const label = button.querySelector("[data-oauth-label]");
+      if (label && name) label.textContent = button.dataset.oauthProvider === provider ? `Abriendo ${name}…` : `Continuar con ${name}`;
+    });
+  }
+
+  /**
+   * Sale hacia Google o Apple. El nonce queda guardado aquí y al proveedor sólo va su huella, que firma dentro del
+   * id_token: sin el nonce, ese id_token no le sirve a otro navegador. Un proveedor apagado lo dice el servidor, y el
+   * profe sigue con su correo.
+   */
+  async function startOAuth(button) {
+    const provider = button.dataset.oauthProvider;
+    if (!Object.hasOwn(OAUTH_PROVIDERS, provider)) return;
+    if (oauthMessage) oauthMessage.textContent = "";
+    setOAuthBusy(provider);
+    try {
+      const state = randomToken(16);
+      const nonce = randomToken(32);
+      const response = await fetch("/api/auth/oauth", {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ provider, state, nonce_hash: await sha256Hex(nonce) }),
+      });
+      const destination = authorizeLink((await readResponse(response))?.url, provider);
+      if (!destination) throw new Error(`No pudimos abrir ${OAUTH_PROVIDERS[provider]}. Vuelve a intentarlo o entra con tu correo.`);
+      const value = `${provider}.${state}.${nonce}`;
+      remember(storage, OAUTH_KEY, value, OAUTH_TTL, Date.now());
+      // Sin poder guardarlo, la vuelta no tendría con qué entrar: mejor decirlo antes de salir
+      if (recall(storage, OAUTH_KEY, Date.now())?.value !== value) {
+        throw new Error(`Este navegador no deja guardar datos de este sitio, y sin eso la entrada con ${OAUTH_PROVIDERS[provider]} no se completa. Entra con tu correo.`);
+      }
+      window.location.assign(destination);
+    } catch (error) {
+      setOAuthBusy("");
+      // Sin red (o sin Web Crypto) el error viene en inglés: se dice en castellano
+      const message = error?.name === "TypeError" ? `No pudimos abrir ${OAUTH_PROVIDERS[provider]}. Revisa tu conexión y vuelve a intentarlo.` : error.message;
+      if (oauthMessage) oauthMessage.textContent = message;
+      // El botón deshabilitado soltó el foco: vuelve a él, para intentarlo de nuevo
+      button.focus();
+    }
   }
 
   /**
@@ -971,9 +1115,13 @@
   });
   document.querySelector("[data-cancel-subscription]")?.addEventListener("click", cancelSubscription);
   document.querySelector("[data-confirm-activation]")?.addEventListener("click", confirmActivation);
+  oauthButtons.forEach((button) => button.addEventListener("click", () => startOAuth(button)));
   // Al volver con «Atrás» desde Flow la página puede salir de la caché tal como quedó: el botón vuelve a estar disponible
   window.addEventListener("pageshow", (event) => {
-    if (!event.persisted || !summaryConfirm) return;
+    if (!event.persisted) return;
+    // También al volver con «Atrás» desde Google o Apple: sus botones vuelven a estar libres
+    setOAuthBusy("");
+    if (!summaryConfirm) return;
     summaryConfirm.disabled = false;
     summaryConfirm.textContent = CONFIRM_LABEL;
     showNotice("");
@@ -1001,7 +1149,11 @@
     return false;
   }
 
-  const linkSession = consumeAuthHash();
-  if (linkSession) enterWithLink(linkSession);
-  else start();
+  const back = consumeAuthReturn();
+  if (back.session) enterWithLink(back.session);
+  else if (back.idToken) enterWithIdToken(back.idToken, back.attempt);
+  else start().then(() => {
+    // Después de start(), que también avisa (Flow, una activación pendiente): el error de la vuelta es lo último que pasó
+    if (back.error) showNotice(back.error, "error");
+  });
 })();

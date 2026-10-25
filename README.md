@@ -17,7 +17,8 @@ Worker, con `wrangler` desde la rama `main` de este repositorio (ver «Despliegu
   - `planes/index.html`: planes, precios y funcionamiento de las licencias. Cada plan de pago
     parte con «Disponible pronto»; `script.js` pregunta a `GET /api/plans` y muestra «Elegir» sólo
     para el que está a la venta, como `/cuenta`.
-  - `cuenta/`: cuenta web, acceso por enlace mágico, checkout y activación.
+  - `cuenta/`: cuenta web, acceso por enlace mágico (o con Google y Apple, cuyos botones esperan ocultos a que se
+    configuren: `ENTRAR-CON-GOOGLE-Y-APPLE.md`), checkout y activación.
   - `descargar/`: descargas por plataforma, firmas y clave pública.
   - `docs/`: documentación en una sola página; `docs/data/releases.json` es el
     catálogo de versiones que mantiene el workflow.
@@ -201,6 +202,13 @@ mantiene sólo metadatos de cuenta y suscripción; los archivos de trabajo
 permanecen en el equipo del profesor. Flow gestiona el registro de tarjeta y los
 cobros. La aplicación `pteron` recibe un enlace de un solo uso y guarda
 localmente una licencia firmada con protección del sistema operativo.
+
+Entrar con Google o Apple es OpenID Connect con `id_token`, sin secretos y sin pasar por el
+dominio de Supabase: `/cuenta` guarda un nonce y `POST /api/auth/oauth` arma la salida al
+proveedor con su huella. Google vuelve a `/cuenta` con el `id_token` en el fragmento; Apple lo
+envía por POST a `/api/auth/apple-callback`, que lo devuelve igual. `POST /api/auth/id-token` lo
+cambia por la sesión de Supabase, que lo acepta sólo junto al nonce de ese navegador. Los Client
+IDs (públicos) están en `wrangler.jsonc` (`ENTRAR-CON-GOOGLE-Y-APPLE.md`).
 
 La cuenta web, Flow y la aplicación de escritorio llaman a `/api/auth/*`,
 `/api/billing/*`, `/api/activation/*`, `/api/license/*`, `/api/account` y
@@ -436,6 +444,9 @@ texto puesta en el panel de Cloudflare se borra en el siguiente despliegue.
   persona jurídica): remitente y datos del vendedor de los correos (ver
   «Correos»). Los `SELLER_*` llevan los datos de Patagua.dev SpA según su declaración de inicio de
   actividades ante el SII (ver `LEGAL-PENDIENTE.md`, punto 1).
+- `GOOGLE_CLIENT_ID` y `APPLE_SERVICES_ID`: los identificadores públicos de «Continuar
+  con Google» y «Continuar con Apple». No hay secretos de ninguno de los dos; Supabase
+  debe tener cada proveedor encendido con ese mismo Client ID (`ENTRAR-CON-GOOGLE-Y-APPLE.md`).
 
 Los secretos se cargan con `npx wrangler secret put <NOMBRE>` o desde el panel
 del Worker, nunca en el repositorio ni en la interfaz del navegador:

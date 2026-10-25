@@ -1,5 +1,28 @@
 # Design QA
 
+## Entrar con Google y Apple, listo y oculto — 2026-10-25
+
+- /cuenta: «Continuar con Google» y «Continuar con Apple» arriba de la hoja de entrada, de papel y a lo ancho, con la
+  marca de cada uno tal cual; debajo, «o con tu correo» y el formulario de siempre. Quedan ocultos (`hidden` en
+  `data-oauth`) hasta que Google, Apple y Supabase estén configurados (`ENTRAR-CON-GOOGLE-Y-APPLE.md`). Con los
+  botones ocultos, /cuenta es idéntica píxel a píxel a la anterior, a 1280 y 390 px.
+- OpenID Connect con `id_token`, sin secretos y sin pasar por el dominio de Supabase, como hola.patagua.dev. Se
+  reutilizan su cliente de Google (una URI de redirección más, sin tocar su marca) y el equipo de Apple (un Services
+  ID «pteron»). El nonce queda en el navegador y al proveedor sólo va su huella. Supabase acepta el `id_token` sólo
+  con ese nonce, así que uno ajeno no abre nada; lo que vuelve sin el state de este navegador no se usa. Un proveedor
+  apagado lo dice junto a los botones, nada queda guardado y el foco vuelve al botón.
+- Los errores de la vuelta (y los del enlace por correo, que antes mostraban el texto en inglés de la URL) se dicen con
+  palabras nuestras; cancelar en Google o Apple no avisa nada. El texto de la URL nunca se muestra.
+- Verificado en Chromium, con los botones a la vista y los proveedores simulados:
+  - viaje completo con Google a 1280 px y con Apple a 390 px;
+  - «Abriendo…» mientras sale y el esqueleto mientras Supabase valida;
+  - después, la cuenta abierta con el saludo, la URL limpia y el intento borrado;
+  - cancelar vuelve sin aviso y un `id_token` ajeno no pide nada;
+  - «Atrás» desde Google deja los botones libres;
+  - sin desborde, errores ni violaciones de CSP.
+- 43 mutantes del Worker y de /cuenta, todos detectados por las pruebas. Google acepta este flujo con el cliente de
+  hola.patagua.dev (comprobado con la dirección de autorización, sin entrar con ninguna cuenta).
+
 ## «Cómo funciona» con la app de hoy — 2026-10-25
 
 - La ventana del inicio refleja pteron main (b79850c):

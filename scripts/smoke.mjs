@@ -95,6 +95,16 @@ try {
     return res.status === 303 && location.endsWith("/cuenta?billing=expired") ? null : `esperaba 303 a /cuenta?billing=expired, llegó ${res.status} ${location}`;
   });
   await expect("api sin sesión", { path: "/api/account" }, jsonError("not_authenticated", 401));
+  // Entrar con Google o Apple: las rutas existen en el Worker real y rechazan lo mal formado antes de ir a Supabase
+  const json = { "content-type": "application/json" };
+  await expect("oauth con un proveedor ajeno", { path: "/api/auth/oauth", method: "POST", headers: json, body: JSON.stringify({ provider: "github", state: "s".repeat(22), nonce_hash: "a".repeat(64) }) }, jsonError("invalid_provider", 400));
+  await expect("id_token sin nonce", { path: "/api/auth/id-token", method: "POST", headers: json, body: JSON.stringify({ provider: "google", id_token: "a.b.c" }) }, jsonError("invalid_input", 400));
+  // La vuelta de Apple es un POST de formulario desde appleid.apple.com, como una navegación: vuelve a /cuenta con el
+  // error en el fragmento, nunca con un JSON
+  await expect("vuelta de Apple cancelada", { path: "/api/auth/apple-callback", method: "POST", headers: { ...navigate, "content-type": "application/x-www-form-urlencoded" }, body: `error=user_cancelled_authorize&state=${"s".repeat(22)}` }, (res) => {
+    const location = res.headers.get("location") || "";
+    return res.status === 303 && location.endsWith(`/cuenta#error=user_cancelled_authorize&state=${"s".repeat(22)}`) ? null : `esperaba 303 a /cuenta#error=…, llegó ${res.status} ${location}`;
+  });
   // Sin .dev.vars responde 503; con la configuración completa, 200. Nunca más que un booleano.
   await expect("salud pública sin detalles", { path: "/api/health" }, (res, body) => {
     if (res.status !== 200 && res.status !== 503) return `status ${res.status}`;

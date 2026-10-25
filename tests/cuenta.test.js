@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 
@@ -8,7 +9,7 @@ const source = readFileSync(new URL("../public/cuenta/cuenta.js", import.meta.ur
 function load() {
   const window = {};
   const document = { querySelector: () => null, querySelectorAll: () => [] };
-  vm.runInNewContext(source, { window, document, URL, console, atob, TextDecoder });
+  vm.runInNewContext(source, { window, document, URL, console, atob, btoa, TextDecoder, TextEncoder, crypto });
   return window.pteronCuenta;
 }
 // Los valores vienen de otro contexto de vm (otro Array): se comparan como datos
@@ -357,7 +358,7 @@ function quienEs(opciones) {
  * /cuenta sobre el documento de mentira. `api` responde por ruta con { status, body } o una función que lo devuelve;
  * /api/account entrega `datos`. El aviso mide 77 px a la vista y 0 oculto.
  */
-async function pagina({ url = "https://pteron.patagua.dev/cuenta", hash = "", sesion = false, guardado = {}, datos = account(), api = {}, observador = true } = {}) {
+async function pagina({ url = "https://pteron.patagua.dev/cuenta", hash = "", sesion = false, guardado = {}, datos = account(), api = {}, observador = true, almacen = fakeStorage() } = {}) {
   const nodos = new Map();
   const documento = {
     listas: {},
@@ -371,8 +372,15 @@ async function pagina({ url = "https://pteron.patagua.dev/cuenta", hash = "", se
   const $ = documento.querySelector;
   documento.body = new Nodo(documento, "body");
   documento.documentElement = new Nodo(documento, "html");
-  // Lo que hace el script en línea de /cuenta antes que cuenta.js: con una sesión guardada o recién llegada, el esqueleto
-  if (sesion || /(^|[#&])access_token=/.test(hash)) documento.documentElement.classList.add("has-session");
+
+  const storage = almacen;
+  if (sesion) storage.setItem("pteron-account-session", sesion === true ? SESION : JSON.stringify(sesion));
+  for (const [clave, valor] of Object.entries(guardado)) storage.setItem(clave, valor);
+  const direccion = new URL(url);
+  // Lo que hace el script en línea de /cuenta antes que cuenta.js: con una sesión guardada, recién llegada o por llegar
+  // con el id_token de Google o Apple, el esqueleto
+  const conIdToken = /(^|[#&])id_token=/.test(hash) && storage.data.has("pteron-oauth");
+  if (sesion || /(^|[#&])access_token=/.test(hash) || conIdToken) documento.documentElement.classList.add("has-session");
   documento.activeElement = documento.body;
   // Lo que el HTML trae oculto
   for (const selector of ["[data-account-notice]", "[data-link-sent]", "[data-link-confirm]", "[data-link-current]", "[data-dashboard]", "[data-checkout-summary]", "[data-cancel-subscription]", "[data-activation-result]", "[data-activation-pending]"]) {
@@ -382,17 +390,35 @@ async function pagina({ url = "https://pteron.patagua.dev/cuenta", hash = "", se
   $('[data-checkout-plan="basic"]').dataset.checkoutPlan = "basic";
   documento.listas["[data-checkout-plan]"] = [$('[data-checkout-plan="basic"]')];
   $("#account-email").value = "profe@colegio.cl";
+  // Los botones de Google y Apple, cada uno con su etiqueta
+  const proveedores = ["google", "apple"].map((proveedor) => {
+    const boton = $(`[data-oauth-provider="${proveedor}"]`);
+    const etiqueta = new Nodo(documento, `${proveedor} [data-oauth-label]`);
+    etiqueta.textContent = `Continuar con ${proveedor === "google" ? "Google" : "Apple"}`;
+    boton.dataset.oauthProvider = proveedor;
+    boton.etiqueta = etiqueta;
+    boton.querySelector = (selector) => (selector === "[data-oauth-label]" ? etiqueta : documento.querySelector(selector));
+    return boton;
+  });
+  documento.listas["[data-oauth-provider]"] = proveedores;
 
-  const storage = fakeStorage();
-  if (sesion) storage.setItem("pteron-account-session", sesion === true ? SESION : JSON.stringify(sesion));
-  for (const [clave, valor] of Object.entries(guardado)) storage.setItem(clave, valor);
   const observadores = [];
-  const direccion = new URL(url);
+  const salidas = [];
+  const direcciones = [];
+  const llamadas = [];
+  const oyentes = new Map();
   const window = {
-    location: { href: url + hash, hash, pathname: direccion.pathname, search: direccion.search, reload() {} },
-    history: { replaceState() {} },
+    location: { href: url + hash, hash, pathname: direccion.pathname, search: direccion.search, reload() {}, assign: (destino) => salidas.push(destino) },
+    // Como en el navegador, replaceState cambia la dirección que ve la página
+    history: {
+      replaceState: (_estado, _titulo, destino) => {
+        direcciones.push(destino);
+        const nueva = new URL(destino, window.location.href);
+        Object.assign(window.location, { href: nueva.href, pathname: nueva.pathname, search: nueva.search, hash: nueva.hash });
+      },
+    },
     localStorage: storage,
-    addEventListener() {},
+    addEventListener: (tipo, fn) => oyentes.set(tipo, [...(oyentes.get(tipo) ?? []), fn]),
     matchMedia: () => ({ matches: false }),
     confirm: () => true,
     setTimeout,
@@ -409,13 +435,16 @@ async function pagina({ url = "https://pteron.patagua.dev/cuenta", hash = "", se
     };
   }
   const fetch = async (ruta, opciones = {}) => {
+    llamadas.push({ ruta, cuerpo: opciones.body ? JSON.parse(opciones.body) : null });
     const definida = api[ruta] ?? (ruta === "/api/account" ? { body: datos } : ruta === "/api/auth/me" ? quienEs : { status: 404, body: { error: "not_found" } });
+    if (definida instanceof Error) throw definida;
     const { status = 200, body = {} } = typeof definida === "function" ? definida(opciones) : definida;
     return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
   };
-  vm.runInNewContext(source, { window, document: documento, URL, URLSearchParams, Headers, fetch, console, atob, TextDecoder });
+  vm.runInNewContext(source, { window, document: documento, URL, URLSearchParams, Headers, fetch, console, atob, btoa, TextDecoder, TextEncoder, crypto });
   await asentar();
-  return { $, documento, observadores, storage };
+  const [google, apple] = proveedores;
+  return { $, documento, observadores, storage, salidas, direcciones, llamadas, oyentes, google, apple, direccion: () => window.location.href };
 }
 
 test("tras pedir el enlace, el foco va al aviso de envío; con un correo rechazado vuelve al campo, marcado inválido", async () => {
@@ -637,4 +666,265 @@ test("el correo del enlace lo dice el servidor: un token alterado no entra sin p
   assert.equal(otra.$("[data-link-confirm]").hidden, false);
   assert.equal(otra.$("[data-link-title]").textContent, "¿Entrar como otra@correo.cl?");
   assert.equal(guardada(otra.storage), null);
+});
+
+/* ---------- Entrar con Google o Apple (OpenID Connect con id_token) ---------- */
+
+const STATE = "estado_de_prueba_0123456";
+const NONCE = "nonce_de_prueba_0123456789abcdef";
+const ID_TOKEN = "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIxMjMifQ.firma_del_proveedor";
+const intento = (proveedor = "google", state = STATE, nonce = NONCE) => ({ "pteron-oauth": JSON.stringify({ value: `${proveedor}.${state}.${nonce}`, expiresAt: Date.now() + 30 * 60 * 1000 }) });
+const GOOGLE = "https://accounts.google.com/o/oauth2/v2/auth?client_id=123-abc.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fpteron.patagua.dev%2Fcuenta&response_type=id_token";
+const APPLE = "https://appleid.apple.com/auth/authorize?client_id=dev.patagua.pteron&response_mode=form_post";
+const hex = (texto) => createHash("sha256").update(texto).digest("hex");
+
+test("el nonce y el state: base64url al azar, y la huella del nonce es su SHA-256 en hex, la que Supabase compara", async () => {
+  const [uno, otro] = [cuenta.randomToken(32), cuenta.randomToken(32)];
+  assert.match(uno, /^[A-Za-z0-9_-]{43}$/);
+  assert.notEqual(uno, otro);
+  assert.match(cuenta.randomToken(16), /^[A-Za-z0-9_-]{22}$/);
+  assert.equal(await cuenta.sha256Hex("abc"), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+  assert.equal(await cuenta.sha256Hex(uno), hex(uno));
+});
+
+test("el intento guardado al salir sólo vale con un proveedor nuestro, un state y un nonce con forma", () => {
+  assert.deepEqual(plain(cuenta.oauthAttempt(`google.${STATE}.${NONCE}`)), { provider: "google", state: STATE, nonce: NONCE });
+  assert.deepEqual(plain(cuenta.oauthAttempt(`apple.${STATE}.${NONCE}`)), { provider: "apple", state: STATE, nonce: NONCE });
+  for (const malo of [`github.${STATE}.${NONCE}`, `constructor.${STATE}.${NONCE}`, `google.${STATE}`, `google..${NONCE}`, `google.corto.${NONCE}`, `google.${STATE}.${NONCE}.otro`, `google.${STATE}.${NONCE}+`, "", null, undefined]) {
+    assert.equal(cuenta.oauthAttempt(malo), null, String(malo));
+  }
+});
+
+test("la salida sólo se abre si es la dirección del proveedor elegido, por https", () => {
+  assert.equal(cuenta.authorizeLink(GOOGLE, "google"), GOOGLE);
+  assert.equal(cuenta.authorizeLink(APPLE, "apple"), APPLE);
+  for (const [malo, proveedor] of [
+    [GOOGLE, "apple"],
+    [APPLE, "google"],
+    [GOOGLE.replace("https:", "http:"), "google"],
+    ["https://accounts.google.com.example.com/o/oauth2/v2/auth", "google"],
+    ["https://accounts.google.com/o/oauth2/v2/auth/otra", "google"],
+    ["https://usuario:clave@accounts.google.com/o/oauth2/v2/auth", "google"],
+    ["https://fake.supabase.co/auth/v1/authorize?provider=google", "google"],
+    ["javascript:alert(1)", "google"],
+    [GOOGLE, "constructor"],
+    ["", "google"],
+    [null, "apple"],
+  ]) {
+    assert.equal(cuenta.authorizeLink(malo, proveedor), "", `${malo} (${proveedor})`);
+  }
+});
+
+test("el error de la vuelta se dice con palabras nuestras; cancelar en Google o Apple no avisa nada", () => {
+  const aviso = (consulta, proveedor) => cuenta.authErrorMessage(new URLSearchParams(consulta), proveedor);
+  assert.equal(aviso("", "google"), "");
+  assert.equal(aviso("error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired"), "El enlace venció o ya se usó. Pide uno nuevo.");
+  assert.equal(aviso("error=access_denied&error_code=otp_expired", "google"), "El enlace venció o ya se usó. Pide uno nuevo.", "un enlace vencido es eso aunque haya un intento guardado");
+  assert.equal(aviso("error=access_denied&state=x", "google"), "", "Google: el profe canceló");
+  assert.equal(aviso("error=user_cancelled_authorize&state=x", "apple"), "", "Apple: el profe canceló");
+  assert.equal(aviso("error=invalid_request&state=x", "apple"), "No pudimos completar la entrada con Apple. Vuelve a intentarlo o entra con tu correo.");
+  // La URL la puede armar cualquiera: su texto no se muestra como si fuera nuestro
+  const armado = aviso("error=server_error&error_description=Llama+al+600+000+0000+para+validar+tu+cuenta", "google");
+  assert.equal(armado, "No pudimos completar la entrada con Google. Vuelve a intentarlo o entra con tu correo.");
+  assert.doesNotMatch(armado, /Llama|600/);
+  // Sin un intento de aquí, es un enlace que no se pudo abrir
+  assert.equal(aviso("error=access_denied"), "No pudimos abrir ese enlace. Pide uno nuevo.");
+  assert.equal(aviso("error_code=unexpected_failure", "constructor"), "No pudimos abrir ese enlace. Pide uno nuevo.");
+});
+
+test("«Continuar con Google» guarda el state y el nonce, manda sólo la huella del nonce y sale a Google", async () => {
+  const p = await pagina({ api: { "/api/auth/oauth": { body: { url: GOOGLE } } } });
+  assert.equal(p.$("[data-login-form]").hidden, false);
+  const antes = p.llamadas.length;
+  p.google.focus();
+  const clic = p.google.disparar("click");
+  // Mientras se arma la salida, los dos botones esperan y el elegido lo dice
+  const durante = { google: p.google.disabled, apple: p.apple.disabled, etiqueta: p.google.etiqueta.textContent, otra: p.apple.etiqueta.textContent };
+  await clic;
+  assert.deepEqual(durante, { google: true, apple: true, etiqueta: "Abriendo Google…", otra: "Continuar con Apple" });
+  const guardado = JSON.parse(p.storage.getItem("pteron-oauth"));
+  const [proveedor, state, nonce] = guardado.value.split(".");
+  assert.equal(proveedor, "google");
+  assert.match(state, /^[A-Za-z0-9_-]{22}$/);
+  assert.match(nonce, /^[A-Za-z0-9_-]{43}$/);
+  assert.ok(guardado.expiresAt > Date.now() && guardado.expiresAt <= Date.now() + 30 * 60 * 1000, "vence en media hora");
+  // Al servidor (y al proveedor) va la huella del nonce, nunca el nonce
+  const pedido = p.llamadas.slice(antes).find(({ ruta }) => ruta === "/api/auth/oauth");
+  assert.deepEqual(pedido.cuerpo, { provider: "google", state, nonce_hash: hex(nonce) });
+  assert.equal(JSON.stringify(p.llamadas).includes(nonce), false);
+  assert.deepEqual(p.salidas, [GOOGLE]);
+});
+
+test("si el servidor no ofrece el proveedor, se dice junto a los botones, nada queda guardado y el foco vuelve al botón", async () => {
+  const apagado = { status: 503, body: { error: "provider_unavailable", message: "La entrada con Apple no está disponible ahora. Entra con tu correo." } };
+  const salida = (opciones) => (JSON.parse(opciones.body).provider === "apple" ? apagado : { body: { url: GOOGLE } });
+  const p = await pagina({ api: { "/api/auth/oauth": salida } });
+  p.apple.focus();
+  await p.apple.disparar("click");
+  assert.equal(p.$("[data-oauth-message]").textContent, "La entrada con Apple no está disponible ahora. Entra con tu correo.");
+  assert.equal(p.storage.getItem("pteron-oauth"), null);
+  assert.deepEqual(p.salidas, []);
+  assert.equal(p.google.disabled, false);
+  assert.equal(p.apple.disabled, false);
+  assert.equal(p.apple.etiqueta.textContent, "Continuar con Apple");
+  assert.equal(p.documento.activeElement, p.apple);
+  // Con Google, que sí está, el aviso de Apple se va y sale
+  await p.google.disparar("click");
+  assert.equal(p.$("[data-oauth-message]").textContent, "");
+  assert.deepEqual(p.salidas, [GOOGLE]);
+
+  // Sin red, en castellano; una dirección que no es la del proveedor elegido no se abre
+  const sinRed = await pagina({ api: { "/api/auth/oauth": new TypeError("Failed to fetch") } });
+  await sinRed.google.disparar("click");
+  assert.equal(sinRed.$("[data-oauth-message]").textContent, "No pudimos abrir Google. Revisa tu conexión y vuelve a intentarlo.");
+  const ajena = await pagina({ api: { "/api/auth/oauth": { body: { url: APPLE } } } });
+  await ajena.google.disparar("click");
+  assert.deepEqual(ajena.salidas, []);
+  assert.equal(ajena.storage.getItem("pteron-oauth"), null);
+  assert.equal(ajena.$("[data-oauth-message]").textContent, "No pudimos abrir Google. Vuelve a intentarlo o entra con tu correo.");
+});
+
+test("un navegador que no deja guardar el intento no sale: la vuelta no tendría con qué entrar", async () => {
+  const p = await pagina({ almacen: fakeStorage({ broken: true }), api: { "/api/auth/oauth": { body: { url: GOOGLE } } } });
+  await p.google.disparar("click");
+  assert.deepEqual(p.salidas, []);
+  assert.equal(p.$("[data-oauth-message]").textContent, "Este navegador no deja guardar datos de este sitio, y sin eso la entrada con Google no se completa. Entra con tu correo.");
+  assert.equal(p.google.disabled, false);
+});
+
+test("al volver con «Atrás» desde Google, los botones están libres otra vez", async () => {
+  const p = await pagina({ api: { "/api/auth/oauth": { body: { url: GOOGLE } } } });
+  await p.google.disparar("click");
+  assert.equal(p.google.disabled, true, "salió: la página quedó esperando");
+  for (const fn of p.oyentes.get("pageshow")) fn({ persisted: true });
+  assert.equal(p.google.disabled, false);
+  assert.equal(p.apple.disabled, false);
+  assert.equal(p.google.etiqueta.textContent, "Continuar con Google");
+});
+
+test("la vuelta de Google con el id_token y el state de este navegador: se cambia por una sesión, una vez, y sale de la URL", async () => {
+  const sesion = { body: { access_token: "acceso-g", refresh_token: "renovar-g", expires_in: 3600, token_type: "bearer" } };
+  const hash = `#state=${STATE}&id_token=${ID_TOKEN}&authuser=0&prompt=consent`;
+  const p = await pagina({ hash, guardado: intento("google"), api: { "/api/auth/id-token": sesion } });
+  // A Supabase va el nonce guardado aquí, que es el que el proveedor firmó como huella
+  assert.deepEqual(p.llamadas.find(({ ruta }) => ruta === "/api/auth/id-token").cuerpo, { provider: "google", id_token: ID_TOKEN, nonce: NONCE });
+  const guardadaAhora = guardada(p.storage);
+  assert.equal(guardadaAhora.access_token, "acceso-g");
+  assert.equal(guardadaAhora.refresh_token, "renovar-g");
+  assert.ok(guardadaAhora.expires_at > Date.now());
+  assert.equal(p.storage.getItem("pteron-oauth"), null, "el intento se usa una vez");
+  assert.equal(p.$("[data-dashboard]").hidden, false);
+  assert.equal(p.$("[data-link-confirm]").hidden, true, "no pregunta: salió de este navegador");
+  assert.equal(p.direccion(), "https://pteron.patagua.dev/cuenta", "el id_token no queda en la URL");
+  // Apple vuelve por /api/auth/apple-callback, que agrega provider=apple
+  const apple = await pagina({ hash: `#provider=apple&id_token=${ID_TOKEN}&state=${STATE}`, guardado: intento("apple"), api: { "/api/auth/id-token": sesion } });
+  assert.equal(apple.llamadas.find(({ ruta }) => ruta === "/api/auth/id-token").cuerpo.provider, "apple");
+  assert.equal(apple.$("[data-dashboard]").hidden, false);
+});
+
+test("un id_token sin el state de este navegador no se usa: ni uno ajeno ni el de otro proveedor", async () => {
+  const intentos = (p) => p.llamadas.filter(({ ruta }) => ruta === "/api/auth/id-token").length;
+  // Sin intento guardado (un enlace armado por otra persona): nada, ni esqueleto ni aviso
+  const ajeno = await pagina({ hash: `#state=${STATE}&id_token=${ID_TOKEN}` });
+  assert.equal(intentos(ajeno), 0);
+  assert.equal(guardada(ajeno.storage), null);
+  assert.equal(ajeno.$("[data-login-form]").hidden, false);
+  assert.equal(ajeno.documento.documentElement.classList.contains("has-session"), false);
+  assert.equal(ajeno.$("[data-account-notice]").hidden, true);
+  assert.equal(ajeno.direccion(), "https://pteron.patagua.dev/cuenta");
+  // Con un intento, pero otro state o el de otro proveedor: no entra, se descarta el intento y se dice
+  for (const hash of [`#state=otro_estado_0123456789ab&id_token=${ID_TOKEN}`, `#provider=apple&id_token=${ID_TOKEN}&state=${STATE}`, `#id_token=${ID_TOKEN}`]) {
+    const p = await pagina({ hash, guardado: intento("google") });
+    assert.equal(intentos(p), 0, hash);
+    assert.equal(guardada(p.storage), null);
+    assert.equal(p.storage.getItem("pteron-oauth"), null);
+    assert.equal(p.$("[data-account-notice-text]").textContent, "No pudimos completar la entrada con Google. Vuelve a intentarlo o entra con tu correo.");
+  }
+  // Una sesión ya abierta sigue como estaba
+  const abierta = await pagina({ hash: `#state=${STATE}&id_token=${ID_TOKEN}`, sesion: sesionDe("profe@colegio.cl") });
+  assert.equal(intentos(abierta), 0);
+  assert.equal(guardada(abierta.storage).refresh_token, "renovar-profe@colegio.cl");
+  assert.equal(abierta.$("[data-dashboard]").hidden, false);
+});
+
+test("si Supabase no acepta el id_token, no se abre nada: vuelve el formulario con el aviso y el intento se descarta", async () => {
+  const rechazo = { status: 400, body: { error: "invalid_grant", message: "No pudimos completar la entrada con Apple. Vuelve a intentarlo o entra con tu correo." } };
+  const hash = `#provider=apple&id_token=${ID_TOKEN}&state=${STATE}`;
+  const p = await pagina({ hash, guardado: intento("apple"), api: { "/api/auth/id-token": rechazo } });
+  assert.equal(guardada(p.storage), null);
+  assert.equal(p.storage.getItem("pteron-oauth"), null);
+  assert.equal(p.$("[data-login-form]").hidden, false);
+  assert.equal(p.$("[data-dashboard]").hidden, true);
+  assert.equal(p.documento.documentElement.classList.contains("has-session"), false, "sin esqueleto: vuelve el formulario");
+  assert.equal(p.$("[data-account-notice-text]").textContent, "No pudimos completar la entrada con Apple. Vuelve a intentarlo o entra con tu correo.");
+  assert.equal(p.$("[data-account-notice]").dataset.tone, "error");
+  // Sin red, en castellano y con el proveedor
+  const sinRed = await pagina({ hash, guardado: intento("apple"), api: { "/api/auth/id-token": new TypeError("Failed to fetch") } });
+  assert.equal(sinRed.$("[data-account-notice-text]").textContent, "No pudimos completar la entrada con Apple. Vuelve a intentarlo.");
+});
+
+test("la vuelta con error: cancelar no avisa, otro error se dice con palabras nuestras y todo sale de la URL", async () => {
+  const cancelo = await pagina({ hash: `#error=access_denied&state=${STATE}`, guardado: intento("google") });
+  assert.equal(cancelo.$("[data-account-notice]").hidden, true);
+  assert.equal(cancelo.$("[data-login-form]").hidden, false);
+  assert.equal(cancelo.storage.getItem("pteron-oauth"), null, "el intento se descarta");
+  assert.equal(cancelo.direccion(), "https://pteron.patagua.dev/cuenta");
+  const apple = await pagina({ hash: `#error=user_cancelled_authorize&state=${STATE}`, guardado: intento("apple") });
+  assert.equal(apple.$("[data-account-notice]").hidden, true);
+
+  const fallo = await pagina({ hash: `#error=invalid_request&state=${STATE}`, guardado: intento("apple") });
+  assert.equal(fallo.$("[data-account-notice-text]").textContent, "No pudimos completar la entrada con Apple. Vuelve a intentarlo o entra con tu correo.");
+  assert.equal(fallo.$("[data-account-notice]").dataset.tone, "error");
+  // Un error sin el state del intento no se atribuye a Google: es un enlace que no se pudo abrir
+  const ajeno = await pagina({ hash: "#error=server_error", guardado: intento("google") });
+  assert.equal(ajeno.$("[data-account-notice-text]").textContent, "No pudimos abrir ese enlace. Pide uno nuevo.");
+});
+
+test("un enlace mágico vencido lo dice en castellano, no con el texto (en inglés, o armado) que trae la URL", async () => {
+  const p = await pagina({ hash: "#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired" });
+  assert.equal(p.$("[data-account-notice-text]").textContent, "El enlace venció o ya se usó. Pide uno nuevo.");
+  assert.equal(p.$("[data-login-message]").textContent, "");
+  assert.equal(p.direccion(), "https://pteron.patagua.dev/cuenta");
+  const armado = await pagina({ hash: "#error=server_error&error_description=Llama+al+600+000+0000" });
+  assert.equal(armado.$("[data-account-notice-text]").textContent, "No pudimos abrir ese enlace. Pide uno nuevo.");
+  // En la consulta, igual; y con la cuenta ya abierta, el aviso queda sobre ella
+  const consulta = await pagina({ url: "https://pteron.patagua.dev/cuenta?error=access_denied&error_code=otp_expired&error_description=x" });
+  assert.equal(consulta.$("[data-account-notice-text]").textContent, "El enlace venció o ya se usó. Pide uno nuevo.");
+  assert.equal(consulta.direccion(), "https://pteron.patagua.dev/cuenta");
+  const abierta = await pagina({ hash: "#error=access_denied&error_code=otp_expired", sesion: true });
+  assert.equal(abierta.$("[data-dashboard]").hidden, false);
+  assert.equal(abierta.$("[data-account-notice-text]").textContent, "El enlace venció o ya se usó. Pide uno nuevo.");
+  // El code de Flow sigue siendo el aviso del pago
+  const flow = await pagina({ url: "https://pteron.patagua.dev/cuenta?billing=error&code=flow_error", sesion: true, guardado: intento("google") });
+  assert.match(flow.$("[data-account-notice-text]").textContent, /\(código: flow_error\)$/);
+  assert.ok(flow.storage.getItem("pteron-oauth"), "no se gastó el intento");
+});
+
+test("el HTML: los botones de Google y Apple antes del correo, con su etiqueta, y el esqueleto para la vuelta con id_token", () => {
+  const html = readFileSync(new URL("../public/cuenta/index.html", import.meta.url), "utf8");
+  const form = html.slice(html.indexOf("<form class=\"acceso-hoja\" data-login-form"), html.indexOf("</form>"));
+  const bloque = /<div class="acceso-proveedores" data-oauth[^>]*>([\s\S]*?)<\/div>/.exec(form);
+  assert.ok(bloque, "el bloque de proveedores está en el formulario de entrada");
+  assert.ok(form.indexOf("data-oauth") < form.indexOf('id="account-email"'), "antes del correo");
+  for (const [proveedor, nombre] of [["google", "Google"], ["apple", "Apple"]]) {
+    assert.match(bloque[1], new RegExp(`<button class="boton acceso-proveedor" type="button" data-oauth-provider="${proveedor}"><svg [^>]*aria-hidden="true"[^>]*>[\\s\\S]*?</svg><span data-oauth-label>Continuar con ${nombre}</span></button>`));
+  }
+  assert.match(bloque[1], /<p class="acceso-error" data-oauth-message role="alert"><\/p>/);
+  // El script en línea: con un id_token en el fragmento y el intento guardado, espera la cuenta con el esqueleto
+  const enLinea = /<script>([\s\S]*?)<\/script>/.exec(html)[1];
+  const corre = (hash, guardado) => {
+    const clases = new Set();
+    const documentElement = { classList: { replace() {}, add: (c) => clases.add(c) } };
+    const localStorage = { getItem: (clave) => (clave === "pteron-oauth" ? guardado : null) };
+    vm.runInNewContext(enLinea, { document: { documentElement }, localStorage, location: { search: "", hash } });
+    return clases.has("has-session");
+  };
+  assert.equal(corre(`#state=x&id_token=${ID_TOKEN}`, "{}"), true);
+  assert.equal(corre(`#provider=apple&id_token=${ID_TOKEN}`, "{}"), true);
+  assert.equal(corre(`#id_token=${ID_TOKEN}`, null), false, "sin intento guardado, no");
+  assert.equal(corre("#access_token=a&refresh_token=b", null), true, "el enlace mágico, como siempre");
+  assert.equal(corre("#error=access_denied", "{}"), false);
+  assert.equal(corre("#not_id_token=1", "{}"), false);
+  const css = readFileSync(new URL("../public/cuenta/cuenta.css", import.meta.url), "utf8");
+  assert.match(css, /\.no-js \.acceso-hoja \.campo,\.no-js \.acceso-enviar,\.no-js \.acceso-proveedores\{display:none\}/, "sin JavaScript no hay nonce");
 });

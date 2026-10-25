@@ -4,7 +4,7 @@ import worker, { createServices, matchApi } from "../src/worker.js";
 import { createLicenseService } from "../src/lib/license.js";
 import { messages, models } from "../src/routes/ai.js";
 import { fakeAssets, fakeAssetsWithEtags, fakeExecution, fakeSupabase, jsonRequest, testEnv, testKeyPair, testServices, withFetch } from "./helpers/fakes.js";
-import { fakeNetwork, matches } from "./helpers/fakes.js";
+import { fakeNetwork, formRequest, matches } from "./helpers/fakes.js";
 
 const env = testEnv();
 
@@ -83,6 +83,191 @@ test("GET /api/auth/me dice el correo que Supabase reconoce en el token; uno alt
     assert.equal((await alterado.json()).user, undefined);
   });
   assert.equal(network.calls.length, 3);
+});
+
+// Entrar con Google o Apple: lo que manda /cuenta (la huella del nonce en hex y el state) y lo que trae de vuelta
+const HUELLA = "a".repeat(64);
+const STATE = "estado_de_prueba_0123456";
+const NONCE = "nonce_de_prueba_0123456789abcdef";
+const ID_TOKEN = "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIxMjMifQ.firma_del_proveedor";
+const oauthEnv = testEnv({ GOOGLE_CLIENT_ID: "123-abc.apps.googleusercontent.com", APPLE_SERVICES_ID: "dev.patagua.pteron" });
+const ajustes = (external) => ({ match: matches.auth("settings"), respond: { body: { external: { email: true, ...external }, disable_signup: false } } });
+const salida = (cuerpo, entorno = oauthEnv) => worker.fetch(jsonRequest("https://pteron.test/api/auth/oauth", cuerpo), entorno, fakeExecution());
+
+test("POST /api/auth/oauth sale directo a Google o Apple con la huella del nonce y el state, sin pasar por Supabase", async () => {
+  const network = fakeNetwork([ajustes({ google: true, apple: true })]);
+  await withFetch(network.fetch, async () => {
+    const google = await salida({ provider: "google", nonce_hash: HUELLA, state: STATE });
+    assert.equal(google.status, 200);
+    assert.equal(google.headers.get("cache-control"), "no-store");
+    const g = new URL((await google.json()).url);
+    assert.equal(`${g.origin}${g.pathname}`, "https://accounts.google.com/o/oauth2/v2/auth");
+    // Google vuelve a /cuenta con el id_token en el fragmento: sin secreto y sin código que cambiar
+    assert.deepEqual(Object.fromEntries(g.searchParams), {
+      client_id: "123-abc.apps.googleusercontent.com",
+      nonce: HUELLA,
+      state: STATE,
+      redirect_uri: "https://pteron.test/cuenta",
+      response_type: "id_token",
+      scope: "openid email profile",
+      prompt: "select_account",
+    });
+    const apple = await salida({ provider: "apple", nonce_hash: HUELLA, state: STATE });
+    const a = new URL((await apple.json()).url);
+    assert.equal(`${a.origin}${a.pathname}`, "https://appleid.apple.com/auth/authorize");
+    // Apple exige form_post para dar el correo: vuelve por POST a la ruta del Worker
+    assert.deepEqual(Object.fromEntries(a.searchParams), {
+      client_id: "dev.patagua.pteron",
+      nonce: HUELLA,
+      state: STATE,
+      redirect_uri: "https://pteron.test/api/auth/apple-callback",
+      response_type: "code id_token",
+      response_mode: "form_post",
+      scope: "name email",
+    });
+  });
+  // La consulta de ajustes va con la clave publicable, nunca con la service role
+  assert.equal(network.calls[0].headers.apikey, "publishable-fake");
+});
+
+test("oauth rechaza un proveedor que no es Google ni Apple, o una huella o un state mal formados, sin tocar la red", async () => {
+  await withFetch(async () => { throw new Error("no debe llamar a la red"); }, async () => {
+    for (const provider of ["github", "constructor", "__proto__", "Google", "", undefined, ["google"]]) {
+      const res = await salida({ provider, nonce_hash: HUELLA, state: STATE });
+      assert.equal(res.status, 400, String(provider));
+      assert.equal((await res.json()).error, "invalid_provider");
+    }
+    // Sin la huella el id_token no quedaría atado al nonce de este navegador
+    for (const cambio of [{ nonce_hash: undefined }, { nonce_hash: "A".repeat(64) }, { nonce_hash: "a".repeat(63) }, { nonce_hash: 64 }, { state: undefined }, { state: "corto" }, { state: `${STATE}.otro` }, { state: "s".repeat(129) }]) {
+      const res = await salida({ provider: "google", nonce_hash: HUELLA, state: STATE, ...cambio });
+      assert.equal(res.status, 400, JSON.stringify(cambio));
+      assert.equal((await res.json()).error, "invalid_input");
+    }
+    const get = await worker.fetch(new Request("https://pteron.test/api/auth/oauth"), oauthEnv, fakeExecution());
+    assert.equal(get.status, 405);
+  });
+});
+
+test("oauth no sale a un proveedor apagado en Supabase o sin su Client ID: lo dice en castellano y ofrece el correo", async () => {
+  const apagado = { error: "provider_unavailable", message: "La entrada con Google no está disponible ahora. Entra con tu correo." };
+  for (const external of [{ google: false, apple: true }, { apple: true }, { google: "true" }]) {
+    const network = fakeNetwork([ajustes(external)]);
+    await withFetch(network.fetch, async () => {
+      const res = await salida({ provider: "google", nonce_hash: HUELLA, state: STATE });
+      assert.equal(res.status, 503, JSON.stringify(external));
+      assert.deepEqual(await res.json(), apagado);
+    });
+  }
+  // Sin el Client ID en wrangler.jsonc no hay a qué salir, aunque Supabase lo tenga encendido
+  await withFetch(async () => { throw new Error("no debe llamar a la red"); }, async () => {
+    const res = await salida({ provider: "apple", nonce_hash: HUELLA, state: STATE }, testEnv({ GOOGLE_CLIENT_ID: "123-abc.apps.googleusercontent.com" }));
+    assert.equal(res.status, 503);
+    assert.match((await res.json()).message, /^La entrada con Apple no está disponible ahora/);
+  });
+  // Supabase caído o con la clave mal puesta: el mismo aviso, nunca su mensaje en inglés ni uno de sesión vencida
+  for (const [status, body] of [[500, { msg: "Internal Server Error" }], [401, { message: "Invalid API key" }]]) {
+    const caido = fakeNetwork([{ match: matches.auth("settings"), respond: { status, body } }]);
+    await withFetch(caido.fetch, async () => {
+      const res = await salida({ provider: "google", nonce_hash: HUELLA, state: STATE });
+      assert.equal(res.status, 503, `Supabase ${status}`);
+      assert.deepEqual(await res.json(), apagado);
+    });
+  }
+  // Sin la clave publicable sigue siendo un servidor sin configurar
+  await withFetch(async () => { throw new Error("no debe llamar a la red"); }, async () => {
+    const res = await salida({ provider: "google", nonce_hash: HUELLA, state: STATE }, { ...oauthEnv, SUPABASE_PUBLISHABLE_KEY: "" });
+    assert.equal(res.status, 503);
+    assert.equal((await res.json()).error, "supabase_not_configured");
+  });
+});
+
+test("la vuelta de Apple (form_post) vuelve a /cuenta con el id_token y el state en el fragmento, sin abrir ninguna sesión", async () => {
+  await withFetch(async () => { throw new Error("no debe llamar a la red"); }, async () => {
+    const vuelta = (campos) => worker.fetch(formRequest("https://pteron.test/api/auth/apple-callback", campos), oauthEnv, fakeExecution());
+    const ok = await vuelta({ state: STATE, code: "codigo-de-apple", id_token: ID_TOKEN, user: JSON.stringify({ name: { firstName: "Ana" } }) });
+    assert.equal(ok.status, 303);
+    assert.equal(ok.headers.get("cache-control"), "no-store");
+    assert.equal(ok.headers.get("location"), `https://pteron.test/cuenta#provider=apple&id_token=${ID_TOKEN}&state=${STATE}`);
+    // Cancelar o fallar en Apple: el error vuelve con su state, para que /cuenta sepa de qué intento es
+    const cancelo = await vuelta({ state: STATE, error: "user_cancelled_authorize" });
+    assert.equal(cancelo.headers.get("location"), `https://pteron.test/cuenta#error=user_cancelled_authorize&state=${STATE}`);
+    // Un error con texto armado no se repite; lo mal formado vuelve como invalid_request
+    const armado = await vuelta({ state: STATE, error: "Llama al 600 000 0000" });
+    assert.equal(armado.headers.get("location"), `https://pteron.test/cuenta#error=server_error&state=${STATE}`);
+    for (const campos of [{ state: STATE }, { id_token: ID_TOKEN }, { state: STATE, id_token: "no-es-un-jwt" }, { state: "corto", id_token: ID_TOKEN }, { state: STATE, id_token: `${ID_TOKEN}${"x".repeat(8200)}` }]) {
+      const res = await vuelta(campos);
+      assert.equal(res.status, 303);
+      assert.match(res.headers.get("location"), /^https:\/\/pteron\.test\/cuenta#error=invalid_request(&state=estado_de_prueba_0123456)?$/, JSON.stringify(campos).slice(0, 80));
+    }
+    const get = await worker.fetch(new Request("https://pteron.test/api/auth/apple-callback"), oauthEnv, fakeExecution());
+    assert.equal(get.status, 405);
+  });
+});
+
+test("POST /api/auth/id-token cambia el id_token y el nonce por una sesión de Supabase, con la clave publicable", async () => {
+  const network = fakeNetwork([{
+    match: (url, m) => m === "POST" && url === "https://fake.supabase.co/auth/v1/token?grant_type=id_token",
+    respond: { body: { access_token: "acceso", refresh_token: "renovar", expires_in: 3600, token_type: "bearer", expires_at: 1, user: { id: "u-1", email: "profe@gmail.com" } } },
+  }]);
+  await withFetch(network.fetch, async () => {
+    const res = await worker.fetch(jsonRequest("https://pteron.test/api/auth/id-token", { provider: "apple", id_token: ID_TOKEN, nonce: NONCE }), oauthEnv, fakeExecution());
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get("cache-control"), "no-store");
+    // Sólo la sesión: el usuario lo pide /cuenta a /api/account con ella
+    assert.deepEqual(await res.json(), { access_token: "acceso", refresh_token: "renovar", expires_in: 3600, token_type: "bearer" });
+  });
+  // A Supabase va el nonce tal cual: él compara su SHA-256 con el que firmó el proveedor
+  assert.deepEqual(network.calls[0].body, { provider: "apple", id_token: ID_TOKEN, nonce: NONCE });
+  assert.equal(network.calls[0].headers.apikey, "publishable-fake");
+});
+
+test("id-token: uno vencido, ajeno o con otro nonce no abre nada y se dice en castellano", async () => {
+  const intercambio = (cuerpo, entorno = oauthEnv) => worker.fetch(jsonRequest("https://pteron.test/api/auth/id-token", cuerpo), entorno, fakeExecution());
+  const mensaje = "No pudimos completar la entrada con Google. Vuelve a intentarlo o entra con tu correo.";
+  for (const [status, body] of [
+    [400, { code: 400, error_code: "validation_failed", msg: "Nonces mismatch" }],
+    [400, { code: 400, msg: "Unacceptable audience in id_token: [otro]" }],
+    [400, { code: 400, error_code: "provider_disabled", msg: "Provider (issuer \"https://accounts.google.com\") is not enabled" }],
+    [401, { code: 401, msg: "Unauthorized" }],
+    [500, { code: 500, msg: "Internal server error" }],
+  ]) {
+    const network = fakeNetwork([{ match: matches.auth("token?grant_type=id_token"), respond: { status, body } }]);
+    await withFetch(network.fetch, async () => {
+      const res = await intercambio({ provider: "google", id_token: ID_TOKEN, nonce: NONCE });
+      assert.equal(res.status, 400, `GoTrue ${status}`);
+      assert.deepEqual(await res.json(), { error: "invalid_grant", message: mensaje });
+    });
+  }
+  // Una respuesta sin sesión tampoco abre nada
+  const vacia = fakeNetwork([{ match: matches.auth("token?grant_type=id_token"), respond: { body: { access_token: "acceso" } } }]);
+  await withFetch(vacia.fetch, async () => {
+    const res = await intercambio({ provider: "google", id_token: ID_TOKEN, nonce: NONCE });
+    assert.equal(res.status, 502);
+    assert.equal((await res.json()).error, "auth_error");
+  });
+  // Lo mal formado se rechaza antes de llegar a Supabase
+  await withFetch(async () => { throw new Error("no debe llamar a la red"); }, async () => {
+    for (const cuerpo of [
+      { provider: "google", id_token: ID_TOKEN },
+      { provider: "google", nonce: NONCE },
+      { provider: "google", id_token: "no-es-un-jwt", nonce: NONCE },
+      { provider: "google", id_token: `${ID_TOKEN}${"x".repeat(8200)}`, nonce: NONCE },
+      { provider: "google", id_token: ID_TOKEN, nonce: "corto" },
+      { provider: "google", id_token: ID_TOKEN, nonce: `${NONCE} ` },
+      { provider: "google", id_token: [ID_TOKEN], nonce: NONCE },
+    ]) {
+      const res = await intercambio(cuerpo);
+      assert.equal(res.status, 400, JSON.stringify(cuerpo).slice(0, 80));
+      assert.deepEqual(await res.json(), { error: "invalid_input", message: mensaje });
+    }
+    const ajeno = await intercambio({ provider: "github", id_token: ID_TOKEN, nonce: NONCE });
+    assert.equal(ajeno.status, 400);
+    assert.equal((await ajeno.json()).error, "invalid_provider");
+    // Sin la clave publicable sigue siendo un servidor sin configurar, no un id_token malo
+    const sinClave = await intercambio({ provider: "google", id_token: ID_TOKEN, nonce: NONCE }, { ...oauthEnv, SUPABASE_PUBLISHABLE_KEY: "" });
+    assert.equal(sinClave.status, 503);
+    assert.equal((await sinClave.json()).error, "supabase_not_configured");
+  });
 });
 
 test("los assets se sirven tal cual y /docs/:slug cae a la página de documentación", async () => {
@@ -420,7 +605,7 @@ test("las respuestas del Worker llevan las mismas cabeceras de seguridad que los
 
 test("la guarda de host responde 421 en las rutas con secretos fuera de PUBLIC_SITE_URL, sin tocar la red", async () => {
   await withFetch(async () => { throw new Error("no debe llamar a la red"); }, async () => {
-    const paths = ["/api/ai/v1/messages", "/api/ai/v1/models", "/api/billing/checkout", "/api/billing/flow-callback", "/api/license/renew", "/api/activation/start", "/api/auth/request-magic-link", "/api/admin", "/api/admin/resumen", "/api/account", "/api/account/"];
+    const paths = ["/api/ai/v1/messages", "/api/ai/v1/models", "/api/billing/checkout", "/api/billing/flow-callback", "/api/license/renew", "/api/activation/start", "/api/auth/request-magic-link", "/api/auth/oauth", "/api/auth/apple-callback", "/api/auth/id-token", "/api/admin", "/api/admin/resumen", "/api/account", "/api/account/"];
     for (const host of ["https://pteron-landing.marco.workers.dev", "https://3f2a1b.pteron-landing.marco.workers.dev"]) {
       for (const path of paths) {
         const res = await worker.fetch(new Request(`${host}${path}`, { method: "POST" }), env, fakeExecution());

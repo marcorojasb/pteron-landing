@@ -57,7 +57,14 @@
     "SELLER_RUT": "78.418.149-9",
     "SELLER_ADDRESS": "Fundo San Ricardo, Lote A y Lote B, Coronel, Región del Biobío",
     "SELLER_EMAIL": "hola@patagua.dev",
-    "SELLER_REPRESENTATIVE": "Marco Antonio Rojas Belmar"
+    "SELLER_REPRESENTATIVE": "Marco Antonio Rojas Belmar",
+    // Entrar con Google y Apple (ENTRAR-CON-GOOGLE-Y-APPLE.md): los identificadores públicos de cada proveedor; no hay
+    // secretos. Google usa el cliente OAuth de hola.patagua.dev, con https://pteron.patagua.dev/cuenta entre sus URIs
+    // de redirección; Apple, el Services ID de pteron en el equipo de Patagua.dev, con vuelta a
+    // https://pteron.patagua.dev/api/auth/apple-callback. Supabase debe tener cada proveedor encendido con este mismo
+    // Client ID: valida que el id_token sea para él.
+    "GOOGLE_CLIENT_ID": "561105936463-52r38o936uacthu7rtin8ttvkqqfhjaa.apps.googleusercontent.com",
+    "APPLE_SERVICES_ID": "dev.patagua.pteron"
   },
   // Cron diario a las 12:17 UTC (09:17 en el verano de Chile, 08:17 en
   // invierno): sincroniza con Flow las suscripciones cerca del fin de lo pagado
