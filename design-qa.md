@@ -1,5 +1,37 @@
 # Design QA
 
+## Rendimiento, accesibilidad, documentación y pulido — 2026-10-25
+
+Pedido: revisar qué más mejorar y optimizar en la landing. Una auditoría en seis frentes (rendimiento,
+accesibilidad, SEO, contenido, visual y código), con cada hallazgo verificado aparte, dejó lo objetivo en cinco
+paquetes; lo que cambia textos, diseño, precios o necesita desplegar quedó para decidir. Revisión del sitio
+2026-10-25.1.
+
+- Portada: una sola imagen por lámina (la sombra usa la de la cara), `sizes` a la medida de cada lámina y nada de las
+  nueve láminas de escritorio en el teléfono. Medido en Chromium: 47 → 22 peticiones y 993 → 421 KB a 390 × 844 a
+  escala 3; 47 → 31 y 993 → 470 KB a 1280 × 800. Ninguna lámina queda con menos píxeles de los que pinta.
+  La pieza de cabecera de /planes, /descargar y /cuenta no se baja bajo 560 px. Las láminas ya no saltan al arrancar
+  la escena (CLS de escritorio 0,36–0,44 → bajo 0,04, que queda del rótulo «Descargar para …» y de la letra), la marca
+  de la portada va en línea y se pinta con el título, y los rótulos de las hojas se parten en una tableta vertical en
+  vez de montarse (0 cruces de 768 a 900 px).
+- Docs: canónica y descripción por página (antes, todas declaraban /docs), el foco pasa al título nuevo al navegar
+  (o a la sección, con ancla) y el colofón ya no se asoma y salta mientras carga (CLS 0,55–0,60 → 0 en escritorio).
+  Si content.js o app.js no cargan, la página vuelve a mostrar el colofón. Un enlace con ancla conserva la sección.
+- /cuenta: el foco vuelve a un lugar visible tras cada petición (enlace enviado, error de correo con aria-invalid,
+  «Abrir pteron» tras activar, errores de pago y cancelación) y el aviso inferior nunca lo tapa: 0 % en 27 casos a
+  390, 320 y 768 px.
+- Pulido: la línea legal del pie alineada (10 px → 0), el fondo del recreo y del índice sin fundido con movimiento
+  reducido, la tabla de /marca sin cortes, la esquina «Descargar» se aparta de #descargar y del colofón también en
+  modo quieto, y la letra mono y los créditos de /privacidad llevan revisión.
+- Impresión de Términos y Privacidad: sin «Sigue leyendo» ni página final con sólo la línea legal en Carta, A4, Legal
+  y Oficio, y sin texto encimado en ningún papel probado (Carta, A4, Legal, Oficio, Folio, 216 × 300, 216 × 340, A5;
+  antes había texto encimado en 11 de 24 combinaciones). Queda: en A5, Folio y 216 × 340 la última página de Términos
+  puede llevar sólo la línea legal; `break-before: avoid` en el colofón no lo evita en Chromium.
+- Barrido final con la revisión nueva: 12 páginas a 390 y 1280 px (portada y docs también con movimiento reducido),
+  sin peticiones fallidas, errores de consola, desborde horizontal ni imágenes rotas. 449 pruebas pasan.
+- Fuera de esta pasada: capturas de docs a 960 px (ahorran cerca de 45 % en escala 1, pero se ven más blandas a escala
+  3 y al imprimir), y lo que pide decidir: textos, diseño, precios y despliegue.
+
 ## La landing con el diseño de pteron 0.8 y el recorrido de bienvenida — 2026-10-14
 
 Pedido: alinear la landing con el diseño nuevo de la app (0.8.0 y 0.8.1: el índice, el margen, Archivo, la marca
