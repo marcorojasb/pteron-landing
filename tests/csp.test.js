@@ -85,3 +85,11 @@ test("connect-src cubre los servicios de afuera a los que el JavaScript del siti
   for (const origen of externos) assert.ok(directivas["connect-src"].includes(origen), `connect-src sin ${origen}`);
   assert.equal(directivas["connect-src"][0], "'self'");
 });
+
+test("Cloudflare Web Analytics, que el borde inyecta en cada página, sigue funcionando con la CSP", () => {
+  // Cloudflare agrega <script src="https://static.cloudflareinsights.com/beacon.min.js/…" data-cf-beacon> al servir el
+  // HTML (no está en el repositorio) y el script envía a cloudflareinsights.com. Sin estas dos fuentes, la CSP lo
+  // bloquea en cada página y la analítica de visitas deja de recibir datos.
+  assert.ok(directivas["script-src"].includes("https://static.cloudflareinsights.com"), "script-src con el beacon");
+  assert.ok(directivas["connect-src"].includes("https://cloudflareinsights.com"), "connect-src con su envío");
+});

@@ -51,7 +51,9 @@ Worker, con `wrangler` desde la rama `main` de este repositorio (ver «Despliegu
   - `_headers`: cabeceras de seguridad y caché de `assets/`. La Content-Security-Policy deja
     correr sólo los scripts del sitio y sus scripts en línea, cada uno con su hash; los estilos
     en línea sí se permiten (las láminas llevan su posición en `style`). Si cambia un script en
-    línea, `tests/csp.test.js` dice qué hash poner, y no se usan manejadores `on…=` en línea.
+    línea, `tests/csp.test.js` dice qué hash poner, y no se usan manejadores `on…=` en línea. Además deja pasar
+    Cloudflare Web Analytics (`static.cloudflareinsights.com` y su envío a `cloudflareinsights.com`), que el borde
+    inyecta en cada página.
   - `assets/atlas/`: recortes de láminas de dominio público y piezas propias;
     sus créditos están en `/privacidad#creditos`. `assets/app/`: capturas reales
     de pteron para la documentación, con su `LEEME.md`.
