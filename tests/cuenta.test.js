@@ -8,7 +8,7 @@ const source = readFileSync(new URL("../public/cuenta/cuenta.js", import.meta.ur
 function load() {
   const window = {};
   const document = { querySelector: () => null, querySelectorAll: () => [] };
-  vm.runInNewContext(source, { window, document, URL, console });
+  vm.runInNewContext(source, { window, document, URL, console, atob, TextDecoder });
   return window.pteronCuenta;
 }
 // Los valores vienen de otro contexto de vm (otro Array): se comparan como datos
@@ -341,11 +341,23 @@ async function asentar() {
   for (let i = 0; i < 5; i++) await new Promise((resolve) => setImmediate(resolve));
 }
 
+/** /api/auth/me como el servidor: el correo del token si es válido (aquí, si se lee), y si no, 401. */
+function quienEs(opciones) {
+  const bearer = new Headers(opciones.headers).get("authorization")?.replace(/^Bearer /, "") ?? "";
+  let email = null;
+  try {
+    email = JSON.parse(Buffer.from(bearer.split(".")[1], "base64url").toString()).email ?? null;
+  } catch {
+    email = null;
+  }
+  return email ? { body: { user: { email } } } : { status: 401, body: { error: "not_authenticated", message: "La sesión ya no es válida." } };
+}
+
 /**
  * /cuenta sobre el documento de mentira. `api` responde por ruta con { status, body } o una función que lo devuelve;
  * /api/account entrega `datos`. El aviso mide 77 px a la vista y 0 oculto.
  */
-async function pagina({ url = "https://pteron.patagua.dev/cuenta", sesion = false, datos = account(), api = {}, observador = true } = {}) {
+async function pagina({ url = "https://pteron.patagua.dev/cuenta", hash = "", sesion = false, guardado = {}, datos = account(), api = {}, observador = true } = {}) {
   const nodos = new Map();
   const documento = {
     listas: {},
@@ -359,9 +371,11 @@ async function pagina({ url = "https://pteron.patagua.dev/cuenta", sesion = fals
   const $ = documento.querySelector;
   documento.body = new Nodo(documento, "body");
   documento.documentElement = new Nodo(documento, "html");
+  // Lo que hace el script en línea de /cuenta antes que cuenta.js: con una sesión guardada o recién llegada, el esqueleto
+  if (sesion || /(^|[#&])access_token=/.test(hash)) documento.documentElement.classList.add("has-session");
   documento.activeElement = documento.body;
   // Lo que el HTML trae oculto
-  for (const selector of ["[data-account-notice]", "[data-link-sent]", "[data-dashboard]", "[data-checkout-summary]", "[data-cancel-subscription]", "[data-activation-result]", "[data-activation-pending]"]) {
+  for (const selector of ["[data-account-notice]", "[data-link-sent]", "[data-link-confirm]", "[data-link-current]", "[data-dashboard]", "[data-checkout-summary]", "[data-cancel-subscription]", "[data-activation-result]", "[data-activation-pending]"]) {
     $(selector).hidden = true;
   }
   Object.defineProperty($("[data-account-notice]"), "offsetHeight", { get() { return this.hidden ? 0 : 77; } });
@@ -370,11 +384,12 @@ async function pagina({ url = "https://pteron.patagua.dev/cuenta", sesion = fals
   $("#account-email").value = "profe@colegio.cl";
 
   const storage = fakeStorage();
-  if (sesion) storage.setItem("pteron-account-session", SESION);
+  if (sesion) storage.setItem("pteron-account-session", sesion === true ? SESION : JSON.stringify(sesion));
+  for (const [clave, valor] of Object.entries(guardado)) storage.setItem(clave, valor);
   const observadores = [];
   const direccion = new URL(url);
   const window = {
-    location: { href: url, hash: "", pathname: direccion.pathname, search: direccion.search, reload() {} },
+    location: { href: url + hash, hash, pathname: direccion.pathname, search: direccion.search, reload() {} },
     history: { replaceState() {} },
     localStorage: storage,
     addEventListener() {},
@@ -393,14 +408,14 @@ async function pagina({ url = "https://pteron.patagua.dev/cuenta", sesion = fals
       }
     };
   }
-  const fetch = async (ruta) => {
-    const definida = api[ruta] ?? (ruta === "/api/account" ? { body: datos } : { status: 404, body: { error: "not_found" } });
-    const { status = 200, body = {} } = typeof definida === "function" ? definida() : definida;
+  const fetch = async (ruta, opciones = {}) => {
+    const definida = api[ruta] ?? (ruta === "/api/account" ? { body: datos } : ruta === "/api/auth/me" ? quienEs : { status: 404, body: { error: "not_found" } });
+    const { status = 200, body = {} } = typeof definida === "function" ? definida(opciones) : definida;
     return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
   };
-  vm.runInNewContext(source, { window, document: documento, URL, URLSearchParams, Headers, fetch, console });
+  vm.runInNewContext(source, { window, document: documento, URL, URLSearchParams, Headers, fetch, console, atob, TextDecoder });
   await asentar();
-  return { $, documento, observadores };
+  return { $, documento, observadores, storage };
 }
 
 test("tras pedir el enlace, el foco va al aviso de envío; con un correo rechazado vuelve al campo, marcado inválido", async () => {
@@ -496,4 +511,130 @@ test("el alto del aviso queda en --aviso-alto, con el que cuenta.css aparta el f
   const bloque = css.slice(css.indexOf("@media screen and (max-width:820px){"));
   assert.match(bloque, /^@media screen and \(max-width:820px\)\{\s*html:has\(\.cuenta-aviso:not\(\[hidden\]\)\)\{scroll-padding-bottom:calc\(var\(--aviso-alto,0px\)/);
   assert.match(bloque, /body:has\(\.cuenta-aviso:not\(\[hidden\]\)\) \.colofon\{\s*padding-bottom:max\(calc\(clamp\(40px,6vw,72px\) \+ 64px\),calc\(var\(--aviso-alto,0px\)/);
+});
+
+// Un token de Supabase de mentira: sólo importa lo que dice su parte del medio (la firma la revisa el servidor)
+const token = (datos) => ["e30", Buffer.from(JSON.stringify(datos)).toString("base64url"), "firma"].join(".");
+const enlace = (correo) => `#access_token=${token({ sub: correo, email: correo })}&refresh_token=renovar-${correo}&expires_in=3600&token_type=bearer&type=magiclink`;
+const pedido = (correo, vence = Date.now() + 60 * 60 * 1000) => ({ "pteron-login-request": JSON.stringify({ value: correo, expiresAt: vence }) });
+const sesionDe = (correo) => ({ access_token: token({ email: correo }), refresh_token: `renovar-${correo}` });
+const guardada = (storage) => JSON.parse(storage.getItem("pteron-account-session") || "null");
+
+test("el correo de un token: el de su parte del medio, en minúsculas; ilegible o sin correo, vacío", () => {
+  assert.equal(cuenta.tokenEmail(token({ email: " Profe@Colegio.CL " })), "profe@colegio.cl");
+  // base64url (con - y _) y texto que no es ASCII
+  assert.equal(cuenta.tokenEmail(token({ email: "ñandú@colegio.cl", nombre: "Ana María ~~~?>>>" })), "ñandú@colegio.cl");
+  for (const malo of [undefined, "", "a.b.c", "sin-puntos", token({ sub: "x" }), token({ email: 7 }), "e30.%%%.firma"]) {
+    assert.equal(cuenta.tokenEmail(malo), "", String(malo));
+  }
+});
+
+test("un enlace entra sin preguntar si es la cuenta que se pidió aquí o la que ya está abierta; si no, pregunta", () => {
+  assert.equal(cuenta.linkNeedsConfirmation("a@x.cl", "a@x.cl", ""), false);
+  assert.equal(cuenta.linkNeedsConfirmation("a@x.cl", "", "a@x.cl"), false);
+  assert.equal(cuenta.linkNeedsConfirmation("a@x.cl", "b@x.cl", "a@x.cl"), false);
+  assert.equal(cuenta.linkNeedsConfirmation("a@x.cl", "", ""), true, "pedido en otro navegador, o mandado por otra persona");
+  assert.equal(cuenta.linkNeedsConfirmation("a@x.cl", "b@x.cl", ""), true);
+  assert.equal(cuenta.linkNeedsConfirmation("a@x.cl", "b@x.cl", "c@x.cl"), true);
+  assert.equal(cuenta.linkNeedsConfirmation("", "", ""), true, "un token que no se lee");
+});
+
+test("pedir el enlace deja anotado el correo, en minúsculas y por una hora, para que su enlace entre sin preguntar", async () => {
+  const { $, storage } = await pagina({ api: { "/api/auth/request-magic-link": { body: { ok: true } } } });
+  $("#account-email").value = "  Profe@Colegio.CL ";
+  const antes = Date.now();
+  await $("[data-login-form]").disparar("submit");
+  const anotado = JSON.parse(storage.getItem("pteron-login-request"));
+  assert.equal(anotado.value, "profe@colegio.cl");
+  assert.ok(anotado.expiresAt >= antes + 60 * 60 * 1000 && anotado.expiresAt <= Date.now() + 60 * 60 * 1000);
+  // Si el envío falla no queda nada anotado
+  const fallido = await pagina({ api: { "/api/auth/request-magic-link": { status: 502, body: { error: "upstream_error", message: "No." } } } });
+  await fallido.$("[data-login-form]").disparar("submit");
+  assert.equal(fallido.storage.getItem("pteron-login-request"), null);
+});
+
+test("el enlace de la cuenta que se pidió en este navegador abre la sesión sin preguntar", async () => {
+  const { $, storage } = await pagina({ hash: enlace("profe@colegio.cl"), guardado: pedido("profe@colegio.cl") });
+  assert.equal(guardada(storage).refresh_token, "renovar-profe@colegio.cl");
+  assert.equal($("[data-link-confirm]").hidden, true);
+  assert.equal($("[data-dashboard]").hidden, false);
+  assert.equal(storage.getItem("pteron-login-request"), null, "lo anotado se usa una vez");
+  // La misma cuenta que ya está abierta tampoco pregunta (pedido desde otro equipo, por ejemplo)
+  const misma = await pagina({ hash: enlace("profe@colegio.cl"), sesion: sesionDe("profe@colegio.cl") });
+  assert.equal(misma.$("[data-dashboard]").hidden, false);
+  assert.equal(misma.$("[data-link-confirm]").hidden, true);
+});
+
+test("un enlace que no se pidió aquí pregunta antes de entrar; «Entrar» abre esa cuenta y el foco pasa a ella", async () => {
+  const { $, documento, storage } = await pagina({ hash: enlace("otra@correo.cl"), guardado: pedido("profe@colegio.cl") });
+  const pregunta = $("[data-link-confirm]");
+  assert.equal(pregunta.hidden, false);
+  assert.equal($("[data-login-form]").hidden, true);
+  assert.equal($("[data-dashboard]").hidden, true);
+  assert.equal(documento.documentElement.classList.contains("has-session"), false, "sin esqueleto: se ve la pregunta");
+  assert.equal($("[data-link-title]").textContent, "¿Entrar como otra@correo.cl?");
+  assert.equal($("[data-link-current]").hidden, true, "no había otra cuenta abierta");
+  assert.equal(documento.activeElement, $("[data-link-title]"));
+  assert.equal(guardada(storage), null, "mientras no responde, no hay sesión");
+
+  await $("[data-link-accept]").disparar("click");
+  await asentar();
+  assert.equal(guardada(storage).refresh_token, "renovar-otra@correo.cl");
+  assert.equal(pregunta.hidden, true);
+  assert.equal($("[data-dashboard]").hidden, false);
+  assert.equal(documento.activeElement, $("#sesion-titulo"));
+  assert.ok(JSON.parse(storage.getItem("pteron-login-request")), "lo pedido para la otra cuenta sigue anotado");
+});
+
+test("con otra cuenta abierta, el enlace ajeno lo dice; «Cancelar» la deja abierta y el foco vuelve a ella", async () => {
+  const { $, documento, storage } = await pagina({ hash: enlace("otra@correo.cl"), sesion: sesionDe("profe@colegio.cl") });
+  assert.equal($("[data-link-confirm]").hidden, false);
+  assert.equal($("[data-link-current]").hidden, false);
+  assert.equal($("[data-link-current-email]").textContent, "profe@colegio.cl");
+  assert.equal($("[data-dashboard]").hidden, true, "la cuenta abierta espera la respuesta");
+
+  await $("[data-link-reject]").disparar("click");
+  await asentar();
+  assert.equal(guardada(storage).refresh_token, "renovar-profe@colegio.cl");
+  assert.equal($("[data-link-confirm]").hidden, true);
+  assert.equal($("[data-dashboard]").hidden, false);
+  assert.equal(documento.documentElement.classList.contains("has-session"), true);
+  assert.equal(documento.activeElement, $("#sesion-titulo"));
+});
+
+test("sin cuenta abierta, «Cancelar» deja el formulario con el foco en el correo", async () => {
+  const { $, documento, storage } = await pagina({ hash: enlace("otra@correo.cl") });
+  await $("[data-link-reject]").disparar("click");
+  await asentar();
+  assert.equal(guardada(storage), null);
+  assert.equal($("[data-login-form]").hidden, false);
+  assert.equal($("[data-dashboard]").hidden, true);
+  assert.equal(documento.activeElement, $("#account-email"));
+  const html = readFileSync(new URL("../public/cuenta/index.html", import.meta.url), "utf8");
+  assert.match(html, /<h2 id="enlace-titulo" tabindex="-1" data-link-title>¿Entrar con este enlace\?<\/h2>/);
+  assert.match(html, /<h2 id="sesion-titulo" tabindex="-1">/, "sin tabindex el título de la cuenta no recibe el foco");
+});
+
+test("el correo del enlace lo dice el servidor: un token alterado no entra sin preguntar ni reemplaza la sesión abierta", async () => {
+  // Un token escrito a mano con el correo pedido, y un refresh_token de otra cuenta: el servidor no lo acepta
+  const falso = `#access_token=${token({ email: "profe@colegio.cl" })}&refresh_token=renovar-de-otra&expires_in=3600`;
+  const rechazo = { "/api/auth/me": { status: 401, body: { error: "not_authenticated", message: "La sesión ya no es válida." } } };
+  const abierta = await pagina({ hash: falso, sesion: sesionDe("profe@colegio.cl"), guardado: pedido("profe@colegio.cl"), api: rechazo });
+  assert.equal(guardada(abierta.storage).refresh_token, "renovar-profe@colegio.cl", "la sesión abierta sigue igual");
+  assert.equal(abierta.$("[data-link-confirm]").hidden, true);
+  assert.equal(abierta.$("[data-dashboard]").hidden, false);
+  assert.equal(abierta.$("[data-account-notice-text]").textContent, "No pudimos comprobar ese enlace. Solicita uno nuevo para entrar.");
+  assert.equal(abierta.$("[data-account-notice]").dataset.tone, "error");
+
+  const sin = await pagina({ hash: falso, guardado: pedido("profe@colegio.cl"), api: rechazo });
+  assert.equal(guardada(sin.storage), null);
+  assert.equal(sin.$("[data-login-form]").hidden, false);
+  assert.equal(sin.$("[data-dashboard]").hidden, true);
+  assert.equal(sin.documento.documentElement.classList.contains("has-session"), false, "vuelve el formulario, no el esqueleto");
+
+  // Si el servidor dice otra cuenta que la escrita en el token, manda la del servidor
+  const otra = await pagina({ hash: falso, guardado: pedido("profe@colegio.cl"), api: { "/api/auth/me": { body: { user: { email: "Otra@Correo.cl" } } } } });
+  assert.equal(otra.$("[data-link-confirm]").hidden, false);
+  assert.equal(otra.$("[data-link-title]").textContent, "¿Entrar como otra@correo.cl?");
+  assert.equal(guardada(otra.storage), null);
 });

@@ -104,6 +104,16 @@ SOFTWARE.
             <p>El enlace es de un solo uso y caduca pronto. Puedes cerrar esta ventana mientras llega.</p>
           </div>
         </form>
+        <!-- Un enlace de entrada que no se pidió desde este navegador: cuenta.js pregunta antes de abrir esa cuenta -->
+        <section class="acceso-hoja" data-link-confirm aria-labelledby="enlace-titulo" hidden>
+          <h2 id="enlace-titulo" tabindex="-1" data-link-title>¿Entrar con este enlace?</h2>
+          <p class="nota">Este enlace no se pidió desde este navegador. Entra sólo si lo pediste tú.</p>
+          <p class="nota" data-link-current hidden>Aquí está abierta la cuenta <b data-link-current-email></b>; al entrar, se cierra.</p>
+          <div class="acceso-acciones">
+            <button class="boton boton-tinta" type="button" data-link-accept>Entrar</button>
+            <button class="boton boton-papel" type="button" data-link-reject>Cancelar</button>
+          </div>
+        </section>
         <dl class="acceso-hechos">
           <div><dt>7 días gratis en Basic</dt><dd>Registras tu tarjeta en Flow y no se cobra nada durante la prueba. Si no cancelas antes, se cobran $2.990 al terminar los 7 días y luego cada mes, hasta que canceles.</dd></div>
           <div><dt>Licencia firmada</dt><dd>Se guarda en tu equipo, se verifica ahí y se renueva sola mientras tu plan siga vigente.</dd></div>
@@ -120,7 +130,7 @@ SOFTWARE.
         <section class="sesion" aria-labelledby="sesion-titulo">
           <div>
             <p class="rotulo">Sesión iniciada</p>
-            <h2 id="sesion-titulo">Hola, <span data-display-name>profe</span>.</h2>
+            <h2 id="sesion-titulo" tabindex="-1">Hola, <span data-display-name>profe</span>.</h2>
             <p class="nota" data-account-email></p>
           </div>
           <button class="boton boton-papel" type="button" data-sign-out>Cerrar sesión</button>

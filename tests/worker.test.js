@@ -61,6 +61,30 @@ test("request-magic-link apunta el retorno a /cuenta sin barra final", async () 
   });
 });
 
+test("GET /api/auth/me dice el correo que Supabase reconoce en el token; uno alterado no pasa (/cuenta lo usa ante un enlace)", async () => {
+  const usuario = { id: "u-1", email: "profe@colegio.cl", created_at: "2026-10-01T00:00:00Z" };
+  const portador = (call) => call.headers.Authorization;
+  const network = fakeNetwork([
+    { match: (url, _m, call) => matches.auth("user")(url) && portador(call) === "Bearer valido", respond: { body: usuario } },
+    { match: (url, _m, call) => matches.auth("user")(url) && portador(call) === "Bearer vencido", respond: { status: 401, body: { code: 401, msg: "token is expired" } } },
+    { match: matches.auth("user"), respond: { status: 403, body: { code: 403, error_code: "bad_jwt", msg: "invalid JWT: unable to parse or verify signature" } } },
+  ]);
+  const me = (token) => worker.fetch(new Request("https://pteron.test/api/auth/me", { headers: { authorization: `Bearer ${token}` } }), env, fakeExecution());
+  await withFetch(network.fetch, async () => {
+    const valido = await me("valido");
+    assert.equal(valido.status, 200);
+    assert.deepEqual(await valido.json(), { user: { id: "u-1", email: "profe@colegio.cl", createdAt: "2026-10-01T00:00:00Z" } });
+    const vencido = await me("vencido");
+    assert.equal(vencido.status, 401);
+    assert.equal((await vencido.json()).error, "not_authenticated");
+    // Un token con la firma alterada: GoTrue responde 403 y la respuesta tampoco es un 200
+    const alterado = await me("alterado");
+    assert.equal(alterado.status, 502);
+    assert.equal((await alterado.json()).user, undefined);
+  });
+  assert.equal(network.calls.length, 3);
+});
+
 test("los assets se sirven tal cual y /docs/:slug cae a la página de documentación", async () => {
   const assets = fakeAssets({ "/docs": "<html>docs</html>", "/docs/data/releases.json": "{}" });
   const bound = { ...env, ASSETS: assets };

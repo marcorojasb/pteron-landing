@@ -7,12 +7,15 @@
   const SESSION_KEY = "pteron-account-session";
   const PENDING_ACTIVATION_KEY = "pteron-pending-activation";
   const REQUESTED_PLAN_KEY = "pteron-requested-plan";
+  const LOGIN_REQUEST_KEY = "pteron-login-request";
   const DAY = 24 * 60 * 60 * 1000;
   // La activación que pide la app vence a los 60 minutos (src/routes/activation.js), lo que puede tardar el enlace
   // mágico más el viaje a Flow; el plan elegido en /planes se recuerda una hora, lo que tarda en llegar y abrirse
   // el enlace mágico.
   const ACTIVATION_TTL = 60 * 60 * 1000;
   const REQUESTED_PLAN_TTL = 60 * 60 * 1000;
+  // El correo al que se pidió un enlace desde este navegador se recuerda lo que dura el enlace (una hora en Supabase)
+  const LOGIN_REQUEST_TTL = 60 * 60 * 1000;
   // Los estados con que el checkout responde «Ya tienes un plan en curso» (src/routes/billing.js)
   const CURRENT_STATUSES = ["incomplete", "trialing", "active", "past_due", "paused"];
   const PLAN_IDS = ["basic", "pro"];
@@ -303,6 +306,27 @@
     return saved ? { code: saved.value, expiresAt: saved.expiresAt } : null;
   }
 
+  /** El correo que dice un token de Supabase, en minúsculas, o "" si no se lee. No verifica la firma: sirve para la sesión guardada aquí, no para la de un enlace. */
+  function tokenEmail(token) {
+    try {
+      const part = String(token).split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+      const bytes = Uint8Array.from(atob(part.padEnd(Math.ceil(part.length / 4) * 4, "=")), (char) => char.charCodeAt(0));
+      const email = JSON.parse(new TextDecoder().decode(bytes)).email;
+      return typeof email === "string" ? email.trim().toLowerCase() : "";
+    } catch {
+      return "";
+    }
+  }
+
+  /**
+   * Un enlace de entrada abre su cuenta sin preguntar sólo si es la que se pidió desde este navegador o la que ya está
+   * abierta en él. Si no, puede ser el enlace de otra persona, mandado para dejar a alguien dentro de una cuenta ajena
+   * (y que pague o autorice un equipo en ella): se pregunta antes.
+   */
+  function linkNeedsConfirmation(linkEmail, requestedEmail, currentEmail) {
+    return !linkEmail || (linkEmail !== requestedEmail && linkEmail !== currentEmail);
+  }
+
   window.pteronCuenta = {
     formatDate,
     formatLongDate,
@@ -318,6 +342,8 @@
     remember,
     recall,
     pendingActivationFrom,
+    tokenEmail,
+    linkNeedsConfirmation,
   };
 
   /* ---------- La página ---------- */
@@ -331,6 +357,7 @@
   const loginForm = document.querySelector("[data-login-form]");
   const loginMessage = document.querySelector("[data-login-message]");
   const linkSent = document.querySelector("[data-link-sent]");
+  const linkConfirm = document.querySelector("[data-link-confirm]");
   const summaryPanel = document.querySelector("[data-checkout-summary]");
   const summaryForm = summaryPanel?.querySelector("[data-summary-form]");
   const termsAccept = summaryPanel?.querySelector("[data-terms-accept]");
@@ -406,27 +433,77 @@
     window.location.reload();
   }
 
+  /** La sesión que trae el enlace mágico en el fragmento, que se borra de la URL en el acto; null si no trae una. */
   function consumeAuthHash() {
     const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
     const accessToken = hash.get("access_token");
     const refreshToken = hash.get("refresh_token");
     if (accessToken && refreshToken) {
-      saveSession({
+      window.history.replaceState({}, "", `${window.location.pathname}${window.location.search}`);
+      return {
         access_token: accessToken,
         refresh_token: refreshToken,
         expires_in: Number(hash.get("expires_in") || 3600),
         expires_at: Date.now() + Number(hash.get("expires_in") || 3600) * 1000,
         token_type: hash.get("token_type") || "bearer",
-      });
-      window.history.replaceState({}, "", `${window.location.pathname}${window.location.search}`);
-      return true;
+      };
     }
     const error = hash.get("error_description") || hash.get("error");
     if (error) {
       showLoginMessage(decodeURIComponent(error.replace(/\+/g, " ")));
       window.history.replaceState({}, "", `${window.location.pathname}${window.location.search}`);
     }
-    return false;
+    return null;
+  }
+
+  /**
+   * Abre la sesión del enlace, o antes pregunta si no es la cuenta que se pidió aquí ni la que ya está abierta. El correo
+   * del enlace lo dice el servidor al validar su token: el que viene escrito en el token se puede cambiar a mano (y su
+   * refresh_token, ser de otra cuenta).
+   */
+  async function enterWithLink(session) {
+    let linkEmail = "";
+    try {
+      const response = await fetch("/api/auth/me", { headers: { Accept: "application/json", Authorization: `Bearer ${session.access_token}` } });
+      linkEmail = String((await readResponse(response))?.user?.email || "").trim().toLowerCase();
+    } catch {
+      // Un enlace vencido, alterado o que no se pudo comprobar no abre nada; lo que había sigue como estaba
+      await start();
+      showNotice("No pudimos comprobar ese enlace. Solicita uno nuevo para entrar.", "error");
+      return;
+    }
+    const currentEmail = tokenEmail(loadSession()?.access_token);
+    const requestedEmail = recall(storage, LOGIN_REQUEST_KEY, Date.now())?.value || "";
+    if (!linkNeedsConfirmation(linkEmail, requestedEmail, currentEmail)) {
+      if (linkEmail === requestedEmail) forget(storage, LOGIN_REQUEST_KEY);
+      saveSession(session);
+      start();
+      return;
+    }
+    // Sin la pregunta en la página no se entra: el enlace se puede volver a pedir
+    if (!linkConfirm || !loginForm) {
+      start();
+      return;
+    }
+    document.documentElement.classList.remove("has-session");
+    setDashboardVisible(false);
+    loginForm.hidden = true;
+    linkConfirm.hidden = false;
+    const title = linkConfirm.querySelector("[data-link-title]");
+    if (linkEmail) title.textContent = `¿Entrar como ${linkEmail}?`;
+    linkConfirm.querySelector("[data-link-current]").hidden = !currentEmail;
+    linkConfirm.querySelector("[data-link-current-email]").textContent = currentEmail;
+    title.focus();
+    const answer = async (enter) => {
+      linkConfirm.hidden = true;
+      loginForm.hidden = false;
+      if (enter) saveSession(session);
+      // El botón se ocultó con el foco encima: va a la cuenta que quedó abierta o, sin una, al correo
+      const entered = await start();
+      (entered ? document.querySelector("#sesion-titulo") : loginForm.querySelector("#account-email"))?.focus();
+    };
+    linkConfirm.querySelector("[data-link-accept]").addEventListener("click", () => answer(true), { once: true });
+    linkConfirm.querySelector("[data-link-reject]").addEventListener("click", () => answer(false), { once: true });
   }
 
   async function refreshSession() {
@@ -714,6 +791,8 @@
         method: "POST",
         body: JSON.stringify({ email: input.value }),
       });
+      // El enlace de este correo, al volver a este navegador, entra sin preguntar
+      remember(storage, LOGIN_REQUEST_KEY, input.value.trim().toLowerCase(), LOGIN_REQUEST_TTL, Date.now());
       linkSent.hidden = false;
       showLoginMessage("");
       linkSent.focus();
@@ -900,14 +979,17 @@
     showNotice("");
   });
 
-  consumeAuthHash();
-  if (billingReturn) showNotice(billingReturn.text, billingReturn.tone);
-  if (loadSession()) loadAccount();
-  else {
+  /** La cuenta con la sesión guardada o, sin una, el formulario de entrada. Dice si quedó una cuenta abierta. */
+  async function start() {
+    if (billingReturn) showNotice(billingReturn.text, billingReturn.tone);
+    if (loadSession()) {
+      document.documentElement.classList.add("has-session");
+      return loadAccount();
+    }
     // Sin una sesión que se pueda usar (un enlace incompleto, por ejemplo), nada que esperar: vuelve el formulario
     document.documentElement.classList.remove("has-session");
     setDashboardVisible(false);
-    if (billingReturn) return;
+    if (billingReturn) return false;
     if (activationCode()) {
       showNotice("Inicia sesión para autorizar el equipo que solicitó activación.");
     } else if (activationExpired) {
@@ -916,5 +998,10 @@
     } else if (requestedPlan) {
       showNotice(`Inicia sesión para elegir el plan ${planName(requestedPlan)}.`);
     }
+    return false;
   }
+
+  const linkSession = consumeAuthHash();
+  if (linkSession) enterWithLink(linkSession);
+  else start();
 })();

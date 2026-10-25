@@ -45,6 +45,9 @@
 .acceso-enviado{display:grid;gap:4px;padding:14px 16px;border-radius:10px;background:var(--ok-papel);color:var(--ok)}
 .acceso-enviado p{font-size:var(--t-chico)}
 .acceso:has([data-link-sent]:not([hidden])) .acceso-enviar{background:var(--hoja);color:var(--azul);box-shadow:0 0 0 1px var(--linea)}
+/* La pregunta ante un enlace que no se pidió aquí; un correo largo se parte donde haga falta */
+.acceso-acciones{display:flex;flex-wrap:wrap;gap:12px}
+[data-link-title],[data-link-current-email]{overflow-wrap:anywhere}
 .acceso-hechos{display:grid;gap:0;align-content:start}
 .acceso-hechos div{padding:16px 0;border-top:var(--borde) solid var(--linea)}
 .acceso-hechos div:last-child{border-bottom:var(--borde) solid var(--linea)}
