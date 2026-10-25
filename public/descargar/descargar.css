@@ -34,6 +34,10 @@ code,pre{font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;font
 .clave-cabeza{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center}
 .codigo{position:relative;display:flex;gap:10px;align-items:flex-start;padding:12px 12px 12px 14px;border-radius:10px;background:var(--mesa);color:var(--tinta)}
 .codigo code,.codigo pre{flex:1;min-width:0;margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.8125rem;line-height:1.6}
+/* Un comando se corta entre argumentos y no en un guion: cada argumento con guion va en un <span> que sólo se parte si no cabe en una línea. La continuación de un comando lleva sangría, y la de un argumento partido, el doble. Si junto a «Copiar» no caben 42 caracteres, el botón baja */
+.codigo:has(> pre){flex-wrap:wrap;justify-content:flex-end}
+.codigo pre{flex-basis:42ch;text-indent:2ch hanging each-line}
+.codigo pre span{display:inline-block;max-width:calc(100% - 2ch);text-indent:2ch hanging}
 .copiar{flex:none;min-height:44px;padding:0 16px;border:var(--borde) solid var(--linea);border-radius:999px;background:var(--hoja);color:var(--azul);font-weight:600;font-size:.8125rem}
 .copiar:hover{border-color:var(--azul)}
 .descargar-hechos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,3vw,40px);margin-top:clamp(40px,6vw,64px)}

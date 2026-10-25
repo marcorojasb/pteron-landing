@@ -185,3 +185,14 @@ test("lo que se dice de Anthropic calza con su política: borra lo de la API den
     assert.match(texto, /Anthropic no entrena sus modelos con ese contenido y lo borra (de sus sistemas )?dentro de 30 días/, ruta);
   }
 });
+
+test("/descargar: los comandos GPG se copian tal cual y se cortan entre argumentos, no en un guion", () => {
+  const pre = /<pre id="gpg-comandos">([\s\S]*?)<\/pre>/.exec(read("descargar/index.html"))?.[1];
+  assert.ok(pre, "/descargar trae los comandos");
+  // «Copiar» copia el textContent: los <span> no agregan nada
+  const texto = pre.replace(/<\/?span>/g, "").replaceAll("&lt;", "<").replaceAll("&gt;", ">");
+  assert.equal(texto, "gpg --show-keys --fingerprint pteron-releases-public.asc\ngpg --import pteron-releases-public.asc\ngpg --verify pteron-<versión>-x86_64.AppImage.asc pteron-<versión>-x86_64.AppImage");
+  // Después de un guion se puede cortar la línea: cada argumento que lo lleva va en un <span> que descargar.css no parte
+  for (const palabra of pre.replace(/<span>[^<]*<\/span>/g, "").split(/\s+/)) assert.doesNotMatch(palabra, /-/, `${palabra} va en un <span>`);
+  assert.match(read("descargar/descargar.css"), /\.codigo pre span\{display:inline-block;max-width:calc\(100% - 2ch\);/);
+});

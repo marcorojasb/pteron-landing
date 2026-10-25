@@ -145,9 +145,9 @@
           <p class="rotulo" id="comandos-rotulo">Comandos</p>
           <p class="nota">Muestra la huella, importa la clave y verifica, por ejemplo, la AppImage:</p>
           <div class="codigo">
-            <pre id="gpg-comandos">gpg --show-keys --fingerprint pteron-releases-public.asc
-gpg --import pteron-releases-public.asc
-gpg --verify pteron-&lt;versión&gt;-x86_64.AppImage.asc pteron-&lt;versión&gt;-x86_64.AppImage</pre>
+            <pre id="gpg-comandos">gpg <span>--show-keys</span> <span>--fingerprint</span> <span>pteron-releases-public.asc</span>
+gpg <span>--import</span> <span>pteron-releases-public.asc</span>
+gpg <span>--verify</span> <span>pteron-&lt;versión&gt;-x86_64.AppImage.asc</span> <span>pteron-&lt;versión&gt;-x86_64.AppImage</span></pre>
             <button class="copiar" type="button" data-copy-target="#gpg-comandos" aria-describedby="comandos-rotulo"><span data-copy-label>Copiar</span></button>
           </div>
           <p class="nota">Comprueba que GPG muestre exactamente la huella publicada antes de confiar en el archivo.</p>
