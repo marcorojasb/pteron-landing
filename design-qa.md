@@ -1,5 +1,32 @@
 # Design QA
 
+## La documentación con pteron main y el despliegue verificado en producción — 2026-10-25
+
+- Capturas de la documentación tomadas de nuevo con pteron main (b79850c, 0.9 en curso), con el arnés de la app bajo
+  Xvfb: 27 escenas revisadas una por una. Nuevas: la tarjeta de la corrida, el menú «Ajustar», un pedido con un
+  archivo de la carpeta y el OA, y una respuesta cortada por el proveedor. Retiradas: la ficha y el error al exportar,
+  que la 0.8.2 quitó. El encargo abierto de la corrida, el error y el aviso de datos se nombra para que calce con lo
+  que muestra. El plan listo va con «Cómo lo abordaré» plegado: en main, los números de sus etapas se dibujan unos
+  200 px más abajo (una regla de chat.css con posición absoluta dentro de una rejilla; en 0.8.1 se veían bien).
+- Documentación al día con la app: la pantalla de inicio sin rumbos, el pedido leído en una frase (Tab), lo último de
+  la carpeta, el índice, Copiar y «Nuevo chat desde aquí», la Biblioteca, «Ajustar», lo pedagógico en la hoja, la
+  tarjeta de la corrida, los ítems con incisos, el formato del colegio, el aviso de datos ampliado y la respuesta que
+  se corta. Cada control nombrado se buscó en el código de pteron. 20 páginas a 390 y 1280 px: sin imágenes rotas,
+  textos alternativos vacíos, desborde, errores ni violaciones de CSP.
+- Despliegue de main a8716b0 (versión 02a9a6bc) y, tras el arreglo, 985ae9f (versión fae117a3). Producción estaba en
+  la revisión 2026-10-14.2. Comprobado en pteron.patagua.dev: 24 archivos idénticos al repositorio, `/api/health` ok,
+  `/api/plans` con el catálogo real (Basic a la venta), la API de cuenta y de administración piden sesión, la CSP y
+  las cabeceras en assets y en lo que entrega el Worker, `/assets` inmutable y releases.json en 0.8.2.
+- Hallazgo en producción: Cloudflare inyecta en cada página el beacon de Web Analytics de la zona, y la CSP nueva lo
+  bloqueaba (error en la consola de cada página y analítica sin datos). La CSP suma static.cloudflareinsights.com en
+  script-src y cloudflareinsights.com en connect-src; probado imitando la inyección (con la CSP anterior no carga, con
+  esta carga y envía) y después en producción: carga sin violaciones.
+- Barrido de producción en Chromium, 17 rutas a 1280 y 390 px: sin errores de consola, violaciones de CSP,
+  peticiones fallidas, imágenes rotas ni desborde; CLS de 0 a 0,007, salvo /admin (0,085 y 0,156: el colofón baja al
+  mostrar «Entra primero con tu cuenta», que el panel decide después de cargar; es anterior y sólo de esa página).
+  Pruebas de lectura: /planes con «Elegir Basic» y Pro «Disponible pronto», /descargar y Versiones con 0.8.2, un
+  enlace de entrada adulterado en /cuenta no entra y lo dice el aviso, y /admin sin sesión no muestra datos.
+
 ## Comandos GPG legibles y enlaces de entrada ajenos — 2026-10-25
 
 - /descargar: los comandos GPG se cortan entre argumentos y no en un guion (antes: «--» / «fingerprint», «pteron-» /
