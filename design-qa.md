@@ -1,5 +1,22 @@
 # Design QA
 
+## Comandos GPG legibles y enlaces de entrada ajenos — 2026-10-25
+
+- /descargar: los comandos GPG se cortan entre argumentos y no en un guion (antes: «--» / «fingerprint», «pteron-» /
+  «releases…»). La continuación de un comando lleva sangría, y la de un nombre de archivo que no cabe en una línea, el
+  doble; si junto a «Copiar» no caben 42 caracteres, el botón baja. Medido a 320, 390, 768, 1024, 1280 y 1920 px: desde
+  768 px ningún corte cae en un guion; a 390 sólo se parte la firma de la AppImage, que no cabe en una línea. Lo que se
+  copia, con el botón o seleccionando, es el comando exacto.
+- /cuenta: un enlace de entrada abre su cuenta sin preguntar sólo si es la que se pidió desde este navegador (el correo
+  queda anotado una hora) o la que ya está abierta en él. Si no, pregunta «¿Entrar como …?» y dice si hay otra cuenta
+  abierta; «Cancelar» deja todo como estaba. Así, el enlace que manda otra persona ya no deja a nadie dentro de una
+  cuenta ajena sin saberlo. El correo del enlace lo confirma el servidor (`GET /api/auth/me`), no el texto del token:
+  un token alterado no entra, no reemplaza la sesión abierta y lo dice un aviso. Los tokens salen de la URL en el acto.
+  Verificado en Chromium a 390 y 1280 px: la pregunta aparece sin esqueleto y con el foco en su título; después, el
+  foco pasa a la cuenta o al correo. Tab recorre «Entrar» y «Cancelar», un correo largo no desborda y recargar no
+  vuelve a preguntar. El recorrido de siempre (pedir y abrir el enlace en el mismo navegador) entra sin preguntar.
+- Revisión del sitio 2026-10-25.3. CSP: ninguna violación en las 15 escenas. 476 pruebas pasan.
+
 ## Planes según la venta, salto temprano de la portada y CSP — 2026-10-25
 
 - /planes: cada plan de pago parte con «Disponible pronto» (deshabilitado, atenuado como en /cuenta) y `script.js`
