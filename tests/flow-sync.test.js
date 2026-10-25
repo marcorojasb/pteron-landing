@@ -476,12 +476,13 @@ test("un vencimiento de Flow rechaza el fetch como una red caída: no es un rech
     throw new DOMException("The operation was aborted due to timeout", "TimeoutError");
   };
   await withFetch(vencido, async () => {
+    // Cada rechazo se atiende al crearse: si el segundo llegara antes de esperarlo, Node lo daría por no manejado,
+    // cerraría esta prueba antes de tiempo y el fetch falso de la siguiente se cruzaría con el real
     const lecturas = [
       flow.getSubscription("sus_basic01"),
       flow.createSubscription({ planId: "pteron-basic-2990-mensual", customerId: "cus_1", trialPeriodDays: 0 }),
-    ];
-    for (const lectura of lecturas) {
-      const error = await lectura.then(() => null, (falla) => falla);
+    ].map((lectura) => lectura.then(() => null, (falla) => falla));
+    for (const error of await Promise.all(lecturas)) {
       assert.equal(error?.name, "TimeoutError");
       assert.equal(flowRejected(error), false, "un vencimiento no dice qué pasó en Flow");
     }
