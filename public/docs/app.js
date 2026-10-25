@@ -1,6 +1,10 @@
 (() => {
   const docs = window.PTERON_DOCS;
-  if (!docs) return;
+  // Sin el contenido no hay nada que pintar: docs-sin-app suelta el alto que styles.css le reservaba a la hoja
+  if (!docs) {
+    document.documentElement.classList.add("docs-sin-app");
+    return;
+  }
 
   const article = document.querySelector("[data-article]");
   const nav = document.querySelector("[data-docs-nav]");

@@ -479,17 +479,18 @@ test("el alto del aviso queda en --aviso-alto, con el que cuenta.css aparta el f
   const { $, documento, observadores } = await pagina({ url });
   const aviso = $("[data-account-notice]");
   assert.equal(aviso.hidden, false);
+  // Al mostrarse ya está medido, antes de que el ResizeObserver llegue a correr: el foco que se devuelve justo
+  // después de un aviso ya se aparta de él
+  assert.equal(documento.documentElement.estilo.get("--aviso-alto"), "77px");
   assert.equal(observadores.length, 1);
   assert.equal(observadores[0].nodo, aviso);
-  observadores[0].medir();
-  assert.equal(documento.documentElement.estilo.get("--aviso-alto"), "77px");
   await $("[data-account-notice-close]").disparar("click");
   observadores[0].medir();
   assert.equal(documento.documentElement.estilo.get("--aviso-alto"), "0px");
-  // Sin ResizeObserver la página sigue igual: el CSS usa 0 y queda el relleno de siempre
+  // Sin ResizeObserver, el alto igual queda al mostrarse el aviso
   const sin = await pagina({ url, observador: false });
   assert.equal(sin.$("[data-account-notice]").hidden, false);
-  assert.equal(sin.documento.documentElement.estilo.has("--aviso-alto"), false);
+  assert.equal(sin.documento.documentElement.estilo.get("--aviso-alto"), "77px");
   // Sólo en pantalla y hasta 820 px, donde el aviso va abajo, y sólo mientras se ve
   const css = readFileSync(new URL("../public/cuenta/cuenta.css", import.meta.url), "utf8");
   const bloque = css.slice(css.indexOf("@media screen and (max-width:820px){"));

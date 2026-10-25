@@ -107,6 +107,12 @@
   .creditos{padding-block:28px 0}
   .legal-hoja{display:block}
   .legal-hoja>section+section{margin-top:clamp(26px,3vw,36px)}
+  /* Una grilla que Chromium parte entre páginas dibuja la fila siguiente donde iba sin partir: en Oficio, texto sobre texto */
+  .legal-lista{display:block}
+  .legal-lista>li+li{margin-top:8px}
+  .creditos-notas,.creditos-notas section{display:block}
+  .creditos-notas>section+section{margin-top:clamp(24px,4vw,56px)}
+  .creditos-notas section>*+*{margin-top:10px}
   .legal-hoja h2,.creditos h3{break-after:avoid}
   .credito{break-inside:avoid}
 }

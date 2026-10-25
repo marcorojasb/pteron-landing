@@ -255,6 +255,12 @@ test("cada rótulo cabe en lo que se ve de su hoja: en una tableta vertical no s
     page.cuadro();
     assert.ok(page.rotulos.every((node) => node.getAttribute("style") === null));
   }
+  // El ancho sólo sirve si el texto puede partirse: con nowrap el rótulo se sale de su caja y vuelve a montarse
+  const css = readFileSync(new URL("../public/inicio.css", import.meta.url), "utf8");
+  const regla = /\.escena\[data-viva\] \.mesa-rotulos li\{([^}]*)\}/.exec(css)?.[1];
+  assert.ok(regla, "inicio.css tiene la regla de los rótulos en la escena viva");
+  assert.match(regla, /white-space:normal/);
+  assert.doesNotMatch(regla, /nowrap/);
 });
 
 test("la escena se mide y se dibuja al cargar: la esquina queda oculta y ninguna lámina en la pose de medir", () => {

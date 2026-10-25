@@ -240,3 +240,19 @@ test("un enlace con ancla lleva a esa sección y deja ahí el foco; la direcció
   assert.equal(alias.location.search, "?pagina=evaluar");
   assert.equal(alias.location.hash, "#criterios");
 });
+
+test("si content.js o app.js no cargan, la página suelta el alto que reservaba y el colofón vuelve a verse", () => {
+  // Cada script marca docs-sin-app en <html> si no carga, y app.js también si llega sin el contenido
+  for (const archivo of ["content.js", "app.js"]) {
+    const etiqueta = new RegExp(`<script src="/docs/${archivo.replace(".", "\\.")}\\?v=[^"]+" defer onerror="document\\.documentElement\\.classList\\.add\\('docs-sin-app'\\)"></script>`);
+    assert.match(html, etiqueta, `${archivo} avisa si no carga`);
+  }
+  const clases = new Set();
+  vm.runInNewContext(app, { window: {}, document: { documentElement: { classList: { add: (clase) => clases.add(clase) } } } });
+  assert.ok(clases.has("docs-sin-app"), "app.js sin PTERON_DOCS marca la página");
+  // Las dos reservas de alto quedan fuera con docs-sin-app
+  const css = leer("docs/styles.css");
+  const reservas = [...css.matchAll(/^([^{}\n]*)\{min-height:(?:calc\(100svh - 40px\)|100svh)\}/gm)].map((m) => m[1]);
+  assert.equal(reservas.length, 2);
+  for (const selector of reservas) assert.match(selector, /^\.js:not\(\.docs-sin-app\) /, selector);
+});

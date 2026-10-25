@@ -471,20 +471,23 @@
     return data;
   }
 
+  // Hasta 820 px el aviso va abajo y tapa el final de la ventana: con su alto (0 mientras está oculto), cuenta.css
+  // aparta de él lo que recibe el foco y alarga el colofón para que sus últimos enlaces queden a la vista
+  const medirAviso = () => document.documentElement.style.setProperty("--aviso-alto", `${notice.offsetHeight}px`);
+
   function showNotice(message, tone = "") {
     if (!notice) return;
     (noticeText || notice).textContent = message || "";
     notice.dataset.tone = tone;
     notice.hidden = !message;
+    // En el acto, no cuando mida el ResizeObserver: el foco que se devuelve justo después ya se aparta del aviso
+    medirAviso();
   }
   notice?.querySelector("[data-account-notice-close]")?.addEventListener("click", () => {
     notice.hidden = true;
   });
-  // Hasta 820 px el aviso va abajo y tapa el final de la ventana: con su alto (0 mientras está oculto), cuenta.css
-  // aparta de él lo que recibe el foco y alarga el colofón para que sus últimos enlaces queden a la vista
-  if (notice && "ResizeObserver" in window) {
-    new window.ResizeObserver(() => document.documentElement.style.setProperty("--aviso-alto", `${notice.offsetHeight}px`)).observe(notice);
-  }
+  // El ResizeObserver lo mantiene al día si el aviso cambia de alto (al girar el teléfono, por ejemplo)
+  if (notice && "ResizeObserver" in window) new window.ResizeObserver(medirAviso).observe(notice);
 
   function showLoginMessage(message) {
     if (loginMessage) loginMessage.textContent = message || "";
