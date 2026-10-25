@@ -35,6 +35,21 @@ code,pre{font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;font
 .copiar{flex:none;min-height:44px;padding:0 16px;border:var(--borde) solid var(--linea);border-radius:999px;background:var(--hoja);color:var(--azul);font-weight:600;font-size:.8125rem}
 .copiar:hover{border-color:var(--azul)}
 
+/* /descargar/<sistema>: mientras baja el archivo, los pasos para instalarlo en una hoja, numerados como los de la
+   portada */
+.instalar{display:grid;gap:clamp(20px,3vw,28px);justify-items:start;padding-bottom:clamp(72px,10vw,128px)}
+.instalar-pasos{list-style:none;margin:0;padding:0;width:min(100%,46rem);counter-reset:paso;background:var(--hoja);border-radius:6px;
+  box-shadow:0 1px 2px rgb(var(--sombra)/.08),0 30px 60px -36px rgb(var(--sombra)/.45)}
+/* El texto de cada paso va en un <span>: con <code> y <strong> en línea, sin él cada pieza sería una celda de la rejilla.
+   El número se alinea con la primera línea por la base del texto */
+.instalar-pasos li{counter-increment:paso;display:grid;grid-template-columns:30px minmax(0,1fr);gap:16px;align-items:baseline;
+  padding:clamp(18px,2.4vw,24px) clamp(20px,3vw,32px);color:var(--tinta);font-size:clamp(1.0625rem,1rem + .3vw,1.25rem);line-height:1.45}
+.instalar-pasos li+li{border-top:var(--borde) solid var(--regla)}
+.instalar-pasos li::before{content:counter(paso);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--azul);color:#fff;
+  font-size:.875rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.instalar-pasos code{white-space:nowrap}
+.instalar-acciones{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;font-weight:560}
+
 @media (max-width:900px){
   .plataforma{grid-template-columns:minmax(0,1fr)}
   .plataforma .boton{justify-self:start}

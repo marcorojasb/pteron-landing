@@ -17,8 +17,8 @@ const docs = (() => {
   return window.PTERON_DOCS;
 })();
 const slugs = docs.groups.flatMap((group) => group.pages.map(([slug]) => slug));
-// La misma forma que pageUrl en app.js: la portada es /docs y el resto, /docs?pagina=<slug>
-const urlCanonica = (slug) => (slug === "inicio" ? `${SITIO}/docs` : `${SITIO}/docs?pagina=${slug}`);
+// La misma forma que pageUrl en app.js: la portada es /docs y el resto, /docs/<slug>
+const urlCanonica = (slug) => (slug === "inicio" ? `${SITIO}/docs` : `${SITIO}/docs/${slug}`);
 const textoPlano = (texto) => String(texto || "").replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
 const descripcionPortada = /<meta name="description" content="([^"]+)">/.exec(html)?.[1];
 const ordenadas = (lista) => [...lista].sort();
@@ -184,6 +184,7 @@ test("al llegar, la URL canónica y la descripción son las de la página que se
     ["/docs?pagina=instalar-windows", "instalar-windows"],
     ["/docs/instalar-linux", "instalar-linux"],
     ["/docs?pagina=rubricas", "evaluar"],
+    ["/docs/rubricas", "evaluar"],
     ["/docs/no-existe", "inicio"],
     ["/docs", "inicio"],
   ]) {
@@ -191,23 +192,26 @@ test("al llegar, la URL canónica y la descripción son las de la página que se
     assert.equal(pagina.cabeza.length, 1, `${direccion}: una sola canónica`);
     assert.equal(pagina.cabeza[0].rel, "canonical");
     assert.equal(pagina.canonica(), urlCanonica(slug), direccion);
+    // La dirección queda en la forma de la página antes de que la analítica la lea: cada página se cuenta aparte
+    assert.equal(`${pagina.location.origin}${pagina.location.pathname}${pagina.location.search}`.replace("http://localhost:8787", SITIO), urlCanonica(slug), `${direccion}: la dirección`);
     assert.equal(pagina.descripcion(), slug === "inicio" ? descripcionPortada : textoPlano(docs.pages[slug].lead), direccion);
     assert.equal(pagina.documento.activeElement, pagina.documento.body, `${direccion}: el foco no se mueve al llegar`);
   }
 });
 
 test("al seguir un enlace y al volver atrás cambian la canónica y la descripción, y el foco pasa al título nuevo", () => {
-  const pagina = abrir("/docs?pagina=requisitos");
+  const pagina = abrir("/docs/requisitos");
   const enfocado = () => pagina.documento.activeElement;
 
-  pagina.clic("/docs?pagina=crear");
-  assert.equal(pagina.location.search, "?pagina=crear");
+  pagina.clic("/docs/crear");
+  assert.equal(pagina.location.pathname, "/docs/crear");
+  assert.equal(pagina.location.search, "");
   assert.equal(pagina.canonica(), urlCanonica("crear"));
   assert.equal(pagina.descripcion(), textoPlano(docs.pages.crear.lead));
   assert.equal(enfocado().textContent, docs.pages.crear.title);
   assert.equal(enfocado().getAttribute("tabindex"), "-1");
 
-  pagina.atras("/docs?pagina=requisitos");
+  pagina.atras("/docs/requisitos");
   assert.equal(pagina.canonica(), urlCanonica("requisitos"));
   assert.equal(pagina.descripcion(), textoPlano(docs.pages.requisitos.lead));
   assert.equal(enfocado().textContent, docs.pages.requisitos.title);
@@ -221,9 +225,9 @@ test("al seguir un enlace y al volver atrás cambian la canónica y la descripci
 });
 
 test("un enlace con ancla lleva a esa sección y deja ahí el foco; la dirección conserva el ancla", () => {
-  const pagina = abrir("/docs?pagina=preguntas");
-  pagina.clic("/docs?pagina=modelos-permisos#ia-incluida");
-  assert.equal(pagina.location.search, "?pagina=modelos-permisos");
+  const pagina = abrir("/docs/preguntas");
+  pagina.clic("/docs/modelos-permisos#ia-incluida");
+  assert.equal(pagina.location.pathname, "/docs/modelos-permisos");
   assert.equal(pagina.location.hash, "#ia-incluida");
   assert.equal(pagina.desplazado()?.id, "ia-incluida");
   assert.equal(pagina.documento.activeElement.id, "ia-incluida", "el foco va a la sección pedida, no al título");
@@ -231,14 +235,17 @@ test("un enlace con ancla lleva a esa sección y deja ahí el foco; la direcció
   assert.equal(pagina.canonica(), urlCanonica("modelos-permisos"), "la canónica no lleva el ancla");
 
   // Un ancla que no existe en la página nueva deja el foco en el título
-  pagina.clic("/docs?pagina=requisitos#no-existe");
+  pagina.clic("/docs/requisitos#no-existe");
   assert.equal(pagina.desplazado(), null);
   assert.equal(pagina.documento.activeElement.textContent, docs.pages.requisitos.title);
 
-  // Al llegar por un alias, la dirección pasa a la página nueva sin perder el ancla
-  const alias = abrir("/docs?pagina=rubricas#criterios");
-  assert.equal(alias.location.search, "?pagina=evaluar");
-  assert.equal(alias.location.hash, "#criterios");
+  // Al llegar por un alias o por la forma anterior, la dirección pasa a la de la página sin perder el ancla
+  for (const direccion of ["/docs?pagina=rubricas#criterios", "/docs/rubricas#criterios"]) {
+    const alias = abrir(direccion);
+    assert.equal(alias.location.pathname, "/docs/evaluar", direccion);
+    assert.equal(alias.location.search, "", direccion);
+    assert.equal(alias.location.hash, "#criterios", direccion);
+  }
 });
 
 test("si content.js o app.js no cargan, la página suelta el alto que reservaba y el colofón vuelve a verse", () => {

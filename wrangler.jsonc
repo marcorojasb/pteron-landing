@@ -20,7 +20,7 @@
     // nunca corre: el retorno de Flow a /api/billing/card-callback y los
     // enlaces directos a /docs/:slug se perderían. Estas rutas van al Worker
     // siempre; los archivos reales de /docs/* los sirve igual vía ASSETS.
-    "run_worker_first": ["/api", "/api/*", "/docs/*"]
+    "run_worker_first": ["/api", "/api/*", "/docs", "/docs/*"]
   },
   // Variables públicas. Los secretos (SUPABASE_PUBLISHABLE_KEY,
   // SUPABASE_SERVICE_ROLE_KEY, FLOW_API_KEY, FLOW_SECRET_KEY,

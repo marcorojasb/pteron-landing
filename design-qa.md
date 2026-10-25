@@ -1,5 +1,31 @@
 # Design QA
 
+## Analítica de visitas que cuenta lo que importa — 2026-10-25
+
+- Privacidad ya no dice «Esta web no incorpora analítica»: dice que la web cuenta sus visitas con Cloudflare Web
+  Analytics (lo inyecta el borde de Cloudflare), sin cookies ni nada guardado en el navegador, y qué registra: la
+  dirección de la página sin lo que va tras «?» o «#», la página de origen, el país, el equipo, el sistema, el
+  navegador y el tiempo de carga. Comprobado en el código del beacon que inyecta Cloudflare (2024.11.0, `spa: 2`):
+  `location` y `referrer` pasan por una función que borra la consulta, el fragmento y las credenciales, así que los
+  tokens que vuelven a /cuenta no salen. No usa cookies, localStorage ni sessionStorage.
+- La documentación tiene una dirección por página, `/docs/<página>`: con `?pagina=` las 30 páginas llegaban a la
+  analítica como una sola, `/docs`. La forma anterior redirige con un 301 (el Worker atiende ahora también `/docs`) y
+  `app.js` deja la dirección en la forma nueva antes de que el beacon la lea. Sitemap, llms.txt y enlaces, al día.
+- Cada descarga pasa por `/descargar/macos`, `/descargar/windows` o `/descargar/linux` (noindex): la página baja el
+  instalador al llegar, después de `load` para que la visita alcance a anotarse, y no al recargar ni al volver; deja a
+  la vista los pasos para instalar. Los botones del inicio, `/planes`, `/descargar` y la esquina llevan ahí; un
+  teléfono vuelve a `/descargar`. Los .deb, .rpm y .tar.gz siguen bajando directo.
+- Verificado en Chromium:
+  - cada sistema baja su archivo una vez y no al recargar, a 1280 y 390 px;
+  - un teléfono vuelve a /descargar sin bajar nada;
+  - en Linux, el botón del inicio lleva a /descargar/linux y baja la AppImage;
+  - `/docs?pagina=crear#plan` queda en `/docs/crear#plan`, y la página siguiente, el índice y Atrás usan la forma
+    nueva.
+
+  Sin errores, violaciones de CSP ni desborde.
+- 21 mutantes de la lógica nueva (Worker, `app.js`, `descarga.js`, `script.js`, `download.js`), todos detectados.
+- Revisión del sitio 2026-10-25.7. 514 pruebas, humo y `sitio.mjs --revisar` en verde.
+
 ## Sin etiquetas ni descripciones secundarias — 2026-10-25
 
 - Principio, en toda la interfaz: el diseño hace la explicación (queda en `AGENTS.md`). Se quitaron:

@@ -23,18 +23,14 @@
   const plainText = html => String(html || "").replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ");
   const bodyText = new Map(allPages.map(page => [page.slug, plainText(docs.pages[page.slug]?.html).toLocaleLowerCase("es")]));
 
-  const slugFromLocation = () => {
-    const requestedPage = new URLSearchParams(location.search).get("pagina");
-    if (requestedPage) return requestedPage;
-    const path = location.pathname.replace(/\/+$/, "");
-    if (path === "/docs" || path === "") return "inicio";
-    return path.split("/").pop() || "inicio";
-  };
+  // Cada página tiene su dirección, /docs/<página>: así la analítica de visitas (que descarta lo que va tras «?») la
+  // cuenta aparte. La forma anterior, /docs?pagina=<página>, sigue llevando a la misma página
+  const slugFromUrl = url => url.searchParams.get("pagina") || /^\/docs\/([^/]+)\/?$/.exec(url.pathname)?.[1] || "inicio";
 
-  const pageUrl = slug => slug === "inicio" ? "/docs" : `/docs?pagina=${encodeURIComponent(slug)}`;
+  const pageUrl = slug => slug === "inicio" ? "/docs" : `/docs/${encodeURIComponent(slug)}`;
 
-  // Cada página declara su propia URL canónica (la forma ?pagina= del sitemap y de llms.txt) y su entrada como
-  // descripción; la portada de la documentación conserva la descripción del HTML
+  // Cada página declara su propia URL canónica (la del sitemap y de llms.txt) y su entrada como descripción; la
+  // portada de la documentación conserva la descripción del HTML
   const canonical = document.querySelector('link[rel="canonical"]') ||
     document.head.appendChild(Object.assign(document.createElement("link"), { rel: "canonical" }));
   const description = document.querySelector('meta[name="description"]');
@@ -291,15 +287,16 @@
   const resolveSlug = slug =>
     docs.pages[slug] ? slug : (docs.aliases && docs.aliases[slug]) || "inicio";
 
-  // hash: el ancla de un enlace de la documentación (/docs?pagina=modelos-permisos#ia-incluida); al llegar o al
-  // volver atrás, la de la dirección
+  // hash: el ancla de un enlace de la documentación (/docs/modelos-permisos#ia-incluida); al llegar o al volver
+  // atrás, la de la dirección. Una dirección en otra forma (la anterior, un alias) se cambia por la de la página
+  // antes de que la analítica la lea
   const renderPage = (slug, push = false, moveFocus = push, hash = "") => {
     const resolvedSlug = resolveSlug(slug);
     renderedSlug = resolvedSlug;
     const page = docs.pages[resolvedSlug];
     const ancla = push ? hash : location.hash;
     if (push) history.pushState({ slug: resolvedSlug }, "", pageUrl(resolvedSlug) + ancla);
-    else if (resolvedSlug !== slug) history.replaceState({ slug: resolvedSlug }, "", pageUrl(resolvedSlug) + ancla);
+    else if (location.pathname + location.search !== pageUrl(resolvedSlug)) history.replaceState({ slug: resolvedSlug }, "", pageUrl(resolvedSlug) + ancla);
     document.title = `${page.title} · pteron`;
     canonical.href = new URL(pageUrl(resolvedSlug), "https://pteron.patagua.dev").href;
     if (description) description.content = resolvedSlug === "inicio" ? hubDescription : plainText(page.lead).trim();
@@ -314,7 +311,7 @@
     renderIndiceDocs(resolvedSlug);
     renderToc();
     renderReleaseData();
-    // Con un ancla (/docs?pagina=trabajo-local#licencia) se va a esa sección; si no, al comienzo
+    // Con un ancla (/docs/trabajo-local#licencia) se va a esa sección; si no, al comienzo
     const anchor = ancla ? document.getElementById(decodeURIComponent(ancla.slice(1))) : null;
     const enSeccion = Boolean(anchor && article.contains(anchor));
     if (enSeccion) anchor.scrollIntoView();
@@ -429,12 +426,12 @@
     if (url.origin !== location.origin) return;
     event.preventDefault();
     setSearchOpen(false);
-    renderPage(url.searchParams.get("pagina") || url.pathname.split("/").filter(Boolean).pop() || "inicio", true, true, url.hash);
+    renderPage(slugFromUrl(url), true, true, url.hash);
   });
 
   // Un salto a un ancla de la misma página no vuelve a pintarla (ni a pedir los datos de versión).
   window.addEventListener("popstate", () => {
-    const slug = slugFromLocation();
+    const slug = slugFromUrl(new URL(location.href));
     if (resolveSlug(slug) === renderedSlug) return;
     renderPage(slug, false, true);
   });
@@ -506,7 +503,7 @@
     if (sidebar.classList.contains("is-open") && !event.target.closest("[data-sidebar]")) setIndexOpen(false);
   });
 
-  renderPage(slugFromLocation());
+  renderPage(slugFromUrl(new URL(location.href)));
   // /docs#buscar (desde la 404, por ejemplo) abre el buscador
   if (location.hash === "#buscar") {
     history.replaceState(history.state, "", location.pathname + location.search);

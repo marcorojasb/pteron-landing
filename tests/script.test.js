@@ -65,7 +65,7 @@ class Vigia {
 }
 
 /** Una página con la esquina, el botón de la página y, si se piden, la sección «Descargar» y el pie. */
-function cargar({ descargar = true, colofon = true, observador = true } = {}) {
+function cargar({ descargar = true, colofon = true, observador = true, ua = "", listas: otras = {} } = {}) {
   Vigia.todos = [];
   const corner = new Nodo({ nombre: "esquina" });
   corner.toggleAttribute("data-oculto", true);
@@ -74,7 +74,7 @@ function cargar({ descargar = true, colofon = true, observador = true } = {}) {
     descargar: descargar ? new Nodo({ id: "descargar" }) : null,
     colofon: colofon ? new Nodo({ id: "colofon" }) : null,
   };
-  const listas = { "main [data-descargar], main .boton-principal": [own] };
+  const listas = { "main [data-descargar], main .boton-principal": [own], ...otras };
   const documento = new Nodo({
     readyState: "complete",
     documentElement: new Nodo(),
@@ -84,7 +84,7 @@ function cargar({ descargar = true, colofon = true, observador = true } = {}) {
   });
   const ventana = new Nodo({
     document: documento,
-    navigator: { userAgent: "", maxTouchPoints: 0 },
+    navigator: { userAgent: ua, maxTouchPoints: 0 },
     matchMedia: () => ({ matches: false, addEventListener() {} }),
     setTimeout,
     clearTimeout,
@@ -221,3 +221,23 @@ test("planes: con la venta cerrada, una respuesta rara o sin red, nada se ofrece
   }
 });
 
+// Cada descarga pasa por /descargar/<sistema>: baja el archivo y la analítica de visitas la cuenta por sistema
+test("el botón del visitante lleva a la página de descarga de su sistema; en un teléfono, todo vuelve a /descargar", () => {
+  const enlace = (href) => ({ atributos: { href }, href, textContent: "Descargar", getAttribute(nombre) { return this.atributos[nombre] ?? null; } });
+  for (const [ua, sistema, nombre] of [
+    ["Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36", "linux", "Linux"],
+    ["Mozilla/5.0 (Windows NT 10.0; Win64; x64)", "windows", "Windows"],
+    ["Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", "macos", "macOS"],
+  ]) {
+    const boton = enlace("/descargar");
+    cargar({ ua, listas: { "[data-descargar]": [boton] } });
+    assert.equal(boton.href, `/descargar/${sistema}`, ua);
+    assert.equal(boton.textContent, `Descargar para ${nombre}`, ua);
+  }
+  const enlaces = ["/descargar/macos", "/descargar#windows", "/descargar/linux", "/descargar/pteron-releases-public.asc", "/descargar"].map(enlace);
+  const boton = enlace("/descargar");
+  cargar({ ua: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)", listas: { 'a[href^="/descargar"]': enlaces, "[data-descargar]": [boton] } });
+  assert.deepEqual(enlaces.map((e) => e.href), ["/descargar", "/descargar", "/descargar", "/descargar/pteron-releases-public.asc", "/descargar"], "la clave pública sigue bajando");
+  assert.equal(boton.href, "/descargar", "en un teléfono no se elige sistema");
+  assert.equal(boton.textContent, "Descargar");
+});

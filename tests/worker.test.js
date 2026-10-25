@@ -295,6 +295,35 @@ test("los assets se sirven tal cual y /docs/:slug cae a la página de documentac
   assert.equal(post.status, 404, "un POST no se reescribe a la página");
 });
 
+test("/docs?pagina=:slug, la forma anterior, pasa con un 301 a /docs/:slug; /docs sola sigue siendo la portada", async () => {
+  const assets = fakeAssets({ "/docs": "<html>docs</html>" });
+  const bound = { ...env, ASSETS: assets };
+  for (const [desde, hacia] of [
+    ["https://pteron.test/docs?pagina=instalar-macos", "https://pteron.test/docs/instalar-macos"],
+    ["https://pteron.test/docs/?pagina=versiones", "https://pteron.test/docs/versiones"],
+    ["https://pteron.test/docs?pagina=crear&r=1", "https://pteron.test/docs/crear"],
+  ]) {
+    const response = await worker.fetch(new Request(desde), bound, fakeExecution());
+    assert.equal(response.status, 301, desde);
+    assert.equal(response.headers.get("location"), hacia, desde);
+    assert.equal(response.headers.get("x-content-type-options"), "nosniff", "con las cabeceras de seguridad");
+  }
+  const head = await worker.fetch(new Request("https://pteron.test/docs?pagina=crear", { method: "HEAD" }), bound, fakeExecution());
+  assert.equal(head.status, 301);
+  assert.deepEqual(assets.calls, [], "la redirección no toca los assets");
+
+  // Lo que no es un nombre de página no se redirige: la portada lo resuelve
+  for (const raro of ["https://pteron.test/docs?pagina=", "https://pteron.test/docs?pagina=..%2Fadmin", "https://pteron.test/docs?pagina=https://otro.test"]) {
+    const response = await worker.fetch(new Request(raro), bound, fakeExecution());
+    assert.equal(response.status, 200, raro);
+  }
+  const portada = await worker.fetch(new Request("https://pteron.test/docs"), bound, fakeExecution());
+  assert.equal(portada.status, 200);
+  assert.equal(await portada.text(), "<html>docs</html>");
+  const post = await worker.fetch(new Request("https://pteron.test/docs?pagina=crear", { method: "POST" }), bound, fakeExecution());
+  assert.notEqual(post.status, 301, "un POST no se redirige");
+});
+
 function gatewayFixture() {
   const keys = testKeyPair();
   const gatewayEnv = testEnv({ LICENSE_PRIVATE_KEY_PEM: keys.privatePem, ANTHROPIC_API_KEY: "upstream-key", ANTHROPIC_BASE_URL: "https://upstream.test", GATEWAY_MODEL_ID: "claude-haiku-5-5" });

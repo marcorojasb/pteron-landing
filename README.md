@@ -66,8 +66,9 @@ Worker, con `wrangler` desde la rama `main` de este repositorio (ver «Despliegu
     de la ventana, los de Lucide que usa la app y su familia propia para los materiales y los formatos (lo escribe `scripts/pteron-iconos.mjs`); los iconos `*-v4` y `favicon-v5-*` (la «p» de la marca sobre el azul;
     `favicon.ico` y `apple-touch-icon.png` van además en la raíz, sin versión) y
     `assets/og/`: una imagen para compartir por página.
-- `src/worker.js`: el Worker. Atiende `/api/*` y reescribe `/docs/:slug` a la
-  página de documentación; todo lo demás lo sirven los assets. Su handler
+- `src/worker.js`: el Worker. Atiende `/api/*`, reescribe `/docs/:slug` a la
+  página de documentación y redirige con un 301 la forma anterior,
+  `/docs?pagina=:slug`; todo lo demás lo sirven los assets. Su handler
   `scheduled` corre el Cron diario de la sincronización con Flow.
   - `src/lib/`: ayudantes HTTP (con la guarda de host), cliente de Supabase,
     cliente de Flow con lectores tipados, la sincronización con Flow
@@ -422,6 +423,32 @@ evitar que un archivo antiguo de la caché reemplace los enlaces actuales. Ese
 valor es una revisión del sitio, no la versión de pteron: sube cuando se
 modifica `styles.css` o alguno de los JavaScript compartidos, y no cambia al
 publicar una versión nueva del producto.
+
+## Analítica
+
+Las visitas las cuenta Cloudflare Web Analytics, que el borde de Cloudflare
+inyecta en cada página: no está en el repositorio, y la CSP deja pasar
+`static.cloudflareinsights.com` y su envío a `cloudflareinsights.com`
+(`tests/csp.test.js`). No usa cookies ni guarda nada en el navegador, y descarta
+lo que va tras «?» y «#»: los tokens que vuelven a `/cuenta` no salen. Lo que
+mide lo dice Privacidad, en «Sitio web»; si cambia lo que se mide, cambia ahí.
+
+Como sólo ve la ruta, lo que conviene contar tiene su propia dirección:
+
+- Cada página de la documentación es `/docs/<página>`. La forma anterior,
+  `/docs?pagina=<página>`, redirige con un 301 (el Worker atiende `/docs`), y
+  `app.js` deja la dirección en esa forma antes de que la analítica la lea.
+- Cada descarga pasa por `/descargar/macos`, `/descargar/windows` o
+  `/descargar/linux`: la página baja el instalador de la última versión al llegar
+  (`descargar/descarga.js`; no al recargar ni al volver) y muestra los pasos para
+  instalarlo. Sus visitas son las descargas por sistema. Los botones del inicio,
+  de `/planes`, de `/descargar` y la esquina llevan ahí; en un teléfono, a
+  `/descargar`, donde se envía el enlace. Los `.deb`, `.rpm` y `.tar.gz` bajan
+  directo desde «Linux en otros formatos».
+
+Las cifras están en Web Analytics, en el panel de Cloudflare. GitHub cuenta
+además cada archivo bajado (`download_count` en la API de releases), también
+las actualizaciones que baja la app.
 
 ## Variables y secretos
 

@@ -13,12 +13,12 @@ en la guía de IA o en Configuración › Modelo de IA.
 ## Empezar
 
 - [Qué es pteron](https://pteron.patagua.dev/docs)
-- [Requisitos](https://pteron.patagua.dev/docs?pagina=requisitos)
-- [Instalar en macOS](https://pteron.patagua.dev/docs?pagina=instalar-macos)
-- [Instalar en Windows](https://pteron.patagua.dev/docs?pagina=instalar-windows)
-- [Instalar en Linux](https://pteron.patagua.dev/docs?pagina=instalar-linux)
-- [Primera apertura](https://pteron.patagua.dev/docs?pagina=primera-apertura)
-- [Actualizar pteron](https://pteron.patagua.dev/docs?pagina=actualizar)
+- [Requisitos](https://pteron.patagua.dev/docs/requisitos)
+- [Instalar en macOS](https://pteron.patagua.dev/docs/instalar-macos)
+- [Instalar en Windows](https://pteron.patagua.dev/docs/instalar-windows)
+- [Instalar en Linux](https://pteron.patagua.dev/docs/instalar-linux)
+- [Primera apertura](https://pteron.patagua.dev/docs/primera-apertura)
+- [Actualizar pteron](https://pteron.patagua.dev/docs/actualizar)
 
 ## Conocer la aplicación
 
@@ -31,11 +31,11 @@ carpeta. Al abrir un material, la conversación del encargo queda en un margen a
 su lado, con Ajustar. El Planificador (el horario semanal con las unidades de
 cada curso) viene apagado y se activa en Configuración › Labs.
 
-- [La pantalla de inicio](https://pteron.patagua.dev/docs?pagina=pantalla-inicio)
-- [Encargos y memoria](https://pteron.patagua.dev/docs?pagina=sesiones-memoria)
-- [Carpeta de trabajo](https://pteron.patagua.dev/docs?pagina=carpeta-trabajo)
-- [Fuentes y contexto](https://pteron.patagua.dev/docs?pagina=fuentes-contexto)
-- [Abrir un recurso](https://pteron.patagua.dev/docs?pagina=biblioteca)
+- [La pantalla de inicio](https://pteron.patagua.dev/docs/pantalla-inicio)
+- [Encargos y memoria](https://pteron.patagua.dev/docs/sesiones-memoria)
+- [Carpeta de trabajo](https://pteron.patagua.dev/docs/carpeta-trabajo)
+- [Fuentes y contexto](https://pteron.patagua.dev/docs/fuentes-contexto)
+- [Abrir un recurso](https://pteron.patagua.dev/docs/biblioteca)
 
 ## Trabajar con pteron
 
@@ -45,33 +45,33 @@ trabaja, la tarjeta de la corrida dice lo que pasa ahora, con el reloj del turno
 y cada paso con lo que tardó; si la respuesta se corta, lo escrito queda a la
 vista, con Reintentar y Cambiar de modelo.
 
-- [Planificar](https://pteron.patagua.dev/docs?pagina=planificar)
-- [Crear](https://pteron.patagua.dev/docs?pagina=crear)
-- [Evaluar](https://pteron.patagua.dev/docs?pagina=evaluar)
-- [Adaptar](https://pteron.patagua.dev/docs?pagina=adaptar)
-- [Revisar y guardar](https://pteron.patagua.dev/docs?pagina=revisar-exportar)
+- [Planificar](https://pteron.patagua.dev/docs/planificar)
+- [Crear](https://pteron.patagua.dev/docs/crear)
+- [Evaluar](https://pteron.patagua.dev/docs/evaluar)
+- [Adaptar](https://pteron.patagua.dev/docs/adaptar)
+- [Revisar y guardar](https://pteron.patagua.dev/docs/revisar-exportar)
 
 ## Materiales y formatos
 
-- [Documentos](https://pteron.patagua.dev/docs?pagina=artefactos)
-- [Formatos de guía](https://pteron.patagua.dev/docs?pagina=formatos-guia)
-- [Pauta docente](https://pteron.patagua.dev/docs?pagina=pauta-docente)
-- [Copia local](https://pteron.patagua.dev/docs?pagina=copia-local)
-- [Presentaciones](https://pteron.patagua.dev/docs?pagina=presentaciones)
-- [Exportar y compartir](https://pteron.patagua.dev/docs?pagina=exportar)
+- [Documentos](https://pteron.patagua.dev/docs/artefactos)
+- [Formatos de guía](https://pteron.patagua.dev/docs/formatos-guia)
+- [Pauta docente](https://pteron.patagua.dev/docs/pauta-docente)
+- [Copia local](https://pteron.patagua.dev/docs/copia-local)
+- [Presentaciones](https://pteron.patagua.dev/docs/presentaciones)
+- [Exportar y compartir](https://pteron.patagua.dev/docs/exportar)
 
 ## Privacidad y control
 
-- [Trabajo local](https://pteron.patagua.dev/docs?pagina=trabajo-local)
-- [Datos de estudiantes](https://pteron.patagua.dev/docs?pagina=datos-estudiantes)
-- [Modelos y permisos](https://pteron.patagua.dev/docs?pagina=modelos-permisos)
+- [Trabajo local](https://pteron.patagua.dev/docs/trabajo-local)
+- [Datos de estudiantes](https://pteron.patagua.dev/docs/datos-estudiantes)
+- [Modelos y permisos](https://pteron.patagua.dev/docs/modelos-permisos)
 
 ## Ayuda
 
-- [Atajos de teclado](https://pteron.patagua.dev/docs?pagina=atajos)
-- [Preguntas frecuentes](https://pteron.patagua.dev/docs?pagina=preguntas)
-- [Solución de problemas](https://pteron.patagua.dev/docs?pagina=solucion-problemas)
-- [Versiones y plataformas](https://pteron.patagua.dev/docs?pagina=versiones)
+- [Atajos de teclado](https://pteron.patagua.dev/docs/atajos)
+- [Preguntas frecuentes](https://pteron.patagua.dev/docs/preguntas)
+- [Solución de problemas](https://pteron.patagua.dev/docs/solucion-problemas)
+- [Versiones y plataformas](https://pteron.patagua.dev/docs/versiones)
 
 ## Notas sobre el estado actual
 

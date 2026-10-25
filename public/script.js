@@ -303,19 +303,22 @@
   };
   const platform = detectPlatform();
   // Un teléfono o una tableta no instala pteron: sus enlaces llevan a /descargar (arriba, donde se envía el enlace),
-  // nunca a un instalador de escritorio
+  // nunca a la página que baja un instalador de escritorio
   const movil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "") || (/Macintosh/i.test(navigator.userAgent || "") && navigator.maxTouchPoints > 1);
   if (movil) {
     document.documentElement.dataset.equipo = "movil";
-    $$('a[href^="/descargar#"]').forEach((link) => (link.href = "/descargar"));
+    $$('a[href^="/descargar"]')
+      .filter((link) => /^\/descargar(?:#|\/(?:macos|windows|linux)$)/.test(link.getAttribute("href")))
+      .forEach((link) => (link.href = "/descargar"));
   }
+  // El botón del visitante lleva a la página de su sistema, /descargar/<sistema>: baja el archivo, muestra cómo
+  // instalarlo y la analítica de visitas la cuenta como una descarga de ese sistema
   const PLATFORM_NAME = { macos: "macOS", windows: "Windows", linux: "Linux" };
-  const PLATFORM_ASSET = { macos: "macosDmg", windows: "windowsExe", linux: "linuxAppImage" };
   if (platform) {
     $$(`[data-platform="${platform}"]`).forEach((node) => node.classList.add("is-detected"));
     $$("[data-descargar]").forEach((link) => {
       link.textContent = `Descargar para ${PLATFORM_NAME[platform]}`;
-      link.href = `/descargar#${platform}`;
+      link.href = `/descargar/${platform}`;
     });
   }
 
@@ -323,7 +326,7 @@
   const releases = window.PTERON_RELEASES;
   const megabytes = new Intl.NumberFormat("es-CL", { maximumFractionDigits: 0 });
   const size = (bytes) => (Number.isFinite(bytes) && bytes > 0 ? `${megabytes.format(bytes / 1e6)} MB` : "");
-  if (releases && $$("[data-release-version], [data-release-asset], [data-release-file], [data-release-link], [data-descargar]").length) {
+  if (releases && $$("[data-release-version], [data-release-file], [data-release-link]").length) {
     releases
       .loadReleaseCatalog()
       .then(({ latest }) => {
@@ -346,15 +349,6 @@
         $$("[data-release-link]").forEach((node) => {
           node.href = latest.url;
         });
-        if (!movil) {
-          $$("[data-release-asset]").forEach((node) => {
-            const asset = releases.findAsset(latest, node.dataset.releaseAsset);
-            if (asset) node.href = asset.url;
-          });
-        }
-        // El botón del visitante baja directo el archivo de su equipo
-        const own = platform && releases.findAsset(latest, PLATFORM_ASSET[platform]);
-        if (own) $$("[data-descargar]").forEach((link) => (link.href = own.url));
       })
       .catch(() => {});
   }

@@ -17,8 +17,9 @@ import { plans } from "./routes/plans.js";
 
 /**
  * Worker de pteron-landing. La web estática la sirve Cloudflare como assets
- * antes de llegar acá; el Worker atiende /api/* y el fallback de /docs/:slug,
- * que antes era una regla de reescritura de vercel.json.
+ * antes de llegar acá; el Worker atiende /api/*, el fallback de /docs/:slug
+ * (antes una regla de reescritura de vercel.json) y la redirección de la forma
+ * anterior de la documentación, /docs?pagina=:slug.
  */
 const ACTION_ROUTES = { auth, billing, activation, license };
 
@@ -70,6 +71,7 @@ async function handleApi(request, env, execution) {
 }
 
 const DOCS_PAGE = /^\/docs\/[^/]+$/;
+const DOCS_SLUG = /^[a-z0-9-]{1,80}$/;
 
 /**
  * Los assets sirven un .txt como `text/plain` sin charset, y el navegador o un
@@ -93,6 +95,13 @@ function textoEnUtf8(response, pathname) {
 async function handleAssets(request, env) {
   const url = new URL(request.url);
   const navigation = request.method === "GET" || request.method === "HEAD";
+  // /docs?pagina=:slug pasa a /docs/:slug, la dirección de cada página: los enlaces y buscadores que guardaron la
+  // anterior llegan a la misma, y la analítica de visitas (que descarta lo que va tras «?») cuenta cada página
+  // aparte. El ancla la conserva el navegador.
+  const anterior = url.searchParams.get("pagina");
+  if ((url.pathname === "/docs" || url.pathname === "/docs/") && navigation && anterior !== null && DOCS_SLUG.test(anterior)) {
+    return new Response(null, { status: 301, headers: { Location: new URL(`/docs/${anterior}`, url).toString(), ...SECURITY_HEADERS } });
+  }
   if (/^\/docs\/[^/]+\/$/.test(url.pathname) && navigation) {
     url.pathname = url.pathname.replace(/\/+$/, "");
     return new Response(null, { status: 308, headers: { Location: url.toString(), ...SECURITY_HEADERS } });

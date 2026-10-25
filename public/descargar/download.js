@@ -1,6 +1,7 @@
-/* pteron · descargar (2026-10-12.12)
-   Enlaces y rótulos de la última versión completa (release-data.js) y la plataforma del visitante destacada.
-   Sin catálogo no se anuncia ninguna versión: los enlaces quedan en la página de versiones y la página lo dice. */
+/* pteron · descargar (2026-10-25)
+   Enlaces de la última versión completa (release-data.js) y la plataforma del visitante destacada. Los botones de
+   cada sistema llevan a /descargar/<sistema>, que baja el archivo (descarga.js); en un teléfono, a la versión en
+   GitHub. Sin catálogo no se anuncia ninguna versión: los enlaces quedan en la página de versiones y la página lo dice. */
 (() => {
   "use strict";
   const releaseData = window.PTERON_RELEASES;
@@ -9,7 +10,7 @@
   const releaseLink = $("[data-download-release]");
   const status = $("[data-download-status]");
   const releasesPageUrl = releaseData?.RELEASES_PAGE_URL || "https://github.com/marcorojasb/pteron-beta/releases";
-  // script.js marca un teléfono o una tableta: ahí los botones llevan a la versión en GitHub, no al instalador
+  // script.js marca un teléfono o una tableta: ahí los botones llevan a la versión en GitHub, no a bajar el instalador
   const movil = document.documentElement.dataset.equipo === "movil";
 
   const announceUnavailable = () => {
@@ -25,8 +26,6 @@
     );
   };
 
-  const PLATFORM = { windows: "windowsExe", macos: "macosDmg", linux: "linuxAppImage" };
-
   const loadLatestRelease = async () => {
     if (!releaseData) return;
     const { latest } = await releaseData.loadReleaseCatalog();
@@ -34,11 +33,7 @@
       announceUnavailable();
       return;
     }
-    Object.entries(PLATFORM).forEach(([platform, kind]) => {
-      const asset = releaseData.findAsset(latest, kind);
-      if (!asset || !links[platform]) return;
-      links[platform].href = movil ? latest.url || releasesPageUrl : asset.url;
-    });
+    if (movil) Object.values(links).forEach((link) => link && (link.href = latest.url || releasesPageUrl));
     Object.entries({ linuxDeb: "[data-download-linux-deb]", linuxRpm: "[data-download-linux-rpm]", linuxTar: "[data-download-linux-tar]" }).forEach(([kind, selector]) => {
       const link = $(selector);
       const asset = releaseData.findAsset(latest, kind);

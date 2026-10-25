@@ -201,3 +201,18 @@ test("/descargar: los comandos GPG se copian tal cual y se cortan entre argument
   for (const palabra of pre.replace(/<span>[^<]*<\/span>/g, "").split(/\s+/)) assert.doesNotMatch(palabra, /-/, `${palabra} va en un <span>`);
   assert.match(read("descargar/descargar.css"), /\.codigo pre span\{display:inline-block;max-width:calc\(100% - 2ch\);/);
 });
+
+// Privacidad dice lo que hace la analítica de visitas (README, «Analítica»): Cloudflare Web Analytics, que el borde
+// inyecta, sin cookies y sin lo que va tras «?» o «#». El ejemplo de una descarga es una página que existe
+test("Privacidad declara la analítica de visitas y sólo lo que registra", () => {
+  const privacidad = read("privacidad.html");
+  const sitio = privacidad.match(/<section id="sitio-web"[\s\S]*?<\/section>/)[0];
+  assert.doesNotMatch(privacidad, /no incorpora analítica/, "ya no dice que no hay analítica");
+  assert.match(sitio, /cuenta sus visitas con Cloudflare Web Analytics, sin cookies y sin guardar nada en tu navegador/);
+  assert.match(sitio, /sin lo que va tras «\?» o «#»/);
+  assert.match(sitio, /No sirve para seguirte entre sitios ni para publicidad/);
+  for (const [, ruta] of sitio.matchAll(/\((?:por ejemplo, )?(\/descargar\/[a-z]+)\)/g)) {
+    assert.ok(read(`${ruta.slice(1)}/index.html`), `${ruta} existe`);
+  }
+  assert.match(privacidad, /<strong>Cloudflare<\/strong> aloja este sitio y el servidor de pteron en su red global, y cuenta las visitas de esta web/);
+});

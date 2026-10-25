@@ -79,6 +79,17 @@ try {
   await expect("404 propia", { path: "/no-existe", headers: navigate }, (res, body) => (res.status === 404 && body.includes("Página no encontrada") ? null : `status ${res.status}`));
   await expect("docs slug por navegación", { path: "/docs/instalar-macos", headers: navigate }, (res, body) => (res.status === 200 && body.includes("Documentación") ? null : `status ${res.status}`));
   await expect("docs slug con barra", { path: "/docs/instalar-macos/", headers: navigate }, redirectTo("/docs/instalar-macos"));
+  // La forma anterior pasa a la dirección de la página (la analítica descarta lo que va tras «?»)
+  await expect("docs ?pagina= anterior", { path: "/docs?pagina=instalar-macos", headers: navigate }, (res) => {
+    const location = res.headers.get("location") || "";
+    return res.status === 301 && location.endsWith("/docs/instalar-macos") ? null : `esperaba 301 a /docs/instalar-macos, llegó ${res.status} ${location}`;
+  });
+  await expect("docs portada", { path: "/docs", headers: navigate }, (res, body) => (res.status === 200 && body.includes("Documentación") ? null : `status ${res.status}`));
+  // Cada sistema tiene su página de descarga, que la analítica cuenta aparte
+  for (const [sistema, archivo] of [["macos", "macosDmg"], ["windows", "windowsExe"], ["linux", "linuxAppImage"]]) {
+    await expect(`descarga ${sistema}`, { path: `/descargar/${sistema}`, headers: navigate }, (res, body) => (res.status === 200 && body.includes(`data-descarga="${archivo}"`) ? null : `status ${res.status}`));
+  }
+  await expect("descarga desconocida", { path: "/descargar/android", headers: navigate }, status(404));
   await expect("docs archivo real", { path: "/docs/app.js" }, (res) => (res.status === 200 && /javascript/.test(res.headers.get("content-type") || "") ? null : `status ${res.status}`));
   await expect("docs datos", { path: "/docs/data/releases.json" }, status(200));
   await expect("cabeceras assets", { path: "/" }, (res) => (res.headers.get("x-frame-options") === "DENY" ? null : "falta X-Frame-Options"));
