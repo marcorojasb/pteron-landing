@@ -85,8 +85,9 @@ class Nodo {
   }
 }
 
-/** Una página de inicio con cuatro láminas, una mesa de ancho × alto y un reloj y unos cuadros que avanzan a mano. */
-function cargar({ ancho = 1440, alto = 900, estilos = null, quieto = false, scrollY = 0, hash = "", navegacion } = {}) {
+/** Una página de inicio con cuatro láminas, una mesa de ancho × alto y un reloj y unos cuadros que avanzan a mano. Con
+    `aviso`, también el aviso de datos de estudiantes, con `ui` (lo que pteron-ventana.js deja en window.pteronUI). */
+function cargar({ ancho = 1440, alto = 900, estilos = null, quieto = false, scrollY = 0, hash = "", navegacion, aviso = null, ui = null } = {}) {
   const vista = { ancho, alto, escena: alto * 4, scrollY, falla: false };
   let reloj = 0;
   let siguiente = 0;
@@ -148,7 +149,7 @@ function cargar({ ancho = 1440, alto = 900, estilos = null, quieto = false, scro
       return nodo;
     },
   });
-  const porSelector = { "[data-escena]": escena, "[data-laminas]": capa, ".esquina-descargar": corner };
+  const porSelector = { "[data-escena]": escena, "[data-laminas]": capa, ".esquina-descargar": corner, ...(aviso ? { "[data-aviso]": aviso } : {}) };
   documento.querySelector = (sel) => porSelector[sel] ?? null;
   documento.getElementById = (id) => (id === "indice" ? indice : null);
   const despachados = [];
@@ -186,6 +187,7 @@ function cargar({ ancho = 1440, alto = 900, estilos = null, quieto = false, scro
   ventana.window = ventana;
   // script.js deja aquí la promesa de las hojas de estilo cuando alguna no había llegado
   if (estilos) ventana.pteronEstilos = estilos;
+  if (ui) ventana.pteronUI = ui;
   const originales = laminas.map((node) => node.getAttribute("style"));
   vm.runInNewContext(source, ventana);
 
@@ -499,4 +501,41 @@ test("con movimiento reducido el recreo se abre de una vez: sin ordenar ni escon
   assert.equal(abiertos[0].laminas.length, 4, "las piezas llevan igual las láminas");
   assert.equal(ocultas(page), 0);
   assert.equal(page.cuadros.size, 0, "la escena sigue quieta");
+});
+
+/** Lo que pteron-ventana.js deja en window.pteronUI, cargado sin navegador: el reconocimiento, el aviso y su tarjeta. */
+function pteronUI() {
+  const window = { matchMedia: () => ({ matches: false, addEventListener() {} }) };
+  const document = { querySelector: () => null, querySelectorAll: () => [], addEventListener() {} };
+  vm.runInNewContext(readFileSync(new URL("../public/pteron-ventana.js", import.meta.url), "utf8"), { window, document, console });
+  return window.pteronUI;
+}
+
+test("el aviso de «En tu computador» arma la tarjeta de la app con lo detectado y la vista previa anonimizada", async () => {
+  // El texto de partida de index.html
+  const campo = new Nodo({ value: "Estudiante: Juan Pérez\nRUT: 12.345.678-5\nReconoce fracciones equivalentes con barras, pero aún no las simplifica." });
+  const tarjeta = new Nodo({ hidden: true, innerHTML: "" });
+  const limpio = new Nodo({ hidden: false, textContent: "pteron no encuentra un RUT ni un nombre en un campo como «Estudiante:»; lo enviaría tal cual." });
+  const voz = new Nodo({ textContent: "" });
+  const aviso = new Nodo();
+  aviso.hijos.set("[data-aviso-texto]", campo);
+  aviso.hijos.set("[data-aviso-tarjeta]", tarjeta);
+  aviso.hijos.set("[data-aviso-limpio]", limpio);
+  aviso.hijos.set("[data-aviso-voz]", voz);
+  cargar({ aviso, ui: pteronUI() });
+  assert.equal(tarjeta.hidden, false);
+  assert.equal(limpio.hidden, true);
+  assert.equal(voz.textContent, "Detecté RUT y nombres identificables en tu pedido. Antes de que salga a un proveedor en la nube, elige cómo protegerlo.");
+  assert.ok(tarjeta.innerHTML.includes('<p class="privacy-consent-hints">Detectado: RUT · nombres identificables</p>'));
+  // La vista previa es la de «Anonimizar y continuar»: cada dato con su seudónimo, como lo muestra la app
+  assert.ok(
+    tarjeta.innerHTML.includes("<pre>Estudiante: [Estudiante 1]\nRUT: [RUT 1]\nReconoce fracciones equivalentes con barras, pero aún no las simplifica.</pre>"),
+    "la tarjeta lleva la vista previa anonimizada",
+  );
+  // Sin un dato que identifique, la tarjeta se va y la nota dice que lo enviaría tal cual
+  campo.value = "Reconoce fracciones equivalentes con barras, pero aún no las simplifica.";
+  campo.dispatchEvent({ type: "input" });
+  await hasta(() => tarjeta.hidden);
+  assert.equal(limpio.hidden, false);
+  assert.equal(voz.textContent, limpio.textContent);
 });

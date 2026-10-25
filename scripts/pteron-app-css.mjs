@@ -4,14 +4,17 @@
  *   node scripts/pteron-app-css.mjs [ruta del repositorio de pteron]   (por omisión ../pteron o $PTERON_DIR)
  *
  * Lee las hojas que importa app-styles.ts en el mismo orden, toma las reglas de los componentes que la web
- * muestra (el índice, la franja de arriba, Home con la marca, el recuadro, la conversación, el plan, la hojita,
- * la hoja que se escribe y las tarjetas de material) y las acota a `.pt-app`, que hace de `body` de la app. La ventana mide 1440 × 880 como las capturas, así
- * que vw y vh se fijan a esa medida; quedan fuera el tema oscuro y las consultas de ancho. Las reglas globales
- * de elementos (styles.css y meridian-office.css) entran con el mismo prefijo, de modo que la cascada de la
- * app se conserva. Al final se agrega scripts/pteron-app/aislamiento.css (escrito a mano): devuelve dentro de
- * la ventana los valores que el sitio reinicia y dibuja los semáforos. La letra es Archivo, la de la web: la app
- * carga los mismos archivos (src/renderer/src/fonts), así que la sirve styles.css; la de lo técnico (--font-mono),
- * IBM Plex Mono, va al comienzo de esta hoja.
+ * muestra (el índice, la franja de arriba, la Home con su firma y lo último de la carpeta, el recuadro con la
+ * frase de lo leído, la conversación, el plan, la tarjeta de la corrida con la ronda y el brillo de su frase, la
+ * hoja que se escribe y las tarjetas de material) y las acota a `.pt-app`, que hace de `body` de la app. De
+ * movimiento.css entran su vocabulario, la llegada de las superficies (`@starting-style`), lo que se cierra y el
+ * brillo; los vuelos no, porque son view transitions de toda la ventana. La ventana mide 1440 × 880 como las
+ * capturas, así que vw y vh se fijan a esa medida; quedan fuera el tema oscuro y las consultas de ancho. Las
+ * reglas globales de elementos (styles.css y meridian-office.css) entran con el mismo prefijo, de modo que la
+ * cascada de la app se conserva. Al final se agrega scripts/pteron-app/aislamiento.css (escrito a mano): devuelve
+ * dentro de la ventana los valores que el sitio reinicia y dibuja los semáforos. La letra es Archivo, la de la
+ * web: la app carga los mismos archivos (src/renderer/src/fonts), así que la sirve styles.css; la de lo técnico
+ * (--font-mono), IBM Plex Mono, va al comienzo de esta hoja.
  */
 import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
@@ -23,7 +26,8 @@ const SRC = path.join(pteron, "src/renderer/src");
 const W = 1440;
 const H = 880;
 
-// Orden de app-styles.ts. De meridian-office.css sólo entran sus reglas globales de elementos.
+// Orden de app-styles.ts. De meridian-office.css sólo entran sus reglas globales de elementos; las hojas de los
+// editores, de Configuración y del margen no dibujan nada de la ventana. movimiento.css va al final, como en la app.
 const FILES = [
   "styles.css",
   "meridian/meridian-office.css",
@@ -31,6 +35,7 @@ const FILES = [
   "ui/controls.css",
   "components/composer/composer.css",
   "components/chat/chat.css",
+  "movimiento.css",
 ];
 const GLOBAL_ONLY = new Set(["meridian/meridian-office.css"]);
 const GLOBAL_TOO = new Set(["styles.css"]);
@@ -38,10 +43,11 @@ const GLOBAL_SEL = /^(\*|body|button|input|select|textarea|svg\.icon|button \.ch
 const KEEP = new RegExp(
   "\\.(" +
     [
-      "app-shell", "shell-", "footer-right", "footer-circle-btn", "home-", "type-tile", "filter-bar", "filter-field",
+      "app-shell", "shell-", "footer-right", "footer-circle-btn", "home-", "filter-bar", "filter-field", "fila-pedido",
       "composer", "context-select", "chat-", "message", "material-card", "quiet-action", "btn\\b", "btn-", "status-pill",
-      "plan-", "activity-mark", "run-details-toggle", "run-step", "pteron-icon", "pteron-marca", "workspace-surface",
-      "workspace-main", "md-body", "md-chat", "live-", "contextual-suggestion", "icon-action", "privacy-consent",
+      "plan-", "activity-mark", "run-card", "run-summary", "run-details", "run-step", "run-log", "pteron-icon",
+      "pteron-marca", "workspace-surface", "workspace-main", "md-body", "md-chat", "live-", "contextual-suggestion",
+      "icon-action", "privacy-consent", "sr-only",
     ].join("|") +
     ")",
 );
@@ -77,6 +83,8 @@ const units = (body) =>
 function scope(selector) {
   const sel = selector.trim();
   if (!sel || sel.includes("data-theme") || sel.includes("meridian") || sel.startsWith("html") || sel.startsWith("@")) return null;
+  // Los vuelos son view transitions de toda la ventana (:root y sus pseudoelementos): no caben en una pieza de la página
+  if (sel.includes("view-transition")) return null;
   if (sel.startsWith(":root")) return ".pt-app" + sel.slice(5);
   if (sel.startsWith("body")) return ".pt-app" + sel.slice(4);
   return ".pt-app " + sel;
@@ -112,6 +120,13 @@ function rules(css, out, { wantedRoot, globalOnly = false, globalToo = false }) 
         if (inner.length) out.push(`@media (prefers-reduced-motion:reduce){\n${inner.join("\n")}\n}`);
       }
       continue; // las de ancho no: la ventana es fija
+    }
+    // Cómo llega una superficie al montarse (movimiento.css): sube 6 px y se funde
+    if (prelude === "@starting-style") {
+      const inner = [];
+      rules(body, inner, { wantedRoot: false });
+      if (inner.length) out.push(`@starting-style{\n${inner.join("\n")}\n}`);
+      continue;
     }
     if (prelude.startsWith("@")) continue;
     const sels = splitSelectors(prelude);
@@ -157,7 +172,7 @@ try {
 }
 const header = `/* pteron · la interfaz de la app (${origin}), regla por regla, para dibujar su ventana y sus piezas en la web.
    Generado por scripts/pteron-app-css.mjs desde src/renderer/src (styles.css, meridian-office.css, pteron.css,
-   ui/controls.css, composer.css, chat.css) acotado a .pt-app; vw y vh fijados a una ventana de 1440 × 880.
+   ui/controls.css, composer.css, chat.css, movimiento.css) acotado a .pt-app; vw y vh fijados a una ventana de 1440 × 880.
    No editar a mano: se regenera con cada versión de pteron. Letras: Archivo, la de styles.css, e IBM Plex Mono (OFL 1.1, /assets/fonts). */
 `;
 // La app carga sólo IBM Plex Mono de @fontsource (app-styles.ts), para el texto técnico como la vista previa del aviso.

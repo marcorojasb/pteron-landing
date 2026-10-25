@@ -11,8 +11,8 @@ Worker, con `wrangler` desde la rama `main` de este repositorio (ver «Despliegu
   URLs limpias y sin barra final.
   - `index.html`: el inicio. Láminas antiguas que flotan; al bajar, cada una se
     da vuelta y aterriza sobre su figura en hojas armadas con el código de pteron.
-    Siguen «Cómo funciona» (la ventana de pteron, con las escenas del recorrido
-    de bienvenida de la app: pedir, decidir, crear y guardar), la hoja en sus dos versiones,
+    Siguen «Cómo funciona» (la ventana de pteron con el primer pedido del recorrido
+    de bienvenida de la app: pedir, decidir, crear y terminar), la hoja en sus dos versiones,
     el aviso de datos de estudiantes y la descarga.
   - `planes/index.html`: planes, precios y funcionamiento de las licencias. Cada plan de pago
     parte con «Disponible pronto»; `script.js` pregunta a `GET /api/plans` y muestra «Elegir» sólo
@@ -39,9 +39,10 @@ Worker, con `wrangler` desde la rama `main` de este repositorio (ver «Despliegu
     `admin/admin.js`, `descargar/download.js` y `docs/app.js` son los scripts
     de página.
   - `pteron-ventana.js`: las plantillas y la secuencia de la ventana de pteron
-    (el índice, la Home con la marca, el recuadro, el plan con su decisión, la
-    hoja que se escribe y las tarjetas del material), con el reconocimiento del
-    pedido y el aviso de datos de estudiantes de la app. `pteron-app.css` son las reglas de la app acotadas a `.pt-app` y
+    (el índice, la Home con la marca, el recuadro que lee el pedido en una frase,
+    el plan con su decisión, la hoja que se escribe con la tarjeta de la corrida y
+    la tarjeta del material), con el reconocimiento del pedido, el aviso de datos
+    de estudiantes y la ronda de la app. `pteron-app.css` son las reglas de la app acotadas a `.pt-app` y
     `pteron-hoja.css` las de las hojas de Write acotadas a `.pteron-document`;
     las dos se generan (ver Scripts) y no se editan a mano.
   - `release-data.js`: selección semver de la última versión completa a partir
@@ -60,8 +61,8 @@ Worker, con `wrangler` desde la rama `main` de este repositorio (ver «Despliegu
   - `assets/fonts/`: Archivo, Outfit, Playwrite CL e IBM Plex, con sus
     licencias; `assets/marca.svg`: el contorno de la marca «pteron» (Outfit con
     la esquina de la «t» doblada); `assets/marca/`: la marca en azul, blanco y
-    tinta y el icono, para descargar; `assets/pt-icons.svg`: los iconos Lucide
-    de la ventana, los de la app (lo escribe `scripts/pteron-iconos.mjs`); los iconos `*-v4` y `favicon-v5-*` (la «p» de la marca sobre el azul;
+    tinta y el icono, para descargar; `assets/pt-icons.svg`: los iconos
+    de la ventana, los de Lucide que usa la app y su familia propia para los materiales y los formatos (lo escribe `scripts/pteron-iconos.mjs`); los iconos `*-v4` y `favicon-v5-*` (la «p» de la marca sobre el azul;
     `favicon.ico` y `apple-touch-icon.png` van además en la raíz, sin versión) y
     `assets/og/`: una imagen para compartir por página.
 - `src/worker.js`: el Worker. Atiende `/api/*` y reescribe `/docs/:slug` a la
@@ -130,8 +131,9 @@ Worker, con `wrangler` desde la rama `main` de este repositorio (ver «Despliegu
     `PLAYWRIGHT`.
   - `pteron-ventana.mjs` escribe la ventana en reposo con las plantillas de
     `pteron-ventana.js`, `pteron-app-css.mjs` extrae y acota las reglas de la
-    app a `pteron-app.css` y `pteron-iconos.mjs` arma `assets/pt-icons.svg` con
-    los iconos de lucide-solid del `node_modules` de pteron.
+    app a `pteron-app.css` (con su vocabulario de movimiento) y `pteron-iconos.mjs`
+    arma `assets/pt-icons.svg` con los iconos de lucide-solid del `node_modules` de
+    pteron y la familia propia de la app (`src/renderer/src/ui/familia.ts`).
   - `capturas-pteron.mjs <ruta de pteron>` toma las capturas de la documentación
     con el arnés de pteron (sus escenas `PTERON_CAPTURE_SCENE` y la siembra de
     materiales de prueba) sobre una mesa con encargos y archivos de un profesor,

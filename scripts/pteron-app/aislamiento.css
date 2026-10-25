@@ -21,3 +21,6 @@
 .pt-traffic i{width:12px;height:12px;border-radius:50%;background:#ff5f57;box-shadow:inset 0 0 0 .5px rgb(0 0 0/.12)}
 .pt-traffic i:nth-child(2){background:#febc2e}
 .pt-traffic i:nth-child(3){background:#28c840}
+/* Los números de las etapas del plan: chat.css los pone con position:absolute sin un padre posicionado, y dentro del
+   hilo, que aquí se desplaza, se quedaban atrás. Van junto a su etapa, donde la app los dibuja sin desplazar. */
+.pt-app .chat-plan-card-stages li > div{position:relative}

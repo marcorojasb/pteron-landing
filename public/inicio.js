@@ -74,7 +74,7 @@
       if (sensitive) {
         const hints = ui.privacy.sensitiveHints(text);
         const message = ui.privacy.privacyMessage(hints);
-        const html = ui.privacyCard({ message, hints, preview: ui.privacy.redactSensitive(text) });
+        const html = ui.privacyCard({ message, hints, preview: ui.privacy.anonymizedPreview(text) });
         if (html !== last) card.innerHTML = last = html;
         voice.textContent = message;
       } else {
