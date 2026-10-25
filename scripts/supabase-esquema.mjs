@@ -44,6 +44,16 @@ from public.plan_catalog order by id`;
 const SQL_AJUSTES = "select key, value from public.app_settings";
 const SQL_SIN_RLS = "select tablename from pg_tables where schemaname = 'public' and not rowsecurity";
 const SQL_CUENTAS = `select (select count(*) from auth.users) as cuentas, (select count(*) from public.profiles) as perfiles`;
+// Lo que el navegador nunca debe poder tocar, aunque alguien agregue una política por error: las tablas sólo del
+// servidor (esquema.sql les quita los permisos de anon y authenticated) y las funciones SECURITY DEFINER, que saltan
+// RLS (esquema.sql les quita EXECUTE). Las dos consultas deben volver vacías.
+export const TABLAS_DEL_SERVIDOR = ["billing_customers", "app_settings", "ai_requests", "billing_events", "billing_checkout_intents"];
+const SQL_TABLAS_ABIERTAS = `select c.relname as tabla from pg_class c join pg_namespace n on n.oid = c.relnamespace
+where n.nspname = 'public' and c.relname in (${TABLAS_DEL_SERVIDOR.map((t) => `'${t}'`).join(", ")})
+  and (has_table_privilege('anon', c.oid, 'SELECT,INSERT,UPDATE,DELETE') or has_table_privilege('authenticated', c.oid, 'SELECT,INSERT,UPDATE,DELETE'))`;
+const SQL_FUNCIONES_ABIERTAS = `select p.oid::regprocedure::text as funcion from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+where n.nspname = 'public' and p.prosecdef
+  and (has_function_privilege('anon', p.oid, 'EXECUTE') or has_function_privilege('authenticated', p.oid, 'EXECUTE'))`;
 
 // Lo que debe quedar: id → [precio, días de prueba, unidades, unidades de prueba]. `for_sale` no se exige: el
 // esquema siembra false, pero al abrir la venta es true y --verificar sólo lo informa.
@@ -117,6 +127,14 @@ export async function verificar(contexto) {
   const sinRls = await consulta(contexto, SQL_SIN_RLS, { soloLectura: true });
   resumen.push(`tablas sin RLS ${sinRls.length}`);
   if (sinRls.length) diferencias.push(`tablas sin RLS: ${sinRls.map((t) => t.tablename).join(", ")}`);
+
+  const tablasAbiertas = await consulta(contexto, SQL_TABLAS_ABIERTAS, { soloLectura: true });
+  resumen.push(`tablas del servidor abiertas ${tablasAbiertas.length}`);
+  if (tablasAbiertas.length) diferencias.push(`anon o authenticated tienen permisos en tablas del servidor: ${tablasAbiertas.map((t) => t.tabla).join(", ")}`);
+
+  const funcionesAbiertas = await consulta(contexto, SQL_FUNCIONES_ABIERTAS, { soloLectura: true });
+  resumen.push(`funciones SECURITY DEFINER abiertas ${funcionesAbiertas.length}`);
+  if (funcionesAbiertas.length) diferencias.push(`anon o authenticated pueden ejecutar: ${funcionesAbiertas.map((f) => f.funcion).join(", ")}`);
 
   const [conteo] = await consulta(contexto, SQL_CUENTAS, { soloLectura: true });
   const cuentas = num(conteo?.cuentas);

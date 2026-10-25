@@ -80,6 +80,22 @@ Los pasos 1 a 3 tienen dos variantes: con script (1b) o a mano.
    select key, value from public.app_settings;   -- included_ai_paused = false
    select tablename from pg_tables where schemaname = 'public' and not rowsecurity;   -- 0 filas
    select (select count(*) from auth.users) as cuentas, (select count(*) from public.profiles) as perfiles;   -- iguales
+   -- 0 filas: ninguna tabla del servidor abierta al navegador
+   select c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace
+   where n.nspname = 'public' and c.relname in ('billing_customers', 'app_settings', 'ai_requests', 'billing_events', 'billing_checkout_intents')
+     and (has_table_privilege('anon', c.oid, 'SELECT,INSERT,UPDATE,DELETE') or has_table_privilege('authenticated', c.oid, 'SELECT,INSERT,UPDATE,DELETE'));
+   -- 0 filas: ninguna función SECURITY DEFINER que el navegador pueda ejecutar
+   select p.oid::regprocedure from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+   where n.nspname = 'public' and p.prosecdef
+     and (has_function_privilege('anon', p.oid, 'EXECUTE') or has_function_privilege('authenticated', p.oid, 'EXECUTE'));
+   ```
+
+   Un proyecto con el esquema anterior al 25 de octubre de 2026 deja a `billing_events` y
+   `billing_checkout_intents` con los permisos por defecto de anon y authenticated (RLS sin políticas igual les
+   niega todo). Sin volver a correr el esquema, lo cierra esto, que no toca datos:
+
+   ```sql
+   revoke all on table public.billing_events, public.billing_checkout_intents from anon, authenticated;
    ```
 
    Si el disparador de `auth.users` hubo que rehacerlo, debe correr el archivo quien sea dueño de esa

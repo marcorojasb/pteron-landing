@@ -1,7 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { jsoncAObjeto, leerWrangler, leerArgumentos, leerOpciones, refDeSupabase } from "../scripts/operador.mjs";
-import { main, suscripcionesVivas, verificar } from "../scripts/supabase-esquema.mjs";
+import { readFileSync } from "node:fs";
+import { TABLAS_DEL_SERVIDOR, main, suscripcionesVivas, verificar } from "../scripts/supabase-esquema.mjs";
 
 const TOKEN = "sbp_token_de_prueba_0123456789";
 const REF = "abcdefghijklmnopqrst";
@@ -19,7 +20,7 @@ const PLANES_OK = [
  * `estado` permite cambiar lo que devuelve cada consulta.
  */
 function simular(estado = {}) {
-  const e = { existeTabla: true, datos: {}, vivas: [], planes: PLANES_OK, ajustes: [{ key: "included_ai_paused", value: false }], sinRls: [], cuentas: { cuentas: 5, perfiles: 5 }, ...estado };
+  const e = { existeTabla: true, datos: {}, vivas: [], planes: PLANES_OK, ajustes: [{ key: "included_ai_paused", value: false }], sinRls: [], tablasAbiertas: [], funcionesAbiertas: [], cuentas: { cuentas: 5, perfiles: 5 }, ...estado };
   const llamadas = [];
   const fetch = async (url, init) => {
     const cuerpo = JSON.parse(init.body);
@@ -34,6 +35,8 @@ function simular(estado = {}) {
     else if (q.includes("from public.plan_catalog")) filas = e.planes;
     else if (q.includes("from public.app_settings")) filas = e.ajustes;
     else if (q.includes("pg_tables")) filas = e.sinRls;
+    else if (q.includes("has_table_privilege")) filas = e.tablasAbiertas;
+    else if (q.includes("prosecdef")) filas = e.funcionesAbiertas;
     else if (q.includes("auth.users")) filas = [e.cuentas];
     else filas = [];
     return new Response(JSON.stringify(filas), { status: 201, headers: { "content-type": "application/json" } });
@@ -70,7 +73,8 @@ test("--aplicar ejecuta supabase/esquema.sql entero en una sola llamada y luego 
   assert.equal(llamadas[0].auth, `Bearer ${TOKEN}`);
   assert.match(llamadas[0].cuerpo.query, /create table|create or replace function/i);
   const despues = r.llamadas.slice(r.llamadas.indexOf(llamadas[0]) + 1);
-  assert.equal(despues.length, 4, "las comprobaciones corren después del esquema");
+  // Planes, ajustes, RLS, tablas del servidor, funciones SECURITY DEFINER y cuentas
+  assert.equal(despues.length, 6, "las comprobaciones corren después del esquema");
   assert.match(r.salida, /Esquema ejecutado/);
   assert.match(r.salida, /basic 2990\/7\/6000000\/1500000 \(for_sale false\)/);
 });
@@ -133,6 +137,32 @@ test("la verificación sale con código 1 y dice qué difiere", async () => {
   assert.match(r.salida, /DIFIERE: tablas sin RLS: x/);
   assert.match(r.salida, /DIFIERE: perfiles \(5\) no igualan a las cuentas \(6\)/);
   assert.equal(esquemaEjecutado(r.llamadas).length, 0);
+});
+
+test("la verificación falla si el navegador puede tocar una tabla del servidor o ejecutar una función SECURITY DEFINER", async () => {
+  const r = await correr(["--verificar"], {
+    tablasAbiertas: [{ tabla: "billing_events" }, { tabla: "billing_checkout_intents" }],
+    funcionesAbiertas: [{ funcion: "admin_usage_by_account(timestamp with time zone,timestamp with time zone)" }],
+  });
+  assert.equal(r.codigo, 1);
+  assert.match(r.salida, /DIFIERE: anon o authenticated tienen permisos en tablas del servidor: billing_events, billing_checkout_intents/);
+  assert.match(r.salida, /DIFIERE: anon o authenticated pueden ejecutar: admin_usage_by_account\(/);
+  // Las consultas sólo leen: van con read_only, como el resto de la verificación
+  const permisos = r.llamadas.filter((l) => /has_table_privilege|prosecdef/.test(l.cuerpo.query));
+  assert.equal(permisos.length, 2);
+  assert.ok(permisos.every((l) => l.cuerpo.read_only === true));
+  for (const tabla of TABLAS_DEL_SERVIDOR) assert.ok(permisos[0].cuerpo.query.includes(`'${tabla}'`), tabla);
+  // Sin nada abierto, todo calza
+  const bien = await correr(["--verificar"], {});
+  assert.equal(bien.codigo, 0);
+  assert.match(bien.salida, /tablas del servidor abiertas 0 · funciones SECURITY DEFINER abiertas 0/);
+});
+
+test("esquema.sql le quita a anon y authenticated cada tabla del servidor que la verificación revisa", () => {
+  const sql = readFileSync(new URL("../supabase/esquema.sql", import.meta.url), "utf8");
+  const revoke = /revoke all on table ([^;]+?)\s+from anon, authenticated;/.exec(sql)?.[1] ?? "";
+  const tablas = revoke.split(",").map((t) => t.trim().replace(/^public\./, ""));
+  assert.deepEqual([...tablas].sort(), [...TABLAS_DEL_SERVIDOR].sort());
 });
 
 test("la venta abierta (for_sale true) no hace fallar la verificación: se informa", async () => {

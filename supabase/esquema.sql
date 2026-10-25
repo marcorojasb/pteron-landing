@@ -560,7 +560,8 @@ using ((select auth.uid()) = user_id);
 -- además se quitan los permisos que Supabase da por defecto a anon y
 -- authenticated en `public`, para que una política agregada por error tampoco
 -- las abra.
-revoke all on table public.billing_customers, public.app_settings, public.ai_requests
+revoke all on table public.billing_customers, public.app_settings, public.ai_requests,
+  public.billing_events, public.billing_checkout_intents
   from anon, authenticated;
 
 -- El Worker entra como service_role. Su permiso se da aquí y no depende de los
