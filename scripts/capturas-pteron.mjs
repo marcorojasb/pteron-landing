@@ -94,7 +94,7 @@ const RESPUESTA =
 // Abiertos en toda captura; cada escena suma el encargo del arnés que muestra
 const SIEMPRE = ["Primera conversación", "Conversación · consulta pedagógica", "Plan integrado · varios materiales"];
 
-function prepararMesa(archivo, { abiertos: propios = [], titulos = {}, materialesDelPrincipal } = {}) {
+function prepararMesa(archivo, { abiertos: propios = [], titulos = {}, encargos = {}, materialesDelPrincipal } = {}) {
   const abiertos = [...SIEMPRE, ...propios];
   const db = new DatabaseSync(archivo);
   const ahora = Date.now();
@@ -102,7 +102,7 @@ function prepararMesa(archivo, { abiertos: propios = [], titulos = {}, materiale
   const sesiones = db.prepare("SELECT id, title FROM sessions").all();
   const principal = sesiones.find((s) => s.title === "Primera conversación");
   for (const sesion of sesiones) {
-    const encargo = ENCARGOS[sesion.title];
+    const encargo = encargos[sesion.title] ?? ENCARGOS[sesion.title];
     if (!encargo) continue;
     const titulo = titulos[sesion.title] ?? encargo[0];
     const abierto = abiertos.includes(sesion.title);
@@ -274,16 +274,16 @@ const CAPTURAS = [
   { nombre: "inicio", escena: "home" },
   { nombre: "inicio-pedido", escena: "home-reconoce" },
   {
+    // Un pedido de planificación escrito en el recuadro: pteron lo lee en una frase antes de usarlo
     nombre: "inicio-planificar",
     escena: "home",
     antes: async (page) => {
-      await page.locator(".type-tile", { hasText: "Planificar" }).first().click();
-      await espera(400);
       await page.locator(".home-surface textarea").first().click();
-      await page.keyboard.type("el ciclo del agua, cuatro clases para 4° básico", { delay: 8 });
+      await page.keyboard.type("Una planificación de cuatro clases de 45 minutos sobre el ciclo del agua para 4° básico, Ciencias Naturales", { delay: 8 });
       await espera(1200);
     },
   },
+  { nombre: "inicio-oa", escena: "home-rumbo" },
   { nombre: "conversacion", escena: "conversacion", titulos: { "Conversación · consulta pedagógica": "Conversación · consulta pedagógica" } },
   { nombre: "memoria", escena: "memory" },
   { nombre: "biblioteca", escena: "library", pausa: 3000 },
@@ -294,10 +294,32 @@ const CAPTURAS = [
     // El hilo se ancla al final; arriba queda a la vista la frase con que pteron presenta el plan
     antes: (page) => page.evaluate(() => document.querySelector(".chat-history")?.scrollTo({ top: 0 })),
   },
-  { nombre: "plan-listo", escena: "plan-ready", abiertos: ["Plan integrado · listo"] },
+  {
+    // «Cómo lo abordaré» va plegado: en pteron main, los números de sus etapas se dibujan fuera de lugar
+    nombre: "plan-listo",
+    escena: "plan-ready",
+    abiertos: ["Plan integrado · listo"],
+    antes: async (page) => {
+      await page.locator(".chat-plan-card-disclosure[open] > summary", { hasText: "Cómo lo abordaré" }).first().click();
+      await espera(400);
+    },
+  },
   { nombre: "encargo", escena: "chat-files" },
+  {
+    // La respuesta en curso: la hoja que se escribe y, al pie, la tarjeta de la corrida con la ronda y sus pasos. La
+    // escena abre el encargo que encuentra abierto; aquí es el de la guía, y el registro técnico («Detalles») va plegado
+    nombre: "corrida",
+    escena: "preparing",
+    encargos: { "Conversación · consulta pedagógica": ["Guía breve de fracciones", "6° básico", "Matemática"] },
+    pausa: 2500,
+    antes: async (page) => {
+      const detalles = page.locator('.chat-live .run-details-toggle[aria-expanded="true"]');
+      if (await detalles.count()) await detalles.first().click();
+      await espera(500);
+    },
+  },
   { nombre: "write-guia", escena: "artifact", pausa: 3500 },
-  { nombre: "write-ficha", escena: "writer-ficha", pausa: 3500 },
+  { nombre: "write-ajustar", escena: "writer-margen", pausa: 3500 },
   { nombre: "write-apaisada", escena: "artifact", artefacto: "capture-seed-guide-landscape", materialesDelPrincipal: ["capture-seed-guide-ready", "capture-seed-guide-landscape", "capture-seed-presentation"], pausa: 3500 },
   { nombre: "write-respuesta", escena: "writer-respuestas", pausa: 3500 },
   { nombre: "pauta", escena: "writer-teacher-key", pausa: 3500 },
@@ -313,9 +335,15 @@ const CAPTURAS = [
   { nombre: "cambio-aplicado", escena: "cambio-aplicado", materialesDelPrincipal: ["capture-seed-guide", "capture-seed-presentation"], pausa: 3500 },
   { nombre: "referencia", escena: "pdf", pausa: 4500 },
   { nombre: "present", escena: "presentation", pausa: 3500 },
-  { nombre: "datos", escena: "privacy", abiertos: ["Plan integrado · guía creada"], titulos: { "Plan integrado · guía creada": "Observaciones del curso" } },
+  { nombre: "datos", escena: "privacy", encargos: { "Conversación · consulta pedagógica": ["Observaciones del curso", "6° básico", "Matemática"] } },
   { nombre: "modelo-de-ia", escena: "settings-model" },
-  { nombre: "error-exportar", escena: "export-error", pausa: 3000 },
+  {
+    // Como la corrida, la escena usa el encargo abierto: el de la guía que alcanzó a escribirse
+    nombre: "error-proveedor",
+    escena: "error-proveedor",
+    encargos: { "Conversación · consulta pedagógica": ["Guía breve de fracciones", "6° básico", "Matemática"] },
+    pausa: 3000,
+  },
   {
     // La marca se construye en unos 7 s y queda quieta; después, dos escenas del recorrido, cada una al final de su réplica
     nombre: "recorrido",

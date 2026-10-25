@@ -7,7 +7,7 @@
 
 El núcleo local es gratis para siempre y no depende de un plan de pago. Los
 planes sólo agregan IA incluida. La primera apertura es un recorrido breve
-(Pedir, Decidir, Crear y Guardar) que no configura nada; la IA se elige aparte,
+(Pedir, Decidir, Crear, Guardar y Empezar) que no configura nada; la IA se elige aparte,
 en la guía de IA o en Configuración › Modelo de IA.
 
 ## Empezar
@@ -23,11 +23,13 @@ en la guía de IA o en Configuración › Modelo de IA.
 ## Conocer la aplicación
 
 El índice, a la izquierda, reúne Nuevo encargo, la Biblioteca (materiales y
-archivos), Buscar y los encargos agrupados por curso y asignatura; al pie,
-Configuración (Perfil, Modelo de IA, Memoria y contexto, Complementos, Labs y
-Sobre pteron), el modelo que responde y la carpeta. Al abrir un material, la
-conversación del encargo queda en un margen a su lado. El Planificador (clases,
-unidades y calendario) está pausado y se activa en Configuración › Labs.
+archivos), Buscar y los encargos agrupados por curso y asignatura; al pie, la
+carpeta, la IA que responde y Configuración (Perfil, Modelo de IA, Memoria y
+contexto, Complementos, Labs y Sobre pteron). Al centro, el recuadro lee el
+pedido en una frase que se acepta con Tab, y debajo está lo último de la
+carpeta. Al abrir un material, la conversación del encargo queda en un margen a
+su lado, con Ajustar. El Planificador (el horario semanal con las unidades de
+cada curso) viene apagado y se activa en Configuración › Labs.
 
 - [La pantalla de inicio](https://pteron.patagua.dev/docs?pagina=pantalla-inicio)
 - [Encargos y memoria](https://pteron.patagua.dev/docs?pagina=sesiones-memoria)
@@ -37,9 +39,11 @@ unidades y calendario) está pausado y se activa en Configuración › Labs.
 
 ## Trabajar con pteron
 
-La pantalla de inicio ofrece cuatro rumbos: Planificar, Crear, Evaluar y
-Adaptar. Un rumbo orienta el pedido de ese turno; no fija un modo ni obliga a
-un curso, un plan o un tipo de material.
+El pedido se escribe con palabras propias; nada de la pantalla de inicio fija un
+modo ni obliga a un curso, un plan o un tipo de material. Mientras pteron
+trabaja, la tarjeta de la corrida dice lo que pasa ahora, con el reloj del turno
+y cada paso con lo que tardó; si la respuesta se corta, lo escrito queda a la
+vista, con Reintentar y Cambiar de modelo.
 
 - [Planificar](https://pteron.patagua.dev/docs?pagina=planificar)
 - [Crear](https://pteron.patagua.dev/docs?pagina=crear)
