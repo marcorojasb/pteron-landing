@@ -242,11 +242,26 @@ test("un enlace con ancla lleva a esa sección y deja ahí el foco; la direcció
 });
 
 test("si content.js o app.js no cargan, la página suelta el alto que reservaba y el colofón vuelve a verse", () => {
-  // Cada script marca docs-sin-app en <html> si no carga, y app.js también si llega sin el contenido
+  // Un script en línea de la cabeza escucha los errores de carga (sin onerror en línea: la CSP no los deja) y marca
+  // docs-sin-app si el que falla es content.js o app.js; app.js también la marca si llega sin el contenido
   for (const archivo of ["content.js", "app.js"]) {
-    const etiqueta = new RegExp(`<script src="/docs/${archivo.replace(".", "\\.")}\\?v=[^"]+" defer onerror="document\\.documentElement\\.classList\\.add\\('docs-sin-app'\\)"></script>`);
-    assert.match(html, etiqueta, `${archivo} avisa si no carga`);
+    assert.match(html, new RegExp(`<script src="/docs/${archivo.replace(".", "\\.")}\\?v=[^"]+" defer></script>`), `${archivo} sin onerror en línea`);
   }
+  const oyente = [...html.matchAll(/<script>([^<]*addEventListener\("error"[^<]*)<\/script>/g)].map((m) => m[1]);
+  assert.equal(oyente.length, 1, "la cabeza trae el script que escucha los errores");
+  const marcadas = [];
+  let alFallar = null;
+  vm.runInNewContext(oyente[0], {
+    addEventListener: (tipo, fn, captura) => tipo === "error" && captura === true && (alFallar = fn),
+    document: { documentElement: { classList: { add: (clase) => marcadas.push(clase) } } },
+  });
+  const falla = (src, tagName = "SCRIPT") => alFallar({ target: { tagName, getAttribute: (nombre) => (nombre === "src" ? src : null) } });
+  falla("/release-data.js?v=1");
+  falla("/docs/app.js?v=1", "IMG");
+  assert.deepEqual(marcadas, [], "otro script o una imagen que falla no la marca");
+  falla("/docs/content.js?v=2026-10-25.1");
+  falla("/docs/app.js?v=2026-10-25.1");
+  assert.deepEqual(marcadas, ["docs-sin-app", "docs-sin-app"]);
   const clases = new Set();
   vm.runInNewContext(app, { window: {}, document: { documentElement: { classList: { add: (clase) => clases.add(clase) } } } });
   assert.ok(clases.has("docs-sin-app"), "app.js sin PTERON_DOCS marca la página");

@@ -26,13 +26,15 @@
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v4.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <script>document.documentElement.classList.replace("no-js", "js");</script>
+  <!-- Si content.js o app.js no cargan, docs-sin-app suelta el alto que docs/styles.css les reserva (sin onerror en línea: la CSP no los deja) -->
+  <script>addEventListener("error",function(e){var s=e.target;if(s&&s.tagName==="SCRIPT"&&/^\/docs\/(content|app)\.js/.test(s.getAttribute("src")||""))document.documentElement.classList.add("docs-sin-app")},true);</script>
   <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin-wdth-normal.woff2?v=2026-10-25.1" crossorigin>
   <link rel="stylesheet" href="/styles.css?v=2026-10-25.1">
   <link rel="stylesheet" href="/docs/styles.css?v=2026-10-25.1">
   <script src="/release-data.js?v=2026-10-25.1" defer></script>
   <script src="/script.js?v=2026-10-25.1" defer></script>
-  <script src="/docs/content.js?v=2026-10-25.1" defer onerror="document.documentElement.classList.add('docs-sin-app')"></script>
-  <script src="/docs/app.js?v=2026-10-25.1" defer onerror="document.documentElement.classList.add('docs-sin-app')"></script>
+  <script src="/docs/content.js?v=2026-10-25.1" defer></script>
+  <script src="/docs/app.js?v=2026-10-25.1" defer></script>
 </head>
 <body class="docs-pagina">
   <a class="saltar" href="#articulo">Saltar al artículo</a>
