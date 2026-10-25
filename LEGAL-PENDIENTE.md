@@ -1,7 +1,7 @@
 # Pendientes legales de la venta de Basic (octubre de 2026)
 
-Estado: abierto. Las páginas públicas (`/planes`, `/cuenta`, `terminos.html` y `privacidad.html`, versión
-2026-10-13) dicen sólo hechos del producto: precio con IVA, prueba, renovación, cancelación, cobros pendientes,
+Estado: abierto. Las páginas públicas (`/planes`, `/cuenta`, `terminos.html`, versión 2026-10-13, y
+`privacidad.html`, versión 2026-10-25) dicen sólo hechos del producto: precio con IVA, prueba, renovación, cancelación, cobros pendientes,
 cuota, uso aceptable, adónde viaja lo que se pide a la IA incluida y quiénes tratan los datos. Lo que necesita una
 decisión de Marco o la revisión de un abogado o de un contador no se escribió en ellas: queda aquí, con borradores y
 opciones. Las llaves `{…}` son datos que faltan.

@@ -161,5 +161,18 @@ test("/cuenta parte con la venta cerrada y pide aceptar los Términos vigentes a
   assert.match(resumen, /<a href="\/privacidad"/);
   // La versión que muestra la casilla es la que publica la página de los Términos
   assert.match(read("terminos.html"), /<p class="legal-fecha">Versión 2026-10-13<\/p>/);
-  assert.match(read("privacidad.html"), /<p class="legal-fecha">Versión 2026-10-13<\/p>/);
+  // Privacidad lleva su propia versión (la casilla no la cita): la de arriba y la del final son la misma
+  const privacidad = read("privacidad.html");
+  const version = /<p class="legal-fecha">Versión (\d{4}-\d{2}-\d{2})<\/p>/.exec(privacidad)?.[1];
+  assert.ok(version, "Privacidad muestra su versión");
+  assert.match(privacidad, new RegExp(`<p>Esta es la versión ${version} de la política\\.</p>`));
+});
+
+test("lo que se dice de Anthropic calza con su política: borra lo de la API dentro de 30 días", () => {
+  // Anthropic borra entradas y salidas de la API dentro de 30 días; «por defecto, no lo guarda» no era cierto
+  for (const ruta of ["privacidad.html", "planes/index.html", "docs/content.js"]) {
+    const texto = read(ruta);
+    assert.doesNotMatch(texto, /por defecto, no lo (guarda|conserva)/, ruta);
+    assert.match(texto, /Anthropic no entrena sus modelos con ese contenido y lo borra (de sus sistemas )?dentro de 30 días/, ruta);
+  }
 });
