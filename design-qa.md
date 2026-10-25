@@ -31,6 +31,10 @@
   tenga su crédito y que cada pie lleve ahí; la de precios exige además que ningún precio nombrado sea otro que los
   del catálogo. Cinco mutantes de esas dos pruebas, todos detectados.
 - Revisión del sitio 2026-10-25.6. 503 pruebas, humo y `sitio.mjs --revisar` en verde.
+- Desplegado (main d853a30, versión 7782a551). La revisión en producción encontró que las leyendas ocultas de los
+  selectores (inicio y Marca) medían todo el ancho: `.segmento legend{width:100%}` le ganaba a `.sr-only`, y la página
+  se desbordaba 15 px a 390 y 50 px en Marca a 1280. `.sr-only` ahora lleva `!important` en cada propiedad; ningún
+  texto oculto del sitio mide más de 1 px ni desborda, en las doce rutas a 1280 y 390 con el índice abierto.
 
 ## Entrar con Google y Apple, listo y oculto — 2026-10-25
 
