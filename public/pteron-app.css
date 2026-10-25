@@ -2,7 +2,7 @@
    Generado por scripts/pteron-app-css.mjs desde src/renderer/src (styles.css, meridian-office.css, pteron.css,
    ui/controls.css, composer.css, chat.css) acotado a .pt-app; vw y vh fijados a una ventana de 1440 × 880.
    No editar a mano: se regenera con cada versión de pteron. Letras: Archivo, la de styles.css, e IBM Plex Mono (OFL 1.1, /assets/fonts). */
-@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/ibm-plex-mono-latin-400-normal.woff2?v=2026-10-25.2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/ibm-plex-mono-latin-400-normal.woff2?v=2026-10-25.3) format("woff2")}
 .pt-app *{box-sizing: border-box;}
 .pt-app,.pt-app #root{height: 100%;}
 .pt-app{margin: 0;min-width: 900px;overflow: hidden;background: var(--bg-canvas);font-size: 16px;line-height: 1.625;}
