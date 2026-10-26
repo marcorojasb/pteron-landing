@@ -17,8 +17,8 @@ Worker, con `wrangler` desde la rama `main` de este repositorio (ver «Despliegu
   - `planes/index.html`: planes, precios y funcionamiento de las licencias. Cada plan de pago
     parte con «Disponible pronto»; `script.js` pregunta a `GET /api/plans` y muestra «Elegir» sólo
     para el que está a la venta, como `/cuenta`.
-  - `cuenta/`: cuenta web, acceso por enlace mágico o con Google (el botón de Apple espera oculto a su
-    Services ID: `ENTRAR-CON-GOOGLE-Y-APPLE.md`), checkout y activación.
+  - `cuenta/`: cuenta web, acceso por enlace mágico o con Google y Apple
+    (`ENTRAR-CON-GOOGLE-Y-APPLE.md`), checkout y activación.
   - `descargar/`: descargas por plataforma, firmas y clave pública.
   - `docs/`: documentación en una sola página; `docs/data/releases.json` es el
     catálogo de versiones que mantiene el workflow.

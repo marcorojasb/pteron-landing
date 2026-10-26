@@ -180,7 +180,7 @@ test("cada proveedor con que se entra a /cuenta está declarado en Privacidad; e
   const privacidad = read("privacidad.html");
   const seccion = (id) => new RegExp(`<section id="${id}"[\\s\\S]*?</section>`).exec(privacidad)[0];
   const botones = [...read("cuenta/index.html").matchAll(/data-oauth-provider="(\w+)"( hidden)?>/g)].map((m) => [m[1], Boolean(m[2])]);
-  assert.deepEqual(botones, [["google", false], ["apple", true]]);
+  assert.deepEqual(botones, [["google", false], ["apple", false]]);
   for (const [proveedor, oculto] of botones) {
     const nombre = { google: "Google", apple: "Apple" }[proveedor];
     const declarado = seccion("cuenta").includes(`<p>Si entras con ${nombre},`) && seccion("proveedores").includes(`<li><strong>${nombre}</strong>, sólo si eliges entrar con ${nombre},`);

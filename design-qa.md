@@ -1,5 +1,20 @@
 # Design QA
 
+## Entrar con Apple, a la vista — 2026-10-26
+
+- Apple tiene el Services ID `dev.patagua.pteron`, con el App ID de la app pteron (`cl.pteron.app`) como primary App
+  ID. Su pantalla dice «Usa tu cuenta de Apple para iniciar sesión en pteron».
+- Marco entró en producción con su Apple ID, con el botón todavía oculto, y aprobó el texto de Privacidad.
+  «Continuar con Apple» queda a la vista bajo «Continuar con Google».
+- Privacidad sigue en la versión 2026-10-26, del mismo día, ahora también con Apple:
+  - en «Cuenta y planes»: Apple entrega el correo, o una dirección de reenvío si se oculta;
+  - en «Proveedores»: Apple.
+- La guía `ENTRAR-CON-GOOGLE-Y-APPLE.md` queda con lo configurado en cada proveedor y cómo mostrar u ocultar uno.
+- Verificado con wrangler dev en Chromium, a 1280 px y en iPhone 13:
+  - se ven los dos botones, la «o» y el correo;
+  - sin desborde, errores, violaciones de CSP ni saltos.
+- Revisión del sitio 2026-10-26.3. 516 pruebas, humo y `sitio.mjs --revisar` en verde.
+
 ## Entrar con Google, a la vista — 2026-10-26
 
 - Marco probó en producción el viaje real con su cuenta de Google, con el botón todavía oculto, y entró a su cuenta.
