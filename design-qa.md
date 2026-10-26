@@ -1,5 +1,20 @@
 # Design QA
 
+## La portada no salta al ponerle el sistema al botón — 2026-10-26
+
+- En producción, con el agente de un computador (Mac o Windows) y movimiento reducido, la portada medía CLS 0,093 a
+  390 px y 0,022 a 1000 px. script.js cambia «Descargar» por «Descargar para macOS» después de pintar: el botón,
+  100 px más ancho, bajaba «Cómo funciona» a otra línea, y la portada, alineada abajo, subía el titular 56 px (a
+  1000 px, con la portada en dos columnas, el párrafo 47 px). Los barridos anteriores no lo veían porque usaban el
+  agente de Chromium sin cabeza, que no recibe ese cambio. En teléfonos (iPhone 13, Pixel 7) era 0.
+- Con cursor (`hover: hover` y `pointer: fine`), «Cómo funciona» va siempre bajo el botón: el ancho del texto ya no
+  decide las líneas. En un teléfono sigue al lado, porque ahí el botón no cambia.
+- Verificado en Chromium, contra wrangler dev, con agentes de macOS, Windows y Linux, con y sin movimiento reducido,
+  de 390 a 1440 px: CLS 0,000 en todos los casos; el titular, el párrafo y las acciones quedan en el mismo lugar con
+  y sin JavaScript. Desaparecieron también los saltos chicos (0,013 a 0,031) de «Cómo funciona» corriéndose a la
+  derecha. Las demás páginas, en iPhone 13, Pixel 7 y Mac a 1000 y 1280 px, miden de 0,000 a 0,005.
+- Revisión del sitio 2026-10-26.1. 515 pruebas, humo y `sitio.mjs --revisar` en verde.
+
 ## Llenar la web con diseño, no con etiquetas — 2026-10-25
 
 - Tras quitar las etiquetas y descripciones secundarias, varias páginas se veían vacías. Comparadas con las de antes a

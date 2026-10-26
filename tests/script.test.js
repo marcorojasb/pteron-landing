@@ -241,3 +241,10 @@ test("el botón del visitante lleva a la página de descarga de su sistema; en u
   assert.equal(boton.href, "/descargar", "en un teléfono no se elige sistema");
   assert.equal(boton.textContent, "Descargar");
 });
+
+// El texto cambia después de pintar: si «Cómo funciona» pudiera seguir al botón en la misma línea, el botón más ancho
+// lo bajaría a otra (a 390 px o en la columna de 1000 px) y la portada, alineada abajo, subiría el titular de golpe
+test("con cursor, «Cómo funciona» va bajo el botón de la portada: el sistema en el texto no corre el titular", () => {
+  const css = readFileSync(new URL("../public/inicio.css", import.meta.url), "utf8");
+  assert.match(css, /@media \(hover:hover\) and \(pointer:fine\)\{\s*\.portada-acciones\{flex-direction:column;align-items:flex-start\}\s*\}/);
+});
