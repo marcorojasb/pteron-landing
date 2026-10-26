@@ -1,27 +1,30 @@
 # Entrar con Google y Apple
 
-Qué falta para que `/cuenta` ofrezca «Continuar con Google» y «Continuar con Apple» junto al enlace por correo, en
-orden. El código está completo y probado. Los botones están en `public/cuenta/index.html`, ocultos (`hidden` en
-`data-oauth`), así que publicarlo no cambia nada a la vista. Se reutiliza lo que ya funciona en hola.patagua.dev:
+Cómo `/cuenta` ofrece «Continuar con Google» y «Continuar con Apple» junto al enlace por correo, y qué falta, en
+orden. El código está completo y probado. Los botones están en `public/cuenta/index.html`; el de Apple sigue oculto
+(`hidden`) hasta que exista su Services ID. Se reutiliza lo que ya funciona en hola.patagua.dev:
 
 - el cliente OAuth de Google;
 - la cuenta pagada de Apple Developer y su equipo.
 
 No hay secretos nuevos.
 
-## Estado al 25 de octubre de 2026
+## Estado al 26 de octubre de 2026
 
-- Hecho:
+- Google está activo en producción:
+  - el cliente de Google tiene la URI de pteron (paso 1);
+  - su marca se llama Patagua, para pteron y hola, y está verificada: Google muestra «Ir a Patagua»;
+  - Supabase lo tiene encendido (paso 3);
+  - Privacidad lo declara (versión 2026-10-26).
+- Hecho también:
   - en el Worker: `POST /api/auth/oauth`, `POST /api/auth/apple-callback` y `POST /api/auth/id-token`;
   - en `/cuenta`: los botones y la vuelta;
-  - las pruebas: `tests/worker.test.js` y `tests/cuenta.test.js`;
-  - en `wrangler.jsonc`: los Client IDs.
-- Falta:
-  - en Google, una URI de redirección más en el cliente de hola.patagua.dev (paso 1);
-  - en Apple, el Services ID de pteron (paso 2);
-  - encender ambos proveedores en Supabase (paso 3);
-  - el texto de la Política de privacidad;
-  - mostrar los botones.
+  - las pruebas: `tests/worker.test.js`, `tests/cuenta.test.js` y, para Privacidad, `tests/sitio.test.js`;
+  - en `wrangler.jsonc`: los Client IDs;
+  - Apple encendido en Supabase.
+- Falta para Apple:
+  - el Services ID `dev.patagua.pteron` (paso 2). Hoy Apple responde `invalid_client`;
+  - su texto en Privacidad y mostrar su botón (paso 5).
 
 ## Cómo funciona
 
@@ -49,24 +52,21 @@ vuelta en su propio dominio.
    alguien escribe «no veo mi plan», pregunta con qué entró.
 6. `/admin` sigue igual: exige un correo de `ADMIN_EMAILS` confirmado por Supabase.
 
-## 1. Google: una URI más en el cliente de hola.patagua.dev
+## 1. Google: una URI más en el cliente de hola.patagua.dev (hecho)
 
 En [Google Cloud](https://console.cloud.google.com), en el proyecto de hola.patagua.dev, abre Google Auth Platform ›
 Clients y el cliente `561105936463-52r38o936uacthu7rtin8ttvkqqfhjaa.apps.googleusercontent.com`. En Authorized
-redirect URIs agrega, sin barra final:
+redirect URIs está, sin barra final:
 
 ```text
 https://pteron.patagua.dev/cuenta
 ```
 
-Nada más:
-- No hace falta su secreto.
-- La marca y los dominios autorizados no cambian, porque `patagua.dev` ya está entre ellos. La verificación de
-  hola.patagua.dev no se toca.
+No hace falta su secreto.
 
-Google mostrará el nombre de la app de ese proyecto. Si se quiere que diga «pteron», se crea un proyecto aparte con
-su propia pantalla de permiso y se cambia `GOOGLE_CLIENT_ID`. Las cuentas siguen siendo las mismas: Google identifica
-a cada persona igual en todos los clientes.
+La marca del proyecto se llama Patagua, con su logo, y sirve para pteron y para hola: Google muestra «Ir a Patagua».
+Cambiar el nombre o el logo pide verificar la marca de nuevo, y mientras tanto Google muestra el dominio
+(«patagua.dev»). Las cuentas siguen siendo las mismas: Google identifica a cada persona igual en todos los clientes.
 
 Si un profe usa la cuenta de Google de su colegio y el administrador del colegio limita las apps de terceros, Google
 puede no dejarlo entrar. En ese caso entra con su correo.
@@ -120,16 +120,19 @@ Para probar el viaje real sin mostrar los botones a nadie:
 3. Entra con tu cuenta de Google y después con tu Apple ID. Debe abrirse tu cuenta.
 4. Revisa en Supabase › Authentication › Users que quedó una sola cuenta por correo, con las dos identidades.
 
-## 5. Mostrar los botones
+## 5. Mostrar el botón de Apple
 
-Lo hago yo cuando me digas que Google y Apple están listos:
+Google está a la vista desde el 26 de octubre. Lo de Apple lo hago yo cuando su Services ID exista y el viaje real
+funcione:
 
-1. `public/cuenta/index.html`: quitar `hidden` de `<div class="acceso-proveedores" data-oauth hidden>`. Si sólo
-   uno está listo, se quita el botón del otro.
+1. `public/cuenta/index.html`: quitar `hidden` del botón `data-oauth-provider="apple"`.
 2. `public/privacidad.html`, con versión nueva. Texto propuesto, para que lo revises:
-   - En «Cuenta y planes»: «Si entras con Google o Apple, ese servicio confirma quién eres y entrega tu correo y,
-     si lo comparte, tu nombre; Google también la dirección de tu foto de perfil. Si en Apple eliges ocultar tu
-     correo, recibimos una dirección de reenvío de Apple en vez de la tuya.»
-   - En «Proveedores»: «**Google** y **Apple**, sólo si eliges entrar con uno de ellos, confirman quién eres.
-     Saben que entraste a pteron; no reciben nada de tu cuenta ni de tu trabajo.»
-3. Subir la revisión `?v=`, `npm run verify`, desplegar y entrar en producción con una cuenta real de cada uno.
+   - En «Cuenta y planes», después del párrafo de Google: «Si entras con Apple, Apple confirma quién eres y nos
+     entrega tu correo, que queda guardado con tu cuenta. Si eliges ocultar tu correo, recibimos una dirección de
+     reenvío de Apple en vez de la tuya.» Apple manda el nombre sólo fuera del `id_token`, y la vuelta no lo pasa.
+   - En «Proveedores», después de Google: «**Apple**, sólo si eliges entrar con Apple, confirma quién eres. Sabe que
+     entraste a pteron; no recibe nada de tu cuenta ni de tu trabajo.»
+
+   `tests/sitio.test.js` exige esas dos frases en cuanto el botón queda a la vista, y que no estén mientras siga
+   oculto.
+3. Subir la revisión `?v=`, `npm run verify`, desplegar y entrar en producción con un Apple ID real.

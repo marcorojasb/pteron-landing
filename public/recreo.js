@@ -1,4 +1,4 @@
-/* pteron · recreo (2026-10-26.1)
+/* pteron · recreo (2026-10-26.2)
    El huevo de pascua del inicio. Dos clics (o dos toques) seguidos en una lámina: las letras de la portada se van, las
    láminas se quedan quietas e inicio.js carga este archivo, que las toma donde están y las recorta en piezas. Cada
    lámina deja caer el sobrante de su recorte y la pieza vuela a su lugar con su trozo de la obra: la del doble clic a la

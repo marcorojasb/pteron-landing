@@ -174,6 +174,20 @@ test("/cuenta parte con la venta cerrada y pide aceptar los Términos vigentes a
   assert.match(privacidad, new RegExp(`<p>Esta es la versión ${version} de la política\\.</p>`));
 });
 
+// Entrar con un proveedor le entrega datos de la cuenta: cada botón a la vista en /cuenta tiene su párrafo en «Cuenta y
+// planes» y su línea en «Proveedores», y uno oculto todavía no se declara
+test("cada proveedor con que se entra a /cuenta está declarado en Privacidad; el que sigue oculto, no", () => {
+  const privacidad = read("privacidad.html");
+  const seccion = (id) => new RegExp(`<section id="${id}"[\\s\\S]*?</section>`).exec(privacidad)[0];
+  const botones = [...read("cuenta/index.html").matchAll(/data-oauth-provider="(\w+)"( hidden)?>/g)].map((m) => [m[1], Boolean(m[2])]);
+  assert.deepEqual(botones, [["google", false], ["apple", true]]);
+  for (const [proveedor, oculto] of botones) {
+    const nombre = { google: "Google", apple: "Apple" }[proveedor];
+    const declarado = seccion("cuenta").includes(`<p>Si entras con ${nombre},`) && seccion("proveedores").includes(`<li><strong>${nombre}</strong>, sólo si eliges entrar con ${nombre},`);
+    assert.equal(declarado, !oculto, oculto ? `${nombre} sigue oculto: Privacidad todavía no lo nombra` : `${nombre} está a la vista: Privacidad lo declara`);
+  }
+});
+
 test("/planes parte con «Disponible pronto»: «Elegir» queda oculto hasta que /api/plans diga que se vende", () => {
   const planes = read("planes/index.html");
   for (const [id, nombre, estilo] of [["basic", "Basic", "boton-tinta"], ["pro", "Pro", "boton-papel"]]) {

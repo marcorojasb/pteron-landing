@@ -1,5 +1,23 @@
 # Design QA
 
+## Entrar con Google, a la vista — 2026-10-26
+
+- Marco probó en producción el viaje real con su cuenta de Google, con el botón todavía oculto, y entró a su cuenta.
+- «Continuar con Google» queda a la vista en /cuenta, antes del correo. El botón de Apple sigue oculto (`hidden`)
+  hasta que exista su Services ID: hoy Apple responde `invalid_client`.
+- Google muestra «Ir a Patagua»: la marca del proyecto de hola, ahora con el nombre y el logo de Patagua, está
+  verificada.
+- Privacidad, versión 2026-10-26:
+  - en «Cuenta y planes», que Google confirma quién eres y entrega tu correo, tu nombre y la dirección de tu foto,
+    que quedan guardados con la cuenta;
+  - en «Proveedores», Google.
+
+  Una prueba exige que cada botón a la vista esté declarado en Privacidad, y que uno oculto todavía no lo esté.
+- Verificado con wrangler dev en Chromium, a 1280 px y en iPhone 13:
+  - se ven el botón, la «o» y el correo, y Apple no;
+  - sin desborde, errores, violaciones de CSP ni saltos.
+- Revisión del sitio 2026-10-26.2. 516 pruebas, humo y `sitio.mjs --revisar` en verde.
+
 ## La portada no salta al ponerle el sistema al botón — 2026-10-26
 
 - En producción, con el agente de un computador (Mac o Windows) y movimiento reducido, la portada medía CLS 0,093 a

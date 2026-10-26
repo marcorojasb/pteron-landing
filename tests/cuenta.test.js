@@ -900,14 +900,15 @@ test("un enlace mágico vencido lo dice en castellano, no con el texto (en ingl�
   assert.ok(flow.storage.getItem("pteron-oauth"), "no se gastó el intento");
 });
 
-test("el HTML: los botones de Google y Apple antes del correo, con su etiqueta, y el esqueleto para la vuelta con id_token", () => {
+test("el HTML: «Continuar con Google» antes del correo (Apple, oculto), con su etiqueta, y el esqueleto para la vuelta con id_token", () => {
   const html = readFileSync(new URL("../public/cuenta/index.html", import.meta.url), "utf8");
   const form = html.slice(html.indexOf("<form class=\"acceso-hoja\" data-login-form"), html.indexOf("</form>"));
-  const bloque = /<div class="acceso-proveedores" data-oauth[^>]*>([\s\S]*?)<\/div>/.exec(form);
-  assert.ok(bloque, "el bloque de proveedores está en el formulario de entrada");
+  const bloque = /<div class="acceso-proveedores" data-oauth>([\s\S]*?)<\/div>/.exec(form);
+  assert.ok(bloque, "el bloque de proveedores está a la vista en el formulario de entrada");
   assert.ok(form.indexOf("data-oauth") < form.indexOf('id="account-email"'), "antes del correo");
-  for (const [proveedor, nombre] of [["google", "Google"], ["apple", "Apple"]]) {
-    assert.match(bloque[1], new RegExp(`<button class="boton acceso-proveedor" type="button" data-oauth-provider="${proveedor}"><svg [^>]*aria-hidden="true"[^>]*>[\\s\\S]*?</svg><span data-oauth-label>Continuar con ${nombre}</span></button>`));
+  // Apple queda oculto hasta que exista su Services ID (ENTRAR-CON-GOOGLE-Y-APPLE.md)
+  for (const [proveedor, nombre, oculto] of [["google", "Google", ""], ["apple", "Apple", " hidden"]]) {
+    assert.match(bloque[1], new RegExp(`<button class="boton acceso-proveedor" type="button" data-oauth-provider="${proveedor}"${oculto}><svg [^>]*aria-hidden="true"[^>]*>[\\s\\S]*?</svg><span data-oauth-label>Continuar con ${nombre}</span></button>`));
   }
   assert.match(bloque[1], /<p class="acceso-error" data-oauth-message role="alert"><\/p>/);
   // El script en línea: con un id_token en el fragmento y el intento guardado, espera la cuenta con el esqueleto
